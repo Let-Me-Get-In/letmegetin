@@ -53,6 +53,12 @@ auth/contribution (Phase 5), the Next.js frontend (Phase 6).
 - Pin `requires-python = ">=3.12"`; CI uses the latest 3.12.
 - `uv.lock` is committed and `uv sync --frozen` is used in CI.
 
+### Delivery / git workflow (milestone stack)
+- The milestone is delivered as **one linear `gh stack`** (a single person works on it):
+  `main ← LET-5 ← LET-6 ← … ← LET-12`. One phase = one stack layer = one PR, based on the layer below.
+- PRs are merged **bottom-up**; merging is a human decision (never automated).
+- `gh stack submit --auto --open` pushes and refreshes the stack; `gh stack sync` keeps it rebased.
+
 ### Agent's Discretion
 - Exact Alembic file layout, workflow job naming, bandit skip list, and pre-commit
   hook versions.
