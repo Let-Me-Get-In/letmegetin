@@ -1,0 +1,107 @@
+[
+  {
+    "slug": "th_moteur_auditif",
+    "name": "th_moteur_auditif",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap motorio e uditivo"
+    }
+  },
+  {
+    "slug": "th_moteur_mental_auditif_visuel",
+    "name": "th_moteur_mental_auditif_visuel",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap motorio, mentale, uditivo e visivo"
+    }
+  },
+  {
+    "slug": "th_moteur_mental_auditif",
+    "name": "th_moteur_mental_auditif",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap motorio, mentale e uditivo"
+    }
+  },
+  {
+    "slug": "th_moteur_mental_visuel",
+    "name": "th_moteur_mental_visuel",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap motorio, mentale e visivo"
+    }
+  },
+  {
+    "slug": "th_moteur_mental",
+    "name": "th_moteur_mental",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap motorio e mentale"
+    }
+  },
+  {
+    "slug": "th_moteur_visuel",
+    "name": "th_moteur_visuel",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap motorio e visivo"
+    }
+  },
+  {
+    "slug": "th_moteur",
+    "name": "th_moteur",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per l'handicap motorio"
+    }
+  },
+  {
+    "slug": "th_visuel",
+    "name": "th_visuel",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per l'handicap visivo"
+    }
+  },
+  {
+    "slug": "th_auditif_visuel",
+    "name": "th_auditif_visuel",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap uditivo e visivo"
+    }
+  },
+  {
+    "slug": "th_auditif",
+    "name": "th_auditif",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per l'handicap uditivo"
+    }
+  },
+  {
+    "slug": "th_mental_auditif_visuel",
+    "name": "th_mental_auditif_visuel",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap mentale, uditivo e visivo"
+    }
+  },
+  {
+    "slug": "th_mental_auditif",
+    "name": "th_mental_auditif",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap mentale e uditivo"
+    }
+  },
+  {
+    "slug": "th_mental_visuel",
+    "name": "th_mental_visuel",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap mentale e visivo"
+    }
+  },
+  {
+    "slug": "th_mental",
+    "name": "th_mental",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per l'handicap mentale"
+    }
+  },
+  {
+    "slug": "th_moteur_auditif_visuel",
+    "name": "th_moteur_auditif_visuel",
+    "label": {
+      "it": "Beneficia del marchio di Stato \"Tourisme & Handicap\" per gli handicap motore, uditivo e visivo"
+    }
+  }
+]

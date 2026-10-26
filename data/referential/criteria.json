@@ -1,0 +1,1490 @@
+[
+  {
+    "slug": "lecteur-de-carte-bancaire-amovible",
+    "label": {
+      "fr": "Lecteur de carte bancaire amovible",
+      "it": "Lettore di carta bancaria amovibile"
+    },
+    "description": {}
+  },
+  {
+    "slug": "automatique-ou-absence-de-porte",
+    "label": {
+      "fr": "Automatique ou absence de porte",
+      "it": "Automatica o assenza di porta"
+    },
+    "description": {}
+  },
+  {
+    "slug": "presence-de-balises-sonores-telecommandees",
+    "label": {
+      "fr": "Présence de balises sonores télécommandées",
+      "it": "Presenza di rilevatori sonori telecomandati"
+    },
+    "description": {}
+  },
+  {
+    "slug": "dispositif",
+    "label": {
+      "fr": "dispositif",
+      "it": "dispositivo"
+    },
+    "description": {}
+  },
+  {
+    "slug": "total",
+    "label": {
+      "fr": "Total",
+      "it": "Totale"
+    },
+    "description": {
+      "it": "Nessun gradino e larghezza di passaggio di almeno 90 cm"
+    }
+  },
+  {
+    "slug": "bande-d-eveil-a-la-vigilance",
+    "label": {
+      "fr": "Bande d'éveil à la vigilance",
+      "it": "Striscia di sensibilizzazione alla vigilanza"
+    },
+    "description": {}
+  },
+  {
+    "slug": "plan-incline",
+    "label": {
+      "fr": "Plan incliné",
+      "it": "Piano inclinato"
+    },
+    "description": {}
+  },
+  {
+    "slug": "rampe-amovible-disponible-sur-demande",
+    "label": {
+      "fr": "Rampe amovible (disponible sur demande)",
+      "it": "Rampa amovibile (disponibile su richiesta)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "elevateur",
+    "label": {
+      "fr": "Élévateur",
+      "it": "Elevatore"
+    },
+    "description": {}
+  },
+  {
+    "slug": "entre-90-et-120-cm-du-sol",
+    "label": {
+      "fr": "Entre 90 et 120 cm du sol",
+      "it": "Tra 90 e 120 cm da terra"
+    },
+    "description": {}
+  },
+  {
+    "slug": "contraste-par-rapport-au-mur",
+    "label": {
+      "fr": "Contrasté par rapport au mur",
+      "it": "In contrasto rispetto al muro"
+    },
+    "description": {}
+  },
+  {
+    "slug": "poignee-ergonomique",
+    "label": {
+      "fr": "Poignée ergonomique",
+      "it": "Maniglia ergonomica"
+    },
+    "description": {
+      "it": "Escluse le maniglie rotonde"
+    }
+  },
+  {
+    "slug": "contrastee-visuellement",
+    "label": {
+      "fr": "Contrastée visuellement",
+      "it": "In contrasto visivo"
+    },
+    "description": {}
+  },
+  {
+    "slug": "version-audio",
+    "label": {
+      "fr": "Version audio",
+      "it": "Versione audio"
+    },
+    "description": {}
+  },
+  {
+    "slug": "bac-a-shampooing-adapte-pour-fauteuil-roulant",
+    "label": {
+      "fr": "Bac à shampooing adapté pour fauteuil roulant",
+      "it": "Riponi shampoo per sedia a rotella"
+    },
+    "description": {}
+  },
+  {
+    "slug": "visiteur-visible-depuis-l-interieur",
+    "label": {
+      "fr": "Visiteur visible depuis l'intérieur",
+      "it": "Visitatore visibile dall'interno"
+    },
+    "description": {}
+  },
+  {
+    "slug": "ouverture-de-porte",
+    "label": {
+      "fr": "Ouverture de porte",
+      "it": "Apertura della porta"
+    },
+    "description": {}
+  },
+  {
+    "slug": "largeur-du-passage-de-la-porte-d-entree-cm",
+    "label": {
+      "fr": "Largeur du passage de la porte d'entrée (cm)",
+      "it": "Larghezza del passaggio della porta di ingresso (cm)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "proche-de-l-entree",
+    "label": {
+      "fr": "Proche de l'entrée",
+      "it": "Vicino all'ingresso"
+    },
+    "description": {}
+  },
+  {
+    "slug": "en-braille",
+    "label": {
+      "fr": "En braille",
+      "it": "In braille"
+    },
+    "description": {}
+  },
+  {
+    "slug": "petit",
+    "label": {
+      "fr": "Petit",
+      "it": "Piccolo"
+    },
+    "description": {}
+  },
+  {
+    "slug": "douche",
+    "label": {
+      "fr": "Douche",
+      "it": "Doccia"
+    },
+    "description": {}
+  },
+  {
+    "slug": "douche-a-l-italienne",
+    "label": {
+      "fr": "Douche à l'italienne",
+      "it": "Doccia a livello terra"
+    },
+    "description": {}
+  },
+  {
+    "slug": "marche-s-escaliers",
+    "label": {
+      "fr": "Marche(s) / escaliers",
+      "it": "Gradino(i) / Scala"
+    },
+    "description": {}
+  },
+  {
+    "slug": "de-plain-pied",
+    "label": {
+      "fr": "De plain-pied",
+      "it": "Su un unico livello"
+    },
+    "description": {
+      "it": "Nessuna differenza di livello tra esterno e interno"
+    }
+  },
+  {
+    "slug": "porte-facile-a-maintenir-ouverte",
+    "label": {
+      "fr": "Porte facile à maintenir ouverte",
+      "it": "Porta facile da tenere aperta"
+    },
+    "description": {}
+  },
+  {
+    "slug": "en-relief",
+    "label": {
+      "fr": "En relief",
+      "it": "In rilievo"
+    },
+    "description": {}
+  },
+  {
+    "slug": "aux-contrastes-renforces",
+    "label": {
+      "fr": "Aux contrastes renforcés",
+      "it": "Dai contrasti evidenziati"
+    },
+    "description": {}
+  },
+  {
+    "slug": "en-gros-caracteres",
+    "label": {
+      "fr": "En gros caractères",
+      "it": "A caratteri cubitali"
+    },
+    "description": {}
+  },
+  {
+    "slug": "services-et-equipements",
+    "label": {
+      "fr": "Services et équipements",
+      "it": "Servizi e attrezzature"
+    },
+    "description": {}
+  },
+  {
+    "slug": "a-cle",
+    "label": {
+      "fr": "à clé",
+      "it": "a chiave"
+    },
+    "description": {}
+  },
+  {
+    "slug": "crochets-a-moins-de-120-cm-du-sol",
+    "label": {
+      "fr": "Crochets à moins de 120 cm du sol",
+      "it": "Ganci a meno di 120 cm da terra"
+    },
+    "description": {}
+  },
+  {
+    "slug": "tables-accessibles",
+    "label": {
+      "fr": "Tables accessibles",
+      "it": "Tavoli accessibili"
+    },
+    "description": {
+      "it": "Spazio sotto i tavoli di 70 cm di altezza, 80 cm di larghezza e 50 cm di profondità"
+    }
+  },
+  {
+    "slug": "auditive",
+    "label": {
+      "fr": "Auditive",
+      "it": "Uditiva"
+    },
+    "description": {}
+  },
+  {
+    "slug": "intellectuelle",
+    "label": {
+      "fr": "Intellectuelle",
+      "it": "Intellettuale"
+    },
+    "description": {}
+  },
+  {
+    "slug": "motrice",
+    "label": {
+      "fr": "Motrice",
+      "it": "Motrice"
+    },
+    "description": {}
+  },
+  {
+    "slug": "facile-dutilisation",
+    "label": {
+      "fr": "Facile d’utilisation",
+      "it": "Di facile utilizzo"
+    },
+    "description": {}
+  },
+  {
+    "slug": "sonore",
+    "label": {
+      "fr": "Sonore",
+      "it": "Sonoro"
+    },
+    "description": {}
+  },
+  {
+    "slug": "du-personnel-peut-accompagner-les-personnes-ayant-des-besoins-specifiques",
+    "label": {
+      "fr": "Du personnel peut accompagner les personnes ayant des besoins spécifiques",
+      "it": "Il personale pụ accompagnare le persone con esigenze specifiche"
+    },
+    "description": {}
+  },
+  {
+    "slug": "sous-titrage-sur-titrage",
+    "label": {
+      "fr": "Sous-titrage / sur-titrage",
+      "it": "Sottotitoli / Sopratitoli"
+    },
+    "description": {}
+  },
+  {
+    "slug": "en-gros-caracteres-sur-fond-contrastant",
+    "label": {
+      "fr": "En gros caractères sur fond contrastant",
+      "it": "A caratteri cubitali su sfondo contrastante"
+    },
+    "description": {}
+  },
+  {
+    "slug": "simples-a-comprendre",
+    "label": {
+      "fr": "Simples à comprendre",
+      "it": "Semplici da capire"
+    },
+    "description": {
+      "it": "Associazione testo-immagine, vocabolario semplice, frasi corte"
+    }
+  },
+  {
+    "slug": "siege-pliable",
+    "label": {
+      "fr": "Siège pliable",
+      "it": "Sedia pieghevole"
+    },
+    "description": {}
+  },
+  {
+    "slug": "chambre-s",
+    "label": {
+      "fr": "Chambre(s)",
+      "it": "Camera(e)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "nombre-de-chambres-accessibles-annonce",
+    "label": {
+      "fr": "Nombre de chambres accessibles annoncé",
+      "it": "Numero di camere accessibili indicato"
+    },
+    "description": {}
+  },
+  {
+    "slug": "numero-de-la-chambre-en-relief-en-braille",
+    "label": {
+      "fr": "Numéro de la chambre en relief / en braille",
+      "it": "Numero della camera in rilievo / in braille"
+    },
+    "description": {}
+  },
+  {
+    "slug": "porte-legere-et-poignee-ergonomique",
+    "label": {
+      "fr": "Porte légère et poignée ergonomique",
+      "it": "Porta leggera e maniglia ergonomica"
+    },
+    "description": {}
+  },
+  {
+    "slug": "aire-de-manuvre-d-au-moins-150-cm",
+    "label": {
+      "fr": "Aire de manœuvre d'au moins 150 cm",
+      "it": "Area di manovra di almeno 150 cm"
+    },
+    "description": {}
+  },
+  {
+    "slug": "tringle-de-penderie-ou-etageres-a-moins-de-140-cm-du-sol",
+    "label": {
+      "fr": "Tringle de penderie ou étagères à moins de 140 cm du sol",
+      "it": "Appendiabiti o mensole  meno di 140 cm da terra"
+    },
+    "description": {}
+  },
+  {
+    "slug": "audio",
+    "label": {
+      "fr": "Audio",
+      "it": "Audio"
+    },
+    "description": {}
+  },
+  {
+    "slug": "documents-adaptes",
+    "label": {
+      "fr": "Documents adaptés",
+      "it": "Documenti adattati"
+    },
+    "description": {}
+  },
+  {
+    "slug": "espace-de-90-cm-de-largeur-au-moins-dun-cote-du-lit",
+    "label": {
+      "fr": "Espace de 90 cm de largeur au moins d’un côté du lit",
+      "it": "Spazio di 90 cm di larghezza minimo dal lato del letto"
+    },
+    "description": {}
+  },
+  {
+    "slug": "entree",
+    "label": {
+      "fr": "Entrée",
+      "it": "Ingresso"
+    },
+    "description": {}
+  },
+  {
+    "slug": "enseigne-visible-et-lisible",
+    "label": {
+      "fr": "Enseigne visible et lisible",
+      "it": "Insegna visibile e leggibile"
+    },
+    "description": {}
+  },
+  {
+    "slug": "lentree-evaluee-est-l-entree-principale",
+    "label": {
+      "fr": "L’entrée évaluée est l'entrée principale",
+      "it": "L'ingresso valutato è l'ingresso principale"
+    },
+    "description": {}
+  },
+  {
+    "slug": "moins-de-90-cm",
+    "label": {
+      "fr": "moins de 90 cm",
+      "it": "meno di 90 cm"
+    },
+    "description": {}
+  },
+  {
+    "slug": "boucle-magnetique",
+    "label": {
+      "fr": "Boucle magnétique",
+      "it": "Circuito magnetico"
+    },
+    "description": {}
+  },
+  {
+    "slug": "amphitheatre",
+    "label": {
+      "fr": "Amphithéâtre",
+      "it": "Anfiteatro"
+    },
+    "description": {}
+  },
+  {
+    "slug": "pas-de-plain-pied",
+    "label": {
+      "fr": "Pas de plain-pied",
+      "it": "Non su un solo livello"
+    },
+    "description": {}
+  },
+  {
+    "slug": "espace-confidentiel-accessible-en-fauteuil-roulant",
+    "label": {
+      "fr": "Espace confidentiel accessible en fauteuil roulant",
+      "it": "Area riservata accessibile in sedia a rotelle"
+    },
+    "description": {}
+  },
+  {
+    "slug": "dispositif-d-attente",
+    "label": {
+      "fr": "Dispositif d'attente",
+      "it": "Dispositivo di attesa"
+    },
+    "description": {}
+  },
+  {
+    "slug": "hauteur-adaptee",
+    "label": {
+      "fr": "Hauteur adaptée",
+      "it": "Altezza adattata"
+    },
+    "description": {}
+  },
+  {
+    "slug": "mobilier-amovible",
+    "label": {
+      "fr": "Mobilier amovible",
+      "it": "Mobili amovibili"
+    },
+    "description": {}
+  },
+  {
+    "slug": "les-informations-visuelles-sont-lisibles-et-comprehensibles",
+    "label": {
+      "fr": "Les informations visuelles sont lisibles et compréhensibles",
+      "it": "Le informazioni visive sono leggibili e comprensibili"
+    },
+    "description": {
+      "it": "Caratteri cubitali contrastati, comprensibili e omogeni  Assegnazione senza interruzione"
+    }
+  },
+  {
+    "slug": "acces-en-fauteuil-roulant",
+    "label": {
+      "fr": "Accès en fauteuil roulant",
+      "it": "Accesso in sedia a rotelle"
+    },
+    "description": {}
+  },
+  {
+    "slug": "il-y-a-plusieurs-niveaux",
+    "label": {
+      "fr": "Il y a plusieurs niveaux",
+      "it": "Sono presenti più livelli"
+    },
+    "description": {}
+  },
+  {
+    "slug": "contrastes",
+    "label": {
+      "fr": "contrastés",
+      "it": "contrastati"
+    },
+    "description": {}
+  },
+  {
+    "slug": "sanitaires",
+    "label": {
+      "fr": "Sanitaires",
+      "it": "Sanitari"
+    },
+    "description": {}
+  },
+  {
+    "slug": "de-plain-pied-sans-amenagement",
+    "label": {
+      "fr": "De plain-pied, sans aménagement",
+      "it": "Su un unico livello, non adattato"
+    },
+    "description": {}
+  },
+  {
+    "slug": "marche-s",
+    "label": {
+      "fr": "Marche(s)",
+      "it": "Gradino(i)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "abattable",
+    "label": {
+      "fr": "abattable",
+      "it": "pieghevole"
+    },
+    "description": {}
+  },
+  {
+    "slug": "vestiaires",
+    "label": {
+      "fr": "Vestiaires",
+      "it": "Spogliatoi"
+    },
+    "description": {}
+  },
+  {
+    "slug": "barre-s-d-appui",
+    "label": {
+      "fr": "Barre(s) d'appui",
+      "it": "Sbarra(e) di appoggio"
+    },
+    "description": {}
+  },
+  {
+    "slug": "cabine-d-essayage",
+    "label": {
+      "fr": "Cabine d'essayage",
+      "it": "Camerino"
+    },
+    "description": {}
+  },
+  {
+    "slug": "cantine",
+    "label": {
+      "fr": "Cantine",
+      "it": "Mensa"
+    },
+    "description": {}
+  },
+  {
+    "slug": "salle-a-manger",
+    "label": {
+      "fr": "Salle à manger",
+      "it": "Sala da pranzo"
+    },
+    "description": {}
+  },
+  {
+    "slug": "visites-et-ou-activites-adaptees-aux-personnes-ayant-une-deficience",
+    "label": {
+      "fr": "Visites et/ou activités adaptées aux personnes ayant une déficience",
+      "it": "Visite e/o attività adatte alle persone con un handicap"
+    },
+    "description": {}
+  },
+  {
+    "slug": "automates",
+    "label": {
+      "fr": "Automates",
+      "it": "Robot"
+    },
+    "description": {}
+  },
+  {
+    "slug": "dispositif-audio",
+    "label": {
+      "fr": "Dispositif audio",
+      "it": "Dispositivo audio"
+    },
+    "description": {}
+  },
+  {
+    "slug": "hauteur-de-lit-en-cm-matelas-inclu",
+    "label": {
+      "fr": "Hauteur de lit en cm (matelas inclu)",
+      "it": "Altezza del letto in cm (materasso compreso)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "interrupteur-et-prises-de-courant-contrastes",
+    "label": {
+      "fr": "Interrupteur et prises de courant contrastés",
+      "it": "Interruttore e prese elettriche contrastate"
+    },
+    "description": {}
+  },
+  {
+    "slug": "salle-de-bain",
+    "label": {
+      "fr": "Salle de bain",
+      "it": "Bagno"
+    },
+    "description": {}
+  },
+  {
+    "slug": "precisez",
+    "label": {
+      "fr": "Précisez",
+      "it": "Precisa"
+    },
+    "description": {}
+  },
+  {
+    "slug": "base-du-miroir-a-maximum-1m-du-sol",
+    "label": {
+      "fr": "Base du miroir à maximum 1m du sol",
+      "it": "Base dello specchio a massimo 1 m da terra"
+    },
+    "description": {}
+  },
+  {
+    "slug": "transfert-possible-sur-siege-classique",
+    "label": {
+      "fr": "Transfert possible sur siège classique",
+      "it": "Trasferimento possibile su sedia classica"
+    },
+    "description": {}
+  },
+  {
+    "slug": "place-de-stationnement-handicape",
+    "label": {
+      "fr": "Place de stationnement \"handicapé\"",
+      "it": "Area di parcheggio \"disabili\""
+    },
+    "description": {
+      "it": "Cartelli e segnali a terra indicanti un divieto di parcheggio, tranne per le persone in situazione di disabilità"
+    }
+  },
+  {
+    "slug": "a-proximite-de-l-etablissement",
+    "label": {
+      "fr": "à proximité de l'établissement",
+      "it": "in prossimità della struttura"
+    },
+    "description": {}
+  },
+  {
+    "slug": "plus-grande-que-les-autres-places",
+    "label": {
+      "fr": "plus grande que les autres places",
+      "it": "più grande degli altri posti"
+    },
+    "description": {}
+  },
+  {
+    "slug": "dans-l-enceinte-de-l-etablissement",
+    "label": {
+      "fr": "dans l'enceinte de l'établissement",
+      "it": "nella recinzione della struttura"
+    },
+    "description": {}
+  },
+  {
+    "slug": "abaisses-a-proximite",
+    "label": {
+      "fr": "Abaissés à proximité",
+      "it": "Abbassati in prossimità"
+    },
+    "description": {
+      "it": "Altezza del marciapiede abbassata a livello del passaggio pedonale"
+    }
+  },
+  {
+    "slug": "90-cm-et-plus",
+    "label": {
+      "fr": "90 cm et plus",
+      "it": "90 cm e più"
+    },
+    "description": {}
+  },
+  {
+    "slug": "alarme-incendie-clignotante-ou-vibrante",
+    "label": {
+      "fr": "Alarme incendie clignotante ou vibrante",
+      "it": "Allarme incendio lampeggiante o vibrante"
+    },
+    "description": {}
+  },
+  {
+    "slug": "ecran-dedie-au-sous-titrage-sur-titrage",
+    "label": {
+      "fr": "Écran dédié au sous-titrage / sur-titrage",
+      "it": "Schermo dedicato ai sottotitoli/sopratitoli"
+    },
+    "description": {}
+  },
+  {
+    "slug": "rehausse-wc",
+    "label": {
+      "fr": "Rehausse WC",
+      "it": "Innalza WC"
+    },
+    "description": {}
+  },
+  {
+    "slug": "fauteuil-tout-terrain",
+    "label": {
+      "fr": "Fauteuil tout terrain",
+      "it": "Sedia per qualsiasi tipo di terreno"
+    },
+    "description": {}
+  },
+  {
+    "slug": "table-a-langer",
+    "label": {
+      "fr": "Table à langer",
+      "it": "Fasciatoio"
+    },
+    "description": {}
+  },
+  {
+    "slug": "information-relative-au-trafic",
+    "label": {
+      "fr": "Information relative au trafic",
+      "it": "Informazione relativa al traffico"
+    },
+    "description": {}
+  },
+  {
+    "slug": "acces",
+    "label": {
+      "fr": "Accès",
+      "it": "Accesso"
+    },
+    "description": {}
+  },
+  {
+    "slug": "interphone-bouton-d-appel",
+    "label": {
+      "fr": "Interphone / Bouton d'appel",
+      "it": "Citofono / Pulsante di chiamata"
+    },
+    "description": {}
+  },
+  {
+    "slug": "barre-s-d-appui-dans-la-douche",
+    "label": {
+      "fr": "Barre(s) d'appui dans la douche",
+      "it": "Sbarra(e) di appoggio nella doccia"
+    },
+    "description": {}
+  },
+  {
+    "slug": "siege-de-douche",
+    "label": {
+      "fr": "Siège de douche",
+      "it": "Sedile da doccia"
+    },
+    "description": {}
+  },
+  {
+    "slug": "amovible",
+    "label": {
+      "fr": "amovible",
+      "it": "amovibile"
+    },
+    "description": {}
+  },
+  {
+    "slug": "fixe",
+    "label": {
+      "fr": "fixe",
+      "it": "fisso"
+    },
+    "description": {}
+  },
+  {
+    "slug": "possibilite-de-s-asseoir",
+    "label": {
+      "fr": "Possibilité de s'asseoir",
+      "it": "Possibilità di sedersi"
+    },
+    "description": {}
+  },
+  {
+    "slug": "casiers",
+    "label": {
+      "fr": "Casiers",
+      "it": "Casse"
+    },
+    "description": {}
+  },
+  {
+    "slug": "a-code",
+    "label": {
+      "fr": "à code",
+      "it": "a codice"
+    },
+    "description": {}
+  },
+  {
+    "slug": "service-a-la-table-possible",
+    "label": {
+      "fr": "Service à la table possible",
+      "it": "Possibile servizio al tavolo"
+    },
+    "description": {}
+  },
+  {
+    "slug": "visuelle",
+    "label": {
+      "fr": "Visuelle",
+      "it": "Visiva"
+    },
+    "description": {}
+  },
+  {
+    "slug": "a-moins-de-120-cm-de-haut",
+    "label": {
+      "fr": "à moins de 120 cm de haut",
+      "it": "a meno di 120 cm di altezza"
+    },
+    "description": {}
+  },
+  {
+    "slug": "visuel",
+    "label": {
+      "fr": "Visuel",
+      "it": "Visivo"
+    },
+    "description": {}
+  },
+  {
+    "slug": "faciles-a-utiliser-et-a-comprendre",
+    "label": {
+      "fr": "Faciles à utiliser et à comprendre",
+      "it": "Facili da usare e da capire"
+    },
+    "description": {}
+  },
+  {
+    "slug": "largeur-du-passage-de-la-porte-cm",
+    "label": {
+      "fr": "Largeur du passage de la porte (cm)",
+      "it": "Larghezza di passaggio dalla porta (cm)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "devant-la-penderie",
+    "label": {
+      "fr": "Devant la penderie",
+      "it": "Davanti all'appendiabiti"
+    },
+    "description": {}
+  },
+  {
+    "slug": "devant-la-porte-de-la-chambre",
+    "label": {
+      "fr": "Devant la porte de la chambre",
+      "it": "Davanti alla porta della camera"
+    },
+    "description": {}
+  },
+  {
+    "slug": "devant-la-porte-de-la-salle-de-bain",
+    "label": {
+      "fr": "Devant la porte de la salle de bain",
+      "it": "Davanti alla porta del bagno"
+    },
+    "description": {}
+  },
+  {
+    "slug": "acces-de-plain-pied",
+    "label": {
+      "fr": "Accès de plain-pied",
+      "it": "Accesso a livello"
+    },
+    "description": {}
+  },
+  {
+    "slug": "porte-difficile-a-maintenir-ouverte",
+    "label": {
+      "fr": "Porte difficile à maintenir ouverte",
+      "it": "Porta difficile da mantenere aperta"
+    },
+    "description": {}
+  },
+  {
+    "slug": "zone-de-transfert-a-cote-des-toilettes",
+    "label": {
+      "fr": "Zone de transfert à côté des toilettes",
+      "it": "Zona di trasferimento a lato delle toilette"
+    },
+    "description": {}
+  },
+  {
+    "slug": "hauteur-de-l-assise-des-toilettes",
+    "label": {
+      "fr": "Hauteur de l'assise des toilettes",
+      "it": "Altezza della seduta delle toilette"
+    },
+    "description": {}
+  },
+  {
+    "slug": "standard-entre-40-et-45-cm",
+    "label": {
+      "fr": "Standard (entre 40 et 45 cm)",
+      "it": "Standard (tra 40 e 45 cm)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "haute-superieure-a-45-cm",
+    "label": {
+      "fr": "Haute (supérieure à 45 cm)",
+      "it": "Alta (superiore a 45 cm)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "lavabo-adapte",
+    "label": {
+      "fr": "Lavabo adapté",
+      "it": "Lavandino adattato"
+    },
+    "description": {}
+  },
+  {
+    "slug": "savon-et-seche-main-entre-90-et-120-cm-du-sol",
+    "label": {
+      "fr": "Savon et sèche-main entre 90 et 120 cm du sol",
+      "it": "Sapone e asciugamani tra 90 e 120 cm da terra"
+    },
+    "description": {}
+  },
+  {
+    "slug": "baignoire",
+    "label": {
+      "fr": "Baignoire",
+      "it": "Vasca da bagno"
+    },
+    "description": {}
+  },
+  {
+    "slug": "2",
+    "label": {
+      "fr": "2",
+      "it": "2"
+    },
+    "description": {}
+  },
+  {
+    "slug": "1",
+    "label": {
+      "fr": "1",
+      "it": "1"
+    },
+    "description": {}
+  },
+  {
+    "slug": "avec-ressaut",
+    "label": {
+      "fr": "Avec ressaut",
+      "it": "Con rialzo"
+    },
+    "description": {
+      "it": "Piccolo gradino di altezza massima di 2 cm"
+    }
+  },
+  {
+    "slug": "nombre-de-marches",
+    "label": {
+      "fr": "Nombre de marches",
+      "it": "Numero di gradini"
+    },
+    "description": {}
+  },
+  {
+    "slug": "plus-de-3",
+    "label": {
+      "fr": "Plus de 3",
+      "it": "Più di 3"
+    },
+    "description": {}
+  },
+  {
+    "slug": "3",
+    "label": {
+      "fr": "3",
+      "it": "3"
+    },
+    "description": {}
+  },
+  {
+    "slug": "commandes",
+    "label": {
+      "fr": "Commandes",
+      "it": "Comandi"
+    },
+    "description": {}
+  },
+  {
+    "slug": "hauteur-de-marche-cm",
+    "label": {
+      "fr": "Hauteur de marche (cm)",
+      "it": "Altezza del gradino (cm)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "main-courante",
+    "label": {
+      "fr": "Main courante",
+      "it": "Corrimano"
+    },
+    "description": {}
+  },
+  {
+    "slug": "nez-de-marches-contrastes-et-antiderapants",
+    "label": {
+      "fr": "Nez de marches contrastés et antidérapants",
+      "it": "Sporgenze dei gradini contrastate e antiscivolo"
+    },
+    "description": {
+      "it": "La sporgenza è la parte sporgente del gradino"
+    }
+  },
+  {
+    "slug": "manuelle",
+    "label": {
+      "fr": "Manuelle",
+      "it": "Manuale"
+    },
+    "description": {}
+  },
+  {
+    "slug": "interieur",
+    "label": {
+      "fr": "Intérieur",
+      "it": "Interno"
+    },
+    "description": {}
+  },
+  {
+    "slug": "guichet-d-accueil",
+    "label": {
+      "fr": "Guichet d'accueil",
+      "it": "Sportello di accoglienza"
+    },
+    "description": {}
+  },
+  {
+    "slug": "bande-de-guidage-tactile-jusquau-guichet-d-accueil",
+    "label": {
+      "fr": "Bande de guidage tactile jusqu’au guichet d'accueil",
+      "it": "Striscia di guida tattile fino allo sportello di accoglienza"
+    },
+    "description": {}
+  },
+  {
+    "slug": "allees-larges",
+    "label": {
+      "fr": "Allées larges",
+      "it": "Corridoi ampi"
+    },
+    "description": {}
+  },
+  {
+    "slug": "plan-du-lieu-proche-de-l-entree",
+    "label": {
+      "fr": "Plan du lieu proche de l'entrée",
+      "it": "Piano del luogo vicino all'ingresso"
+    },
+    "description": {}
+  },
+  {
+    "slug": "eclairage-adapte",
+    "label": {
+      "fr": "Éclairage adapté",
+      "it": "Illuminazione adatta"
+    },
+    "description": {
+      "it": "Assenza di controluce, di zona abbagliante o di penombra"
+    }
+  },
+  {
+    "slug": "partiel",
+    "label": {
+      "fr": "Partiel",
+      "it": "Parziale"
+    },
+    "description": {
+      "it": "Alcune sezioni dei luoghi sono inaccessibili in sedia a rotelle"
+    }
+  },
+  {
+    "slug": "ascenseur-s",
+    "label": {
+      "fr": "Ascenseur(s)",
+      "it": "Ascensore(i)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "dimensions-de-la-cabine",
+    "label": {
+      "fr": "Dimensions de la cabine",
+      "it": "Dimensioni della cabina"
+    },
+    "description": {}
+  },
+  {
+    "slug": "grand",
+    "label": {
+      "fr": "Grand",
+      "it": "Grande"
+    },
+    "description": {}
+  },
+  {
+    "slug": "standard-110-x-130-cm",
+    "label": {
+      "fr": "Standard (110 x 130 cm)",
+      "it": "Standard (110 x 130 cm)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "annonce-vocale-des-etages",
+    "label": {
+      "fr": "Annonce vocale des étages",
+      "it": "Annuncio vocale dei piani"
+    },
+    "description": {}
+  },
+  {
+    "slug": "sur-les-commandes-les-chiffres-sont",
+    "label": {
+      "fr": "Sur les commandes, les chiffres sont",
+      "it": "Sui comandi, i numeri sono"
+    },
+    "description": {}
+  },
+  {
+    "slug": "commandes-a-hauteur-de-fauteuil-roulant",
+    "label": {
+      "fr": "Commandes à hauteur de fauteuil roulant",
+      "it": "Comandi ad altezza della sedia a rotelle"
+    },
+    "description": {}
+  },
+  {
+    "slug": "personnel-initie-a-la-langue-des-signes",
+    "label": {
+      "fr": "Personnel initié à la langue des signes",
+      "it": "Personale formato al linguaggio dei segni"
+    },
+    "description": {}
+  },
+  {
+    "slug": "personnel-forme-a-l-accueil-des-personnes-en-situation-de-handicap",
+    "label": {
+      "fr": "Personnel formé à l'accueil des personnes en situation de handicap",
+      "it": "Personale formato all'accoglienza di persone disabili"
+    },
+    "description": {}
+  },
+  {
+    "slug": "film-s-visite-s-propose-s-en-audiodescription",
+    "label": {
+      "fr": "Film(s)/visite(s) proposé(s) en audiodescription",
+      "it": "Film/visita(e) proposti in audiodescrizione"
+    },
+    "description": {}
+  },
+  {
+    "slug": "circulation-aisee-jusqu-a-la-chambre",
+    "label": {
+      "fr": "Circulation aisée jusqu'à la chambre",
+      "it": "Circolazione facilitata fino alla camera"
+    },
+    "description": {}
+  },
+  {
+    "slug": "exterieur",
+    "label": {
+      "fr": "Extérieur",
+      "it": "Esterno"
+    },
+    "description": {}
+  },
+  {
+    "slug": "trottoirs",
+    "label": {
+      "fr": "Trottoirs",
+      "it": "Marciapiedi"
+    },
+    "description": {}
+  },
+  {
+    "slug": "paves",
+    "label": {
+      "fr": "Pavés",
+      "it": "Piastrelle"
+    },
+    "description": {}
+  },
+  {
+    "slug": "tres-etroits",
+    "label": {
+      "fr": "Très étroits",
+      "it": "Molto stretti"
+    },
+    "description": {}
+  },
+  {
+    "slug": "devers-important",
+    "label": {
+      "fr": "Dévers important",
+      "it": "Sopraelevazione importante"
+    },
+    "description": {}
+  },
+  {
+    "slug": "rue-en-pente",
+    "label": {
+      "fr": "Rue en pente",
+      "it": "Strada in pendenza"
+    },
+    "description": {}
+  },
+  {
+    "slug": "de-plain-pied-et-amenages",
+    "label": {
+      "fr": "De plain-pied et aménagés",
+      "it": "A livello e predisposti"
+    },
+    "description": {
+      "it": "Nessuna differenza di livello tra esterno e interno dei sanitari. Larghezza della porta di almeno 90 cm, area di manovra di 150 cm, sbarra di appoggio."
+    }
+  },
+  {
+    "slug": "panneau-prioritaire",
+    "label": {
+      "fr": "Panneau \"Prioritaire\"",
+      "it": "Cartello \"Prioritario\""
+    },
+    "description": {
+      "it": "I servizi offerti in modo prioritario alle persone a mobilità ridotta sono ben indicati (esempi: cassa prioritaria, sportello prioritario, ecc.)"
+    }
+  },
+  {
+    "slug": "espace-dau-moins-20-cm-de-haut-sous-le-lit",
+    "label": {
+      "fr": "Espace d’au moins 20 cm de haut sous le lit",
+      "it": "Spazio di almeno 20 cm di altezza sotto al letto"
+    },
+    "description": {}
+  },
+  {
+    "slug": "acces-a-l-estrade-en-fauteuil-roulant",
+    "label": {
+      "fr": "Accès à l'estrade en fauteuil roulant",
+      "it": "Accesso alla piattaforma in sedia a rotelle"
+    },
+    "description": {}
+  },
+  {
+    "slug": "vehicule-s-adapte-s",
+    "label": {
+      "fr": "Véhicule(s) adapté(s)",
+      "it": "Veicolo(i) adattato(i)"
+    },
+    "description": {}
+  },
+  {
+    "slug": "mode-de-transport-accessible-en-fauteuil-roulant",
+    "label": {
+      "fr": "Mode de transport accessible en fauteuil roulant",
+      "it": "Modalità di trasporto accessibile in sedia a rotelle"
+    },
+    "description": {}
+  },
+  {
+    "slug": "marquages-sur-porte-vitree",
+    "label": {
+      "fr": "Marquages sur porte vitrée",
+      "it": "Indicazioni su porta vetrata"
+    },
+    "description": {
+      "it": "Se la porta è a vetri, una striscia o un motivo adesivo di almeno 5 cm deve essere posizionato a 110 e 160 cm da terra"
+    }
+  },
+  {
+    "slug": "fauteuil-roulant-manuel",
+    "label": {
+      "fr": "Fauteuil roulant manuel",
+      "it": "Sedia a rotelle manuale"
+    },
+    "description": {}
+  },
+  {
+    "slug": "lit-a-hauteur-ajustable",
+    "label": {
+      "fr": "Lit à hauteur ajustable",
+      "it": "Letto ad altezza regolabile"
+    },
+    "description": {}
+  },
+  {
+    "slug": "leve-personne",
+    "label": {
+      "fr": "Lève-personne",
+      "it": "Solleva-persone"
+    },
+    "description": {}
+  },
+  {
+    "slug": "dispositif-de-mise-a-l-eau",
+    "label": {
+      "fr": "Dispositif de mise à l'eau",
+      "it": "Dispositivo di messa in acqua"
+    },
+    "description": {}
+  },
+  {
+    "slug": "audioguides",
+    "label": {
+      "fr": "Audioguides",
+      "it": "Audioguide"
+    },
+    "description": {}
+  },
+  {
+    "slug": "chaise-haute-pour-enfant",
+    "label": {
+      "fr": "Chaise haute pour enfant",
+      "it": "Seggiolone per bambino"
+    },
+    "description": {}
+  },
+  {
+    "slug": "salle-de-reunion-accessible-en-fauteuil-roulant",
+    "label": {
+      "fr": "Salle de réunion accessible en fauteuil roulant",
+      "it": "Sala riunioni accessibile in sedia a rotelle"
+    },
+    "description": {}
+  },
+  {
+    "slug": "amphitheatre-accessible-en-fauteuil-roulant",
+    "label": {
+      "fr": "Amphithéâtre accessible en fauteuil roulant",
+      "it": "Anfiteatro accessibile in sedia a rotelle"
+    },
+    "description": {}
+  },
+  {
+    "slug": "places-reservees-aux-personnes-en-fauteuil-roulant",
+    "label": {
+      "fr": "Places réservées aux personnes en fauteuil roulant",
+      "it": "Posti riservati alle persone in sedia a rotelle"
+    },
+    "description": {}
+  },
+  {
+    "slug": "menu-accessible",
+    "label": {
+      "fr": "Menu accessible",
+      "it": "Menù accessibile"
+    },
+    "description": {
+      "it": "Esempi: brochure, depliant, menù, ecc."
+    }
+  },
+  {
+    "slug": "caisses-a-hauteur-adaptee",
+    "label": {
+      "fr": "Caisses à hauteur adaptée",
+      "it": "Casse ad altezza adattata"
+    },
+    "description": {}
+  },
+  {
+    "slug": "materiel-a-disposition",
+    "label": {
+      "fr": "Matériel à disposition",
+      "it": "Materiale a disposizione"
+    },
+    "description": {}
+  },
+  {
+    "slug": "coffre-mobile-sur-demande",
+    "label": {
+      "fr": "Coffre mobile sur demande",
+      "it": "Cassaforte mobile su richiesta"
+    },
+    "description": {}
+  },
+  {
+    "slug": "espace-calme",
+    "label": {
+      "fr": "Espace calme",
+      "it": "Spazio calmo"
+    },
+    "description": {}
+  },
+  {
+    "slug": "autre",
+    "label": {
+      "fr": "Autre",
+      "it": "Altro"
+    },
+    "description": {}
+  },
+  {
+    "slug": "teletranscription",
+    "label": {
+      "fr": "Télétranscription",
+      "it": "Teletrascrizione"
+    },
+    "description": {}
+  }
+]
