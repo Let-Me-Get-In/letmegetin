@@ -31,8 +31,8 @@ uv run pytest
 
 ## Conventions
 
-- **Linear** : chaque branche/commit/PR commence par `LMG-<n>` (team `LMG`, projet `LetMeGetIn`). Voir `.planning/LINEAR.md`.
-- Branche : `LMG-<n>-<slug>` — Commit/PR : `LMG-<n> <type>(<scope>): <description>`.
+- **Linear** : chaque branche/commit/PR commence par `LET-<n>` (team `LET`, projet `LetMeGetIn`). Voir `.planning/LINEAR.md`.
+- Branche : `LET-<n>-<slug>` — Commit/PR : `LET-<n> <type>(<scope>): <description>`.
 - Le hook `.githooks/commit-msg` force la convention (et rejette `feat(01-02)`).
 - Détails complets : [AGENTS.md](AGENTS.md) et [CLAUDE.md](CLAUDE.md).
 
