@@ -2,11 +2,11 @@
 
 ## What This Is
 
-LetMeGetIn est la réécriture moderne de **Jaccede** (guide collaboratif des lieux accessibles aux personnes en situation de handicap, 2002→2024). Il expose un **référentiel d'accessibilité normalisé** (catégories de lieux, critères hiérarchiques et typés, labels officiels) via une **API publique FastAPI** consommable par des tiers, et un **frontend Next.js** qui permet de rechercher des lieux, consulter leur fiche d'accessibilité et contribuer.
+LetMeGetIn is the modern rewrite of **Jaccede**, the collaborative guide to places accessible to people with disabilities (2002–2024). It exposes a **normalized accessibility referential** (place categories, typed hierarchical criteria, official labels) through a **public FastAPI API**, consumed by third parties and by our own Next.js frontend.
 
 ## Core Value
 
-Permettre à quiconque de savoir, en quelques secondes, si un lieu est réellement accessible — grâce à une fiche d'accessibilité structurée et fiable, consommable par n'importe quel site ou application.
+Let anyone know in seconds whether a place is truly accessible — through a structured, reliable accessibility record that any site or app can consume.
 
 ## Requirements
 
@@ -16,68 +16,68 @@ Permettre à quiconque de savoir, en quelques secondes, si un lieu est réelleme
 
 ### Active
 
-- [ ] Référentiel : catégories, critères hiérarchiques typés, filtres, labels officiels, exposés par l'API
-- [ ] Seed reconstitué depuis les archives de l'ancien Jaccede (158 catégories, 182 critères, grille complète d'une catégorie)
-- [ ] Recherche de lieux géo + texte + filtres d'accessibilité
-- [ ] Fiche lieu avec arbre d'accessibilité et avis
-- [ ] Auth (JWT) + contribution (compléter une fiche, déposer un avis)
-- [ ] Frontend Next.js : recherche (carte + liste), fiche, contribution, compte
-- [ ] API publique : clés API, OpenAPI, documentation
+- [ ] Referential: categories, typed hierarchical criteria, filters, official labels exposed by the API
+- [ ] Seed reconstructed from the Jaccede archives (158 categories, 182 criteria, one full category grid)
+- [ ] Place search: geo + text + accessibility filters
+- [ ] Place detail with the accessibility tree and reviews
+- [ ] Auth (JWT) + contribution (complete a record, post a review)
+- [ ] Next.js frontend: search (map + list), detail, contribution, account
+- [ ] Public API: API keys, OpenAPI, documentation
 
 ### Out of Scope
 
-- Gamification (challenges, équipes, points, trésor) — v2
-- Messagerie / chat temps réel — v2
-- Applications mobiles natives — plus tard (API-first)
-- Import des référentiels partenaires (Macif, La Poste, LocalEyes, HandiPlage) — v2
-- Modération avancée / back-office complet — admin minimal en v1
+- Gamification (challenges, teams, points) — v2
+- Real-time messaging/chat — v2
+- Native mobile apps — later (API-first)
+- Partner referential imports (Macif, La Poste, LocalEyes, HandiPlage) — v2
+- Full moderation/back-office — minimal admin in v1
 
 ## Context
 
-### Reconstruction (sources épuisées)
+### Reconstruction (sources exhausted)
 
-Le code de production Jaccede n'est plus accessible (buckets S3 supprimés, RDS mort, Wayback indisponible). La reconstitution s'appuie sur les dépôts privés encore présents :
+Jaccede's production code is no longer accessible (S3 backups deleted, RDS gone, Wayback unavailable). The reconstruction relies on the private repositories that still exist:
 
-| Source | Donnée |
+| Source | Data |
 |---|---|
-| `jaccede-api-v4` (Flask, 2024) | Modèle `Criterion` (hiérarchique, 7 types), `Category`, `AccessibilityValue`, `OtherInformation`, importeurs partenaires |
-| `commands/translations/it/*.csv` | 233 libellés critères/options, 158 catégories, 52 filtres, 16 labels TH |
-| `jaccede-v3/docs/api/source/places_api.rst` | Grille **complète** de la catégorie 1 (4 groupes, 19 critères, options, types) |
-| `apidocs/docs/categories.html` | 118 catégories avec libellés FR |
-| `jaccede-dev-tools` + `jaccede-doc` | Confirment le dump S3 (supprimé) ; aucune donnée exploitable |
+| `jaccede-api-v4` (Flask, 2024) | `Criterion` model (hierarchical, 7 types), `Category`, `AccessibilityValue`, `OtherInformation`, partner importers |
+| `commands/translations/it/*.csv` | 233 criterion/option labels, 158 categories, 52 filters, 16 TH labels |
+| `jaccede-v3/docs/api/source/places_api.rst` | **Complete** category-1 grid (4 groups, 19 criteria, options, types) |
+| `apidocs/docs/categories.html` | 118 categories with FR labels |
+| `jaccede-dev-tools` + `jaccede-doc` | Confirm the S3 dump (deleted); no usable data |
 
-La grille fine par catégorie n'est pas récupérable à 100 % : on part de la grille catégorie 1 comme base universelle, on l'étend avec le vocabulaire et les mappings partenaires, et on rend l'ensemble **éditable en admin**.
+The exact per-category grid is not fully recoverable: category 1 is used as the universal base, extended with the vocabulary and partner mappings, and made **editable in the admin**.
 
 ### Monorepo
 
-- **Backend** : racine du dépôt (`src/letmegetin`, `tests/`, `data/`).
-- **Frontend** : `web/` (Next.js, à venir).
-- **E2E** : plus tard, dans un **dépôt séparé** (comme interview-challenger).
+- **Backend**: repo root (`src/letmegetin`, `tests/`, `data/`).
+- **Frontend**: `web/` (Next.js, coming).
+- **E2E**: later, in a **separate repository** (same model as interview-challenger).
 
-### Suivi
+### Tracking
 
-Linear : **workspace dédié LetMeGetIn** (à créer — surtout pas `exstrat`), team **LET**, project **LetMeGetIn**. Chaque branche/commit/PR commence par `LET-<n>`. Mapping dans `.planning/LINEAR.md`.
+Linear: dedicated **LetMeGetIn** workspace (`letmegetin`), team **LET**, project **LetMeGetIn**. Every branch/commit/PR starts with `LET-<n>`. Mapping in `.planning/LINEAR.md`.
 
 ## Constraints
 
-- **Backend** : FastAPI + SQLAlchemy 2.0 async + Pydantic v2 + Alembic.
-- **Frontend** : Next.js (App Router) + TypeScript + Tailwind + MapLibre/OSM.
-- **BDD** : PostgreSQL + PostGIS (recherche géo), port dev **55433**.
-- **Qualité** : ruff, mypy, bandit, pytest + coverage, pre-commit.
-- **Pas de dépendance dure à Google Places** : seed local, enrichissement optionnel.
-- **Données historiques** : ne pas prétendre à une copie 1:1 ; conserver idées, vocabulaire et structure.
+- **Backend**: FastAPI + SQLAlchemy 2.0 async + Pydantic v2 + Alembic.
+- **Frontend**: Next.js (App Router) + TypeScript + Tailwind + MapLibre/OSM.
+- **Database**: PostgreSQL + PostGIS (geo search), dev port **55433**.
+- **Quality**: ruff, mypy, bandit, pytest + coverage, pre-commit.
+- **No hard dependency on Google Places**: local seed, optional enrichment.
+- **Historical data**: do not claim a 1:1 copy; keep the ideas, vocabulary and structure.
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| FastAPI (pas Django) | Async, OpenAPI auto, écosystème de l'auteur | — Pending |
-| Next.js (pas SvelteKit) | SEO/SSR, écosystème a11y, cartes | — Pending |
-| PostGIS + JSONB i18n | Recherche géo native ; i18n simple | — Pending |
-| Seed reconstitué (pas de dump) | Seule donnée disponible ; éditable | — Pending |
-| Monorepo back + front | Simplicité pour l'instant ; e2e séparé plus tard | — Pending |
-| Linear (team LET) en tête de branche/commit/PR | Traçabilité ticket ↔ code | — Pending |
-| V1 sans gamification/messagerie/mobile | Recentrage sur le cœur | — Pending |
+| FastAPI (not Django) | Async, OpenAPI auto, author's ecosystem | — Pending |
+| Next.js (not SvelteKit) | SEO/SSR, a11y ecosystem, maps | — Pending |
+| PostGIS + JSONB i18n | Native geo search; simple i18n | — Pending |
+| Reconstructed seed (no dump) | Only data available; editable | — Pending |
+| Backend + frontend monorepo | Simplicity for now; e2e separate later | — Pending |
+| Linear (team LET) at the start of branch/commit/PR | Ticket ↔ code traceability | — Pending |
+| V1 without gamification/messaging/mobile | Focus on the core | — Pending |
 
 ## Evolution
 
@@ -97,4 +97,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-26 after rename to LetMeGetIn*
+*Last updated: 2026-10-26 after moving to the LetMeGetIn GitHub organization*
