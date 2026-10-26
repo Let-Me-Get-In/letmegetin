@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from jaccede.api import router
-from jaccede.config import settings
+from letmegetin.api import router
+from letmegetin.config import settings
 
 app = FastAPI(title=settings.api_title, version=settings.api_version)
 app.include_router(router)

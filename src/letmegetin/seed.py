@@ -1,6 +1,6 @@
 """Charge le seed reconstitué dans PostgreSQL/PostGIS.
 
-Usage : `uv run python -m jaccede.seed`
+Usage : `uv run python -m letmegetin.seed`
 Idempotent : les enregistrements existants ne sont pas dupliqués.
 """
 
@@ -12,9 +12,9 @@ import json
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from jaccede.config import settings
-from jaccede.db import SessionLocal, engine
-from jaccede.models import (
+from letmegetin.config import settings
+from letmegetin.db import SessionLocal, engine
+from letmegetin.models import (
     AccessibilityFilter,
     Base,
     Category,
@@ -22,7 +22,7 @@ from jaccede.models import (
     Criterion,
     OtherInformation,
 )
-from jaccede.utils import slugify
+from letmegetin.utils import slugify
 
 
 def _criterion_type(data: dict) -> str:

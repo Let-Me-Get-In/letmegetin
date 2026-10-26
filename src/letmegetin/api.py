@@ -6,15 +6,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from jaccede.db import get_session
-from jaccede.models import (
+from letmegetin.db import get_session
+from letmegetin.models import (
     AccessibilityFilter,
     Category,
     CategoryCriterion,
     Criterion,
     OtherInformation,
 )
-from jaccede.schemas import CategoryOut, CriterionOut, FilterOut, OtherInformationOut
+from letmegetin.schemas import CategoryOut, CriterionOut, FilterOut, OtherInformationOut
 
 router = APIRouter(prefix="/api/v1", tags=["referential"])
 
