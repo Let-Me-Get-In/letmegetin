@@ -2,90 +2,97 @@
 
 ## Overview
 
-Réécriture moderne du guide collaboratif de lieux accessibles : référentiel normalisé + API publique FastAPI + frontend Next.js. V1 = cœur produit (référentiel, recherche, fiche, contribution). Gamification, intégrations et mobile sont différés.
+Modern rewrite of the collaborative accessible-places guide: normalized referential + public FastAPI API + Next.js frontend. V1 = the product core (referential, search, record, contribution). Gamification, integrations and mobile are deferred.
 
 ## Phases
 
-### Phase 1: Socle & CI
-**Goal:** Un squelette FastAPI + Postgres/PostGIS + Alembic + CI qui démarre et passe au vert.
+### Phase 1: Foundation & CI
+**Goal:** A FastAPI + Postgres/PostGIS + Alembic + CI skeleton that starts and passes.
 **Mode:** mvp
+**Ticket:** LET-6
 **Requirements:** OPS-01, OPS-02, OPS-03
 **Success Criteria**:
-1. `docker compose up -d` lance PostGIS et l'API sert `GET /health` → 200.
-2. `uv run alembic upgrade head` crée le schéma.
-3. `uv run pytest`, `uv run ruff check .` et `uv run mypy` passent localement et en CI.
+1. `docker compose up -d` starts PostGIS and the API serves `GET /health` → 200.
+2. `uv run alembic upgrade head` creates the schema.
+3. `uv run pytest`, `uv run ruff check .` and `uv run mypy` pass locally and in CI.
 
-### Phase 2: Référentiel & seed
-**Goal:** L'API expose catégories, critères (arbre) et filtres issus du seed reconstitué.
+### Phase 2: Referential & seed
+**Goal:** The API exposes categories, the criteria tree and filters from the reconstructed seed.
 **Mode:** mvp
+**Ticket:** LET-7
 **Requirements:** REF-01, REF-02, REF-03, REF-04, REF-05
 **Success Criteria**:
-1. `uv run python scripts/build_referential.py` produit les JSON de seed.
-2. `uv run python -m jaccede.seed` charge 158 catégories, 233 libellés et la grille catégorie 1.
-3. `GET /api/v1/categories` et `GET /api/v1/categories/{slug}/criteria` répondent avec libellés multilingues.
-4. `GET /api/v1/filters` renvoie les 52 filtres + labels officiels.
-5. Un admin/CLI minimal permet d'ajouter/éditer un critère.
+1. `uv run python scripts/build_referential.py` produces the seed JSON.
+2. `uv run python -m letmegetin.seed` loads 158 categories, 182 criteria and the category-1 grid.
+3. `GET /api/v1/categories` and `GET /api/v1/categories/{slug}/criteria` return multilingual labels.
+4. `GET /api/v1/filters` returns the 52 filters + official labels.
+5. A minimal admin/CLI can add/edit a criterion.
 
-### Phase 3: Lieux & recherche
-**Goal:** Rechercher des lieux par texte, proximité et filtres d'accessibilité.
+### Phase 3: Places & search
+**Goal:** Search places by text, proximity and accessibility filters.
 **Mode:** mvp
+**Ticket:** LET-8
 **Requirements:** PLACE-01, PLACE-02, PLACE-03, PLACE-04, PLACE-05
 **Success Criteria**:
-1. Un script importe un jeu de lieux de démonstration.
-2. `GET /api/v1/places?lat=&lng=&radius=&q=&filters=` renvoie des résultats triés par distance.
-3. Les filtres par critère réduisent correctement les résultats.
-4. `GET /api/v1/places/{slug}` renvoie la fiche complète (adresse, catégorie, note).
+1. A script imports a demo place dataset.
+2. `GET /api/v1/places?lat=&lng=&radius=&q=&filters=` returns distance-sorted results.
+3. Criterion filters narrow the results correctly.
+4. `GET /api/v1/places/{slug}` returns the full record (address, category, rating).
 
-### Phase 4: Fiche & avis (lecture)
-**Goal:** Consulter une fiche d'accessibilité complète et les avis.
+### Phase 4: Record & reviews (read)
+**Goal:** View a complete accessibility record and its reviews.
 **Mode:** mvp
+**Ticket:** LET-9
 **Requirements:** PLACE-03, PLACE-04, REV-01
 **Success Criteria**:
-1. La fiche renvoie l'arbre d'accessibilité (groupes → critères → options) avec valeurs.
-2. Le taux de complétude (`filled_rate`) est calculé.
-3. Les avis sont paginés et lisibles.
+1. The record returns the accessibility tree (groups → criteria → options) with values.
+2. The completion rate (`filled_rate`) is computed.
+3. Reviews are paginated and readable.
 
 ### Phase 5: Auth & contribution
-**Goal:** Créer un compte, contribuer aux fiches et déposer un avis.
+**Goal:** Create an account, contribute to records and post reviews.
 **Mode:** mvp
+**Ticket:** LET-10
 **Requirements:** AUTH-01, AUTH-02, AUTH-03, CONTRIB-01, CONTRIB-02, REV-02
 **Success Criteria**:
-1. Inscription + login JWT (access/refresh).
-2. Un utilisateur authentifié complète une fiche → `accessibility_value` mis à jour + `contribution` journalisée.
-3. Le taux de complétude est recalculé.
-4. Un avis authentifié est créé.
-5. Les rôles `admin` protègent l'édition du référentiel.
+1. Sign-up + JWT login (access/refresh).
+2. An authenticated user completes a record → `accessibility_value` updated + `contribution` logged.
+3. The completion rate is recomputed.
+4. An authenticated review is created.
+5. `admin` roles protect referential edits.
 
-### Phase 6: Frontend Next.js
-**Goal:** Parcours utilisateur complet (recherche, fiche, contribution, compte).
+### Phase 6: Next.js frontend
+**Goal:** Complete user journey (search, record, contribution, account).
 **Mode:** mvp
+**Ticket:** LET-11
 **Requirements:** FRONT-01, FRONT-02, FRONT-03, FRONT-04
 **Success Criteria**:
-1. Page d'accueil + recherche carte/liste avec filtres.
-2. Fiche lieu avec arbre d'accessibilité et avis.
-3. Contribution depuis le front (auth requise).
-4. Gestion de compte/profil.
+1. Home + map/list search with filters.
+2. Place record with accessibility tree and reviews.
+3. Contribution from the frontend (auth required).
+4. Account/profile management.
 
-### Phase 7: API publique & déploiement
-**Goal:** Ouvrir l'API aux partenaires et déployer.
+### Phase 7: Public API & deployment
+**Goal:** Open the API to partners and deploy.
 **Mode:** mvp
+**Ticket:** LET-12
 **Requirements:** API-01, API-02
 **Success Criteria**:
-1. Une clé API authentifie et rate-limite les appels partenaires.
-2. La doc OpenAPI est publiée et à jour.
-3. L'application est déployée (docker/CI) et accessible.
+1. An API key authenticates and rate-limits partner calls.
+2. OpenAPI docs are published and up to date.
+3. The application is deployed (docker/CI) and reachable.
 
 ## Progress
 
-| Phase | Status | Completed |
-|-------|--------|-----------|
-| 1. Socle & CI | In progress | — |
-| 2. Référentiel & seed | Pending | — |
-| 3. Lieux & recherche | Pending | — |
-| 4. Fiche & avis (lecture) | Pending | — |
-| 5. Auth & contribution | Pending | — |
-| 6. Frontend Next.js | Pending | — |
-| 7. API publique & déploiement | Pending | — |
+| Phase | Ticket | Status | Completed |
+|-------|--------|--------|-----------|
+| 1. Foundation & CI | LET-6 | In progress | — |
+| 2. Referential & seed | LET-7 | Pending | — |
+| 3. Places & search | LET-8 | Pending | — |
+| 4. Record & reviews (read) | LET-9 | Pending | — |
+| 5. Auth & contribution | LET-10 | Pending | — |
+| 6. Next.js frontend | LET-11 | Pending | — |
+| 7. Public API & deployment | LET-12 | Pending | — |
 
 ---
 *Created: 2026-10-26*
