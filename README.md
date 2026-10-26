@@ -13,6 +13,7 @@ Réécriture moderne de Jaccede : un **référentiel d'accessibilité normalisé
 ```bash
 docker compose up -d                        # PostGIS sur localhost:55433
 uv sync
+git config core.hooksPath .githooks         # active le hook commit-msg (une fois par clone)
 uv run python scripts/build_referential.py  # (re)génère data/referential/*.json
 uv run python -m letmegetin.seed            # charge le seed en base
 uv run uvicorn letmegetin.main:app --reload
