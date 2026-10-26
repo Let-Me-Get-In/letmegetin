@@ -10,3 +10,4 @@ web/.next/
 web/out/
 dist/
 *.egg-info/
+data/referential/raw/
