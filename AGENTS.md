@@ -54,6 +54,8 @@ Rules:
 
 - **NEVER commit or push directly to `main`.** Every change goes through a
   `LET-<n>-…` branch and a Pull Request.
+- **Milestone delivery**: the milestone is one linear `gh stack`
+  (`main ← LET-5 ← LET-6 ← …`), one phase per layer, merged bottom-up.
 - **NEVER merge a PR automatically.** Stop when CI is green; merging is a human
   decision.
 - **One logical concern per branch/PR.** Related, dependent changes are a
