@@ -56,7 +56,7 @@ La grille fine par catégorie n'est pas récupérable à 100 % : on part de la g
 
 ### Suivi
 
-Linear : workspace `exstrat`, team **LMG**, project **LetMeGetIn**. Chaque branche/commit/PR commence par `LMG-<n>`. Mapping dans `.planning/LINEAR.md`.
+Linear : **workspace dédié LetMeGetIn** (à créer — surtout pas `exstrat`), team **LMG**, project **LetMeGetIn**. Chaque branche/commit/PR commence par `LMG-<n>`. Mapping dans `.planning/LINEAR.md`.
 
 ## Constraints
 
