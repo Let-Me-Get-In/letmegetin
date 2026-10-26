@@ -1,4 +1,4 @@
-# Requirements: Jaccede v5
+# Requirements: LetMeGetIn
 
 **Defined:** 2026-10-26
 **Core Value:** Permettre à quiconque de savoir en quelques secondes si un lieu est réellement accessible, via une fiche d'accessibilité structurée et consommable par des tiers.
