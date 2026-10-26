@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from jaccede.main import app
+from letmegetin.main import app
 
 
 def test_health() -> None:
