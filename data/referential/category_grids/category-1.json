@@ -1,0 +1,482 @@
+[
+  {
+    "description": null,
+    "criteria": [
+      {
+        "is_mandatory": true,
+        "description": null,
+        "options": [
+          {
+            "id": 1,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Plain-pied",
+            "label": "Accès de plain-pied"
+          },
+          {
+            "precision_label": "préciser (en cm)",
+            "description": "Préciser la hauteur en cm",
+            "value": "1 marche",
+            "label": "1 marche à l'entrée, hauteur (cm)",
+            "user_can_precise": true,
+            "id": 5
+          },
+          {
+            "id": 2,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Rampe",
+            "label": "Accès avec rampe"
+          },
+          {
+            "id": 4,
+            "precision_label": "préciser",
+            "description": "Petite marche, d'une hauteur maximale de 2 cm.",
+            "value": "Ressaut",
+            "label": "Ressaut à l'entrée"
+          },
+          {
+            "id": 3,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Ascenseur / élévateur",
+            "label": "Accès par ascenseur ou élévateur"
+          }
+        ],
+        "subtype": "multichoice_single_value",
+        "type": "multichoice",
+        "id": 1,
+        "name": "Accès"
+      },
+      {
+        "is_mandatory": true,
+        "description": null,
+        "options": [
+          {
+            "id": 6,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Manuelle",
+            "label": "Porte à ouverture manuelle"
+          },
+          {
+            "id": 7,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Automatique",
+            "label": "Porte à ouverture automatique"
+          }
+        ],
+        "subtype": "multichoice_single_value",
+        "type": "multichoice",
+        "id": 2,
+        "name": "Ouverture de porte"
+      },
+      {
+        "is_mandatory": true,
+        "description": "Largeur utile",
+        "type": "user_value",
+        "id": 3,
+        "name": "Largeur de porte (cm)"
+      },
+      {
+        "is_mandatory": false,
+        "description": null,
+        "options": [
+          {
+            "id": 8,
+            "precision_label": "préciser",
+            "description": "Sur les portes vitrées, une bande ou un motif de 5 cm. doit être placé à une hauteur comprise entre 110 et 160 cm. ",
+            "value": "Absence de marquage sur porte vitrée",
+            "label": "Absence de marquage sur porte vitrée"
+          },
+          {
+            "id": 9,
+            "precision_label": "préciser",
+            "description": "Par exemple : porte très lourde.",
+            "value": "Porte difficile à maintenir ouverte",
+            "label": "Porte difficile à maintenir ouverte"
+          },
+          {
+            "id": 10,
+            "precision_label": "préciser",
+            "description": "La conception de la poignée rend sa prehension difficile.",
+            "value": "Poignée peu ergonomique",
+            "label": "Poignée peu ergonomique"
+          }
+        ],
+        "subtype": "multichoice_multiple_values",
+        "type": "multichoice",
+        "id": 4,
+        "name": "Obstacles à la porte d'entrée"
+      },
+      {
+        "is_mandatory": false,
+        "description": "L’entrée accessible est l’entrée principale",
+        "options": [
+          {
+            "id": 92,
+            "precision_label": "préciser",
+            "description": "qc",
+            "value": "oui",
+            "label": "oui"
+          }
+        ],
+        "subtype": "multichoice_binary_value",
+        "type": "multichoice",
+        "id": 47,
+        "name": "L’entrée accessible est l’entrée principale"
+      }
+    ],
+    "id": 1,
+    "name": "ENTRÉE"
+  },
+  {
+    "description": null,
+    "criteria": [
+      {
+        "is_mandatory": false,
+        "description": null,
+        "options": [
+          {
+            "id": 13,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Difficile",
+            "label": "Circulation difficile dans les allées"
+          },
+          {
+            "id": 14,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Aisée",
+            "label": "Circulation aisée dans les allées"
+          }
+        ],
+        "subtype": "multichoice_single_value",
+        "type": "multichoice",
+        "id": 6,
+        "name": "Circulation dans les allées"
+      },
+      {
+        "is_mandatory": false,
+        "description": null,
+        "options": [
+          {
+            "id": 15,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Total",
+            "label": "Accès en fauteuil possible partout"
+          },
+          {
+            "id": 16,
+            "precision_label": "préciser",
+            "description": "Par exemple : certains espaces ne sont accessibles que par escalier.",
+            "value": "Partiel",
+            "label": "Certains espaces ne sont pas accessibles en fauteuil"
+          }
+        ],
+        "subtype": "multichoice_single_value",
+        "type": "multichoice",
+        "id": 7,
+        "name": "Accès en fauteuil à tout le lieu"
+      },
+      {
+        "is_mandatory": false,
+        "description": "Dimensions de la cabine. (largeur x profondeur)",
+        "options": [
+          {
+            "id": 17,
+            "precision_label": "préciser",
+            "description": "Dimensions de la cabine supérieures à 100 x 130 cm. (largeur x profondeur)",
+            "value": "Grand",
+            "label": "Ascenseur de grandes dimensions"
+          },
+          {
+            "id": 18,
+            "precision_label": "préciser",
+            "description": "Dimensions de la cabine d'environ 100 x 130 cm. (largeur x profondeur)",
+            "value": "Standard",
+            "label": "Ascenseur de dimensions suffisantes"
+          },
+          {
+            "id": 19,
+            "precision_label": "préciser",
+            "description": "Dimensions de la cabine inférieures à 100 x 130 cm. (largeur x profondeur)",
+            "value": "Petit",
+            "label": "Ascenseur de petites dimensions"
+          }
+        ],
+        "subtype": "multichoice_single_value",
+        "type": "multichoice",
+        "id": 8,
+        "name": "Ascenseurs (dimensions)"
+      },
+      {
+        "is_mandatory": false,
+        "description": "Equipements facilitant l'utilisation de l'ascenseur.",
+        "options": [
+          {
+            "id": 20,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Annonce vocale des étages",
+            "label": "Annonce vocale des étages"
+          },
+          {
+            "id": 21,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Chiffres en relief (ou braille)",
+            "label": "Chiffres en relief sur le panneau de commande"
+          },
+          {
+            "id": 22,
+            "precision_label": "préciser",
+            "description": "Hauteur des boutons et autres commandes comprise entre 90 et 130 cm.",
+            "value": "Commandes à hauteur de fauteuil",
+            "label": "Commandes à hauteur de fauteuil"
+          }
+        ],
+        "subtype": "multichoice_multiple_values",
+        "type": "multichoice",
+        "id": 9,
+        "name": "Ascenseurs (Adaptations)"
+      }
+    ],
+    "id": 2,
+    "name": "CIRCULATION"
+  },
+  {
+    "description": null,
+    "criteria": [
+      {
+        "is_mandatory": false,
+        "description": "Une partie du comptoir doit avoir une hauteur maximale de 80 cm. ou être équipé d'un écritoire.",
+        "options": [
+          {
+            "id": 34,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Oui",
+            "label": "Oui"
+          }
+        ],
+        "subtype": "multichoice_binary_value",
+        "type": "multichoice",
+        "id": 15,
+        "name": "Hauteur adaptée des comptoirs / guichets"
+      },
+      {
+        "is_mandatory": true,
+        "description": null,
+        "options": [
+          {
+            "id": 90,
+            "precision_label": "préciser",
+            "description": "Non renseigné",
+            "value": "Non renseigné",
+            "label": "Sanitaires non renseigné"
+          },
+          {
+            "id": 37,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Inaccessibles",
+            "label": "Sanitaires inaccessibles"
+          },
+          {
+            "id": 36,
+            "precision_label": "préciser",
+            "description": "De plain-pied, mais pas aménagé.",
+            "value": "Peu accessibles",
+            "label": "Sanitaires non aménagés mais de plain-pied"
+          },
+          {
+            "id": 35,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Aménagés",
+            "label": "Sanitaires aménagés pour les PMR"
+          }
+        ],
+        "subtype": "multichoice_single_value",
+        "type": "multichoice",
+        "id": 16,
+        "name": "Sanitaires"
+      },
+      {
+        "is_mandatory": false,
+        "description": "Personnel formé à l'accueil des personnes en situation de handicap",
+        "options": [
+          {
+            "id": 48,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Oui",
+            "label": "Oui"
+          }
+        ],
+        "subtype": "multichoice_binary_value",
+        "type": "multichoice",
+        "id": 21,
+        "name": "Personnel formé à l'accueil des personnes en situation de handicap"
+      },
+      {
+        "is_mandatory": false,
+        "description": "Personnel initié à la langue des signes",
+        "options": [
+          {
+            "id": 49,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Oui",
+            "label": "Oui"
+          }
+        ],
+        "subtype": "multichoice_binary_value",
+        "type": "multichoice",
+        "id": 22,
+        "name": "Personnel initié à la langue des signes"
+      },
+      {
+        "is_mandatory": false,
+        "description": null,
+        "options": [
+          {
+            "id": 54,
+            "precision_label": "préciser",
+            "description": "Spécialement conçu pour s'adapter à certaines déficiences.",
+            "value": "Adapté",
+            "label": "Mobilier et/ou équipements adaptés"
+          },
+          {
+            "id": 53,
+            "precision_label": "préciser",
+            "description": "Peuvent être déplacés pour faciliter leur utilisation ou dégager l'espace.",
+            "value": "Amovible",
+            "label": "Mobilier et/ou équipements amovibles"
+          }
+        ],
+        "subtype": "multichoice_multiple_values",
+        "type": "multichoice",
+        "id": 26,
+        "name": "Mobilier et équipements"
+      },
+      {
+        "is_mandatory": false,
+        "description": "Menu en braille",
+        "options": [
+          {
+            "id": 55,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Oui",
+            "label": "Oui"
+          }
+        ],
+        "subtype": "multichoice_binary_value",
+        "type": "multichoice",
+        "id": 27,
+        "name": "Menu en braille"
+      }
+    ],
+    "id": 3,
+    "name": "SERVICES ET ÉQUIPEMENTS"
+  },
+  {
+    "description": null,
+    "criteria": [
+      {
+        "is_mandatory": true,
+        "description": null,
+        "options": [
+          {
+            "id": 89,
+            "precision_label": "préciser",
+            "description": "Trottoirs larges, lisses et dégagés",
+            "value": "Sans obstacles",
+            "label": "Trottoirs sans obstacles"
+          },
+          {
+            "id": 76,
+            "precision_label": "préciser",
+            "description": "Abaissés = hauteur des trottoirs réduite au niveau des passages piétons.",
+            "value": "Sans abaissés",
+            "label": "Trottoirs sans abaissés"
+          },
+          {
+            "id": 77,
+            "precision_label": "préciser",
+            "description": "Pavés \"ronds\" rendant difficiles les déplacements en fauteuil roulant.",
+            "value": "Pavés",
+            "label": "Trottoirs pavés"
+          },
+          {
+            "id": 78,
+            "precision_label": "préciser",
+            "description": "Largeur du trottoir inférieure à 120 cm.",
+            "value": "Étroits",
+            "label": "Trottoirs étroits"
+          },
+          {
+            "id": 79,
+            "precision_label": "préciser",
+            "description": "Dévers : pente latérale de plus de 2%.",
+            "value": "Dévers",
+            "label": "Trottoirs en dévers"
+          }
+        ],
+        "subtype": "multichoice_multiple_values",
+        "type": "multichoice",
+        "id": 40,
+        "name": "Trottoirs (obstacles)"
+      },
+      {
+        "is_mandatory": false,
+        "description": "Enseigne suffisamment visible et lisible",
+        "options": [
+          {
+            "id": 80,
+            "precision_label": "préciser",
+            "description": null,
+            "value": "Oui",
+            "label": "Oui"
+          }
+        ],
+        "subtype": "multichoice_binary_value",
+        "type": "multichoice",
+        "id": 41,
+        "name": "Enseigne suffisamment visible et lisible"
+      },
+      {
+        "is_mandatory": false,
+        "description": "Place de parking public réservée aux personnes détentrices d'une carte de stationnement GIG/GIC.",
+        "options": [
+          {
+            "precision_label": "préciser",
+            "description": "Place GIG/GIC à proximité",
+            "value": "Place GIG/GIC à proximité",
+            "label": "Place GIG/GIC à proximité",
+            "user_can_precise": true,
+            "id": 81
+          }
+        ],
+        "subtype": "multichoice_binary_value",
+        "type": "multichoice",
+        "id": 42,
+        "name": "Place GIG/GIC à proximité"
+      },
+      {
+        "is_mandatory": false,
+        "description": "Proximité d'une station de transport en commun accessible. Par exemple : bus ou tramway accessible et aménagé.",
+        "type": "user_value",
+        "id": 44,
+        "name": "Transports accessibles à proximité"
+      }
+    ],
+    "id": 4,
+    "name": "EXTÉRIEUR"
+  }
+]
