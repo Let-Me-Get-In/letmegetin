@@ -1,0 +1,1108 @@
+[
+  {
+    "slug": "campground",
+    "name": "campground",
+    "label": {
+      "it": "Campeggio"
+    }
+  },
+  {
+    "slug": "bed_and_breakfast",
+    "name": "bed_and_breakfast",
+    "label": {
+      "it": "Bed & Breakfast"
+    }
+  },
+  {
+    "slug": "recreation_center",
+    "name": "recreation_center",
+    "label": {
+      "it": "Centro ricreativo"
+    }
+  },
+  {
+    "slug": "gite",
+    "name": "gite",
+    "label": {
+      "it": "Casa"
+    }
+  },
+  {
+    "slug": "hotel",
+    "name": "hotel",
+    "label": {
+      "it": "Hotel"
+    }
+  },
+  {
+    "slug": "aquarium",
+    "name": "aquarium",
+    "label": {
+      "it": "Acquario"
+    }
+  },
+  {
+    "slug": "antique_furniture_store",
+    "name": "antique_furniture_store",
+    "label": {
+      "it": "Negozio di antiquariato"
+    }
+  },
+  {
+    "slug": "cemetery",
+    "name": "cemetery",
+    "label": {
+      "it": "Cimitero"
+    }
+  },
+  {
+    "slug": "funeral_home",
+    "name": "funeral_home",
+    "label": {
+      "it": "Camera funeraria"
+    }
+  },
+  {
+    "slug": "luggage_store",
+    "name": "luggage_store",
+    "label": {
+      "it": "Negozio di borse e valigie"
+    }
+  },
+  {
+    "slug": "association_or_organization",
+    "name": "association_or_organization",
+    "label": {
+      "it": "Associazione o organizzazione"
+    }
+  },
+  {
+    "slug": "car_dealer",
+    "name": "car_dealer",
+    "label": {
+      "it": "Concessionaria automobilistica"
+    }
+  },
+  {
+    "slug": "lodging",
+    "name": "lodging",
+    "label": {
+      "it": "Alloggio"
+    }
+  },
+  {
+    "slug": "shopping_center",
+    "name": "shopping_center",
+    "label": {
+      "it": "Centro commerciale"
+    }
+  },
+  {
+    "slug": "boot_store",
+    "name": "boot_store",
+    "label": {
+      "it": "Negozio di Scarpe"
+    }
+  },
+  {
+    "slug": "chocolate_shop",
+    "name": "chocolate_shop",
+    "label": {
+      "it": "Cioccolataio"
+    }
+  },
+  {
+    "slug": "home_goods_store",
+    "name": "home_goods_store",
+    "label": {
+      "it": "Negozio di arredamento, decorazione ed elettrodomestici"
+    }
+  },
+  {
+    "slug": "grocery_store",
+    "name": "grocery_store",
+    "label": {
+      "it": "Drogheria"
+    }
+  },
+  {
+    "slug": "tobacco_shop",
+    "name": "tobacco_shop",
+    "label": {
+      "it": "Tabaccaio"
+    }
+  },
+  {
+    "slug": "cell_phone_store",
+    "name": "cell_phone_store",
+    "label": {
+      "it": "Negozio di telefonia mobile"
+    }
+  },
+  {
+    "slug": "catering_service",
+    "name": "catering_service",
+    "label": {
+      "it": "Salumeria"
+    }
+  },
+  {
+    "slug": "clothing_store",
+    "name": "clothing_store",
+    "label": {
+      "it": "Negozio di abbigliamento"
+    }
+  },
+  {
+    "slug": "movie_rental_store",
+    "name": "movie_rental_store",
+    "label": {
+      "it": "Negozio di noleggio film"
+    }
+  },
+  {
+    "slug": "corporate_office",
+    "name": "corporate_office",
+    "label": {
+      "it": "Sede sociale"
+    }
+  },
+  {
+    "slug": "driving_school",
+    "name": "driving_school",
+    "label": {
+      "it": "Autoscuola"
+    }
+  },
+  {
+    "slug": "middle_school",
+    "name": "middle_school",
+    "label": {
+      "it": "Scuola media"
+    }
+  },
+  {
+    "slug": "elementary_school",
+    "name": "elementary_school",
+    "label": {
+      "it": "Scuola elementare"
+    }
+  },
+  {
+    "slug": "college",
+    "name": "college",
+    "label": {
+      "it": "Scuola di insegnamento superiore"
+    }
+  },
+  {
+    "slug": "high_school",
+    "name": "high_school",
+    "label": {
+      "it": "Liceo"
+    }
+  },
+  {
+    "slug": "florist",
+    "name": "florist",
+    "label": {
+      "it": "Fiorista"
+    }
+  },
+  {
+    "slug": "cheese_shop",
+    "name": "cheese_shop",
+    "label": {
+      "it": "Formaggiaio"
+    }
+  },
+  {
+    "slug": "department_store",
+    "name": "department_store",
+    "label": {
+      "it": "Grande magazzino"
+    }
+  },
+  {
+    "slug": "toy_store",
+    "name": "toy_store",
+    "label": {
+      "it": "Negozio di giocattoli"
+    }
+  },
+  {
+    "slug": "laundry",
+    "name": "laundry",
+    "label": {
+      "it": "Tintoria"
+    }
+  },
+  {
+    "slug": "book_store",
+    "name": "book_store",
+    "label": {
+      "it": "Libreria-Cartoleria"
+    }
+  },
+  {
+    "slug": "market",
+    "name": "market",
+    "label": {
+      "it": "Mercato"
+    }
+  },
+  {
+    "slug": "music_store",
+    "name": "music_store",
+    "label": {
+      "it": "Negozio di musica"
+    }
+  },
+  {
+    "slug": "home_improvement_store",
+    "name": "home_improvement_store",
+    "label": {
+      "it": "Negozio di bricolage e decorazione"
+    }
+  },
+  {
+    "slug": "locksmith",
+    "name": "locksmith",
+    "label": {
+      "it": "Ferramenta"
+    }
+  },
+  {
+    "slug": "lawyer",
+    "name": "lawyer",
+    "label": {
+      "it": "Avvocato"
+    }
+  },
+  {
+    "slug": "bazar",
+    "name": "bazar",
+    "label": {
+      "it": "Bazar"
+    }
+  },
+  {
+    "slug": "jewelry_store",
+    "name": "jewelry_store",
+    "label": {
+      "it": "Gioielleria"
+    }
+  },
+  {
+    "slug": "butcher_shop",
+    "name": "butcher_shop",
+    "label": {
+      "it": "Macelleria"
+    }
+  },
+  {
+    "slug": "bakery",
+    "name": "bakery",
+    "label": {
+      "it": "Panettiere"
+    }
+  },
+  {
+    "slug": "wine_store",
+    "name": "wine_store",
+    "label": {
+      "it": "Enoteca"
+    }
+  },
+  {
+    "slug": "perfume_store",
+    "name": "perfume_store",
+    "label": {
+      "it": "Profumeria"
+    }
+  },
+  {
+    "slug": "seafood_market",
+    "name": "seafood_market",
+    "label": {
+      "it": "Mercato del pesce e dei crostacei"
+    }
+  },
+  {
+    "slug": "green_grocers",
+    "name": "green_grocers",
+    "label": {
+      "it": "Fruttivendolo"
+    }
+  },
+  {
+    "slug": "photo_lab",
+    "name": "photo_lab",
+    "label": {
+      "it": "Laboratorio fotografico"
+    }
+  },
+  {
+    "slug": "sporting_goods_store",
+    "name": "sporting_goods_store",
+    "label": {
+      "it": "Negozio di articoli sportivi"
+    }
+  },
+  {
+    "slug": "supermarket",
+    "name": "supermarket",
+    "label": {
+      "it": "Supermercato"
+    }
+  },
+  {
+    "slug": "car_rental",
+    "name": "car_rental",
+    "label": {
+      "it": "Noleggio di auto"
+    }
+  },
+  {
+    "slug": "car_wash",
+    "name": "car_wash",
+    "label": {
+      "it": "Lavaggio auto"
+    }
+  },
+  {
+    "slug": "church",
+    "name": "church",
+    "label": {
+      "it": "Chiesa"
+    }
+  },
+  {
+    "slug": "city_hall",
+    "name": "city_hall",
+    "label": {
+      "it": "Municipio"
+    }
+  },
+  {
+    "slug": "convenience_store",
+    "name": "convenience_store",
+    "label": {
+      "it": "Carro-attrezzi"
+    }
+  },
+  {
+    "slug": "courthouse",
+    "name": "courthouse",
+    "label": {
+      "it": "Tribunale"
+    }
+  },
+  {
+    "slug": "embassy",
+    "name": "embassy",
+    "label": {
+      "it": "Ambasciata"
+    }
+  },
+  {
+    "slug": "fire_station",
+    "name": "fire_station",
+    "label": {
+      "it": "Pompieri"
+    }
+  },
+  {
+    "slug": "furniture_store",
+    "name": "furniture_store",
+    "label": {
+      "it": "Negozio di mobili"
+    }
+  },
+  {
+    "slug": "grocery_or_supermarket",
+    "name": "grocery_or_supermarket",
+    "label": {
+      "it": "Drogheria / Supermercato"
+    }
+  },
+  {
+    "slug": "training_center",
+    "name": "training_center",
+    "label": {
+      "it": "Centro di formazione"
+    }
+  },
+  {
+    "slug": "parking",
+    "name": "parking",
+    "label": {
+      "it": "Parcheggio"
+    }
+  },
+  {
+    "slug": "fitness_center",
+    "name": "fitness_center",
+    "label": {
+      "it": "Palestra"
+    }
+  },
+  {
+    "slug": "public_swimming_pool",
+    "name": "public_swimming_pool",
+    "label": {
+      "it": "Piscina pubblica"
+    }
+  },
+  {
+    "slug": "beauty_salon",
+    "name": "beauty_salon",
+    "label": {
+      "it": "Salone di bellezza"
+    }
+  },
+  {
+    "slug": "hair_care",
+    "name": "hair_care",
+    "label": {
+      "it": "Parrucchiere"
+    }
+  },
+  {
+    "slug": "tattoo_shop",
+    "name": "tattoo_shop",
+    "label": {
+      "it": "Tatuatore"
+    }
+  },
+  {
+    "slug": "spa",
+    "name": "spa",
+    "label": {
+      "it": "Spa"
+    }
+  },
+  {
+    "slug": "hostel",
+    "name": "hostel",
+    "label": {
+      "it": "Ostello della gioventù"
+    }
+  },
+  {
+    "slug": "luxury_hotel",
+    "name": "luxury_hotel",
+    "label": {
+      "it": "Albergo di lusso"
+    }
+  },
+  {
+    "slug": "library",
+    "name": "library",
+    "label": {
+      "it": "Biblioteca"
+    }
+  },
+  {
+    "slug": "bowling_alley",
+    "name": "bowling_alley",
+    "label": {
+      "it": "Bowling"
+    }
+  },
+  {
+    "slug": "casino",
+    "name": "casino",
+    "label": {
+      "it": "Casiṇ"
+    }
+  },
+  {
+    "slug": "movie_theater",
+    "name": "movie_theater",
+    "label": {
+      "it": "Cinema"
+    }
+  },
+  {
+    "slug": "circus",
+    "name": "circus",
+    "label": {
+      "it": "Circo"
+    }
+  },
+  {
+    "slug": "night_club",
+    "name": "night_club",
+    "label": {
+      "it": "Discoteca"
+    }
+  },
+  {
+    "slug": "art_gallery",
+    "name": "art_gallery",
+    "label": {
+      "it": "Galleria d'arte"
+    }
+  },
+  {
+    "slug": "monument",
+    "name": "monument",
+    "label": {
+      "it": "Monumento"
+    }
+  },
+  {
+    "slug": "museum",
+    "name": "museum",
+    "label": {
+      "it": "Museo"
+    }
+  },
+  {
+    "slug": "sports_complex",
+    "name": "sports_complex",
+    "label": {
+      "it": "Complesso sportivo"
+    }
+  },
+  {
+    "slug": "opera_house",
+    "name": "opera_house",
+    "label": {
+      "it": "Opera"
+    }
+  },
+  {
+    "slug": "park",
+    "name": "park",
+    "label": {
+      "it": "Parco"
+    }
+  },
+  {
+    "slug": "amusement_park",
+    "name": "amusement_park",
+    "label": {
+      "it": "Parco dei divertimenti"
+    }
+  },
+  {
+    "slug": "beach_resort",
+    "name": "beach_resort",
+    "label": {
+      "it": "Complesso balneare"
+    }
+  },
+  {
+    "slug": "national_park",
+    "name": "national_park",
+    "label": {
+      "it": "Parco nazionale"
+    }
+  },
+  {
+    "slug": "stadium",
+    "name": "stadium",
+    "label": {
+      "it": "Stadio"
+    }
+  },
+  {
+    "slug": "performing_arts_theater",
+    "name": "performing_arts_theater",
+    "label": {
+      "it": "Sala spettacoli"
+    }
+  },
+  {
+    "slug": "zoo",
+    "name": "zoo",
+    "label": {
+      "it": "Zoo"
+    }
+  },
+  {
+    "slug": "cultural_center",
+    "name": "cultural_center",
+    "label": {
+      "it": "Centro culturale"
+    }
+  },
+  {
+    "slug": "government_office",
+    "name": "government_office",
+    "label": {
+      "it": "Amministrazione"
+    }
+  },
+  {
+    "slug": "airport",
+    "name": "airport",
+    "label": {
+      "it": "Aeroporto"
+    }
+  },
+  {
+    "slug": "travel_agency",
+    "name": "travel_agency",
+    "label": {
+      "it": "Agenzia viaggi"
+    }
+  },
+  {
+    "slug": "real_estate_agency",
+    "name": "real_estate_agency",
+    "label": {
+      "it": "Agenzia immobiliare"
+    }
+  },
+  {
+    "slug": "insurance_agency",
+    "name": "insurance_agency",
+    "label": {
+      "it": "Agenzia assicurativa"
+    }
+  },
+  {
+    "slug": "bank",
+    "name": "bank",
+    "label": {
+      "it": "Banca"
+    }
+  },
+  {
+    "slug": "child_care_agency",
+    "name": "child_care_agency",
+    "label": {
+      "it": "Asilo nido"
+    }
+  },
+  {
+    "slug": "atm",
+    "name": "atm",
+    "label": {
+      "it": "Distributore automatico di banconote"
+    }
+  },
+  {
+    "slug": "internet_cafe",
+    "name": "internet_cafe",
+    "label": {
+      "it": "Cyber-caffè"
+    }
+  },
+  {
+    "slug": "train_station",
+    "name": "train_station",
+    "label": {
+      "it": "Stazione"
+    }
+  },
+  {
+    "slug": "place_of_worship",
+    "name": "place_of_worship",
+    "label": {
+      "it": "Luogo di culto"
+    }
+  },
+  {
+    "slug": "social_services_organization",
+    "name": "social_services_organization",
+    "label": {
+      "it": "Organismo dei servizi sociali"
+    }
+  },
+  {
+    "slug": "copy_shop",
+    "name": "copy_shop",
+    "label": {
+      "it": "Centro di reprografia"
+    }
+  },
+  {
+    "slug": "function_room_facility",
+    "name": "function_room_facility",
+    "label": {
+      "it": "Sala ricevimento"
+    }
+  },
+  {
+    "slug": "bicycle_store",
+    "name": "bicycle_store",
+    "label": {
+      "it": "Negozio di biciclette"
+    }
+  },
+  {
+    "slug": "electrician",
+    "name": "electrician",
+    "label": {
+      "it": "Elettricista"
+    }
+  },
+  {
+    "slug": "bus_station",
+    "name": "bus_station",
+    "label": {
+      "it": "Stazione autobus"
+    }
+  },
+  {
+    "slug": "cafe",
+    "name": "cafe",
+    "label": {
+      "it": "Caffè"
+    }
+  },
+  {
+    "slug": "police",
+    "name": "police",
+    "label": {
+      "it": "Polizia"
+    }
+  },
+  {
+    "slug": "appliance_store",
+    "name": "appliance_store",
+    "label": {
+      "it": "Negozio di elettrodomestici"
+    }
+  },
+  {
+    "slug": "unemployment_office",
+    "name": "unemployment_office",
+    "label": {
+      "it": "Agenzia per il lavoro"
+    }
+  },
+  {
+    "slug": "hindu_temple",
+    "name": "hindu_temple",
+    "label": {
+      "it": "Tempio indù"
+    }
+  },
+  {
+    "slug": "vacation_appartment",
+    "name": "vacation_appartment",
+    "label": {
+      "it": "Appartamento di vacanze"
+    }
+  },
+  {
+    "slug": "transit_station",
+    "name": "transit_station",
+    "label": {
+      "it": "Fermata dell'autobus"
+    }
+  },
+  {
+    "slug": "bar",
+    "name": "bar",
+    "label": {
+      "it": "Bar"
+    }
+  },
+  {
+    "slug": "fast_food_restaurant",
+    "name": "fast_food_restaurant",
+    "label": {
+      "it": "Fast Food"
+    }
+  },
+  {
+    "slug": "dentist",
+    "name": "dentist",
+    "label": {
+      "it": "Dentista"
+    }
+  },
+  {
+    "slug": "hospital",
+    "name": "hospital",
+    "label": {
+      "it": "Ospedale"
+    }
+  },
+  {
+    "slug": "physiotherapist",
+    "name": "physiotherapist",
+    "label": {
+      "it": "Fisioterapista"
+    }
+  },
+  {
+    "slug": "university",
+    "name": "university",
+    "label": {
+      "it": "Edificio universitario"
+    }
+  },
+  {
+    "slug": "store",
+    "name": "store",
+    "label": {
+      "it": "Negozio"
+    }
+  },
+  {
+    "slug": "liquor_store",
+    "name": "liquor_store",
+    "label": {
+      "it": "Negozio di alcolici"
+    }
+  },
+  {
+    "slug": "local_government_office",
+    "name": "local_government_office",
+    "label": {
+      "it": "Uffici governamentali"
+    }
+  },
+  {
+    "slug": "meal_delivery",
+    "name": "meal_delivery",
+    "label": {
+      "it": "Servizio di ristorazione a domicilio"
+    }
+  },
+  {
+    "slug": "school",
+    "name": "school",
+    "label": {
+      "it": "Scuola"
+    }
+  },
+  {
+    "slug": "shoe_store",
+    "name": "shoe_store",
+    "label": {
+      "it": "Negozio di Scarpe"
+    }
+  },
+  {
+    "slug": "storage",
+    "name": "storage",
+    "label": {
+      "it": "Magazzino"
+    }
+  },
+  {
+    "slug": "subway_station",
+    "name": "subway_station",
+    "label": {
+      "it": "Stazione della metropolitana"
+    }
+  },
+  {
+    "slug": "pet_store",
+    "name": "pet_store",
+    "label": {
+      "it": "Negozio di animali"
+    }
+  },
+  {
+    "slug": "post_office",
+    "name": "post_office",
+    "label": {
+      "it": "Ufficio postale"
+    }
+  },
+  {
+    "slug": "tea_house",
+    "name": "tea_house",
+    "label": {
+      "it": "Salone da tè"
+    }
+  },
+  {
+    "slug": "tourist_information_center",
+    "name": "tourist_information_center",
+    "label": {
+      "it": "Ufficio del turismo"
+    }
+  },
+  {
+    "slug": "restaurant",
+    "name": "restaurant",
+    "label": {
+      "it": "Ristorante"
+    }
+  },
+  {
+    "slug": "nursing_agency",
+    "name": "nursing_agency",
+    "label": {
+      "it": "Infermeria"
+    }
+  },
+  {
+    "slug": "medical_lab",
+    "name": "medical_lab",
+    "label": {
+      "it": "Laboratorio medico"
+    }
+  },
+  {
+    "slug": "wheelchair_store",
+    "name": "wheelchair_store",
+    "label": {
+      "it": "Negozio di sedie a rotelle"
+    }
+  },
+  {
+    "slug": "optician",
+    "name": "optician",
+    "label": {
+      "it": "Ottico"
+    }
+  },
+  {
+    "slug": "meal_takeaway",
+    "name": "meal_takeaway",
+    "label": {
+      "it": "Take-away"
+    }
+  },
+  {
+    "slug": "mosque",
+    "name": "mosque",
+    "label": {
+      "it": "Moschea"
+    }
+  },
+  {
+    "slug": "movie_rental",
+    "name": "movie_rental",
+    "label": {
+      "it": "Videoclub"
+    }
+  },
+  {
+    "slug": "synagogue",
+    "name": "synagogue",
+    "label": {
+      "it": "Sinagoga"
+    }
+  },
+  {
+    "slug": "rv_park",
+    "name": "rv_park",
+    "label": {
+      "it": "Area per camper"
+    }
+  },
+  {
+    "slug": "accounting",
+    "name": "accounting",
+    "label": {
+      "it": "Studio contabile"
+    }
+  },
+  {
+    "slug": "car_repair",
+    "name": "car_repair",
+    "label": {
+      "it": "Garage"
+    }
+  },
+  {
+    "slug": "electronics_store",
+    "name": "electronics_store",
+    "label": {
+      "it": "Negozio di elettronica"
+    }
+  },
+  {
+    "slug": "establishment",
+    "name": "establishment",
+    "label": {
+      "it": "Struttura"
+    }
+  },
+  {
+    "slug": "gym",
+    "name": "gym",
+    "label": {
+      "it": "Fitness"
+    }
+  },
+  {
+    "slug": "gas_station",
+    "name": "gas_station",
+    "label": {
+      "it": "Stazione di servizio"
+    }
+  },
+  {
+    "slug": "taxi_service",
+    "name": "taxi_service",
+    "label": {
+      "it": "Servizio di taxi"
+    }
+  },
+  {
+    "slug": "doctor",
+    "name": "doctor",
+    "label": {
+      "it": "Medico"
+    }
+  },
+  {
+    "slug": "physiotherapy_center",
+    "name": "physiotherapy_center",
+    "label": {
+      "it": "Centro riabilitativo"
+    }
+  },
+  {
+    "slug": "pharmacy",
+    "name": "pharmacy",
+    "label": {
+      "it": "Farmacia"
+    }
+  },
+  {
+    "slug": "orthesist",
+    "name": "orthesist",
+    "label": {
+      "it": "Ortopedista"
+    }
+  },
+  {
+    "slug": "public_bathroom",
+    "name": "public_bathroom",
+    "label": {
+      "it": "Toilette pubbliche"
+    }
+  },
+  {
+    "slug": "veterinary_care",
+    "name": "veterinary_care",
+    "label": {
+      "it": "Veterinario"
+    }
+  },
+  {
+    "slug": "hardware_store",
+    "name": "hardware_store",
+    "label": {
+      "it": "Ferramenta"
+    }
+  },
+  {
+    "slug": "shopping_mall",
+    "name": "shopping_mall",
+    "label": {
+      "it": "Centro commerciale"
+    }
+  },
+  {
+    "slug": "taxi_stand",
+    "name": "taxi_stand",
+    "label": {
+      "it": "Stazione di taxi"
+    }
+  }
+]

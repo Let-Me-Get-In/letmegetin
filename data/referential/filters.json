@@ -1,0 +1,366 @@
+[
+  {
+    "slug": "automatic-door-opening-system",
+    "label": {
+      "en": "Automatic door opening system",
+      "it": "Sistema automatico di apertura porta"
+    }
+  },
+  {
+    "slug": "full-wheelchair-access",
+    "label": {
+      "en": "Full wheelchair access",
+      "it": "Accesso totale per sedie a rotelle"
+    }
+  },
+  {
+    "slug": "slope",
+    "label": {
+      "en": "Slope",
+      "it": "Discesa"
+    }
+  },
+  {
+    "slug": "removable-ramp-available-on-request",
+    "label": {
+      "en": "Removable ramp (available on request)",
+      "it": "Rampa amovibile (disponibile su richiesta)"
+    }
+  },
+  {
+    "slug": "lift",
+    "label": {
+      "en": "Lift",
+      "it": "Ascensore"
+    }
+  },
+  {
+    "slug": "visually-contrasting-tactile-guide-strip",
+    "label": {
+      "en": "Visually contrasting tactile guide strip",
+      "it": "Striscia guida tattile visibilmente contrastante"
+    }
+  },
+  {
+    "slug": "walk-in-shower",
+    "label": {
+      "en": "Walk-in shower",
+      "it": "Doccia senza gradino"
+    }
+  },
+  {
+    "slug": "level-access",
+    "label": {
+      "en": "Level access",
+      "it": "Accesso a livello"
+    }
+  },
+  {
+    "slug": "tours-and-or-activities-suitable-for-people-with-hearing-impairments",
+    "label": {
+      "en": "Tours and/or activities suitable for people with hearing impairments",
+      "it": "Tour e/o attività adatte a persone con disabilità uditive"
+    }
+  },
+  {
+    "slug": "tours-and-or-activities-suitable-for-people-with-learning-disabilities",
+    "label": {
+      "en": "Tours and/or activities suitable for people with learning disabilities",
+      "it": "Tour e/o attività adatte a persone con disabilità legate all'apprendimento"
+    }
+  },
+  {
+    "slug": "tours-and-or-activities-suitable-for-people-with-physical-impairments",
+    "label": {
+      "en": "Tours and/or activities suitable for people with physical impairments",
+      "it": "Tour e/o attività adatte a persone con disabilità fisiche"
+    }
+  },
+  {
+    "slug": "information-on-traffic-spoken",
+    "label": {
+      "en": "Information on traffic: spoken",
+      "it": "Informazioni sul traffico: parlate"
+    }
+  },
+  {
+    "slug": "staff-can-assist-people-with-specific-needs",
+    "label": {
+      "en": "Staff can assist people with specific needs",
+      "it": "Il personale è in grado di assistere persone con esigenze particolari"
+    }
+  },
+  {
+    "slug": "subtitles-surtitles",
+    "label": {
+      "en": "Subtitles/surtitles",
+      "it": "Sottotitoli/sopratitoli"
+    }
+  },
+  {
+    "slug": "width-space-of-at-least-90-cm-on-one-side-of-the-bed",
+    "label": {
+      "en": "Width space of at least 90 cm on one side of the bed",
+      "it": "Ampio spazio di almeno 90 cm su un lato del letto"
+    }
+  },
+  {
+    "slug": "ground-level-toilets-not-adapted",
+    "label": {
+      "en": "Ground level toilets, not adapted",
+      "it": "Toilette al piano terra, non adattate"
+    }
+  },
+  {
+    "slug": "disabled-parking-spaces-near-the-establishment",
+    "label": {
+      "en": "Disabled parking spaces near the establishment",
+      "it": "Aree di parcheggio per disabili vicine alla struttura"
+    }
+  },
+  {
+    "slug": "disabled-parking-spaces-within-the-establishment",
+    "label": {
+      "en": "Disabled parking spaces within the establishment",
+      "it": "Aree di parcheggio per disabili all'interno della struttura"
+    }
+  },
+  {
+    "slug": "bathroom-door-clearance-90-cm",
+    "label": {
+      "en": "Bathroom: door clearance : 90+ cm",
+      "it": "Bagno: ingresso porta: 90+ cm"
+    }
+  },
+  {
+    "slug": "bathroom-walk-in-shower",
+    "label": {
+      "en": "Bathroom: Walk-in shower",
+      "it": "Bagno: Doccia senza gradino"
+    }
+  },
+  {
+    "slug": "bathroom-support-rail-s-in-the-shower",
+    "label": {
+      "en": "Bathroom: Support rail(s) in the shower",
+      "it": "Bagno: Sbarra(e) di sostegno nella doccia"
+    }
+  },
+  {
+    "slug": "bathroom-shower-seat",
+    "label": {
+      "en": "Bathroom: Shower seat",
+      "it": "Bagno: Sedile per doccia"
+    }
+  },
+  {
+    "slug": "bathroom-support-rail-s",
+    "label": {
+      "en": "Bathroom: Support rail(s)",
+      "it": "Bagno: sbarra(e) di sostegno"
+    }
+  },
+  {
+    "slug": "tours-and-or-activities-suitable-for-people-with-visual-impairments",
+    "label": {
+      "en": "Tours and/or activities suitable for people with visual impairments",
+      "it": "Tour e/o attività adatte a persone con disabilità uditive"
+    }
+  },
+  {
+    "slug": "information-on-traffic-visual",
+    "label": {
+      "en": "Information on traffic: visual",
+      "it": "Informazioni sul traffico: visive"
+    }
+  },
+  {
+    "slug": "waiting-facility-spoken",
+    "label": {
+      "en": "Waiting facility: spoken",
+      "it": "Sala di aspetto: parlato"
+    }
+  },
+  {
+    "slug": "waiting-facility-visual",
+    "label": {
+      "en": "Waiting facility : visual",
+      "it": "Sala di aspetto: visivo"
+    }
+  },
+  {
+    "slug": "bathroom-turning-space-of-least-150-cm",
+    "label": {
+      "en": "Bathroom: Turning space of least 150 cm",
+      "it": "Bagno: Spazio di manovra di almeno 150 cm"
+    }
+  },
+  {
+    "slug": "level-access-to-the-bathroom",
+    "label": {
+      "en": "Level access to the bathroom",
+      "it": "Livello di accesso al bagno"
+    }
+  },
+  {
+    "slug": "transfer-space-alongside-toilets",
+    "label": {
+      "en": "Transfer space alongside toilets",
+      "it": "Spazio di trasferimento lungo le toilette"
+    }
+  },
+  {
+    "slug": "height-of-toilet-base-standard-40-45-cm",
+    "label": {
+      "en": "Height of toilet base : Standard (40-45 cm)",
+      "it": "Altezza della base del wc: Standard (40-45 cm)"
+    }
+  },
+  {
+    "slug": "height-of-toilet-base-high-45-cm",
+    "label": {
+      "en": "Height of toilet base: High (45+ cm)",
+      "it": "Altezza della base del wc: Alta (45+ cm)"
+    }
+  },
+  {
+    "slug": "adapted-wash-basin",
+    "label": {
+      "en": "Adapted wash basin",
+      "it": "Lavandino adattato"
+    }
+  },
+  {
+    "slug": "access-with-drop",
+    "label": {
+      "en": "Access with drop",
+      "it": "Accesso con riduzione"
+    }
+  },
+  {
+    "slug": "clearance-entrance-door-90-cm",
+    "label": {
+      "en": "Clearance -  entrance door : 90 + cm",
+      "it": "Ingresso - porta di ingresso: 90+ cm"
+    }
+  },
+  {
+    "slug": "tactile-guide-strip-to-the-reception-desk",
+    "label": {
+      "en": "Tactile guide strip to the reception desk",
+      "it": "Striscia guida tattile fino alla reception"
+    }
+  },
+  {
+    "slug": "wide-aisles",
+    "label": {
+      "en": "Wide aisles",
+      "it": "Corridoi larghi"
+    }
+  },
+  {
+    "slug": "adapted-lighting",
+    "label": {
+      "en": "Adapted lighting",
+      "it": "Illuminazione adattata"
+    }
+  },
+  {
+    "slug": "induction-loop",
+    "label": {
+      "en": "Induction loop",
+      "it": "Circuito di induzione"
+    }
+  },
+  {
+    "slug": "staff-trained-in-signing",
+    "label": {
+      "en": "Staff trained in signing",
+      "it": "Personale formato nel linguaggio dei segni"
+    }
+  },
+  {
+    "slug": "audio-descriptions-available-for-film-s-tour-s",
+    "label": {
+      "en": "Audio descriptions available for film (s)/tour(s)",
+      "it": "Descrizioni audio disponibili per film/tour"
+    }
+  },
+  {
+    "slug": "clearance-bedroom-door-90-cm",
+    "label": {
+      "en": "Clearance - bedroom door : 90+ cm",
+      "it": "Ingresso - porta camera da letto: 90+ cm"
+    }
+  },
+  {
+    "slug": "ground-level-and-adapted-toilets",
+    "label": {
+      "en": "Ground level and adapted toilets",
+      "it": "Livello piano terra e toilette adattate"
+    }
+  },
+  {
+    "slug": "accessible-tables",
+    "label": {
+      "en": "Accessible tables",
+      "it": "Tavoli accessibili"
+    }
+  },
+  {
+    "slug": "mode-of-transport-accessible-in-a-wheelchair",
+    "label": {
+      "en": "Mode of transport accessible in a wheelchair",
+      "it": "Modalità di trasporto accessibile in sedia a rotelle"
+    }
+  },
+  {
+    "slug": "manual-wheelchair",
+    "label": {
+      "en": "Manual wheelchair",
+      "it": "Sedia a rotelle manuale"
+    }
+  },
+  {
+    "slug": "shower-seat",
+    "label": {
+      "en": "Shower seat",
+      "it": "Sedile per doccia"
+    }
+  },
+  {
+    "slug": "hoist",
+    "label": {
+      "en": "Hoist",
+      "it": "Montacarichi"
+    }
+  },
+  {
+    "slug": "pool-access-facility",
+    "label": {
+      "en": "Pool access facility",
+      "it": "Facilità di accesso alla piscina"
+    }
+  },
+  {
+    "slug": "audio-guides",
+    "label": {
+      "en": "Audio guides",
+      "it": "Audio guide"
+    }
+  },
+  {
+    "slug": "spaces-reserved-for-people-in-wheelchairs",
+    "label": {
+      "en": "Spaces reserved for people in wheelchairs",
+      "it": "Spazi riservati alle persone in sedia a rotelle"
+    }
+  },
+  {
+    "slug": "espace-calme",
+    "label": {
+      "en": "Espace calme",
+      "it": "Spazio tranquillo"
+    }
+  }
+]
