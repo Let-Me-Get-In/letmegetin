@@ -4,16 +4,16 @@
 
 See: .planning/PROJECT.md (updated 2026-10-26)
 
-**Core value:** Permettre à quiconque de savoir en quelques secondes si un lieu est réellement accessible.
-**Current focus:** LET-5 — Bootstrap + conventions (puis LET-6, Phase 1)
+**Core value:** Let anyone know in seconds whether a place is truly accessible.
+**Current focus:** LET-5 — Bootstrap + conventions (then LET-6, Phase 1)
 
 ## Current Position
 
-Ticket: LET-5 (Bootstrap LetMeGetIn + conventions Linear/GSD)
-Phase: 1 of 7 (Socle & CI)
+Ticket: LET-5 (Bootstrap LetMeGetIn + Linear/GSD conventions)
+Phase: 1 of 7 (Foundation & CI)
 Plan: —
 Status: In progress
-Last activity: 2026-10-26 — Rename to LetMeGetIn, Linear team/project + tickets, AGENTS.md/CLAUDE.md, commit-msg hook.
+Last activity: 2026-10-26 — Rename to LetMeGetIn, dedicated Linear workspace (team LET), GitHub org + public repo, English docs, commit-msg hook.
 
 ## Performance Metrics
 
@@ -28,22 +28,23 @@ Last activity: 2026-10-26 — Rename to LetMeGetIn, Linear team/project + ticket
 
 - FastAPI + SQLAlchemy 2 async + PostGIS.
 - Next.js (App Router) + TS + Tailwind + MapLibre.
-- Seed reconstitué (pas de dump) ; grille cat-1 comme base.
-- Monorepo back (racine) + front (`web/`) ; e2e dans un dépôt séparé plus tard.
-- Linear team `LET`, tickets `LET-<n>` en tête de branche/commit/PR (hook `commit-msg`).
-- GSD `branching_strategy = none` (pas de branches `gsd/phase-…`).
+- Reconstructed seed (no dump); category-1 grid as the base.
+- Backend + frontend monorepo; e2e in a separate repo later.
+- Linear team `LET`, tickets `LET-<n>` at the start of branch/commit/PR (`commit-msg` hook).
+- GSD `branching_strategy = none` (no `gsd/phase-…` branches).
+- Public repo under the `Let-Me-Get-In` GitHub organization; all public artifacts in English.
 
 ### Pending Todos
 
-- Valider le seed (cf. `data/referential/`).
-- Curer le vocabulaire complet (182 critères) en base (REF-05).
+- Validate the seed (see `data/referential/`).
+- Curate the full vocabulary (182 criteria) in the database (REF-05).
 
 ### Blockers/Concerns
 
-- La grille exacte par catégorie n'est pas récupérable ; base + extension + admin.
+- The exact per-category grid is not recoverable; base + extension + admin.
 
 ## Session Continuity
 
 Last session: 2026-10-26
-Stopped at: rename + Linear + conventions
+Stopped at: bootstrap + conventions + public repo
 Resume file: .planning/PROJECT.md

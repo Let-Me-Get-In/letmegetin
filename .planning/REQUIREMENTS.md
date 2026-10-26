@@ -1,79 +1,79 @@
 # Requirements: LetMeGetIn
 
 **Defined:** 2026-10-26
-**Core Value:** Permettre à quiconque de savoir en quelques secondes si un lieu est réellement accessible, via une fiche d'accessibilité structurée et consommable par des tiers.
+**Core Value:** Let anyone know in seconds whether a place is truly accessible, through a structured accessibility record consumable by third parties.
 
 ## v1 Requirements
 
-### Socle & Ops
+### Foundation & Ops
 
-- [ ] **OPS-01**: Le projet démarre en une commande (`docker compose up` + `uv run`) avec Postgres/PostGIS
-- [ ] **OPS-02**: CI exécute ruff, mypy, bandit, pytest (seuil de couverture)
-- [ ] **OPS-03**: Les migrations de schéma sont gérées par Alembic
+- [ ] **OPS-01**: The project starts with one command (`docker compose up` + `uv run`) with Postgres/PostGIS
+- [ ] **OPS-02**: CI runs ruff, mypy, bandit, pytest (coverage floor)
+- [ ] **OPS-03**: Schema migrations are managed by Alembic
 
-### Référentiel
+### Referential
 
-- [ ] **REF-01**: L'API liste les catégories avec libellés multilingues (fr/en/es/de/it)
-- [ ] **REF-02**: L'API expose l'arbre des critères par catégorie (groupes → critères → options)
-- [ ] **REF-03**: L'API liste les filtres d'accessibilité (recherche) et les labels officiels
-- [ ] **REF-04**: Le seed initial est chargé depuis les données reconstituées (158 catégories, 233 libellés, grille cat-1)
-- [ ] **REF-05**: Un admin/CLI minimal permet d'éditer catégories, critères et options
+- [ ] **REF-01**: The API lists categories with multilingual labels (fr/en/es/de/it)
+- [ ] **REF-02**: The API exposes the criteria tree per category (groups → criteria → options)
+- [ ] **REF-03**: The API lists accessibility filters (search) and official labels
+- [ ] **REF-04**: The initial seed is loaded from the reconstructed data (158 categories, 182 criteria, category-1 grid)
+- [ ] **REF-05**: A minimal admin/CLI can edit categories, criteria and options
 
-### Lieux & recherche
+### Places & search
 
-- [ ] **PLACE-01**: L'utilisateur peut rechercher des lieux par texte et par proximité (lat/lng/rayon)
-- [ ] **PLACE-02**: L'utilisateur peut filtrer les résultats par un ou plusieurs critères d'accessibilité
-- [ ] **PLACE-03**: L'utilisateur peut consulter une fiche lieu (adresse, catégorie, note, photos)
-- [ ] **PLACE-04**: La fiche lieu affiche l'arbre d'accessibilité avec les valeurs renseignées et le taux de complétude
-- [ ] **PLACE-05**: Un script importe un jeu de lieux (seed local) pour peupler la recherche
+- [ ] **PLACE-01**: Users can search places by text and proximity (lat/lng/radius)
+- [ ] **PLACE-02**: Users can filter results by one or more accessibility criteria
+- [ ] **PLACE-03**: Users can view a place record (address, category, rating, photos)
+- [ ] **PLACE-04**: The record shows the accessibility tree with values and a completion rate
+- [ ] **PLACE-05**: A script imports a demo place dataset to populate search
 
-### Avis & contribution
+### Reviews & contribution
 
-- [ ] **REV-01**: L'utilisateur peut lire les avis d'un lieu (note 1–5 + texte)
-- [ ] **REV-02**: L'utilisateur authentifié peut déposer un avis
-- [ ] **CONTRIB-01**: L'utilisateur authentifié peut compléter/modifier les valeurs d'accessibilité d'une fiche
-- [ ] **CONTRIB-02**: Chaque contribution est journalisée et le taux de complétude est recalculé
+- [ ] **REV-01**: Users can read a place's reviews (rating 1–5 + text)
+- [ ] **REV-02**: Authenticated users can post a review
+- [ ] **CONTRIB-01**: Authenticated users can complete/edit a record's accessibility values
+- [ ] **CONTRIB-02**: Every contribution is logged and the completion rate is recomputed
 
 ### Auth
 
-- [ ] **AUTH-01**: L'utilisateur peut créer un compte (email + mot de passe)
-- [ ] **AUTH-02**: L'utilisateur peut se connecter et obtenir un JWT (access + refresh)
-- [ ] **AUTH-03**: Les rôles `user` et `admin` contrôlent les actions sensibles
+- [ ] **AUTH-01**: Users can create an account (email + password)
+- [ ] **AUTH-02**: Users can log in and receive a JWT (access + refresh)
+- [ ] **AUTH-03**: `user` and `admin` roles gate sensitive actions
 
-### API publique
+### Public API
 
-- [ ] **API-01**: Les partenaires consomment l'API via une clé API (rate limitée)
-- [ ] **API-02**: La documentation OpenAPI est générée et publiée
+- [ ] **API-01**: Partners consume the API with an API key (rate-limited)
+- [ ] **API-02**: OpenAPI documentation is generated and published
 
 ### Frontend
 
-- [ ] **FRONT-01**: L'utilisateur peut rechercher des lieux (carte + liste + filtres)
-- [ ] **FRONT-02**: L'utilisateur peut consulter une fiche lieu complète
-- [ ] **FRONT-03**: L'utilisateur authentifié peut contribuer depuis le front
-- [ ] **FRONT-04**: L'utilisateur peut gérer son compte et son profil
+- [ ] **FRONT-01**: Users can search places (map + list + filters)
+- [ ] **FRONT-02**: Users can view a complete place record
+- [ ] **FRONT-03**: Authenticated users can contribute from the frontend
+- [ ] **FRONT-04**: Users can manage their account and profile
 
 ## v2 Requirements
 
 ### Gamification
 
-- **GAME-01**: Challenges d'entreprise avec équipes
-- **GAME-02**: Points de contribution et classements
-- **GAME-03**: Messagerie d'équipe
+- **GAME-01**: Corporate challenges with teams
+- **GAME-02**: Contribution points and leaderboards
+- **GAME-03**: Team messaging
 
-### Intégrations
+### Integrations
 
-- **INTG-01**: Import des référentiels partenaires (Macif, La Poste, LocalEyes, HandiPlage)
-- **INTG-02**: Enrichissement Google Places / OpenStreetMap (Overpass)
-- **INTG-03**: Applications mobiles iOS/Android
+- **INTG-01**: Partner referential imports (Macif, La Poste, LocalEyes, HandiPlage)
+- **INTG-02**: Google Places / OpenStreetMap (Overpass) enrichment
+- **INTG-03**: iOS/Android mobile apps
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Copie 1:1 de la base historique | Le dump n'existe plus ; on reconstruit une grille éditable |
-| Chat temps réel (Crossbar) | Complexité inutile pour le cœur référentiel |
-| Applications mobiles natives | API-first d'abord, mobile ensuite |
-| Back-office complet type Flask-Admin | Admin minimal en v1, enrichi selon les besoins |
+| 1:1 copy of the historical database | The dump no longer exists; we rebuild an editable grid |
+| Real-time chat (Crossbar) | Needless complexity for the core referential |
+| Native mobile apps | API-first first, mobile later |
+| Full Flask-Admin-style back-office | Minimal admin in v1, enriched as needed |
 
 ## Traceability
 
