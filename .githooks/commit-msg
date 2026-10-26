@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Enforce LetMeGetIn commit conventions.
 #
-# - A Linear ticket is required: read from the branch (LMG-12-…), or the message
-#   must already start with one (LMG-12 …).
+# - A Linear ticket is required: read from the branch (LET-12-…), or the message
+#   must already start with one (LET-12 …).
 # - The subject must be Conventional Commits *after* the ticket:
-#     LMG-12 feat(api): add health endpoint
+#     LET-12 feat(api): add health endpoint
 # - Phase-number scopes are rejected (e.g. feat(01-02)).
 #
 # Merge/revert/fixup commits are exempt.
@@ -35,13 +35,13 @@ if [ -n "$ticket" ]; then
   fi
 else
   if ! printf '%s' "$first_line" | grep -qE '^[A-Z]+-[0-9]+[ :]'; then
-    echo "commit-msg: branch is not tied to a Linear ticket; name it 'LMG-12-slug' or start the message with 'LMG-12 '." >&2
+    echo "commit-msg: branch is not tied to a Linear ticket; name it 'LET-12-slug' or start the message with 'LET-12 '." >&2
     exit 1
   fi
 fi
 
 # Enforce Conventional Commits after the ticket.
 if ! printf '%s' "$first_line" | grep -qE '^[A-Z]+-[0-9]+ (feat|fix|docs|test|chore|refactor|perf|style)(\([a-z0-9-]+\))?: .+'; then
-  echo "commit-msg: expected 'LMG-12 feat(scope): description' (Conventional Commits after the ticket)." >&2
+  echo "commit-msg: expected 'LET-12 feat(scope): description' (Conventional Commits after the ticket)." >&2
   exit 1
 fi

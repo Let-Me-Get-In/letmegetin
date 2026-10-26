@@ -56,7 +56,7 @@ La grille fine par catégorie n'est pas récupérable à 100 % : on part de la g
 
 ### Suivi
 
-Linear : **workspace dédié LetMeGetIn** (à créer — surtout pas `exstrat`), team **LMG**, project **LetMeGetIn**. Chaque branche/commit/PR commence par `LMG-<n>`. Mapping dans `.planning/LINEAR.md`.
+Linear : **workspace dédié LetMeGetIn** (à créer — surtout pas `exstrat`), team **LET**, project **LetMeGetIn**. Chaque branche/commit/PR commence par `LET-<n>`. Mapping dans `.planning/LINEAR.md`.
 
 ## Constraints
 
@@ -76,7 +76,7 @@ Linear : **workspace dédié LetMeGetIn** (à créer — surtout pas `exstrat`),
 | PostGIS + JSONB i18n | Recherche géo native ; i18n simple | — Pending |
 | Seed reconstitué (pas de dump) | Seule donnée disponible ; éditable | — Pending |
 | Monorepo back + front | Simplicité pour l'instant ; e2e séparé plus tard | — Pending |
-| Linear (team LMG) en tête de branche/commit/PR | Traçabilité ticket ↔ code | — Pending |
+| Linear (team LET) en tête de branche/commit/PR | Traçabilité ticket ↔ code | — Pending |
 | V1 sans gamification/messagerie/mobile | Recentrage sur le cœur | — Pending |
 
 ## Evolution
