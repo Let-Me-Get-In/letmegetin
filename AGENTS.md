@@ -21,7 +21,7 @@ by our own **Next.js** frontend.
 - **Frontend**: Next.js (App Router), TypeScript, Tailwind, MapLibre/OSM
 - **Package manager**: `uv` (Python), `npm` (web)
 - **Quality**: ruff, mypy, bandit, pytest, pre-commit
-- **Tracking**: Linear — team **LMG**, project **LetMeGetIn**
+- **Tracking**: Linear — **workspace dédié LetMeGetIn** (not `exstrat`), team **LMG**, project **LetMeGetIn**
 
 ## Linear workflow (MANDATORY)
 
@@ -41,7 +41,8 @@ Rules:
 - Keep the GSD plan id in the commit **body** on its own line: `Plan: 01-02`.
 - The **`.githooks/commit-msg` hook enforces this**: it prepends the ticket read
   from the branch and rejects phase-number scopes and non-conventional subjects.
-- Create/update tickets with the Linear CLI (`.linear.toml` is configured):
+- Create/update tickets with the Linear CLI (`.linear.toml` is written by
+  `linear config` once the **dedicated workspace** is set up — not `exstrat`):
   ```bash
   linear issue create -t "…" --team LMG --project LetMeGetIn -a @me
   linear issue update LMG-3 --state "In Progress"
