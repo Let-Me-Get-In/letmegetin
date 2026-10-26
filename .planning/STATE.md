@@ -5,11 +5,11 @@
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Permettre à quiconque de savoir en quelques secondes si un lieu est réellement accessible.
-**Current focus:** LMG-1 — Bootstrap + conventions (puis LMG-2, Phase 1)
+**Current focus:** LET-5 — Bootstrap + conventions (puis LET-6, Phase 1)
 
 ## Current Position
 
-Ticket: LMG-1 (Bootstrap LetMeGetIn + conventions Linear/GSD)
+Ticket: LET-5 (Bootstrap LetMeGetIn + conventions Linear/GSD)
 Phase: 1 of 7 (Socle & CI)
 Plan: —
 Status: In progress
@@ -19,7 +19,7 @@ Last activity: 2026-10-26 — Rename to LetMeGetIn, Linear team/project + ticket
 
 - Requirements: 26 v1
 - Phases: 7
-- Linear tickets: LMG-1..LMG-8
+- Linear tickets: LET-5..LET-12
 - Plans completed: 0
 
 ## Accumulated Context
@@ -30,7 +30,7 @@ Last activity: 2026-10-26 — Rename to LetMeGetIn, Linear team/project + ticket
 - Next.js (App Router) + TS + Tailwind + MapLibre.
 - Seed reconstitué (pas de dump) ; grille cat-1 comme base.
 - Monorepo back (racine) + front (`web/`) ; e2e dans un dépôt séparé plus tard.
-- Linear team `LMG`, tickets `LMG-<n>` en tête de branche/commit/PR (hook `commit-msg`).
+- Linear team `LET`, tickets `LET-<n>` en tête de branche/commit/PR (hook `commit-msg`).
 - GSD `branching_strategy = none` (pas de branches `gsd/phase-…`).
 
 ### Pending Todos
