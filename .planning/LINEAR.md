@@ -1,6 +1,11 @@
 # Linear — LetMeGetIn
 
-Workspace: `exstrat` • Team: **LMG** (LetMeGetIn) • Project: **LetMeGetIn**
+> **Workspace dédié** (différent de `exstrat` : les gens d'exStrat ne travaillent
+> pas sur LetMeGetIn). À créer dans l'UI Linear, puis :
+> `linear auth login --workspace <slug> --key <API_KEY>`
+> `linear config --team LMG --sort manual` (écrit `.linear.toml`)
+
+Team: **LMG** • Project: **LetMeGetIn**
 
 Every branch, commit and PR starts with the ticket id (`LMG-<n>`).
 
@@ -18,10 +23,9 @@ Every branch, commit and PR starts with the ticket id (`LMG-<n>`).
 ## CLI
 
 ```bash
-linear issue list --team LMG
+linear auth list
+linear issue list --team LMG --all-states
 linear issue create -t "…" --team LMG --project LetMeGetIn -a @me
 linear issue update LMG-3 --state "In Progress"
 linear issue url LMG-3
 ```
-
-`linear config --team LMG --sort manual` wrote `.linear.toml`.
