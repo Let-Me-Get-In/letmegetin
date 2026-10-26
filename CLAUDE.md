@@ -6,17 +6,17 @@ over any workflow, planner, executor or ship prompt that says otherwise.
 
 ## Linear tickets
 
-- **Every branch, commit and PR starts with a Linear ticket id** `LMG-<n>`.
-  - Branch: `LMG-<n>-<short-slug>` (e.g. `LMG-2-socle-ci`).
-  - Commit: `LMG-<n> <type>(<scope>): <description>`.
-  - PR title: `LMG-<n> <type>(<scope>): <description>`.
+- **Every branch, commit and PR starts with a Linear ticket id** `LET-<n>`.
+  - Branch: `LET-<n>-<short-slug>` (e.g. `LET-6-socle-ci`).
+  - Commit: `LET-<n> <type>(<scope>): <description>`.
+  - PR title: `LET-<n> <type>(<scope>): <description>`.
 - The `.githooks/commit-msg` hook prepends the ticket from the branch and rejects
   messages that do not conform. Do not bypass it with `--no-verify`.
 - The roadmap ↔ tickets mapping lives in `.planning/LINEAR.md`.
 
 ## Branches and pull requests
 
-- **Never commit to `main`.** Work on a `LMG-<n>-…` branch.
+- **Never commit to `main`.** Work on a `LET-<n>-…` branch.
 - **One logical concern per PR.** Related or dependent changes are a **stack**,
   built with `gh stack init` / `gh stack add` / `gh stack submit --open` — never
   hand-rolled `gh pr create --base <layer>`.
@@ -28,7 +28,7 @@ over any workflow, planner, executor or ship prompt that says otherwise.
 
 ## Commit subjects
 
-`LMG-<n> {type}({feature}): {description}` — Conventional Commits after the
+`LET-<n> {type}({feature}): {description}` — Conventional Commits after the
 ticket, imperative, lowercase, no trailing period, under 72 characters.
 
 - The scope names the **feature**, never the phase number: `feat(api)`,
@@ -42,11 +42,11 @@ ticket, imperative, lowercase, no trailing period, under 72 characters.
   to run verbatim.** `discuss-phase` hardcodes
   `docs(${padded_phase}): capture phase context` and
   `docs(state): record phase ${PHASE} context session`; run them as
-  `LMG-<n> docs(<feature>): capture the <topic> decisions` and
-  `LMG-<n> docs(state): record the <feature> discussion session`. Check every
+  `LET-<n> docs(<feature>): capture the <topic> decisions` and
+  `LET-<n> docs(state): record the <feature> discussion session`. Check every
   `gsd_run query commit "…"` before running it.
 
 ## GSD git settings
 
 - `git.branching_strategy` is `none`: GSD must not create `gsd/phase-…` branches.
-  All work happens on `LMG-<n>-…` branches.
+  All work happens on `LET-<n>-…` branches.
