@@ -51,6 +51,9 @@ def upgrade() -> None:
         "category_criteria",
         sa.Column("excluded", sa.Boolean(), nullable=False, server_default=sa.text("false")),
     )
+    # The mapping is derived from criteria.is_default now; Phase 1 materialized it row by
+    # row, and those rows would mask an is_default edit. One-shot reset, safe on a fresh DB.
+    op.execute("DELETE FROM category_criteria")
 
 
 def downgrade() -> None:
