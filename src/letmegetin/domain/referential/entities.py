@@ -15,6 +15,7 @@ class Category:
     slug: str
     name: str
     label: Label = field(default_factory=dict)
+    parent_id: int | None = None
 
 
 @dataclass
