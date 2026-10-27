@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Run pre-commit quality gates before each commit.
+#
+# core.hooksPath points at .githooks, so `pre-commit install` refuses to run;
+# this wrapper invokes the configured hooks directly instead.
+set -euo pipefail
+
+exec uv run pre-commit run --hook-stage pre-commit
