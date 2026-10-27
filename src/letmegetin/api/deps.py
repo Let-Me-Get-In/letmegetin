@@ -10,12 +10,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from letmegetin.core.db import get_session
 from letmegetin.domain.places.repositories import PlaceRepository
 from letmegetin.domain.referential.repositories import (
+    CategoryGridRepository,
     CategoryRepository,
     CriterionRepository,
     FilterRepository,
     OtherInformationRepository,
 )
 from letmegetin.infrastructure.persistence.repositories import (
+    SqlAlchemyCategoryGridRepository,
     SqlAlchemyCategoryRepository,
     SqlAlchemyCriterionRepository,
     SqlAlchemyFilterRepository,
@@ -46,6 +48,10 @@ def get_place_repository(session: DbSession) -> PlaceRepository:
     return SqlAlchemyPlaceRepository(session)
 
 
+def get_category_grid_repository(session: DbSession) -> CategoryGridRepository:
+    return SqlAlchemyCategoryGridRepository(session)
+
+
 CategoryRepo = Annotated[CategoryRepository, Depends(get_category_repository)]
 CriterionRepo = Annotated[CriterionRepository, Depends(get_criterion_repository)]
 FilterRepo = Annotated[FilterRepository, Depends(get_filter_repository)]
@@ -53,3 +59,4 @@ OtherInformationRepo = Annotated[
     OtherInformationRepository, Depends(get_other_information_repository)
 ]
 PlaceRepo = Annotated[PlaceRepository, Depends(get_place_repository)]
+CategoryGridRepo = Annotated[CategoryGridRepository, Depends(get_category_grid_repository)]

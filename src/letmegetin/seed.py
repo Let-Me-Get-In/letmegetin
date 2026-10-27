@@ -8,22 +8,33 @@ Idempotent: existing rows are not duplicated.
 from __future__ import annotations
 
 import asyncio
+import csv
 import json
 from pathlib import Path
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from letmegetin.application.referential.admin import load_vocabulary_file
+from letmegetin.application.referential.admin import (
+    load_vocabulary_file,
+    rebuild_category_grids,
+)
 from letmegetin.config import settings
 from letmegetin.core.db import SessionLocal
 from letmegetin.core.utils import slugify
 from letmegetin.infrastructure.persistence.models import (
     AccessibilityFilterModel,
+    CategoryMappingModel,
     CategoryModel,
     CriterionModel,
     CriterionVocabularyModel,
     OtherInformationModel,
+)
+from letmegetin.infrastructure.persistence.repositories import (
+    SqlAlchemyCategoryGridRepository,
+    SqlAlchemyCategoryRepository,
+    SqlAlchemyCriterionRepository,
 )
 
 
@@ -80,6 +91,40 @@ async def _load_vocabulary(session: AsyncSession, path: Path) -> tuple[int, int]
         )
         created += 1
     return created, skipped
+
+
+async def _load_category_mapping(session: AsyncSession, path: Path) -> int:
+    """Upsert ``data/referential/category_mapping.csv`` by category slug."""
+    if not path.exists():
+        return 0
+    with path.open(encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle, delimiter=";"))
+    written = 0
+    for row in rows:
+        slug = (row.get("slug") or "").strip()
+        if not slug:
+            continue
+        category_id = await session.scalar(
+            select(CategoryModel.id).where(CategoryModel.slug == slug)
+        )
+        if category_id is None:
+            continue
+        values = {
+            "category_id": int(category_id),
+            "overture_category": (row.get("overture_category") or "").strip() or None,
+            "osm_tag": (row.get("osm_tag") or "").strip() or None,
+            "acceslibre_family": (row.get("acceslibre_family") or "").strip() or None,
+            "notes": (row.get("notes") or "").strip() or None,
+        }
+        statement = insert(CategoryMappingModel).values(**values)
+        await session.execute(
+            statement.on_conflict_do_update(
+                constraint="category_mapping_category_uc",
+                set_={key: value for key, value in values.items() if key != "category_id"},
+            )
+        )
+        written += 1
+    return written
 
 
 async def seed() -> None:
@@ -166,10 +211,19 @@ async def seed() -> None:
 
         categories = list((await session.scalars(select(CategoryModel))).all())
 
+        mapping_written = await _load_category_mapping(session, data_dir / "category_mapping.csv")
+
+        version = await rebuild_category_grids(
+            SqlAlchemyCategoryRepository(session),
+            SqlAlchemyCriterionRepository(session),
+            SqlAlchemyCategoryGridRepository(session),
+        )
+
         await session.commit()
         print(
             f"seed ok: categories={len(categories)} base_criteria={base_criteria} "
-            f"vocabulary_created={vocabulary_created} vocabulary_skipped={vocabulary_skipped}"
+            f"vocabulary_created={vocabulary_created} vocabulary_skipped={vocabulary_skipped} "
+            f"mapping={mapping_written} referential_version={version}"
         )
 
 
