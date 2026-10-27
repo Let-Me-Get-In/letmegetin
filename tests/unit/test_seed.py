@@ -13,6 +13,7 @@ from letmegetin.infrastructure.persistence.models import (
     CategoryCriterionModel,
     CategoryModel,
     CriterionModel,
+    CriterionVocabularyModel,
     OtherInformationModel,
 )
 
@@ -35,6 +36,19 @@ _GRID = [
     }
 ]
 
+_VOCABULARY = [
+    {
+        "slug": "lecteur-de-carte",
+        "label": {"fr": "Lecteur de carte", "it": "Lettore di carta"},
+        "description": {},
+    },
+    {
+        "slug": "rampe-amovible",
+        "label": {"fr": "Rampe amovible"},
+        "description": {"fr": "Une rampe"},
+    },
+]
+
 
 class _Result:
     def __init__(self, values: list[Any]) -> None:
@@ -45,7 +59,7 @@ class _Result:
 
 
 class FakeSession:
-    """Fake AsyncSession recording writes; assigns ids on add."""
+    """Fake AsyncSession recording writes; assigns ids on add and answers lookups by slug."""
 
     def __init__(self) -> None:
         self.added: list[Any] = []
@@ -53,6 +67,12 @@ class FakeSession:
         self.committed = False
 
     async def scalar(self, statement: Any) -> Any:
+        entity = statement.column_descriptions[0].get("entity")
+        compiled = str(statement.compile(compile_kwargs={"literal_binds": True}))
+        for obj in self.added:
+            slug = getattr(obj, "slug", None)
+            if isinstance(obj, entity) and slug and f"'{slug}'" in compiled:
+                return obj
         return None
 
     async def scalars(self, statement: Any) -> _Result:
@@ -112,6 +132,7 @@ def _write_data_dir(tmp_path: Path) -> Path:
     (data_dir / "th.json").write_text(
         json.dumps([{"slug": "th", "name": "th", "label": {"fr": "Tourisme"}}]), encoding="utf-8"
     )
+    (data_dir / "criteria.json").write_text(json.dumps(_VOCABULARY), encoding="utf-8")
     (data_dir / "category_grids" / "category-1.json").write_text(
         json.dumps(_GRID), encoding="utf-8"
     )
@@ -131,7 +152,64 @@ async def test_seed_loads_data_without_schema(
     assert any(isinstance(obj, CategoryModel) for obj in session.added)
     assert any(isinstance(obj, OtherInformationModel) for obj in session.added)
     assert any(isinstance(obj, CriterionModel) for obj in session.added)
-    assert any(isinstance(obj, CategoryCriterionModel) for obj in session.added)
+
+
+async def test_seed_imports_the_vocabulary_without_polluting_criteria(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    session = FakeSession()
+    monkeypatch.setattr(seed_module, "SessionLocal", FakeSessionFactory(session))
+    monkeypatch.setattr(seed_module.settings, "data_dir", _write_data_dir(tmp_path))
+
+    await seed_module.seed()
+
+    vocabulary = [obj for obj in session.added if isinstance(obj, CriterionVocabularyModel)]
+    assert {entry.slug for entry in vocabulary} == {entry["slug"] for entry in _VOCABULARY}
+    criterion_slugs = {obj.slug for obj in session.added if isinstance(obj, CriterionModel)}
+    assert criterion_slugs.isdisjoint({entry["slug"] for entry in _VOCABULARY})
+
+
+async def test_seed_marks_only_the_grid_criteria_as_default(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    session = FakeSession()
+    monkeypatch.setattr(seed_module, "SessionLocal", FakeSessionFactory(session))
+    monkeypatch.setattr(seed_module.settings, "data_dir", _write_data_dir(tmp_path))
+
+    await seed_module.seed()
+
+    defaults = {
+        obj.slug: obj.is_default for obj in session.added if isinstance(obj, CriterionModel)
+    }
+    assert defaults["entree-acces"] is True
+    assert defaults["entree-hauteur-cm"] is True
+    assert defaults["entree"] is False
+    assert defaults["entree-acces-acces-de-plain-pied"] is False
+
+
+async def test_seed_no_longer_materializes_category_criteria(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    session = FakeSession()
+    monkeypatch.setattr(seed_module, "SessionLocal", FakeSessionFactory(session))
+    monkeypatch.setattr(seed_module.settings, "data_dir", _write_data_dir(tmp_path))
+
+    await seed_module.seed()
+
+    assert not any(isinstance(obj, CategoryCriterionModel) for obj in session.added)
+
+
+async def test_second_seed_adds_nothing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    session = FakeSession()
+    monkeypatch.setattr(seed_module, "SessionLocal", FakeSessionFactory(session))
+    monkeypatch.setattr(seed_module.settings, "data_dir", _write_data_dir(tmp_path))
+
+    await seed_module.seed()
+    first_count = len(session.added)
+
+    await seed_module.seed()
+
+    assert len(session.added) == first_count
 
 
 def test_seed_has_no_schema_engine() -> None:
