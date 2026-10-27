@@ -95,7 +95,18 @@ values that are logged, and posts reviews. An admin can hide a review.
 - `pytest`: 165 passed, 94.08 % line+branch (floor 85 %).
 - `alembic upgrade head`: `0005 (head)`.
 
+## Addendum — previously deferred items now closed
+
+- **Refresh-token revocation and rotation**: migration `0006` adds `refresh_token` (SHA-256
+  fingerprint, expiry, revoked flag). Login and refresh persist the fingerprint; `/refresh`
+  checks it, revokes the presented token and issues a new pair; `/logout` revokes it.
+- **Email verification**: `users.email_verified`, a `typ=verify` JWT, a mailer that logs the link
+  in development and sends SMTP when `LETMEGETIN_SMTP_HOST` is set, `/verify-email` and
+  `/resend-verification`. Contributions and review creation now require a verified address (403
+  otherwise).
+- Tokens carry a random `jti`, so two tokens issued in the same second are distinct.
+
 ## Deferred
 
-- Refresh-token revocation, email verification, password reset.
+- Password reset and OAuth.
 - Auth rate limiting (Phase 7) and a non-default `LETMEGETIN_JWT_SECRET` in production.

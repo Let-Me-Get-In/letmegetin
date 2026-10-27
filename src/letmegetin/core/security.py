@@ -75,11 +75,23 @@ def _sign(signing_input: bytes) -> bytes:
     return hmac.new(settings.jwt_secret.encode(), signing_input, hashlib.sha256).digest()
 
 
+def token_fingerprint(token: str) -> str:
+    """A stable SHA-256 fingerprint so the refresh store never holds a usable token."""
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
 def create_token(user_id: int, role: str, kind: str, ttl: int) -> str:
     """Issue a signed token of the given kind (`access` or `refresh`)."""
     now = int(time.time())
     header = _b64(json.dumps({"alg": "HS256", "typ": "JWT"}, separators=(",", ":")).encode())
-    claims = {"sub": str(user_id), "role": role, "typ": kind, "iat": now, "exp": now + ttl}
+    claims = {
+        "sub": str(user_id),
+        "role": role,
+        "typ": kind,
+        "iat": now,
+        "exp": now + ttl,
+        "jti": secrets.token_urlsafe(8),
+    }
     payload = _b64(json.dumps(claims, separators=(",", ":")).encode())
     signature = _b64(_sign(f"{header}.{payload}".encode()))
     return f"{header}.{payload}.{signature}"

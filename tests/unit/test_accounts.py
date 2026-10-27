@@ -28,10 +28,18 @@ class _Users:
             password_hash=user.password_hash,
             role=user.role,
             display_name=user.display_name,
+            email_verified=user.email_verified,
         )
         self._users[stored.email] = stored
         self._next_id += 1
         return stored
+
+    async def mark_email_verified(self, user_id: int) -> User | None:
+        user = await self.get_by_id(user_id)
+        if user is None:
+            return None
+        user.email_verified = True
+        return user
 
 
 async def test_register_normalizes_the_email_and_display_name() -> None:

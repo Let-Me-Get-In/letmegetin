@@ -7,6 +7,7 @@ from typing import Any
 
 import geoalchemy2
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
     Computed,
     Double,
@@ -50,6 +51,20 @@ class UserModel(Base, TimestampMixin):
     password_hash: Mapped[str] = mapped_column(String(255))
     role: Mapped[str] = mapped_column(String(16), server_default="user")
     display_name: Mapped[str | None] = mapped_column(String(120))
+    email_verified: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
+
+
+class RefreshTokenModel(Base):
+    """A refresh token the server can revoke (only its SHA-256 fingerprint is stored)."""
+
+    __tablename__ = "refresh_token"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    expires_at: Mapped[datetime] = mapped_column()
+    revoked: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
+    created: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
 class ContributionModel(Base):
