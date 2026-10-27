@@ -13,9 +13,9 @@ from alembic import context
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from letmegetin import models  # noqa: F401  (register tables on Base.metadata)
 from letmegetin.config import settings
-from letmegetin.models import Base
+from letmegetin.infrastructure.persistence import models  # noqa: F401  (register tables)
+from letmegetin.infrastructure.persistence.models import Base
 
 config = context.config
 
