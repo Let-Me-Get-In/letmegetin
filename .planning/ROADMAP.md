@@ -93,7 +93,7 @@ Plans:
 | 1. Foundation & CI | LET-6 | Complete | 2026-10-27 |
 | 2. Referential & seed | LET-7 | Complete | 2026-10-27 |
 | 3. Places & search | LET-8 | Complete | 2026-10-27 |
-| 4. Record & reviews (read) | LET-9 | Pending | — |
+| 4. Record & reviews (read) | LET-9 | Complete | 2026-10-27 |
 | 5. Auth & contribution | LET-10 | Pending | — |
 | 6. Next.js frontend | LET-11 | Pending | — |
 | 7. Public API & deployment | LET-12 | Pending | — |
