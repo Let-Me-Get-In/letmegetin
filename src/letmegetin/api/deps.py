@@ -11,7 +11,7 @@ from letmegetin.core.db import get_session
 from letmegetin.core.exceptions import InvalidToken
 from letmegetin.core.security import decode_token
 from letmegetin.domain.accounts.entities import User
-from letmegetin.domain.accounts.repositories import UserRepository
+from letmegetin.domain.accounts.repositories import RefreshTokenRepository, UserRepository
 from letmegetin.domain.places.repositories import PlaceRepository
 from letmegetin.domain.referential.repositories import (
     CategoryGridRepository,
@@ -27,6 +27,7 @@ from letmegetin.infrastructure.persistence.repositories import (
     SqlAlchemyFilterRepository,
     SqlAlchemyOtherInformationRepository,
     SqlAlchemyPlaceRepository,
+    SqlAlchemyRefreshTokenRepository,
     SqlAlchemyUserRepository,
 )
 
@@ -61,6 +62,10 @@ def get_user_repository(session: DbSession) -> UserRepository:
     return SqlAlchemyUserRepository(session)
 
 
+def get_refresh_token_repository(session: DbSession) -> RefreshTokenRepository:
+    return SqlAlchemyRefreshTokenRepository(session)
+
+
 async def get_current_user(
     session: DbSession,
     authorization: Annotated[str | None, Header()] = None,
@@ -90,6 +95,13 @@ def require_admin(user: CurrentUser) -> User:
     return user
 
 
+def require_verified(user: CurrentUser) -> User:
+    """Reject writes from an account whose email is not confirmed yet."""
+    if not user.email_verified:
+        raise HTTPException(status_code=403, detail="Email verification required")
+    return user
+
+
 CategoryRepo = Annotated[CategoryRepository, Depends(get_category_repository)]
 CriterionRepo = Annotated[CriterionRepository, Depends(get_criterion_repository)]
 FilterRepo = Annotated[FilterRepository, Depends(get_filter_repository)]
@@ -99,5 +111,7 @@ OtherInformationRepo = Annotated[
 PlaceRepo = Annotated[PlaceRepository, Depends(get_place_repository)]
 CategoryGridRepo = Annotated[CategoryGridRepository, Depends(get_category_grid_repository)]
 UserRepo = Annotated[UserRepository, Depends(get_user_repository)]
+RefreshRepo = Annotated[RefreshTokenRepository, Depends(get_refresh_token_repository)]
 CurrentUser = Annotated[User, Depends(get_current_user)]
 AdminUser = Annotated[User, Depends(require_admin)]
+VerifiedUser = Annotated[User, Depends(require_verified)]

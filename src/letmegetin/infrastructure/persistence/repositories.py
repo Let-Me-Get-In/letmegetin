@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from datetime import datetime
 
 from geoalchemy2 import Geography
 from sqlalchemy import func, or_, select, update
@@ -10,7 +11,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from letmegetin.core.exceptions import DomainError
-from letmegetin.domain.accounts.entities import User
+from letmegetin.domain.accounts.entities import RefreshToken, User
 from letmegetin.domain.places.dedup import normalize_name
 from letmegetin.domain.places.entities import (
     HandicapFamily,
@@ -56,6 +57,7 @@ from letmegetin.infrastructure.persistence.models import (
     PlaceModel,
     PlacePhotoModel,
     ReferentialVersionModel,
+    RefreshTokenModel,
     ReviewModel,
     UserModel,
 )
@@ -317,8 +319,17 @@ class SqlAlchemyUserRepository:
             password_hash=user.password_hash,
             role=user.role,
             display_name=user.display_name,
+            email_verified=user.email_verified,
         )
         self._session.add(model)
+        await self._session.flush()
+        return _user_from_model(model)
+
+    async def mark_email_verified(self, user_id: int) -> User | None:
+        model = await self._session.get(UserModel, user_id)
+        if model is None:
+            return None
+        model.email_verified = True
         await self._session.flush()
         return _user_from_model(model)
 
@@ -330,7 +341,39 @@ def _user_from_model(model: UserModel) -> User:
         password_hash=model.password_hash,
         role=model.role,
         display_name=model.display_name,
+        email_verified=model.email_verified,
     )
+
+
+class SqlAlchemyRefreshTokenRepository:
+    """Refresh-token store backed by SQLAlchemy (no commit: the caller owns the work)."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def add(self, user_id: int, token_hash: str, expires_at: datetime) -> None:
+        self._session.add(
+            RefreshTokenModel(user_id=user_id, token_hash=token_hash, expires_at=expires_at)
+        )
+        await self._session.flush()
+
+    async def get(self, token_hash: str) -> RefreshToken | None:
+        model = await self._session.scalar(
+            select(RefreshTokenModel).where(RefreshTokenModel.token_hash == token_hash)
+        )
+        if model is None:
+            return None
+        return RefreshToken(
+            user_id=model.user_id, expires_at=model.expires_at, revoked=model.revoked
+        )
+
+    async def revoke(self, token_hash: str) -> None:
+        model = await self._session.scalar(
+            select(RefreshTokenModel).where(RefreshTokenModel.token_hash == token_hash)
+        )
+        if model is not None:
+            model.revoked = True
+            await self._session.flush()
 
 
 class SqlAlchemyPlaceRepository:
