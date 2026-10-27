@@ -120,3 +120,57 @@ def test_acceslibre_import_logs_the_merge_and_keeps_the_alias(db: None, tmp_path
         "(SELECT id FROM place WHERE source_id = 'test-1')"
     )
     assert [row[0] for row in aliases] == ["Mediatheque Test Alpha"]
+
+
+_ACCESSIBILITY_FIXTURE = (
+    "id;nom;adresse;commune;code_postal;latitude;longitude;categorie;"
+    "acces_entree;acces_entree_largeur;photo_url\n"
+    "test-p4-imp-1;Lieu Import Test;1 rue des Tests;Testville;99001;45.2;5.2;bibliotheque;"
+    "true;90;https://example.test/p4.jpg\n"
+)
+
+
+def test_acceslibre_import_writes_accessibility_values_and_photos(db: None, tmp_path: Path) -> None:
+    path = tmp_path / "acceslibre.csv"
+    path.write_text(_ACCESSIBILITY_FIXTURE, encoding="utf-8")
+    _import(path)
+
+    values = _places(
+        "SELECT c.slug, pa.value FROM place_accessibility pa "
+        "JOIN criteria c ON c.id = pa.criterion_id "
+        "JOIN place p ON p.id = pa.place_id WHERE p.source_id = 'test-p4-imp-1'"
+    )
+    assert values == [
+        ("entree-acces", {"value": "true", "source": "acceslibre", "key": "acces_entree"}),
+        (
+            "entree-largeur-de-porte-cm",
+            {"value": "90", "source": "acceslibre", "key": "acces_entree_largeur"},
+        ),
+    ]
+
+    photos = _places(
+        "SELECT url, credit FROM place_photo ph JOIN place p ON p.id = ph.place_id "
+        "WHERE p.source_id = 'test-p4-imp-1'"
+    )
+    assert photos == [("https://example.test/p4.jpg", "Acceslibre")]
+
+    updated = _ACCESSIBILITY_FIXTURE.replace(";true;90;", ";false;80;")
+    path.write_text(updated, encoding="utf-8")
+    _import(path)
+
+    refreshed = _places(
+        "SELECT pa.value->>'value' FROM place_accessibility pa "
+        "JOIN criteria c ON c.id = pa.criterion_id "
+        "JOIN place p ON p.id = pa.place_id "
+        "WHERE p.source_id = 'test-p4-imp-1' AND c.slug = 'entree-acces'"
+    )
+    assert refreshed == [("false",)]
+    assert (
+        len(
+            _places(
+                "SELECT ph.id FROM place_photo ph JOIN place p ON p.id = ph.place_id "
+                "WHERE p.source_id = 'test-p4-imp-1'"
+            )
+        )
+        == 1
+    )
