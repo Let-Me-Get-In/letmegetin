@@ -10,6 +10,8 @@ from letmegetin.domain.places.entities import (
     Place,
     PlaceAccessibility,
     PlaceHit,
+    PlacePhoto,
+    Review,
 )
 
 DEFAULT_CANDIDATE_RADIUS = 100.0
@@ -53,6 +55,26 @@ class PlaceRepository(Protocol):
         ...
 
     async def list_accessibility(self, place_id: int) -> list[PlaceAccessibility]: ...
+
+    async def upsert_accessibility(
+        self, place_id: int, values: dict[str, dict[str, object]]
+    ) -> None:
+        """Write values keyed by criterion slug; unknown slugs are ignored."""
+        ...
+
+    async def upsert_photos(self, place_id: int, photos: Sequence[PlacePhoto]) -> None: ...
+
+    async def list_photos(self, place_id: int) -> list[PlacePhoto]: ...
+
+    async def list_reviews(
+        self, place_id: int, *, page: int, size: int
+    ) -> tuple[list[Review], int]:
+        """Published reviews, newest first, plus the total count."""
+        ...
+
+    async def review_stats(self, place_id: int) -> tuple[float | None, int]:
+        """Average rating (one decimal) and published review count."""
+        ...
 
 
 class PlaceAliasRepository(Protocol):

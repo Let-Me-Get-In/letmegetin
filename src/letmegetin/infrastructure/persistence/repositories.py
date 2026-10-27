@@ -11,7 +11,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from letmegetin.core.exceptions import DomainError
 from letmegetin.domain.places.dedup import normalize_name
-from letmegetin.domain.places.entities import HandicapFamily, Place, PlaceAccessibility, PlaceHit
+from letmegetin.domain.places.entities import (
+    HandicapFamily,
+    Place,
+    PlaceAccessibility,
+    PlaceHit,
+    PlacePhoto,
+    Review,
+)
 from letmegetin.domain.places.repositories import DEFAULT_CANDIDATE_RADIUS
 from letmegetin.domain.referential.entities import (
     AccessibilityFilter,
@@ -45,7 +52,9 @@ from letmegetin.infrastructure.persistence.models import (
     PlaceAliasModel,
     PlaceMergeLogModel,
     PlaceModel,
+    PlacePhotoModel,
     ReferentialVersionModel,
+    ReviewModel,
 )
 
 
@@ -454,6 +463,103 @@ class SqlAlchemyPlaceRepository:
             )
         ).all()
         return [place_accessibility_from_models(value, criterion) for value, criterion in rows]
+
+    async def upsert_accessibility(
+        self, place_id: int, values: dict[str, dict[str, object]]
+    ) -> None:
+        if not values:
+            return
+        slugs = list(values)
+        rows = (
+            await self._session.execute(
+                select(CriterionModel.id, CriterionModel.slug).where(CriterionModel.slug.in_(slugs))
+            )
+        ).all()
+        if not rows:
+            return
+        statement = insert(PlaceAccessibilityModel).values(
+            [
+                {"place_id": place_id, "criterion_id": criterion_id, "value": values[slug]}
+                for criterion_id, slug in rows
+            ]
+        )
+        await self._session.execute(
+            statement.on_conflict_do_update(
+                index_elements=[
+                    PlaceAccessibilityModel.place_id,
+                    PlaceAccessibilityModel.criterion_id,
+                ],
+                set_={"value": statement.excluded.value},
+            )
+        )
+
+    async def upsert_photos(self, place_id: int, photos: Sequence[PlacePhoto]) -> None:
+        if not photos:
+            return
+        statement = insert(PlacePhotoModel).values(
+            [
+                {
+                    "place_id": place_id,
+                    "url": photo.url,
+                    "credit": photo.credit,
+                    "license": photo.license,
+                }
+                for photo in photos
+            ]
+        )
+        await self._session.execute(
+            statement.on_conflict_do_nothing(constraint="place_photo_url_uc")
+        )
+
+    async def list_photos(self, place_id: int) -> list[PlacePhoto]:
+        rows = (
+            await self._session.scalars(
+                select(PlacePhotoModel)
+                .where(PlacePhotoModel.place_id == place_id)
+                .order_by(PlacePhotoModel.id)
+            )
+        ).all()
+        return [PlacePhoto(url=row.url, credit=row.credit, license=row.license) for row in rows]
+
+    async def list_reviews(
+        self, place_id: int, *, page: int, size: int
+    ) -> tuple[list[Review], int]:
+        conditions = (ReviewModel.place_id == place_id) & (ReviewModel.status == "published")
+        total = await self._session.scalar(
+            select(func.count()).select_from(ReviewModel).where(conditions)
+        )
+        rows = (
+            await self._session.scalars(
+                select(ReviewModel)
+                .where(conditions)
+                .order_by(ReviewModel.created.desc(), ReviewModel.id.desc())
+                .offset((page - 1) * size)
+                .limit(size)
+            )
+        ).all()
+        return (
+            [
+                Review(
+                    id=row.id,
+                    rating=row.rating,
+                    body=row.body,
+                    author_name=row.author_name,
+                    created=row.created,
+                )
+                for row in rows
+            ],
+            int(total or 0),
+        )
+
+    async def review_stats(self, place_id: int) -> tuple[float | None, int]:
+        average, count = (
+            await self._session.execute(
+                select(func.avg(ReviewModel.rating), func.count())
+                .select_from(ReviewModel)
+                .where(ReviewModel.place_id == place_id, ReviewModel.status == "published")
+            )
+        ).one()
+        return (round(float(average), 1) if average is not None else None, int(count or 0))
 
 
 class SqlAlchemyPlaceAliasRepository:

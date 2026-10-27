@@ -7,11 +7,14 @@ from typing import Any
 
 import geoalchemy2
 from sqlalchemy import (
+    CheckConstraint,
     Computed,
     Double,
     ForeignKey,
     Index,
+    SmallInteger,
     String,
+    Text,
     UniqueConstraint,
     func,
     text,
@@ -212,6 +215,36 @@ class PlaceAccessibilityModel(Base):
         ForeignKey("criteria.id", ondelete="CASCADE"), primary_key=True
     )
     value: Mapped[dict] = mapped_column(JSONB, default=dict)
+
+
+class ReviewModel(Base, TimestampMixin):
+    """A published review for a place (write path arrives with auth, Phase 5)."""
+
+    __tablename__ = "review"
+    __table_args__ = (
+        CheckConstraint("rating >= 1 AND rating <= 5", name="review_rating_range"),
+        Index("ix_review_place_created", "place_id", "created"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("place.id", ondelete="CASCADE"), index=True)
+    rating: Mapped[int] = mapped_column(SmallInteger)
+    body: Mapped[str] = mapped_column(Text, default="")
+    author_name: Mapped[str | None] = mapped_column(String(120))
+    status: Mapped[str] = mapped_column(String(16), server_default="published")
+
+
+class PlacePhotoModel(Base):
+    """A source photo of the place (never invented; license kept per row)."""
+
+    __tablename__ = "place_photo"
+    __table_args__ = (UniqueConstraint("place_id", "url", name="place_photo_url_uc"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("place.id", ondelete="CASCADE"), index=True)
+    url: Mapped[str] = mapped_column(String(1000))
+    credit: Mapped[str | None] = mapped_column(String(255))
+    license: Mapped[str | None] = mapped_column(String(64))
 
 
 class CategoryMappingModel(Base, TimestampMixin):

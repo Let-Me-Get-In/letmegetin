@@ -6,14 +6,16 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query
 
-from letmegetin.api.deps import CriterionRepo, PlaceRepo
+from letmegetin.api.deps import CategoryGridRepo, CriterionRepo, PlaceRepo
 from letmegetin.api.schemas.places import (
     CandidateOut,
     PlaceDetailOut,
     PlaceSummaryOut,
+    ReviewPageOut,
 )
 from letmegetin.application.places.candidates import find_candidates
 from letmegetin.application.places.get_place import get_place
+from letmegetin.application.places.list_reviews import list_reviews
 from letmegetin.application.places.search import (
     DEFAULT_LIMIT,
     DEFAULT_RADIUS_METRES,
@@ -74,10 +76,27 @@ async def candidates(
 
 
 @router.get("/places/{slug}", response_model=PlaceDetailOut)
-async def place_detail(slug: str, places: PlaceRepo, criteria: CriterionRepo) -> PlaceDetailOut:
-    """Return one place with its accessibility skeleton, or 404."""
+async def place_detail(
+    slug: str, places: PlaceRepo, criteria: CriterionRepo, grids: CategoryGridRepo
+) -> PlaceDetailOut:
+    """Return one place with its accessibility tree, reviews summary and photos, or 404."""
     try:
-        detail = await get_place(places, criteria, slug)
+        detail = await get_place(places, criteria, grids, slug)
     except PlaceNotFound:
         raise HTTPException(status_code=404, detail="Place not found") from None
     return PlaceDetailOut.from_detail(detail)
+
+
+@router.get("/places/{slug}/reviews", response_model=ReviewPageOut)
+async def place_reviews(
+    slug: str,
+    places: PlaceRepo,
+    page: Annotated[int, Query(ge=1)] = 1,
+    size: Annotated[int, Query(ge=1, le=100)] = 20,
+) -> ReviewPageOut:
+    """Return a place's published reviews, newest first, or 404."""
+    try:
+        reviews = await list_reviews(places, slug, page=page, size=size)
+    except PlaceNotFound:
+        raise HTTPException(status_code=404, detail="Place not found") from None
+    return ReviewPageOut.from_page(reviews)

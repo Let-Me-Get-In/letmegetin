@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel
 
 from letmegetin.application.places.get_place import PlaceDetail
+from letmegetin.application.places.list_reviews import ReviewPage
 from letmegetin.domain.places.entities import Place, PlaceHit
 
 
@@ -45,11 +47,61 @@ class AccessibilityValueOut(BaseModel):
     value: dict[str, Any]
 
 
+class PhotoOut(BaseModel):
+    """A source photo of the place."""
+
+    url: str
+    credit: str | None = None
+    license: str | None = None
+
+
+class ReviewOut(BaseModel):
+    """One published review."""
+
+    id: int
+    rating: int
+    body: str
+    author_name: str | None = None
+    created: datetime
+
+
+class ReviewPageOut(BaseModel):
+    """A page of reviews plus the total count."""
+
+    items: list[ReviewOut]
+    total: int
+    page: int
+    size: int
+
+    @classmethod
+    def from_page(cls, page: ReviewPage) -> ReviewPageOut:
+        return cls(
+            items=[
+                ReviewOut(
+                    id=review.id,
+                    rating=review.rating,
+                    body=review.body,
+                    author_name=review.author_name,
+                    created=review.created,
+                )
+                for review in page.items
+            ],
+            total=page.total,
+            page=page.page,
+            size=page.size,
+        )
+
+
 class PlaceDetailOut(PlaceSummaryOut):
-    """A place record with its accessibility skeleton (PLACE-03/04)."""
+    """A place record with its accessibility tree and reviews (PLACE-03/04, REV-01)."""
 
     accessibility: list[AccessibilityValueOut] = []
     accessibility_by_family: dict[str, float] = {}
+    tree: list[dict[str, Any]] = []
+    filled_rate: float = 0.0
+    photos: list[PhotoOut] = []
+    rating: float | None = None
+    review_count: int = 0
 
     @classmethod
     def from_detail(cls, detail: PlaceDetail) -> PlaceDetailOut:
@@ -66,6 +118,14 @@ class PlaceDetailOut(PlaceSummaryOut):
                 for value in detail.accessibility
             ],
             accessibility_by_family=detail.accessibility_by_family,
+            tree=detail.tree,
+            filled_rate=detail.filled_rate,
+            photos=[
+                PhotoOut(url=photo.url, credit=photo.credit, license=photo.license)
+                for photo in detail.photos
+            ],
+            rating=detail.rating,
+            review_count=detail.review_count,
         )
 
 
