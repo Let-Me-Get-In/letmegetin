@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** LET-6 — Phase 1 executed, verification pending
+**Current focus:** LET-7 — Phase 2 (Referential & seed)
 
 ## Current Position
 
-Ticket: LET-6 (Phase 1 — Foundation & CI)
-Phase: 1 of 7 (Foundation & CI)
-Plan: 01-01 (executed)
-Status: Executed — awaiting verification
-Last activity: 2026-10-27 — Phase 1 executed (Alembic, seed decoupling, CI, pre-commit); 22 tests, 96% coverage.
+Ticket: LET-6 (Phase 1 — complete); next LET-7
+Phase: 1 complete / 7; next Phase 2
+Plan: 01-01 (verified)
+Status: Complete — verified
+Last activity: 2026-10-27 — Phase 1 verified (VERIFICATION.md passed); 22 tests, 97.5% coverage, CI green.
 
 ## Performance Metrics
 
@@ -21,6 +21,7 @@ Last activity: 2026-10-27 — Phase 1 executed (Alembic, seed decoupling, CI, pr
 - Phases: 7
 - Linear tickets: LET-5..LET-12
 - Plans completed: 1
+- Phases complete: 1
 
 ## Accumulated Context
 
