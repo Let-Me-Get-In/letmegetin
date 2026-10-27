@@ -1,20 +1,14 @@
 ---
-status: testing
+status: complete
 phase: 01-foundation-ci
 source: 01-01-SUMMARY.md
 started: 2026-10-27T09:00:00Z
-updated: 2026-10-27T09:00:00Z
+updated: 2026-10-27T09:18:31.280Z
 ---
 
 ## Current Test
 
-number: 1
-name: Cold Start Smoke Test
-expected: |
-  From a clean state, `docker compose up -d --wait db` starts PostGIS,
-  `uv run alembic upgrade head` creates the schema, `uv run python -m letmegetin.seed`
-  loads the referential, and `GET /health` returns 200.
-awaiting: user confirmation
+[testing complete]
 
 ## Tests
 
