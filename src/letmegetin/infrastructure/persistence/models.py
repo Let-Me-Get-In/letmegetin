@@ -3,10 +3,27 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
-from sqlalchemy import ForeignKey, String, UniqueConstraint, func, text
-from sqlalchemy.dialects.postgresql import JSONB
+import geoalchemy2
+from sqlalchemy import (
+    Computed,
+    Double,
+    ForeignKey,
+    Index,
+    String,
+    UniqueConstraint,
+    func,
+    text,
+)
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+# PostGIS derives the point from the plain lat/lng columns, so the two never drift.
+_LOCATION_SQL = (
+    "CASE WHEN lat IS NOT NULL AND lng IS NOT NULL "
+    "THEN ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography END"
+)
 
 
 class Base(DeclarativeBase):
@@ -46,6 +63,10 @@ class CriterionModel(Base, TimestampMixin):
     is_default: Mapped[bool] = mapped_column(default=False, server_default=text("false"))
     label: Mapped[dict] = mapped_column(JSONB, default=dict)
     description: Mapped[dict] = mapped_column(JSONB, default=dict)
+    handicap_families: Mapped[list[str]] = mapped_column(
+        ARRAY(String(16)), default=list, server_default=text("'{}'")
+    )
+    en17210_ref: Mapped[str | None] = mapped_column(String(64))
 
 
 class CategoryCriterionModel(Base):
@@ -87,6 +108,9 @@ class AccessibilityFilterModel(Base, TimestampMixin):
     criterion_id: Mapped[int | None] = mapped_column(ForeignKey("criteria.id"))
     position: Mapped[int] = mapped_column(default=0)
     active: Mapped[bool] = mapped_column(default=True)
+    handicap_families: Mapped[list[str]] = mapped_column(
+        ARRAY(String(16)), default=list, server_default=text("'{}'")
+    )
 
 
 class OtherInformationModel(Base, TimestampMixin):
@@ -101,3 +125,126 @@ class OtherInformationModel(Base, TimestampMixin):
     label: Mapped[dict] = mapped_column(JSONB, default=dict)
     link: Mapped[str | None] = mapped_column(String(500))
     parent_id: Mapped[int | None] = mapped_column(ForeignKey("other_information.id"))
+
+
+class PlaceModel(Base, TimestampMixin):
+    """A physical place (Acceslibre, Overture, OSM or user-created)."""
+
+    __tablename__ = "place"
+    __table_args__ = (
+        Index(
+            "place_source_source_id_uc",
+            "source",
+            "source_id",
+            unique=True,
+            postgresql_where=text("source_id IS NOT NULL"),
+        ),
+        Index("ix_place_location", "location", postgresql_using="gist"),
+        Index(
+            "ix_place_name_normalized",
+            "name_normalized",
+            postgresql_using="gin",
+            postgresql_ops={"name_normalized": "gin_trgm_ops"},
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    source: Mapped[str] = mapped_column(String(32))
+    source_id: Mapped[str | None] = mapped_column(String(255))
+    name: Mapped[str] = mapped_column(String(255))
+    name_normalized: Mapped[str] = mapped_column(String(255))
+    slug: Mapped[str] = mapped_column(String(300), unique=True, index=True)
+    category_id: Mapped[int | None] = mapped_column(
+        ForeignKey("categories.id", ondelete="SET NULL"), index=True
+    )
+    address_full: Mapped[str | None] = mapped_column(String(500))
+    city: Mapped[str | None] = mapped_column(String(120))
+    postal_code: Mapped[str | None] = mapped_column(String(16))
+    country_code: Mapped[str] = mapped_column(String(2), server_default="FR")
+    lat: Mapped[float | None] = mapped_column(Double)
+    lng: Mapped[float | None] = mapped_column(Double)
+    location: Mapped[Any] = mapped_column(
+        geoalchemy2.Geography(geometry_type="POINT", srid=4326, spatial_index=False),
+        Computed(_LOCATION_SQL, persisted=True),
+        nullable=True,
+    )
+    operating_status: Mapped[str] = mapped_column(String(32), server_default="open")
+    confidence: Mapped[float | None] = mapped_column(Double)
+    website: Mapped[str | None] = mapped_column(String(500))
+    phone: Mapped[str | None] = mapped_column(String(32))
+    canonical_id: Mapped[int | None] = mapped_column(
+        ForeignKey("place.id", ondelete="SET NULL"), index=True
+    )
+
+
+class PlaceAliasModel(Base):
+    """A name a place is also known by (kept when a duplicate is merged)."""
+
+    __tablename__ = "place_alias"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("place.id", ondelete="CASCADE"), index=True)
+    name: Mapped[str] = mapped_column(String(255))
+
+
+class PlaceMergeLogModel(Base):
+    """Audit trail of every soft merge; nothing is deleted."""
+
+    __tablename__ = "place_merge_log"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kept_id: Mapped[int] = mapped_column(ForeignKey("place.id", ondelete="CASCADE"), index=True)
+    merged_id: Mapped[int] = mapped_column(ForeignKey("place.id", ondelete="CASCADE"))
+    score: Mapped[float] = mapped_column(Double)
+    actor: Mapped[str] = mapped_column(String(32), server_default="importer")
+    created: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class PlaceAccessibilityModel(Base):
+    """One recorded accessibility value for a place (PLACE-04 skeleton)."""
+
+    __tablename__ = "place_accessibility"
+
+    place_id: Mapped[int] = mapped_column(
+        ForeignKey("place.id", ondelete="CASCADE"), primary_key=True
+    )
+    criterion_id: Mapped[int] = mapped_column(
+        ForeignKey("criteria.id", ondelete="CASCADE"), primary_key=True
+    )
+    value: Mapped[dict] = mapped_column(JSONB, default=dict)
+
+
+class CategoryMappingModel(Base, TimestampMixin):
+    """Map one of our categories to the Overture/OSM/Acceslibre vocabularies."""
+
+    __tablename__ = "category_mapping"
+    __table_args__ = (UniqueConstraint("category_id", name="category_mapping_category_uc"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id", ondelete="CASCADE"))
+    overture_category: Mapped[str | None] = mapped_column(String(120))
+    osm_tag: Mapped[str | None] = mapped_column(String(120))
+    acceslibre_family: Mapped[str | None] = mapped_column(String(60))
+    notes: Mapped[str | None] = mapped_column(String(500))
+
+
+class CategoryGridModel(Base):
+    """Precomputed per-category criteria tree (one row read per form)."""
+
+    __tablename__ = "category_grid"
+
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("categories.id", ondelete="CASCADE"), primary_key=True
+    )
+    version: Mapped[int] = mapped_column(default=1)
+    tree: Mapped[list] = mapped_column(JSONB, default=list)
+    updated: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+
+
+class ReferentialVersionModel(Base):
+    """Single-row global referential version, bumped on every admin edit."""
+
+    __tablename__ = "referential_version"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    version: Mapped[int] = mapped_column(default=1, server_default=text("1"))
