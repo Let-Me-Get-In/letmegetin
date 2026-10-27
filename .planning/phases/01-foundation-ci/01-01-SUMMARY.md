@@ -88,6 +88,23 @@ and CI plus pre-commit gates (lint, types, SAST, tests with an 80% branch floor)
 - **Files modified:** `.github/workflows/ci.yml`
 - **Commit:** 53208da
 
+## Structure
+
+The backend is organized as a pragmatic DDD / hexagonal layout:
+`api → application → domain ← infrastructure`.
+
+- `domain/referential/` — pure entities + repository `Protocol`s (no SQLAlchemy/FastAPI).
+- `application/referential/` — use cases (list categories, category tree, filters, labels).
+- `infrastructure/persistence/` — SQLAlchemy `*Model`s, mappers, repository implementations.
+- `api/` — dependencies, Pydantic schemas, v1 endpoints (never touches the ORM).
+- `core/` — async DB session, exceptions, utils.
+- `tests/unit/` — unit tests; `tests/integration/` reserved for real PostGIS.
+
+CI aligned with interview-challenger: `lint`, `typecheck`, `sast`, `secret-scan`,
+`unit`, `test` (PostGIS service + `alembic upgrade head` + 85% coverage floor).
+
+Refactor commit: `LET-6 refactor(ddd): split the backend into domain/application/infrastructure/api`.
+
 ## Commits
 
 - 851ad09 `LET-6 feat(migrations): add async alembic baseline`

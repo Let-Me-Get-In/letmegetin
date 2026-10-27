@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_prefix="LETMEGETIN_", extra="ignore")
 
     database_url: str = "postgresql+asyncpg://letmegetin:letmegetin@localhost:55433/letmegetin"
-    api_title: str = "Jaccede API"
+    api_title: str = "LetMeGetIn API"
     api_version: str = "0.1.0"
     data_dir: Path = Path("data/referential")
 
