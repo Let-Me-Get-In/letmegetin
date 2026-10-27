@@ -121,7 +121,7 @@ LET-6 docs(referential): document the reconstruction sources
 - Use `@pytest.mark.parametrize` for multi-case tests.
 - Mock external boundaries (`mocker`), never call real APIs.
 - AAA pattern; test names `test_<unit>_<scenario>`.
-- Coverage floor enforced in CI (start at 80 %, raise over time).
+- Coverage floor enforced in CI at **85 %** (line + branch).
 
 ## Commands
 
