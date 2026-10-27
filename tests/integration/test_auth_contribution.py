@@ -18,6 +18,7 @@ from sqlalchemy.pool import NullPool
 
 from letmegetin.config import settings
 from letmegetin.core.db import get_session
+from letmegetin.core.security import create_token
 from letmegetin.domain.places.dedup import normalize_name
 from letmegetin.main import app
 
@@ -137,6 +138,12 @@ def _auth(tokens: dict[str, str]) -> dict[str, str]:
     return {"Authorization": f"Bearer {tokens['access_token']}"}
 
 
+def _verify(client: TestClient, user: dict[str, Any]) -> None:
+    token = create_token(user["id"], user["role"], "verify", 60)
+    response = client.post("/api/v1/auth/verify-email", json={"token": token})
+    assert response.status_code == 200, response.text
+
+
 def _scalar(statement: str, params: dict[str, Any] | None = None) -> Any:
     async def run() -> Any:
         async with _TestSessionLocal() as session:
@@ -159,6 +166,7 @@ def _execute(statement: str, params: dict[str, Any] | None = None) -> None:
 def test_register_login_me_and_refresh(client: TestClient) -> None:
     user = _register(client)
     assert (user["email"], user["role"], "password_hash" in user) == (_EMAIL, "user", False)
+    assert user["email_verified"] is False
 
     duplicate = client.post("/api/v1/auth/register", json={"email": _EMAIL, "password": _PASSWORD})
     assert duplicate.status_code == 409
@@ -176,6 +184,17 @@ def test_register_login_me_and_refresh(client: TestClient) -> None:
     assert refreshed.status_code == 200
     assert refreshed.json()["token_type"] == "bearer"
 
+    reused = client.post("/api/v1/auth/refresh", json={"refresh_token": tokens["refresh_token"]})
+    assert reused.status_code == 401
+
+    new_refresh = refreshed.json()["refresh_token"]
+    assert (
+        client.post("/api/v1/auth/logout", json={"refresh_token": new_refresh}).status_code == 204
+    )
+    assert (
+        client.post("/api/v1/auth/refresh", json={"refresh_token": new_refresh}).status_code == 401
+    )
+
     as_access = client.post("/api/v1/auth/refresh", json={"refresh_token": tokens["access_token"]})
     assert as_access.status_code == 401
 
@@ -183,11 +202,19 @@ def test_register_login_me_and_refresh(client: TestClient) -> None:
 def test_contribution_updates_the_value_logs_it_and_recomputes_the_rate(
     client: TestClient,
 ) -> None:
-    _register(client)
+    user = _register(client)
     tokens = _tokens(client)
 
     anonymous = client.put(f"/api/v1/places/{_SLUG}/accessibility/test-p5-a", json={"value": True})
     assert anonymous.status_code == 401
+
+    unverified = client.put(
+        f"/api/v1/places/{_SLUG}/accessibility/test-p5-a",
+        json={"value": True},
+        headers=_auth(tokens),
+    )
+    assert unverified.status_code == 403
+    _verify(client, user)
 
     response = client.put(
         f"/api/v1/places/{_SLUG}/accessibility/test-p5-a",
@@ -226,8 +253,9 @@ def test_contribution_updates_the_value_logs_it_and_recomputes_the_rate(
 
 
 def test_review_creation_and_admin_moderation(client: TestClient) -> None:
-    _register(client)
+    user = _register(client)
     tokens = _tokens(client)
+    _verify(client, user)
 
     created = client.post(
         f"/api/v1/places/{_SLUG}/reviews",
@@ -260,3 +288,16 @@ def test_anonymous_review_is_rejected(client: TestClient) -> None:
     response = client.post(f"/api/v1/places/{_SLUG}/reviews", json={"rating": 5})
 
     assert response.status_code == 401
+
+
+def test_verification_token_and_resend(client: TestClient) -> None:
+    user = _register(client)
+    tokens = _tokens(client)
+
+    wrong_kind = client.post("/api/v1/auth/verify-email", json={"token": tokens["access_token"]})
+    assert wrong_kind.status_code == 401
+
+    assert client.post("/api/v1/auth/resend-verification", headers=_auth(tokens)).status_code == 202
+
+    _verify(client, user)
+    assert client.post("/api/v1/auth/resend-verification", headers=_auth(tokens)).status_code == 409

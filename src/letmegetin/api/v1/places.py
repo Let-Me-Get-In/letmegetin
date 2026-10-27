@@ -10,9 +10,9 @@ from letmegetin.api.deps import (
     AdminUser,
     CategoryGridRepo,
     CriterionRepo,
-    CurrentUser,
     DbSession,
     PlaceRepo,
+    VerifiedUser,
 )
 from letmegetin.api.schemas.places import (
     CandidateOut,
@@ -124,7 +124,7 @@ async def write_accessibility(
     places: PlaceRepo,
     criteria: CriterionRepo,
     grids: CategoryGridRepo,
-    user: CurrentUser,
+    user: VerifiedUser,
     session: DbSession,
 ) -> ContributionOut:
     """Authenticated write of one accessibility value (CONTRIB-01/02)."""
@@ -146,7 +146,7 @@ async def write_review(
     slug: str,
     payload: ReviewIn,
     places: PlaceRepo,
-    user: CurrentUser,
+    user: VerifiedUser,
     session: DbSession,
 ) -> ReviewOut:
     """Authenticated review creation (REV-02)."""

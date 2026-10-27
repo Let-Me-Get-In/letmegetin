@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     jwt_secret: str = "dev-insecure-secret-change-me"
     access_token_ttl: int = 900
     refresh_token_ttl: int = 2_592_000
+    verification_token_ttl: int = 86_400
+    public_base_url: str = "http://localhost:8000"
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_user: str | None = None
+    smtp_password: str | None = None
+    smtp_from: str = "no-reply@letmegetin.org"
 
 
 settings = Settings()

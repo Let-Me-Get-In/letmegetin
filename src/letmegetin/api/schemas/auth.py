@@ -43,6 +43,7 @@ class UserOut(BaseModel):
     email: str
     role: str
     display_name: str | None = None
+    email_verified: bool = False
 
     @classmethod
     def from_user(cls, user: User) -> UserOut:
@@ -51,4 +52,23 @@ class UserOut(BaseModel):
             email=user.email,
             role=user.role,
             display_name=user.display_name,
+            email_verified=user.email_verified,
         )
+
+
+class VerifyEmailIn(BaseModel):
+    """Email-confirmation payload."""
+
+    token: str
+
+
+class LogoutIn(BaseModel):
+    """Logout payload: the refresh token to revoke."""
+
+    refresh_token: str
+
+
+class StatusOut(BaseModel):
+    """A minimal status acknowledgement."""
+
+    status: str
