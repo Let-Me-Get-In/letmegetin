@@ -58,7 +58,7 @@ evidence: "access token as verify → 401; resend 202 then 409 after verificatio
 expected: on PR #9, lint, typecheck, sast, secret-scan, unit and test all pass.
 result: pass
 source: automated
-evidence: "GitHub Actions run 40591089274: 6/6 jobs pass."
+evidence: "GitHub Actions run 40592434991: 6/6 jobs pass."
 
 ## Summary
 
