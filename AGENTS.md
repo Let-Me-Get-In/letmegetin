@@ -29,6 +29,12 @@ Every unit of work is tracked by a Linear ticket `LET-<n>` (team `LET`). The
 ticket id is the **first token** of the branch name, the commit subject and the
 PR title.
 
+**Linear is link-only.** Linear may *link* existing branches/PRs, but it must
+**never create** them: branches are created manually as `LET-<n>-…` so the
+`commit-msg` hook, the stack and the no-auto-merge rule apply. Disable the
+GitHub integration's branch/PR automations in Linear
+(Settings → Integrations → GitHub → Automations).
+
 | Artefact | Format | Example |
 |---|---|---|
 | Branch | `LET-<n>-<short-slug>` | `LET-6-socle-ci` |
