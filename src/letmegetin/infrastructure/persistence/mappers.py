@@ -7,11 +7,13 @@ from letmegetin.domain.referential.entities import (
     Category,
     Criterion,
     OtherInformation,
+    VocabularyEntry,
 )
 from letmegetin.infrastructure.persistence.models import (
     AccessibilityFilterModel,
     CategoryModel,
     CriterionModel,
+    CriterionVocabularyModel,
     OtherInformationModel,
 )
 
@@ -29,6 +31,17 @@ def criterion_from_model(model: CriterionModel) -> Criterion:
         position=model.position,
         label=model.label,
         description=model.description,
+        is_default=model.is_default,
+    )
+
+
+def vocabulary_from_model(model: CriterionVocabularyModel) -> VocabularyEntry:
+    return VocabularyEntry(
+        id=model.id,
+        slug=model.slug,
+        label=model.label,
+        description=model.description,
+        promoted_criterion_id=model.promoted_criterion_id,
     )
 
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import ForeignKey, String, UniqueConstraint, func
+from sqlalchemy import ForeignKey, String, UniqueConstraint, func, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -43,6 +43,7 @@ class CriterionModel(Base, TimestampMixin):
     type: Mapped[str] = mapped_column(String(16), default="boolean")
     position: Mapped[int] = mapped_column(default=0)
     need_children: Mapped[bool] = mapped_column(default=False)
+    is_default: Mapped[bool] = mapped_column(default=False, server_default=text("false"))
     label: Mapped[dict] = mapped_column(JSONB, default=dict)
     description: Mapped[dict] = mapped_column(JSONB, default=dict)
 
@@ -57,6 +58,21 @@ class CategoryCriterionModel(Base):
     )
     criterion_id: Mapped[int] = mapped_column(
         ForeignKey("criteria.id", ondelete="CASCADE"), primary_key=True
+    )
+    excluded: Mapped[bool] = mapped_column(default=False, server_default=text("false"))
+
+
+class CriterionVocabularyModel(Base, TimestampMixin):
+    """Flat vocabulary of criteria labels, promoted into `criteria` on demand."""
+
+    __tablename__ = "criterion_vocabulary"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    slug: Mapped[str] = mapped_column(String(200), unique=True, index=True)
+    label: Mapped[dict] = mapped_column(JSONB, default=dict)
+    description: Mapped[dict] = mapped_column(JSONB, default=dict)
+    promoted_criterion_id: Mapped[int | None] = mapped_column(
+        ForeignKey("criteria.id", ondelete="SET NULL")
     )
 
 

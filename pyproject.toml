@@ -12,7 +12,11 @@ dependencies = [
     "alembic>=1.13.0",
     "pydantic>=2.8.0",
     "pydantic-settings>=2.4.0",
+    "typer>=0.12.0",
 ]
+
+[project.scripts]
+letmegetin-admin = "letmegetin.admin:app"
 
 [dependency-groups]
 dev = [

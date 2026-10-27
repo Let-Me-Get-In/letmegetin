@@ -9,6 +9,7 @@ from letmegetin.domain.referential.entities import (
     Category,
     Criterion,
     OtherInformation,
+    VocabularyEntry,
 )
 
 
@@ -24,8 +25,20 @@ class CriterionRepository(Protocol):
     """Read access to the accessibility criteria tree."""
 
     async def list_for_category(self, category_id: int) -> list[Criterion]:
-        """Return the criteria linked to a category plus their ancestors."""
+        """Return the applicable criteria plus their ancestors and descendants."""
         ...
+
+
+class VocabularyRepository(Protocol):
+    """Read/write access to the flat criteria vocabulary."""
+
+    async def list_all(self) -> list[VocabularyEntry]: ...
+
+    async def get_by_slug(self, slug: str) -> VocabularyEntry | None: ...
+
+    async def add(self, entry: VocabularyEntry) -> VocabularyEntry: ...
+
+    async def update(self, entry: VocabularyEntry) -> VocabularyEntry: ...
 
 
 class FilterRepository(Protocol):
