@@ -13,6 +13,11 @@ Team: **LET**
 Current milestone: **V1 — Accessibility Referential** (tickets LET-5..LET-12).
 Create a new project for each new GSD milestone.
 
+**Linear is link-only**: it may link existing branches/PRs, but it must **never create**
+them. Branches are created manually as `LET-<n>-…` so the `commit-msg` hook, the stack
+and the no-auto-merge rule apply. Disable branch/PR automations in
+Settings → Integrations → GitHub → Automations.
+
 Every branch, commit and PR starts with the ticket id (`LET-<n>`).
 
 | Ticket | Phase | Scope |
