@@ -37,6 +37,13 @@ class VocabularyNotFound(NotFoundError):
         super().__init__("Vocabulary entry", slug)
 
 
+class PlaceNotFound(NotFoundError):
+    """Raised when a place slug does not exist."""
+
+    def __init__(self, slug: str) -> None:
+        super().__init__("Place", slug)
+
+
 class CategoryAlreadyExists(DomainError):
     """Raised when adding a category whose slug is already taken."""
 

@@ -48,7 +48,7 @@ class PlaceRepository(Protocol):
         *,
         radius: float = DEFAULT_CANDIDATE_RADIUS,
         limit: int = 50,
-    ) -> list[Place]:
+    ) -> list[PlaceHit]:
         """Places within ``radius`` metres of the point, for name scoring by the caller."""
         ...
 

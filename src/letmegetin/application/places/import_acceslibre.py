@@ -141,7 +141,7 @@ async def _candidate(places: PlaceRepository, row: AcceslibreRow) -> tuple[Place
     if row.lat is None or row.lng is None:
         return None, 0.0
     candidates = await places.get_candidates(row.lat, row.lng, row.name)
-    scored = [(candidate, similar_score(candidate.name, row.name)) for candidate in candidates]
+    scored = [(hit.place, similar_score(hit.place.name, row.name)) for hit in candidates]
     return max(scored, key=lambda item: item[1], default=(None, 0.0))
 
 
