@@ -72,9 +72,7 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["criterion_id"], ["criteria.id"]),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        "ix_accessibility_filters_slug", "accessibility_filters", ["slug"], unique=True
-    )
+    op.create_index("ix_accessibility_filters_slug", "accessibility_filters", ["slug"], unique=True)
 
     op.create_table(
         "other_information",

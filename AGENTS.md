@@ -129,7 +129,7 @@ LET-6 docs(referential): document the reconstruction sources
 # Backend
 docker compose up -d                 # PostGIS on localhost:55433
 uv sync
-git config core.hooksPath .githooks  # enable the commit-msg hook (once per clone)
+git config core.hooksPath .githooks  # enable commit-msg + pre-commit hooks (once per clone)
 uv run python scripts/build_referential.py
 uv run alembic upgrade head
 uv run python -m letmegetin.seed
@@ -145,6 +145,12 @@ cd web && npm ci && npm run dev && npm run lint && npm run typecheck && npm run 
 # Linear
 linear issue list --team LET
 ```
+
+Hooks: `git config core.hooksPath .githooks` is all a contributor needs — do
+**not** run `pre-commit install` (it refuses when `core.hooksPath` is set). The
+`.githooks/pre-commit` wrapper runs `uv run pre-commit run --hook-stage pre-commit`,
+which mirrors the CI jobs (ruff, bandit, gitleaks, hygiene); `.githooks/commit-msg`
+keeps enforcing the commit convention.
 
 ## Architecture
 
