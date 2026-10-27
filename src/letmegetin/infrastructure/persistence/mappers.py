@@ -19,7 +19,13 @@ from letmegetin.infrastructure.persistence.models import (
 
 
 def category_from_model(model: CategoryModel) -> Category:
-    return Category(id=model.id, slug=model.slug, name=model.name, label=model.label)
+    return Category(
+        id=model.id,
+        slug=model.slug,
+        name=model.name,
+        label=model.label,
+        parent_id=model.parent_id,
+    )
 
 
 def criterion_from_model(model: CriterionModel) -> Criterion:

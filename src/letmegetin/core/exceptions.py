@@ -21,3 +21,28 @@ class CategoryNotFound(NotFoundError):
 
     def __init__(self, slug: str) -> None:
         super().__init__("Category", slug)
+
+
+class CriterionNotFound(NotFoundError):
+    """Raised when a criterion slug does not exist."""
+
+    def __init__(self, slug: str) -> None:
+        super().__init__("Criterion", slug)
+
+
+class VocabularyNotFound(NotFoundError):
+    """Raised when a vocabulary slug does not exist."""
+
+    def __init__(self, slug: str) -> None:
+        super().__init__("Vocabulary entry", slug)
+
+
+class CategoryAlreadyExists(DomainError):
+    """Raised when adding a category whose slug is already taken."""
+
+    def __init__(self, slug: str) -> None:
+        super().__init__(f"Category '{slug}' already exists")
+
+
+class LabelError(DomainError):
+    """Raised when label input cannot be parsed or names an unsupported locale."""

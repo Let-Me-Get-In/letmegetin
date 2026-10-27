@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Literal, Protocol
 
 from letmegetin.domain.referential.entities import (
     AccessibilityFilter,
@@ -12,21 +12,42 @@ from letmegetin.domain.referential.entities import (
     VocabularyEntry,
 )
 
+MappingState = Literal["include", "exclude", "clear"]
+
 
 class CategoryRepository(Protocol):
-    """Read access to place categories."""
+    """Read/write access to place categories."""
 
     async def list_all(self) -> list[Category]: ...
 
     async def get_by_slug(self, slug: str) -> Category | None: ...
 
+    async def add(self, category: Category) -> Category: ...
+
+    async def update(self, category: Category) -> Category: ...
+
 
 class CriterionRepository(Protocol):
-    """Read access to the accessibility criteria tree."""
+    """Read/write access to the accessibility criteria tree."""
 
     async def list_for_category(self, category_id: int) -> list[Criterion]:
-        """Return the applicable criteria plus their ancestors and descendants."""
+        """Return the applicable set: defaults minus exclusions plus includes,
+        with their ancestors and descendants."""
         ...
+
+    async def list_all(self) -> list[Criterion]: ...
+
+    async def get_by_slug(self, slug: str) -> Criterion | None: ...
+
+    async def add(self, criterion: Criterion) -> Criterion: ...
+
+    async def update(self, criterion: Criterion) -> Criterion: ...
+
+
+class MappingRepository(Protocol):
+    """Write access to the category-to-criterion mapping."""
+
+    async def set_state(self, category_id: int, criterion_id: int, state: MappingState) -> None: ...
 
 
 class VocabularyRepository(Protocol):

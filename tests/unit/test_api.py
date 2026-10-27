@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from letmegetin.core.db import get_session
 from letmegetin.infrastructure.persistence.models import (
     AccessibilityFilterModel,
+    CategoryCriterionModel,
     CategoryModel,
     CriterionModel,
     OtherInformationModel,
@@ -88,7 +89,10 @@ def test_category_criteria_tree(client: TestClient) -> None:
     _use(
         FakeSession(
             scalar_queue=[CategoryModel(id=1, slug="restaurant", name="Restaurant", label={})],
-            scalars_queue=[_Result([2]), _Result([root, child])],
+            scalars_queue=[
+                _Result([root, child]),
+                _Result([CategoryCriterionModel(category_id=1, criterion_id=2, excluded=False)]),
+            ],
         )
     )
     response = client.get("/api/v1/categories/restaurant/criteria")
