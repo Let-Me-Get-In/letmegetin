@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Literal
 
 from letmegetin.core.utils import slugify
@@ -16,6 +17,8 @@ __all__ = [
     "Place",
     "PlaceAccessibility",
     "PlaceHit",
+    "PlacePhoto",
+    "Review",
     "make_slug",
 ]
 
@@ -55,6 +58,26 @@ class PlaceAccessibility:
     label: dict[str, str] = field(default_factory=dict)
     handicap_families: list[str] = field(default_factory=list)
     value: dict[str, object] = field(default_factory=dict)
+
+
+@dataclass
+class PlacePhoto:
+    """A photo of the place, provenance and license kept explicit."""
+
+    url: str
+    credit: str | None = None
+    license: str | None = None
+
+
+@dataclass
+class Review:
+    """A published review: a 1-5 rating plus optional text."""
+
+    id: int
+    rating: int
+    body: str
+    created: datetime
+    author_name: str | None = None
 
 
 @dataclass

@@ -13,13 +13,14 @@ from __future__ import annotations
 import csv
 import json
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from letmegetin.core.utils import slugify
+from letmegetin.domain.places.acceslibre_map import accessibility_values
 from letmegetin.domain.places.dedup import classify_match, similar_score
-from letmegetin.domain.places.entities import Place, make_slug
+from letmegetin.domain.places.entities import Place, PlacePhoto, make_slug
 from letmegetin.domain.places.repositories import (
     CategoryMappingRepository,
     MergeLogRepository,
@@ -58,6 +59,8 @@ class AcceslibreRow:
     category: str | None = None
     website: str | None = None
     phone: str | None = None
+    accessibility: dict[str, dict[str, object]] = field(default_factory=dict)
+    photos: list[PlacePhoto] = field(default_factory=list)
 
 
 @dataclass
@@ -87,6 +90,37 @@ def _coordinate(value: Any) -> float | None:
         return None
 
 
+def _photos(record: dict[str, Any]) -> list[PlacePhoto]:
+    """Parse an export's ``photos`` (JSON list) or single ``photo_url`` column."""
+    raw = record.get("photos")
+    items: list[Any] = []
+    if isinstance(raw, str) and raw.strip():
+        try:
+            parsed = json.loads(raw)
+            items = parsed if isinstance(parsed, list) else [parsed]
+        except json.JSONDecodeError:
+            items = [part.strip() for part in raw.split(";") if part.strip()]
+    elif isinstance(raw, list):
+        items = raw
+    single = record.get("photo_url")
+    if isinstance(single, str) and single.strip():
+        items.append(single.strip())
+
+    photos: list[PlacePhoto] = []
+    for item in items:
+        if isinstance(item, str) and item.strip():
+            photos.append(PlacePhoto(url=item.strip(), credit="Acceslibre", license="Etalab 2.0"))
+        elif isinstance(item, dict) and item.get("url"):
+            photos.append(
+                PlacePhoto(
+                    url=str(item["url"]),
+                    credit=item.get("credit"),
+                    license=item.get("license"),
+                )
+            )
+    return photos
+
+
 def _to_row(record: dict[str, Any]) -> AcceslibreRow | None:
     source_id = _field(record, "source_id")
     name = _field(record, "name")
@@ -104,6 +138,8 @@ def _to_row(record: dict[str, Any]) -> AcceslibreRow | None:
         category=str(category) if category else None,
         website=_field(record, "website"),
         phone=_field(record, "phone"),
+        accessibility=accessibility_values(record),
+        photos=_photos(record),
     )
 
 
@@ -145,6 +181,12 @@ async def _candidate(places: PlaceRepository, row: AcceslibreRow) -> tuple[Place
     return max(scored, key=lambda item: item[1], default=(None, 0.0))
 
 
+async def _write_source_data(places: PlaceRepository, place_id: int, row: AcceslibreRow) -> None:
+    """Persist the source-owned accessibility values and photos for one place."""
+    await places.upsert_accessibility(place_id, row.accessibility)
+    await places.upsert_photos(place_id, row.photos)
+
+
 async def _import_row(
     places: PlaceRepository,
     mapping: CategoryMappingRepository,
@@ -153,7 +195,10 @@ async def _import_row(
     row: AcceslibreRow,
     report: ImportReport,
 ) -> None:
-    if await places.get_by_source_id(SOURCE_ACCESLIBRE, row.source_id) is not None:
+    existing = await places.get_by_source_id(SOURCE_ACCESLIBRE, row.source_id)
+    if existing is not None:
+        # Re-import refreshes the source-owned values without touching contributions.
+        await _write_source_data(places, existing.id, row)
         report.skipped += 1
         return
 
@@ -178,6 +223,7 @@ async def _import_row(
         canonical_id=candidate.id if kind == "auto" and candidate is not None else None,
     )
     created = await places.add(place)
+    await _write_source_data(places, created.id, row)
     report.created += 1
 
     if kind == "auto" and candidate is not None:
