@@ -1,5 +1,6 @@
 """Charge le seed reconstitué dans PostgreSQL/PostGIS.
 
+Le schéma doit exister au préalable : `uv run alembic upgrade head`.
 Usage : `uv run python -m letmegetin.seed`
 Idempotent : les enregistrements existants ne sont pas dupliqués.
 """
@@ -13,10 +14,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from letmegetin.config import settings
-from letmegetin.db import SessionLocal, engine
+from letmegetin.db import SessionLocal
 from letmegetin.models import (
     AccessibilityFilter,
-    Base,
     Category,
     CategoryCriterion,
     Criterion,
@@ -59,10 +59,7 @@ async def _upsert_criterion(
 
 
 async def seed() -> None:
-    """Crée le schéma puis insère catégories, filtres, labels et grille catégorie 1."""
-    async with engine.begin() as connection:
-        await connection.run_sync(Base.metadata.create_all)
-
+    """Insère catégories, filtres, labels et grille catégorie 1 (schéma déjà migré)."""
     data_dir = settings.data_dir
     async with SessionLocal() as session:
         for entry in json.loads((data_dir / "categories.json").read_text(encoding="utf-8")):

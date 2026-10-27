@@ -15,10 +15,15 @@ docker compose up -d                        # PostGIS on localhost:55433
 uv sync
 git config core.hooksPath .githooks         # enable the commit-msg hook (once per clone)
 
+uv run alembic upgrade head                 # versioned schema
 uv run python -m letmegetin.seed            # load the committed seed into the database
 uv run uvicorn letmegetin.main:app --reload
 # http://localhost:8000/docs  •  /health  •  /api/v1/categories
 ```
+
+The one-command-equivalent smoke path is
+`docker compose up -d --wait db && uv run alembic upgrade head && uv run uvicorn letmegetin.main:app`:
+`GET /health` returns `{"status": "ok"}`.
 
 ## Referential data
 
