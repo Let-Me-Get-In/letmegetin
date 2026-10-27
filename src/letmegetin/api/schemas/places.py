@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from letmegetin.application.places.get_place import PlaceDetail
 from letmegetin.application.places.list_reviews import ReviewPage
-from letmegetin.domain.places.entities import Place, PlaceHit
+from letmegetin.domain.places.entities import Place, PlaceHit, Review
 
 
 class PlaceSummaryOut(BaseModel):
@@ -63,6 +63,45 @@ class ReviewOut(BaseModel):
     body: str
     author_name: str | None = None
     created: datetime
+    status: str = "published"
+
+    @classmethod
+    def from_review(cls, review: Review) -> ReviewOut:
+        return cls(
+            id=review.id,
+            rating=review.rating,
+            body=review.body,
+            author_name=review.author_name,
+            created=review.created,
+            status=review.status,
+        )
+
+
+class ReviewIn(BaseModel):
+    """Review creation payload."""
+
+    rating: int = Field(ge=1, le=5)
+    body: str = Field(default="", max_length=5000)
+
+
+class ReviewStatusIn(BaseModel):
+    """Admin moderation payload."""
+
+    status: Literal["published", "hidden"]
+
+
+class ContributionIn(BaseModel):
+    """One accessibility value written by an authenticated user."""
+
+    value: Any
+
+
+class ContributionOut(BaseModel):
+    """The written value plus the recomputed completion rate."""
+
+    criterion: str
+    value: Any
+    filled_rate: float
 
 
 class ReviewPageOut(BaseModel):
