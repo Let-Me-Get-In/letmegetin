@@ -44,6 +44,13 @@ class PlaceNotFound(NotFoundError):
         super().__init__("Place", slug)
 
 
+class ReviewNotFound(NotFoundError):
+    """Raised when a review id does not exist."""
+
+    def __init__(self, review_id: int) -> None:
+        super().__init__("Review", str(review_id))
+
+
 class CategoryAlreadyExists(DomainError):
     """Raised when adding a category whose slug is already taken."""
 
@@ -53,3 +60,18 @@ class CategoryAlreadyExists(DomainError):
 
 class LabelError(DomainError):
     """Raised when label input cannot be parsed or names an unsupported locale."""
+
+
+class InvalidToken(DomainError):
+    """Raised when a bearer or refresh token is malformed, expired or of the wrong kind."""
+
+
+class InvalidCredentials(DomainError):
+    """Raised when an email/password pair does not match an account."""
+
+
+class EmailAlreadyUsed(DomainError):
+    """Raised when registering an email that already has an account."""
+
+    def __init__(self, email: str) -> None:
+        super().__init__(f"Email '{email}' already has an account")

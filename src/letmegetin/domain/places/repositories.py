@@ -76,6 +76,21 @@ class PlaceRepository(Protocol):
         """Average rating (one decimal) and published review count."""
         ...
 
+    async def add_contribution(
+        self, place_id: int, user_id: int, criterion_id: int, value: dict[str, object]
+    ) -> None: ...
+
+    async def add_review(
+        self,
+        place_id: int,
+        user_id: int,
+        rating: int,
+        body: str,
+        author_name: str | None,
+    ) -> Review: ...
+
+    async def set_review_status(self, review_id: int, status: str) -> Review | None: ...
+
 
 class PlaceAliasRepository(Protocol):
     """Names a place is also known by (kept when a duplicate is merged)."""

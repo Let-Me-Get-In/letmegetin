@@ -40,6 +40,31 @@ class TimestampMixin:
     updated: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
 
 
+class UserModel(Base, TimestampMixin):
+    """An account allowed to contribute and review."""
+
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(255))
+    role: Mapped[str] = mapped_column(String(16), server_default="user")
+    display_name: Mapped[str | None] = mapped_column(String(120))
+
+
+class ContributionModel(Base):
+    """Append-only audit log of an authenticated accessibility write (CONTRIB-02)."""
+
+    __tablename__ = "contribution"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("place.id", ondelete="CASCADE"), index=True)
+    criterion_id: Mapped[int] = mapped_column(ForeignKey("criteria.id", ondelete="CASCADE"))
+    value: Mapped[dict] = mapped_column(JSONB, default=dict)
+    created: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
 class CategoryModel(Base, TimestampMixin):
     """Place categories (restaurant, hotel, pharmacy…)."""
 
@@ -231,6 +256,9 @@ class ReviewModel(Base, TimestampMixin):
     rating: Mapped[int] = mapped_column(SmallInteger)
     body: Mapped[str] = mapped_column(Text, default="")
     author_name: Mapped[str | None] = mapped_column(String(120))
+    user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
     status: Mapped[str] = mapped_column(String(16), server_default="published")
 
 

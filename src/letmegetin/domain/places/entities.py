@@ -78,6 +78,7 @@ class Review:
     body: str
     created: datetime
     author_name: str | None = None
+    status: str = "published"
 
 
 @dataclass

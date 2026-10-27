@@ -6,22 +6,36 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query
 
-from letmegetin.api.deps import CategoryGridRepo, CriterionRepo, PlaceRepo
+from letmegetin.api.deps import (
+    AdminUser,
+    CategoryGridRepo,
+    CriterionRepo,
+    CurrentUser,
+    DbSession,
+    PlaceRepo,
+)
 from letmegetin.api.schemas.places import (
     CandidateOut,
+    ContributionIn,
+    ContributionOut,
     PlaceDetailOut,
     PlaceSummaryOut,
+    ReviewIn,
+    ReviewOut,
     ReviewPageOut,
+    ReviewStatusIn,
 )
 from letmegetin.application.places.candidates import find_candidates
+from letmegetin.application.places.contribute import contribute
 from letmegetin.application.places.get_place import get_place
 from letmegetin.application.places.list_reviews import list_reviews
+from letmegetin.application.places.reviews import create_review, set_review_status
 from letmegetin.application.places.search import (
     DEFAULT_LIMIT,
     DEFAULT_RADIUS_METRES,
     search_places,
 )
-from letmegetin.core.exceptions import PlaceNotFound
+from letmegetin.core.exceptions import CriterionNotFound, PlaceNotFound, ReviewNotFound
 from letmegetin.domain.referential.entities import HandicapFamily
 
 router = APIRouter(prefix="/api/v1", tags=["places"])
@@ -100,3 +114,62 @@ async def place_reviews(
     except PlaceNotFound:
         raise HTTPException(status_code=404, detail="Place not found") from None
     return ReviewPageOut.from_page(reviews)
+
+
+@router.put("/places/{slug}/accessibility/{criterion_slug}", response_model=ContributionOut)
+async def write_accessibility(
+    slug: str,
+    criterion_slug: str,
+    payload: ContributionIn,
+    places: PlaceRepo,
+    criteria: CriterionRepo,
+    grids: CategoryGridRepo,
+    user: CurrentUser,
+    session: DbSession,
+) -> ContributionOut:
+    """Authenticated write of one accessibility value (CONTRIB-01/02)."""
+    try:
+        await contribute(places, criteria, slug, criterion_slug, user, payload.value)
+        detail = await get_place(places, criteria, grids, slug)
+    except PlaceNotFound:
+        raise HTTPException(status_code=404, detail="Place not found") from None
+    except CriterionNotFound:
+        raise HTTPException(status_code=404, detail="Criterion not found") from None
+    await session.commit()
+    return ContributionOut(
+        criterion=criterion_slug, value=payload.value, filled_rate=detail.filled_rate
+    )
+
+
+@router.post("/places/{slug}/reviews", response_model=ReviewOut, status_code=201)
+async def write_review(
+    slug: str,
+    payload: ReviewIn,
+    places: PlaceRepo,
+    user: CurrentUser,
+    session: DbSession,
+) -> ReviewOut:
+    """Authenticated review creation (REV-02)."""
+    try:
+        review = await create_review(places, slug, user, payload.rating, payload.body)
+    except PlaceNotFound:
+        raise HTTPException(status_code=404, detail="Place not found") from None
+    await session.commit()
+    return ReviewOut.from_review(review)
+
+
+@router.patch("/reviews/{review_id}", response_model=ReviewOut)
+async def moderate_review(
+    review_id: int,
+    payload: ReviewStatusIn,
+    places: PlaceRepo,
+    admin: AdminUser,
+    session: DbSession,
+) -> ReviewOut:
+    """Admin-only hide/publish of a review (AUTH-03)."""
+    try:
+        review = await set_review_status(places, review_id, payload.status)
+    except ReviewNotFound:
+        raise HTTPException(status_code=404, detail="Review not found") from None
+    await session.commit()
+    return ReviewOut.from_review(review)
