@@ -5,9 +5,13 @@ The exStrat people do not work on LetMeGetIn.
 
 Team: **LET**
 
-**Convention: a Linear project = a milestone** (`V1`, `V2`…). Its tickets are the phases of
-that milestone. Current milestone: **V1 — Accessibility Referential** (tickets LET-5..LET-12).
-Create a new project for each new milestone.
+**Mapping GSD → Linear:**
+- GSD **milestone** (`V1`, `V2`…) → Linear **project**.
+- GSD **phase** → Linear **issue** (`LET-<n>`).
+- **No Linear milestones**: a Linear milestone is a sub-checkpoint inside a project and has
+  no GSD equivalent, so we do not use them (the project *is* the milestone).
+Current milestone: **V1 — Accessibility Referential** (tickets LET-5..LET-12).
+Create a new project for each new GSD milestone.
 
 Every branch, commit and PR starts with the ticket id (`LET-<n>`).
 
