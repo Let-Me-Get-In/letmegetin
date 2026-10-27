@@ -133,6 +133,7 @@ git config core.hooksPath .githooks  # enable commit-msg + pre-commit hooks (onc
 uv run python scripts/build_referential.py
 uv run alembic upgrade head
 uv run python -m letmegetin.seed
+uv run python -m letmegetin.admin --help    # operator CLI: the only write path (no auth yet)
 uv run uvicorn letmegetin.main:app --reload
 uv run pytest
 uv run ruff check . && uv run ruff format --check .
@@ -165,6 +166,7 @@ letmegetin/
 │   ├── config.py           # pydantic-settings (LETMEGETIN_*)
 │   ├── main.py             # app FastAPI + /health
 │   ├── seed.py             # seed loader (assumes `alembic upgrade head`)
+│   ├── admin.py            # Typer CLI: categories, criteria, vocabulary, mapping, labels
 │   ├── core/               # shared kernel: db.py, exceptions.py, utils.py
 │   ├── domain/             # pure domain: entities + repository ports
 │   │   └── referential/
@@ -188,6 +190,12 @@ letmegetin/
 - `application/` holds use cases; it depends only on the domain ports.
 - `infrastructure/` implements the ports (SQLAlchemy `*Model`s, mappers, repositories).
 - `api/` maps HTTP ↔ use cases; it never touches the ORM.
+
+Write access goes through the operator CLI only: `letmegetin.admin` (same as
+`python -m letmegetin.admin`) builds the SQLAlchemy repositories and calls the
+`application/referential/admin.py` use cases. Until authentication exists (Phase
+5), that CLI is the **only write path** to the referential — no HTTP endpoint
+mutates data.
 
 ## Key design decisions
 

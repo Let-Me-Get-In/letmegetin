@@ -134,3 +134,132 @@ def test_list_other_information(client: TestClient) -> None:
     response = client.get("/api/v1/other-information")
     assert response.status_code == 200
     assert response.json()[0]["name"] == "th"
+
+
+_FIVE_LOCALES = {
+    "fr": "Restaurant",
+    "en": "Restaurant",
+    "es": "Restaurante",
+    "de": "Restaurant",
+    "it": "Ristorante",
+}
+
+
+def _categories_session() -> FakeSession:
+    return FakeSession(
+        scalars_queue=[
+            _Result([CategoryModel(slug="restaurant", name="Restaurant", label=_FIVE_LOCALES)])
+        ]
+    )
+
+
+def _filters_session() -> FakeSession:
+    return FakeSession(
+        scalars_queue=[
+            _Result([AccessibilityFilterModel(slug="slope", label=_FIVE_LOCALES, position=3)])
+        ]
+    )
+
+
+def _other_information_session() -> FakeSession:
+    return FakeSession(
+        scalars_queue=[
+            _Result([OtherInformationModel(slug="th", name="th", label=_FIVE_LOCALES, link=None)])
+        ]
+    )
+
+
+def _criteria_session() -> FakeSession:
+    root = CriterionModel(
+        id=1,
+        slug="entree",
+        parent_id=None,
+        type="array",
+        position=0,
+        label=_FIVE_LOCALES,
+        description={},
+    )
+    return FakeSession(
+        scalar_queue=[CategoryModel(id=1, slug="restaurant", name="Restaurant", label={})],
+        scalars_queue=[
+            _Result([root]),
+            _Result([CategoryCriterionModel(category_id=1, criterion_id=1, excluded=False)]),
+        ],
+    )
+
+
+@pytest.mark.parametrize(
+    ("path", "session_factory"),
+    [
+        ("/api/v1/categories", _categories_session),
+        ("/api/v1/categories/restaurant/criteria", _criteria_session),
+        ("/api/v1/filters", _filters_session),
+        ("/api/v1/other-information", _other_information_session),
+    ],
+    ids=["categories", "criteria", "filters", "other-information"],
+)
+def test_endpoints_return_full_label_maps(
+    client: TestClient, path: str, session_factory: Any
+) -> None:
+    _use(session_factory())
+
+    response = client.get(path)
+
+    assert response.status_code == 200
+    assert response.json()[0]["label"] == _FIVE_LOCALES
+
+
+def test_criteria_tree_exposes_description_and_option_nodes(client: TestClient) -> None:
+    root = CriterionModel(
+        id=1,
+        slug="entree",
+        parent_id=None,
+        type="array",
+        position=0,
+        label=_FIVE_LOCALES,
+        description={},
+    )
+    child = CriterionModel(
+        id=2,
+        slug="entree-acces",
+        parent_id=1,
+        type="boolean",
+        position=1,
+        label=_FIVE_LOCALES,
+        description=_FIVE_LOCALES,
+    )
+    option = CriterionModel(
+        id=3,
+        slug="entree-acces-plain-pied",
+        parent_id=2,
+        type="option",
+        position=0,
+        label=_FIVE_LOCALES,
+        description={"fr": "Accès de plain-pied"},
+    )
+    _use(
+        FakeSession(
+            scalar_queue=[CategoryModel(id=1, slug="restaurant", name="Restaurant", label={})],
+            scalars_queue=[
+                _Result([root, child, option]),
+                _Result([CategoryCriterionModel(category_id=1, criterion_id=2, excluded=False)]),
+            ],
+        )
+    )
+
+    response = client.get("/api/v1/categories/restaurant/criteria")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body[0]["label"] == _FIVE_LOCALES
+    assert body[0]["children"][0]["description"] == _FIVE_LOCALES
+    assert body[0]["children"][0]["children"][0]["slug"] == "entree-acces-plain-pied"
+    assert body[0]["children"][0]["children"][0]["label"] == _FIVE_LOCALES
+
+
+def test_filters_keep_their_position(client: TestClient) -> None:
+    _use(_filters_session())
+
+    response = client.get("/api/v1/filters")
+
+    assert response.json()[0]["position"] == 3

@@ -39,6 +39,50 @@ needed to regenerate the JSON:
 uv run python scripts/build_referential.py
 ```
 
+## Admin CLI
+
+`letmegetin-admin` (or `uv run python -m letmegetin.admin`) is the only write path
+to the referential until authentication exists. It talks to the database with the
+same async session as the API; the credentials in `LETMEGETIN_DATABASE_URL` are
+the only gate.
+
+```bash
+uv run python -m letmegetin.admin --help
+
+# Categories
+uv run python -m letmegetin.admin category list
+uv run python -m letmegetin.admin category add garden --name Garden --label fr=Jardin
+uv run python -m letmegetin.admin category edit garden --label en=Garden
+
+# Criteria and options (an option is a criterion with --type option and --parent)
+uv run python -m letmegetin.admin criterion list --category restaurant
+uv run python -m letmegetin.admin criterion add entree-automatique --type boolean \
+  --parent entree --label fr=Automatique --default
+uv run python -m letmegetin.admin criterion edit entree-automatique --no-default
+
+# Category-to-criteria mapping
+uv run python -m letmegetin.admin link restaurant entree-automatique
+uv run python -m letmegetin.admin unlink restaurant entree-automatique
+
+# Flat vocabulary (library of unassigned labels) and promotion into a criterion
+uv run python -m letmegetin.admin vocabulary import
+uv run python -m letmegetin.admin vocabulary list --query rampe --unpromoted
+uv run python -m letmegetin.admin vocabulary promote rampe-amovible --type option \
+  --parent entree-acces --category restaurant
+
+# Multilingual labels
+uv run python -m letmegetin.admin labels set criterion entree-automatique \
+  --label en=Automatic --label es=Automática
+```
+
+Labels are JSONB maps over **fr, en, es, de, it**, set by hand: no machine
+translation ships in this phase, and the API always returns the full map so the
+client picks the locale.
+
+The default mapping is data, not code: `criteria.is_default` marks the base set
+and `category_criteria.excluded` records a per-category opt-out, so re-running
+`uv run python -m letmegetin.seed` never undoes an operator decision.
+
 ## Quality
 
 ```bash
