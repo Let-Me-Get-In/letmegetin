@@ -418,12 +418,13 @@ class SqlAlchemyPlaceRepository:
         *,
         radius: float = DEFAULT_CANDIDATE_RADIUS,
         limit: int = 50,
-    ) -> list[Place]:
+    ) -> list[PlaceHit]:
         """Spatial blocking only: the caller scores the names (one scoring source)."""
         point = _point(lat, lng)
+        distance = func.ST_Distance(PlaceModel.location, point).label("distance")
         rows = (
-            await self._session.scalars(
-                select(PlaceModel)
+            await self._session.execute(
+                select(PlaceModel, distance)
                 .where(
                     PlaceModel.canonical_id.is_(None),
                     PlaceModel.location.is_not(None),
@@ -433,7 +434,10 @@ class SqlAlchemyPlaceRepository:
                 .limit(limit)
             )
         ).all()
-        return [place_from_model(row) for row in rows]
+        return [
+            PlaceHit(place=place_from_model(model), distance=float(metres))
+            for model, metres in rows
+        ]
 
     async def list_accessibility(self, place_id: int) -> list[PlaceAccessibility]:
         rows = (
