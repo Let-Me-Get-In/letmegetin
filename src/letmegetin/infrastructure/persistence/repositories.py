@@ -5,7 +5,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from geoalchemy2 import Geography
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, or_, select, update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from letmegetin.core.exceptions import DomainError
@@ -15,6 +16,8 @@ from letmegetin.domain.places.repositories import DEFAULT_CANDIDATE_RADIUS
 from letmegetin.domain.referential.entities import (
     AccessibilityFilter,
     Category,
+    CategoryGrid,
+    CategoryMapping,
     Criterion,
     OtherInformation,
     VocabularyEntry,
@@ -32,6 +35,7 @@ from letmegetin.infrastructure.persistence.mappers import (
 from letmegetin.infrastructure.persistence.models import (
     AccessibilityFilterModel,
     CategoryCriterionModel,
+    CategoryGridModel,
     CategoryMappingModel,
     CategoryModel,
     CriterionModel,
@@ -41,6 +45,7 @@ from letmegetin.infrastructure.persistence.models import (
     PlaceAliasModel,
     PlaceMergeLogModel,
     PlaceModel,
+    ReferentialVersionModel,
 )
 
 
@@ -510,3 +515,69 @@ class SqlAlchemyCategoryMappingRepository:
             select(CategoryModel.id).where(CategoryModel.slug == slug)
         )
         return int(direct) if direct is not None else None
+
+    async def upsert(self, mapping: CategoryMapping) -> None:
+        statement = insert(CategoryMappingModel).values(
+            category_id=mapping.category_id,
+            overture_category=mapping.overture_category,
+            osm_tag=mapping.osm_tag,
+            acceslibre_family=mapping.acceslibre_family,
+            notes=mapping.notes,
+        )
+        await self._session.execute(
+            statement.on_conflict_do_update(
+                constraint="category_mapping_category_uc",
+                set_={
+                    "overture_category": statement.excluded.overture_category,
+                    "osm_tag": statement.excluded.osm_tag,
+                    "acceslibre_family": statement.excluded.acceslibre_family,
+                    "notes": statement.excluded.notes,
+                    "updated": func.now(),
+                },
+            )
+        )
+
+
+class SqlAlchemyCategoryGridRepository:
+    """Precomputed per-category grids and the global referential version."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def current_version(self) -> int:
+        version = await self._session.scalar(
+            select(ReferentialVersionModel.version).where(ReferentialVersionModel.id == 1)
+        )
+        return int(version or 1)
+
+    async def bump_version(self) -> int:
+        version = await self._session.scalar(
+            update(ReferentialVersionModel)
+            .where(ReferentialVersionModel.id == 1)
+            .values(version=ReferentialVersionModel.version + 1)
+            .returning(ReferentialVersionModel.version)
+        )
+        return int(version or 1)
+
+    async def set_grid(self, category_id: int, version: int, tree: list[dict[str, object]]) -> None:
+        statement = insert(CategoryGridModel).values(
+            category_id=category_id, version=version, tree=tree
+        )
+        await self._session.execute(
+            statement.on_conflict_do_update(
+                index_elements=[CategoryGridModel.category_id],
+                set_={"version": version, "tree": tree, "updated": func.now()},
+            )
+        )
+
+    async def get_for_slug(self, slug: str) -> CategoryGrid | None:
+        row = (
+            await self._session.execute(
+                select(CategoryModel.slug, CategoryGridModel.version, CategoryGridModel.tree)
+                .join(CategoryGridModel, CategoryGridModel.category_id == CategoryModel.id)
+                .where(CategoryModel.slug == slug)
+            )
+        ).first()
+        if row is None:
+            return None
+        return CategoryGrid(category_slug=row[0], version=int(row[1]), tree=row[2])

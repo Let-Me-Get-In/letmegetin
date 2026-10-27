@@ -25,8 +25,11 @@ from letmegetin.application.referential.admin import (
     import_vocabulary,
     link_criterion,
     load_vocabulary_file,
+    map_category,
     promote_vocabulary,
+    rebuild_category_grids,
     set_category_labels,
+    set_criterion_families,
     set_criterion_labels,
     set_vocabulary_labels,
     unlink_criterion,
@@ -37,6 +40,7 @@ from letmegetin.core.exceptions import CategoryNotFound, DomainError
 from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
 from letmegetin.domain.referential.labels import parse_label_pairs
 from letmegetin.infrastructure.persistence.repositories import (
+    SqlAlchemyCategoryGridRepository,
     SqlAlchemyCategoryMappingRepository,
     SqlAlchemyCategoryRepository,
     SqlAlchemyCriterionRepository,
@@ -65,12 +69,22 @@ LabelPairs = Annotated[
 ]
 
 
-def _run_admin(callback: AdminCallback) -> None:
-    """Run a use case in one session, commit on success, and map domain errors to exit 1."""
+def _run_admin(callback: AdminCallback, *, bump: bool = True) -> None:
+    """Run a use case in one session, commit on success, and map domain errors to exit 1.
+
+    Any write bumps the referential version and recomputes the grids, so clients refetch
+    their cached grid only when it actually changed.
+    """
 
     async def run() -> str:
         async with SessionLocal() as session:
             message = await callback(session)
+            if bump:
+                await rebuild_category_grids(
+                    SqlAlchemyCategoryRepository(session),
+                    SqlAlchemyCriterionRepository(session),
+                    SqlAlchemyCategoryGridRepository(session),
+                )
             await session.commit()
             return message
 
@@ -94,7 +108,7 @@ def category_list() -> None:
         categories = await SqlAlchemyCategoryRepository(session).list_all()
         return "\n".join(f"{item.slug}\t{item.label.get('fr', item.name)}" for item in categories)
 
-    _run_admin(callback)
+    _run_admin(callback, bump=False)
 
 
 @category_app.command("add")
@@ -131,6 +145,37 @@ def category_edit(
     _run_admin(callback)
 
 
+@category_app.command("map")
+def category_map(
+    slug: Annotated[str, typer.Argument(help="Category slug")],
+    overture: Annotated[str | None, typer.Option("--overture", help="Overture basic_category")] = (
+        None
+    ),
+    osm: Annotated[str | None, typer.Option("--osm", help="OSM tag, e.g. amenity=restaurant")] = (
+        None
+    ),
+    acceslibre: Annotated[
+        str | None, typer.Option("--acceslibre", help="Acceslibre family")
+    ] = None,
+    notes: Annotated[str | None, typer.Option("--notes", help="Free-form note")] = None,
+) -> None:
+    """Map a category to the Overture, OSM and Acceslibre vocabularies."""
+
+    async def callback(session: AsyncSession) -> str:
+        category = await map_category(
+            SqlAlchemyCategoryMappingRepository(session),
+            SqlAlchemyCategoryRepository(session),
+            slug,
+            overture,
+            osm,
+            acceslibre,
+            notes,
+        )
+        return f"category mapped: {category.slug}"
+
+    _run_admin(callback)
+
+
 @criterion_app.command("list")
 def criterion_list(
     category: Annotated[str | None, typer.Option("--category", help="Category slug")] = None,
@@ -155,7 +200,7 @@ def criterion_list(
             for row in rows
         )
 
-    _run_admin(callback)
+    _run_admin(callback, bump=False)
 
 
 @criterion_app.command("add")
@@ -202,6 +247,9 @@ def criterion_edit(
         typer.Option("--description", help="locale=value, repeatable"),
     ] = None,
     default: Annotated[bool | None, typer.Option("--default/--no-default")] = None,
+    en17210: Annotated[
+        str | None, typer.Option("--en17210", help="EN 17210 / Tourisme & Handicap reference")
+    ] = None,
 ) -> None:
     """Edit a criterion: labels and descriptions are merged, never replaced."""
     labels = _labels(label)
@@ -216,8 +264,28 @@ def criterion_edit(
             descriptions,
             default,
             parent,
+            en17210_ref=en17210,
         )
         return f"criterion edited: {criterion.slug}"
+
+    _run_admin(callback)
+
+
+@criterion_app.command("families")
+def criterion_families(
+    slug: Annotated[str, typer.Argument(help="Criterion slug")],
+    family: Annotated[
+        list[str] | None,
+        typer.Option("--family", help="moteur, auditif, visuel, mental — repeatable"),
+    ] = None,
+) -> None:
+    """Replace the handicap families a criterion belongs to."""
+
+    async def callback(session: AsyncSession) -> str:
+        criterion = await set_criterion_families(
+            SqlAlchemyCriterionRepository(session), slug, family or []
+        )
+        return f"criterion families set: {criterion.slug} {criterion.handicap_families}"
 
     _run_admin(callback)
 
@@ -273,7 +341,7 @@ def import_(
         )
         return f"vocabulary import: created={report.created} skipped={report.skipped}"
 
-    _run_admin(callback)
+    _run_admin(callback, bump=False)
 
 
 @vocabulary_app.command("list")
@@ -302,7 +370,7 @@ def vocabulary_list(
             for entry in rows
         )
 
-    _run_admin(callback)
+    _run_admin(callback, bump=False)
 
 
 @vocabulary_app.command("promote")
@@ -377,7 +445,7 @@ def import_acceslibre_command(
             f"review={report.review} skipped={report.skipped}"
         )
 
-    _run_admin(callback)
+    _run_admin(callback, bump=False)
 
 
 if __name__ == "__main__":

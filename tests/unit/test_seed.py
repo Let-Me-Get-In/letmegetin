@@ -105,6 +105,16 @@ class FakeSessionFactory:
         return False
 
 
+@pytest.fixture(autouse=True)
+def _skip_grids(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Grid precomputation needs PostGIS upserts; it is covered by the integration tests."""
+
+    async def noop(*args: Any, **kwargs: Any) -> int:
+        return 1
+
+    monkeypatch.setattr(seed_module, "rebuild_category_grids", noop)
+
+
 @pytest.mark.parametrize(
     ("data", "expected"),
     [
