@@ -18,6 +18,11 @@ Out of scope: auth/contribution writes (Phase 5), Next.js UI (Phase 6), mobile.
 </domain>
 
 <decisions>
+### Validated with the product owner (2026-10-27)
+- **Place sources**: Overture + Acceslibre as primary, **OSM opt-in** per deployment.
+- **Community data license**: **ODbL** (attribution + share-alike).
+- **Funding**: **open data + paid service/SLA + grants/sponsorship**.
+
 ## Data sources & licensing (research-backed)
 
 Never Google Places: the Google Maps Platform ToS forbids storing/caching Places data
