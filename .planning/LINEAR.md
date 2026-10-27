@@ -3,7 +3,11 @@
 Dedicated workspace: **`letmegetin`** (https://linear.app/letmegetin).
 The exStrat people do not work on LetMeGetIn.
 
-Team: **LET** • Project: **LetMeGetIn**
+Team: **LET**
+
+**Convention: a Linear project = a milestone** (`V1`, `V2`…). Its tickets are the phases of
+that milestone. Current milestone: **V1 — Accessibility Referential** (tickets LET-5..LET-12).
+Create a new project for each new milestone.
 
 Every branch, commit and PR starts with the ticket id (`LET-<n>`).
 
@@ -23,7 +27,7 @@ Every branch, commit and PR starts with the ticket id (`LET-<n>`).
 ```bash
 linear auth list
 linear issue list --team LET --all-states
-linear issue create -t "…" --team LET --project LetMeGetIn -a @me
+linear issue create -t "…" --team LET --project "V1 — Accessibility Referential" -a @me
 linear issue update LET-7 --state "In Progress"
 linear issue url LET-7
 ```
