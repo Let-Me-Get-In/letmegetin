@@ -5,23 +5,27 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from letmegetin.core.exceptions import DomainError
 from letmegetin.domain.referential.entities import (
     AccessibilityFilter,
     Category,
     Criterion,
     OtherInformation,
+    VocabularyEntry,
 )
 from letmegetin.infrastructure.persistence.mappers import (
     category_from_model,
     criterion_from_model,
     filter_from_model,
     other_information_from_model,
+    vocabulary_from_model,
 )
 from letmegetin.infrastructure.persistence.models import (
     AccessibilityFilterModel,
     CategoryCriterionModel,
     CategoryModel,
     CriterionModel,
+    CriterionVocabularyModel,
     OtherInformationModel,
 )
 
@@ -74,6 +78,49 @@ class SqlAlchemyCriterionRepository:
                 keep.add(current.id)
                 current = by_id.get(current.parent_id) if current.parent_id else None
         return [criterion_from_model(row) for row in rows if row.id in keep]
+
+
+class SqlAlchemyVocabularyRepository:
+    """Vocabulary repository backed by SQLAlchemy (no commit: the caller owns the unit of work)."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def list_all(self) -> list[VocabularyEntry]:
+        rows = (
+            await self._session.scalars(
+                select(CriterionVocabularyModel).order_by(CriterionVocabularyModel.slug)
+            )
+        ).all()
+        return [vocabulary_from_model(row) for row in rows]
+
+    async def get_by_slug(self, slug: str) -> VocabularyEntry | None:
+        row = await self._session.scalar(
+            select(CriterionVocabularyModel).where(CriterionVocabularyModel.slug == slug)
+        )
+        return vocabulary_from_model(row) if row is not None else None
+
+    async def add(self, entry: VocabularyEntry) -> VocabularyEntry:
+        model = CriterionVocabularyModel(
+            slug=entry.slug,
+            label=entry.label,
+            description=entry.description,
+            promoted_criterion_id=entry.promoted_criterion_id,
+        )
+        self._session.add(model)
+        await self._session.flush()
+        return vocabulary_from_model(model)
+
+    async def update(self, entry: VocabularyEntry) -> VocabularyEntry:
+        model = await self._session.get(CriterionVocabularyModel, entry.id)
+        if model is None:
+            raise DomainError(f"vocabulary entry '{entry.slug}' is not persisted")
+        model.slug = entry.slug
+        model.label = entry.label
+        model.description = entry.description
+        model.promoted_criterion_id = entry.promoted_criterion_id
+        await self._session.flush()
+        return vocabulary_from_model(model)
 
 
 class SqlAlchemyFilterRepository:

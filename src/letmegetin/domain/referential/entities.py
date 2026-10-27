@@ -29,6 +29,18 @@ class Criterion:
     label: Label = field(default_factory=dict)
     description: Label = field(default_factory=dict)
     children: list[Criterion] = field(default_factory=list)
+    is_default: bool = False
+
+
+@dataclass
+class VocabularyEntry:
+    """A flat vocabulary label, promoted into a criterion on demand."""
+
+    id: int
+    slug: str
+    label: Label = field(default_factory=dict)
+    description: Label = field(default_factory=dict)
+    promoted_criterion_id: int | None = None
 
 
 @dataclass
