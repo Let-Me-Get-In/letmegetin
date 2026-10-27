@@ -21,15 +21,15 @@
 
 ### Places & search
 
-- [ ] **PLACE-01**: Users can search places by text and proximity (lat/lng/radius)
-- [ ] **PLACE-02**: Users can filter results by one or more accessibility criteria
-- [ ] **PLACE-03**: Users can view a place record (address, category, rating, photos)
-- [ ] **PLACE-04**: The record shows the accessibility tree with values and a completion rate
-- [ ] **PLACE-05**: A script imports a demo place dataset to populate search
+- [x] **PLACE-01**: Users can search places by text and proximity (lat/lng/radius)
+- [x] **PLACE-02**: Users can filter results by one or more accessibility criteria
+- [x] **PLACE-03**: Users can view a place record (address, category, rating, photos)
+- [x] **PLACE-04**: The record shows the accessibility tree with values and a completion rate
+- [x] **PLACE-05**: A script imports a demo place dataset to populate search
 
 ### Reviews & contribution
 
-- [ ] **REV-01**: Users can read a place's reviews (rating 1–5 + text)
+- [x] **REV-01**: Users can read a place's reviews (rating 1–5 + text)
 - [ ] **REV-02**: Authenticated users can post a review
 - [ ] **CONTRIB-01**: Authenticated users can complete/edit a record's accessibility values
 - [ ] **CONTRIB-02**: Every contribution is logged and the completion rate is recomputed
@@ -87,13 +87,13 @@
 | REF-03 | Phase 2 | Complete |
 | REF-04 | Phase 2 | Complete |
 | REF-05 | Phase 2 | Complete |
-| PLACE-01 | Phase 3 | Pending |
-| PLACE-02 | Phase 3 | Pending |
-| PLACE-03 | Phase 3 | Pending |
-| PLACE-04 | Phase 3 | Pending |
-| PLACE-05 | Phase 3 | Pending |
-| REV-01 | Phase 4 | Pending |
-| REV-02 | Phase 4 | Pending |
+| PLACE-01 | Phase 3 | Complete |
+| PLACE-02 | Phase 3 | Complete |
+| PLACE-03 | Phase 4 | Complete |
+| PLACE-04 | Phase 4 | Complete |
+| PLACE-05 | Phase 3 | Complete |
+| REV-01 | Phase 4 | Complete |
+| REV-02 | Phase 5 | Pending |
 | CONTRIB-01 | Phase 5 | Pending |
 | CONTRIB-02 | Phase 5 | Pending |
 | AUTH-01 | Phase 5 | Pending |
