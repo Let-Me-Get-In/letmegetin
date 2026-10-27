@@ -22,6 +22,8 @@ class CriterionOut(BaseModel):
     label: dict[str, str]
     description: dict[str, str] = {}
     type: str
+    handicap_families: list[str] = []
+    en17210_ref: str | None = None
     children: list[CriterionOut] = []
 
 
@@ -33,6 +35,7 @@ class FilterOut(BaseModel):
     slug: str
     label: dict[str, str]
     position: int
+    handicap_families: list[str] = []
 
 
 class OtherInformationOut(BaseModel):

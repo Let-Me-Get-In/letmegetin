@@ -15,8 +15,11 @@ from letmegetin.application.referential.admin import (
     edit_category,
     edit_criterion,
     link_criterion,
+    map_category,
     promote_vocabulary,
+    rebuild_category_grids,
     set_category_labels,
+    set_criterion_families,
     set_criterion_labels,
     set_vocabulary_labels,
     unlink_criterion,
@@ -30,7 +33,12 @@ from letmegetin.core.exceptions import (
     NotFoundError,
     VocabularyNotFound,
 )
-from letmegetin.domain.referential.entities import Category, Criterion, VocabularyEntry
+from letmegetin.domain.referential.entities import (
+    Category,
+    CategoryMapping,
+    Criterion,
+    VocabularyEntry,
+)
 
 
 class FakeMappingRepository:
@@ -139,6 +147,33 @@ class FakeVocabularyRepository:
         self.items.pop(entry.slug, None)
         self.items[entry.slug] = entry
         return entry
+
+
+class FakeMappingAdminRepository:
+    def __init__(self) -> None:
+        self.upserts: list[CategoryMapping] = []
+
+    async def upsert(self, mapping: CategoryMapping) -> None:
+        self.upserts.append(mapping)
+
+
+class FakeCategoryGridRepository:
+    def __init__(self) -> None:
+        self.version = 1
+        self.grids: dict[int, tuple[int, list[dict[str, object]]]] = {}
+
+    async def current_version(self) -> int:
+        return self.version
+
+    async def bump_version(self) -> int:
+        self.version += 1
+        return self.version
+
+    async def set_grid(self, category_id: int, version: int, tree: list[dict[str, object]]) -> None:
+        self.grids[category_id] = (version, tree)
+
+    async def get_for_slug(self, slug: str) -> Any:
+        return None
 
 
 def _criterion(
@@ -391,6 +426,74 @@ async def test_set_labels_rejects_unsupported_locale(stores: tuple[Any, ...]) ->
         parse_label_pairs(["pt=Restaurante"])
 
 
+async def test_set_criterion_families_keeps_the_canonical_order(
+    stores: tuple[Any, ...],
+) -> None:
+    _, criteria, _, _ = stores
+
+    updated = await set_criterion_families(criteria, "entree-acces", ["visuel", "moteur"])
+
+    assert updated.handicap_families == ["moteur", "visuel"]
+
+
+async def test_set_criterion_families_rejects_an_unknown_family(
+    stores: tuple[Any, ...],
+) -> None:
+    _, criteria, _, _ = stores
+
+    with pytest.raises(DomainError, match="olfactif"):
+        await set_criterion_families(criteria, "entree-acces", ["olfactif"])
+
+
+async def test_edit_criterion_sets_the_en17210_reference(stores: tuple[Any, ...]) -> None:
+    _, criteria, _, _ = stores
+
+    edited = await edit_criterion(criteria, "entree-acces", en17210_ref="EN 17210 §5.4")
+
+    assert edited.en17210_ref == "EN 17210 §5.4"
+    assert edited.handicap_families == []
+
+
+async def test_map_category_upserts_the_source_vocabularies(stores: tuple[Any, ...]) -> None:
+    categories, _, _, _ = stores
+    mapping = FakeMappingAdminRepository()
+
+    category = await map_category(
+        mapping,
+        categories,
+        "restaurant",
+        overture_category="restaurant",
+        osm_tag="amenity=restaurant",
+        acceslibre_family="restauration",
+    )
+
+    assert category.slug == "restaurant"
+    assert mapping.upserts[0].category_id == 10
+    assert mapping.upserts[0].osm_tag == "amenity=restaurant"
+
+
+async def test_map_category_rejects_an_unknown_category(stores: tuple[Any, ...]) -> None:
+    categories, _, _, _ = stores
+
+    with pytest.raises(CategoryNotFound):
+        await map_category(FakeMappingAdminRepository(), categories, "nope", overture_category="x")
+
+
+async def test_rebuild_category_grids_bumps_the_version_and_stores_every_tree(
+    stores: tuple[Any, ...],
+) -> None:
+    categories, criteria, _, _ = stores
+    grids = FakeCategoryGridRepository()
+
+    version = await rebuild_category_grids(categories, criteria, grids)
+
+    assert version == 2
+    assert grids.grids[10][0] == 2
+    root = grids.grids[10][1][0]
+    assert root["slug"] == "entree"
+    assert root["children"][0]["slug"] == "entree-acces"
+
+
 class _FakeSession:
     def __init__(self) -> None:
         self.committed = False
@@ -419,7 +522,11 @@ def test_cli_reports_success(monkeypatch: pytest.MonkeyPatch) -> None:
     async def fake_add(repository: Any, slug: str, name: str, label: Any) -> Category:
         return Category(id=1, slug=slug, name=name, label=label)
 
+    async def fake_grids(*args: Any, **kwargs: Any) -> int:
+        return 1
+
     monkeypatch.setattr(admin, "add_category", fake_add)
+    monkeypatch.setattr(admin, "rebuild_category_grids", fake_grids)
     monkeypatch.setattr(admin, "SessionLocal", _FakeSessionFactory(session))
 
     result = CliRunner().invoke(admin.app, ["category", "add", "garden", "--name", "Garden"])

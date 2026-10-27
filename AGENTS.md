@@ -169,9 +169,11 @@ letmegetin/
 │   ├── admin.py            # Typer CLI: categories, criteria, vocabulary, mapping, labels
 │   ├── core/               # shared kernel: db.py, exceptions.py, utils.py
 │   ├── domain/             # pure domain: entities + repository ports
-│   │   └── referential/
+│   │   ├── referential/    # categories, criteria, filters, grids
+│   │   └── places/         # place aggregate, dedup scoring
 │   ├── application/        # use cases (orchestration)
-│   │   └── referential/
+│   │   ├── referential/
+│   │   └── places/         # acceslibre import, search, detail, candidates
 │   ├── infrastructure/     # adapters: SQLAlchemy models, mappers, repositories
 │   │   └── persistence/
 │   └── api/                # presentation: deps, schemas, v1 endpoints
@@ -205,6 +207,16 @@ mutates data.
   universal base, extended and editable.
 - **V1 scope**: referential + read API + place detail + contribution.
   Gamification, messaging and mobile are deferred (v2).
+- **Places are France-first**: Acceslibre (Etalab 2.0) is the primary seed,
+  imported from a local export; Overture/OSM stay additive via `place.source` and
+  `category_mapping`. Never Google Places (its ToS forbids storing the data).
+- **Dedup is soft**: `place.canonical_id` + `place_alias` + `place_merge_log`
+  (auto-link ≥ 0.90, review 0.60–0.90, nothing is ever deleted). Name scoring is
+  stdlib `difflib` on normalized names — no extra dependency.
+- **4 handicap families** (`moteur`, `auditif`, `visuel`, `mental`) are data on
+  criteria, not hard-coded in the API; `?family=` filters search.
+- **Grids are precomputed**: `category_grid` holds the resolved per-category tree,
+  invalidated by `referential_version` (`ETag: W/"ref-<version>"`, `304`).
 
 ## Security
 

@@ -7,6 +7,8 @@ from typing import Literal, Protocol
 from letmegetin.domain.referential.entities import (
     AccessibilityFilter,
     Category,
+    CategoryGrid,
+    CategoryMapping,
     Criterion,
     OtherInformation,
     VocabularyEntry,
@@ -72,3 +74,23 @@ class OtherInformationRepository(Protocol):
     """Read access to official labels."""
 
     async def list_all(self) -> list[OtherInformation]: ...
+
+
+class CategoryGridRepository(Protocol):
+    """Precomputed grids plus the global referential version."""
+
+    async def current_version(self) -> int: ...
+
+    async def bump_version(self) -> int: ...
+
+    async def set_grid(
+        self, category_id: int, version: int, tree: list[dict[str, object]]
+    ) -> None: ...
+
+    async def get_for_slug(self, slug: str) -> CategoryGrid | None: ...
+
+
+class MappingAdminRepository(Protocol):
+    """Write access to the category-to-source vocabulary mapping."""
+
+    async def upsert(self, mapping: CategoryMapping) -> None: ...

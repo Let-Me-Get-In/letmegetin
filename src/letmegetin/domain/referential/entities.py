@@ -72,3 +72,23 @@ class OtherInformation:
     name: str
     label: Label
     link: str | None = None
+
+
+@dataclass
+class CategoryGrid:
+    """A precomputed per-category criteria tree, versioned by the referential version."""
+
+    category_slug: str
+    version: int
+    tree: list[dict[str, object]]
+
+
+@dataclass
+class CategoryMapping:
+    """Our category mapped to the Overture/OSM/Acceslibre vocabularies."""
+
+    category_id: int
+    overture_category: str | None = None
+    osm_tag: str | None = None
+    acceslibre_family: str | None = None
+    notes: str | None = None

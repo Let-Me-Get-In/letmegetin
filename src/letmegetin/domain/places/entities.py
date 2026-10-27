@@ -68,5 +68,7 @@ class PlaceHit:
 
 def make_slug(name: str, source: str, source_id: str | None) -> str:
     """Deterministic public slug: readable name plus a short provenance digest."""
-    digest = hashlib.sha1(f"{source}:{source_id or ''}:{name}".encode()).hexdigest()[:8]
+    digest = hashlib.sha1(  # noqa: S324 - slug disambiguation only, not a security hash
+        f"{source}:{source_id or ''}:{name}".encode(), usedforsecurity=False
+    ).hexdigest()[:8]
     return f"{slugify(name)}-{digest}"

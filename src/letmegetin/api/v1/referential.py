@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi.responses import JSONResponse
 
 from letmegetin.api.deps import (
+    CategoryGridRepo,
     CategoryRepo,
     CriterionRepo,
     FilterRepo,
@@ -50,7 +52,24 @@ def _to_out(node: Criterion) -> CriterionOut:
         label=node.label,
         description=node.description,
         type=node.type,
+        handicap_families=node.handicap_families,
+        en17210_ref=node.en17210_ref,
         children=[_to_out(child) for child in node.children],
+    )
+
+
+@router.get("/categories/{slug}/grid")
+async def get_category_grid(slug: str, request: Request, repository: CategoryGridRepo) -> Response:
+    """Return the precomputed criteria grid, cached by the global referential version."""
+    grid = await repository.get_for_slug(slug)
+    if grid is None:
+        raise HTTPException(status_code=404, detail="Category grid not found")
+    etag = f'W/"ref-{grid.version}"'
+    if request.headers.get("if-none-match") == etag:
+        return Response(status_code=304, headers={"ETag": etag})
+    return JSONResponse(
+        {"category": grid.category_slug, "version": grid.version, "tree": grid.tree},
+        headers={"ETag": etag, "Cache-Control": "public, max-age=300"},
     )
 
 

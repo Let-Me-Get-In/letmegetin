@@ -12,6 +12,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Literal
 
+from letmegetin.application.referential.get_category_tree import build_tree, tree_to_json
 from letmegetin.core.exceptions import (
     CategoryAlreadyExists,
     CategoryNotFound,
@@ -20,11 +21,20 @@ from letmegetin.core.exceptions import (
     VocabularyNotFound,
 )
 from letmegetin.core.utils import slugify
-from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
+from letmegetin.domain.referential.entities import (
+    HANDICAP_FAMILIES,
+    Category,
+    CategoryMapping,
+    Criterion,
+    Label,
+    VocabularyEntry,
+)
 from letmegetin.domain.referential.labels import merge_label, normalize_label
 from letmegetin.domain.referential.repositories import (
+    CategoryGridRepository,
     CategoryRepository,
     CriterionRepository,
+    MappingAdminRepository,
     MappingRepository,
     VocabularyRepository,
 )
@@ -172,6 +182,8 @@ async def edit_criterion(
     description: Label | None = None,
     is_default: bool | None = None,
     parent_slug: str | None = None,
+    families: list[str] | None = None,
+    en17210_ref: str | None = None,
 ) -> Criterion:
     """Edit a criterion in place: labels and descriptions are merged, never replaced."""
     criterion = await _require_criterion(repository, slug)
@@ -186,8 +198,68 @@ async def edit_criterion(
             label=merge_label(criterion.label, label or {}),
             description=merge_label(criterion.description, description or {}),
             is_default=criterion.is_default if is_default is None else is_default,
+            handicap_families=(
+                _validated_families(families)
+                if families is not None
+                else criterion.handicap_families
+            ),
+            en17210_ref=(criterion.en17210_ref if en17210_ref is None else en17210_ref or None),
         )
     )
+
+
+def _validated_families(families: list[str]) -> list[str]:
+    unknown = [family for family in families if family not in HANDICAP_FAMILIES]
+    if unknown:
+        allowed = ", ".join(HANDICAP_FAMILIES)
+        raise DomainError(f"unsupported handicap family '{unknown[0]}' (allowed: {allowed})")
+    return [family for family in HANDICAP_FAMILIES if family in families]
+
+
+async def set_criterion_families(
+    repository: CriterionRepository, slug: str, families: list[str]
+) -> Criterion:
+    """Replace the handicap families a criterion belongs to."""
+    criterion = await _require_criterion(repository, slug)
+    return await repository.update(
+        replace(criterion, handicap_families=_validated_families(families))
+    )
+
+
+async def map_category(
+    mapping: MappingAdminRepository,
+    categories: CategoryRepository,
+    slug: str,
+    overture_category: str | None = None,
+    osm_tag: str | None = None,
+    acceslibre_family: str | None = None,
+    notes: str | None = None,
+) -> Category:
+    """Upsert the source-vocabulary mapping of a category."""
+    category = await _require_category(categories, slug)
+    await mapping.upsert(
+        CategoryMapping(
+            category_id=category.id,
+            overture_category=overture_category,
+            osm_tag=osm_tag,
+            acceslibre_family=acceslibre_family,
+            notes=notes,
+        )
+    )
+    return category
+
+
+async def rebuild_category_grids(
+    categories: CategoryRepository,
+    criteria: CriterionRepository,
+    grids: CategoryGridRepository,
+) -> int:
+    """Bump the referential version and recompute every precomputed category grid."""
+    version = await grids.bump_version()
+    for category in await categories.list_all():
+        tree = build_tree(await criteria.list_for_category(category.id))
+        await grids.set_grid(category.id, version, tree_to_json(tree))
+    return version
 
 
 async def link_criterion(
