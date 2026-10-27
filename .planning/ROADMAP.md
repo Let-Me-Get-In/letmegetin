@@ -86,7 +86,7 @@ Modern rewrite of the collaborative accessible-places guide: normalized referent
 
 | Phase | Ticket | Status | Completed |
 |-------|--------|--------|-----------|
-| 1. Foundation & CI | LET-6 | In progress | — |
+| 1. Foundation & CI | LET-6 | Executed | — |
 | 2. Referential & seed | LET-7 | Pending | — |
 | 3. Places & search | LET-8 | Pending | — |
 | 4. Record & reviews (read) | LET-9 | Pending | — |
