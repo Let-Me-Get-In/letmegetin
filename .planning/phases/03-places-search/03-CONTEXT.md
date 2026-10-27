@@ -118,6 +118,11 @@ Decisions:
 - Adopt a **standard core**: EN 17210 / ISO 21542 sequences (signalisation/cheminements,
   accès/entrées, circulation, sanitaires, accueil/services, prévention, informations
   accessibilité), matching the **Tourisme & Handicap** common trunk.
+- **Categories**: adopt the Overture `basic_category` as the public taxonomy; keep the 158
+  Jaccede categories as `legacy_category` aliases.
+- **4 handicap families** (`moteur`, `auditif`, `visuel`, `mental`) as a first-class dimension:
+  `Criterion.handicap_families`, `AccessibilityFilter.handicap_families`,
+  `Place.accessibility_by_family`, `?family=` filter. Jaccede was motor-only; this fixes it.
 - Keep the **Jaccede vocabulary** (182 labels) as aliases/options; map each to a standard
   criterion.
 - Import the **OSM accessibility tags** as objective sub-fields: `wheelchair`, `entrance:step_count`,
