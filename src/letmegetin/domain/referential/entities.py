@@ -3,8 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Literal
 
 Label = dict[str, str]
+
+# The four first-class disability families (Jaccede was motor-only). They live on the
+# referential because criteria are the only source of truth for them; places re-export.
+HandicapFamily = Literal["moteur", "auditif", "visuel", "mental"]
+HANDICAP_FAMILIES: tuple[HandicapFamily, ...] = ("moteur", "auditif", "visuel", "mental")
 
 
 @dataclass
@@ -31,6 +37,8 @@ class Criterion:
     description: Label = field(default_factory=dict)
     children: list[Criterion] = field(default_factory=list)
     is_default: bool = False
+    handicap_families: list[str] = field(default_factory=list)
+    en17210_ref: str | None = None
 
 
 @dataclass
@@ -52,6 +60,7 @@ class AccessibilityFilter:
     slug: str
     label: Label
     position: int
+    handicap_families: list[str] = field(default_factory=list)
 
 
 @dataclass

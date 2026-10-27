@@ -13,6 +13,10 @@ from typing import Annotated, Literal
 import typer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from letmegetin.application.places.import_acceslibre import (
+    import_acceslibre,
+    load_acceslibre_file,
+)
 from letmegetin.application.referential.admin import (
     add_category,
     add_criterion,
@@ -33,9 +37,13 @@ from letmegetin.core.exceptions import CategoryNotFound, DomainError
 from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
 from letmegetin.domain.referential.labels import parse_label_pairs
 from letmegetin.infrastructure.persistence.repositories import (
+    SqlAlchemyCategoryMappingRepository,
     SqlAlchemyCategoryRepository,
     SqlAlchemyCriterionRepository,
     SqlAlchemyMappingRepository,
+    SqlAlchemyMergeLogRepository,
+    SqlAlchemyPlaceAliasRepository,
+    SqlAlchemyPlaceRepository,
     SqlAlchemyVocabularyRepository,
 )
 
@@ -44,10 +52,12 @@ category_app = typer.Typer(help="Add, edit and list place categories.")
 criterion_app = typer.Typer(help="Add, edit and list criteria and options.")
 vocabulary_app = typer.Typer(help="Import, list and promote the flat criteria vocabulary.")
 labels_app = typer.Typer(help="Set multilingual labels on any referential entity.")
+import_app = typer.Typer(help="Import open place datasets (Acceslibre first).")
 app.add_typer(category_app, name="category")
 app.add_typer(criterion_app, name="criterion")
 app.add_typer(vocabulary_app, name="vocabulary")
 app.add_typer(labels_app, name="labels")
+app.add_typer(import_app, name="import")
 
 AdminCallback = Callable[[AsyncSession], Awaitable[str]]
 LabelPairs = Annotated[
@@ -344,6 +354,28 @@ def labels_set(
                 SqlAlchemyVocabularyRepository(session), slug, labels
             )
         return f"{kind} labels set: {entity.slug} {entity.label}"
+
+    _run_admin(callback)
+
+
+@import_app.command("acceslibre")
+def import_acceslibre_command(
+    file: Annotated[Path, typer.Option("--file", "-f", help="Local Acceslibre CSV/JSON export")],
+) -> None:
+    """Import a local Acceslibre export; idempotent by (source, source_id)."""
+
+    async def callback(session: AsyncSession) -> str:
+        report = await import_acceslibre(
+            SqlAlchemyPlaceRepository(session),
+            SqlAlchemyCategoryMappingRepository(session),
+            SqlAlchemyPlaceAliasRepository(session),
+            SqlAlchemyMergeLogRepository(session),
+            load_acceslibre_file(file),
+        )
+        return (
+            f"acceslibre import: created={report.created} linked={report.linked} "
+            f"review={report.review} skipped={report.skipped}"
+        )
 
     _run_admin(callback)
 
