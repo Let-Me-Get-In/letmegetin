@@ -1,6 +1,10 @@
-"""Tests du générateur de seed (parser stdlib, sans base de données)."""
+"""Tests for the seed generator (stdlib parser, no database)."""
 
 from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
 
 from scripts.build_referential import (
     build_categories,
@@ -8,6 +12,13 @@ from scripts.build_referential import (
     build_filters,
     build_th,
     extract_category_one_grid,
+)
+
+RAW_DIR = Path(__file__).resolve().parents[1] / "data" / "referential" / "raw"
+
+pytestmark = pytest.mark.skipif(
+    not (RAW_DIR / "category.csv").exists(),
+    reason="private raw referential sources are not committed",
 )
 
 
