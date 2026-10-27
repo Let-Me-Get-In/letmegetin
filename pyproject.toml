@@ -22,6 +22,7 @@ dev = [
     "ruff>=0.6.0",
     "mypy>=1.11.0",
     "bandit>=1.7.9",
+    "pytest-cov>=7.1.0",
 ]
 
 [build-system]
@@ -48,6 +49,7 @@ asyncio_mode = "auto"
 
 [tool.mypy]
 python_version = "3.12"
+files = ["src", "scripts"]
 check_untyped_defs = true
 ignore_missing_imports = true
 

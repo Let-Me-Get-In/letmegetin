@@ -131,6 +131,7 @@ docker compose up -d                 # PostGIS on localhost:55433
 uv sync
 git config core.hooksPath .githooks  # enable the commit-msg hook (once per clone)
 uv run python scripts/build_referential.py
+uv run alembic upgrade head
 uv run python -m letmegetin.seed
 uv run uvicorn letmegetin.main:app --reload
 uv run pytest
