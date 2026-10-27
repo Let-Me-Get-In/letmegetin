@@ -13,11 +13,11 @@
 
 ### Referential
 
-- [ ] **REF-01**: The API lists categories with multilingual labels (fr/en/es/de/it)
-- [ ] **REF-02**: The API exposes the criteria tree per category (groups → criteria → options)
-- [ ] **REF-03**: The API lists accessibility filters (search) and official labels
-- [ ] **REF-04**: The initial seed is loaded from the reconstructed data (158 categories, 182 vocabulary rows, category-1 grid)
-- [ ] **REF-05**: A minimal admin/CLI can edit categories, criteria and options
+- [x] **REF-01**: The API lists categories with multilingual labels (fr/en/es/de/it)
+- [x] **REF-02**: The API exposes the criteria tree per category (groups → criteria → options)
+- [x] **REF-03**: The API lists accessibility filters (search) and official labels
+- [x] **REF-04**: The initial seed is loaded from the reconstructed data (158 categories, 182 vocabulary rows, category-1 grid)
+- [x] **REF-05**: A minimal admin/CLI can edit categories, criteria and options
 
 ### Places & search
 
@@ -82,11 +82,11 @@
 | OPS-01 | Phase 1 | Pending |
 | OPS-02 | Phase 1 | Pending |
 | OPS-03 | Phase 1 | Pending |
-| REF-01 | Phase 2 | Pending |
-| REF-02 | Phase 2 | Pending |
-| REF-03 | Phase 2 | Pending |
-| REF-04 | Phase 2 | Pending |
-| REF-05 | Phase 2 | Pending |
+| REF-01 | Phase 2 | Complete |
+| REF-02 | Phase 2 | Complete |
+| REF-03 | Phase 2 | Complete |
+| REF-04 | Phase 2 | Complete |
+| REF-05 | Phase 2 | Complete |
 | PLACE-01 | Phase 3 | Pending |
 | PLACE-02 | Phase 3 | Pending |
 | PLACE-03 | Phase 3 | Pending |

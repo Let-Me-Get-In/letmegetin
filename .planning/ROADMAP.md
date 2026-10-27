@@ -30,7 +30,7 @@ Modern rewrite of the collaborative accessible-places guide: normalized referent
 
 **Plans:** 1 plan
 Plans:
-- [ ] 02-01-PLAN.md — Curate the 182-label vocabulary into criterion_vocabulary, add the editable category-to-criteria mapping and the Typer admin CLI, then prove the multilingual reads
+- [x] 02-01-PLAN.md — Curate the 182-label vocabulary into criterion_vocabulary, add the editable category-to-criteria mapping and the Typer admin CLI, then prove the multilingual reads
 
 ### Phase 3: Places & search
 **Goal:** Search places by text, proximity and accessibility filters.
