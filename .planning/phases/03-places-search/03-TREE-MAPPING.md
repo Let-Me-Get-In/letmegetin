@@ -61,12 +61,36 @@ Do not auto-insert the library into the tree.
 
 ## 4. Category mapping
 
+### Overture taxonomy — what it is
+Overture classifies places with a **hierarchical taxonomy**: 13 top-level (L0) → ~2,100 leaf
+categories → ~280 **basic categories**.
+- `basic_category` — a "cognitively basic" label (e.g. `casual_eatery`).
+- `taxonomy.hierarchy` — the full path, e.g. `[food_and_drink, restaurant, casual_eatery, gas_station_sushi]`.
+- `taxonomy.primary` — the most specific label.
+- `taxonomy.alternate` — other labels.
+Aggregation traverses `hierarchy` (all restaurants = any path containing `restaurant`).
+
+### Comparison with our 158 categories
+| Our category | Overture `basic_category` | Overture `taxonomy.hierarchy` |
+|---|---|---|
+| hotel | hotel | [lodging, hotel] |
+| restaurant | restaurant | [food_and_drink, restaurant] |
+| bakery | bakery | [food_and_drink, bakery] |
+| pharmacy | pharmacy | [health_and_medical, pharmacy] |
+| museum | museum | [arts_and_entertainment, museum] |
+| gite (FR) | vacation_rental | [lodging, vacation_rental] |
+| bazar | variety_store | [shopping, variety_store] |
+| antique_furniture_store | antique_furniture_store | [shopping, antique_furniture_store] |
+
+**Decision:** adopt Overture's **`basic_category`** (~280) as the public category list; keep our
+158 as `legacy_category` / alias, mapped in `category_mapping`.
+
+### Persistence
 - `data/referential/category_mapping.csv` — one row per category:
   `slug;name;overture_category;osm_tag;acceslibre_family;notes`
-  (34 common categories pre-filled; the rest curated in the admin).
-- Persist as a `category_mapping` table (Phase 2/3) so the API can resolve a category to
-  Overture/OSM/Acceslibre, and imports can map a source record to a category.
-- Priority when importing: **Overture `categories`** → `osm_tag` → Acceslibre family.
+- Table `category_mapping` resolves a category to Overture/OSM/Acceslibre and maps source
+  records to a category.
+- Priority when importing: **Overture `basic_category`** → `osm_tag` → Acceslibre family.
 
 ## 5. Serving the grid (performance)
 
@@ -86,15 +110,23 @@ Do not auto-insert the library into the tree.
 4. Add category-specific criteria overrides.
 5. Regenerate the grids (`category_grid`) and bump `referential_version`.
 
-## 7. Open questions (to settle with the product owner)
+## 7. Decisions (resolved with the product owner, 2026-10-27)
 
-- Do we keep **all 158** Jaccede categories, or collapse them into the Overture taxonomy and
-  keep the 158 as aliases? (Recommend: keep them as aliases, adopt the Overture taxonomy as the
-  public category list.)
-- Do we expose **EN 17210 sequences** verbatim, or our own 7 groups? (Recommend: our 7 groups,
-  with an `en17210_ref` field for traceability.)
-- Which **handicap families** (moteur/auditif/visuel/mental) are first-class on each criterion?
-  (T&H uses 4 families; the Jaccede grid is motor-heavy — extend it.)
+- **Categories**: adopt the Overture `basic_category` as the public taxonomy; keep the 158
+  Jaccede categories as `legacy_category` aliases.
+- **Groups**: expose **our 7 groups** (form-friendly) with an `en17210_ref` per criterion
+  (traceability to EN 17210 / T&H).
+- **Handicap families**: model **4 first-class families** — `moteur`, `auditif`, `visuel`,
+  `mental` (cognitive) — instead of the motor-only Jaccede grid.
+  - `Criterion.handicap_families: list[HandicapFamily]`
+  - `AccessibilityFilter.handicap_families`
+  - `Place.accessibility_by_family` (computed score per family)
+  - API: `?family=` on the grid and search; criteria expose `handicap_families`.
+  - Admin: set the families per criterion.
+  - Add non-motor criteria (induction loop, sign language, braille, contrast, audio description,
+    easy-read, quiet space, tactile paving…) from the 182 library + T&H/EN 17210.
+- **Why**: Jaccede was essentially motor-only; hearing, visual and cognitive accessibility was
+  under-represented. The 4 families are a first-class product feature.
 
 ---
 
