@@ -23,10 +23,14 @@ Modern rewrite of the collaborative accessible-places guide: normalized referent
 **Requirements:** REF-01, REF-02, REF-03, REF-04, REF-05
 **Success Criteria**:
 1. `uv run python scripts/build_referential.py` produces the seed JSON.
-2. `uv run python -m letmegetin.seed` loads 158 categories, 182 criteria and the category-1 grid.
+2. `uv run python -m letmegetin.seed` loads 158 categories, 182 vocabulary rows and the category-1 grid.
 3. `GET /api/v1/categories` and `GET /api/v1/categories/{slug}/criteria` return multilingual labels.
 4. `GET /api/v1/filters` returns the 52 filters + official labels.
 5. A minimal admin/CLI can add/edit a criterion.
+
+**Plans:** 1 plan
+Plans:
+- [ ] 02-01-PLAN.md — Curate the 182-label vocabulary into criterion_vocabulary, add the editable category-to-criteria mapping and the Typer admin CLI, then prove the multilingual reads
 
 ### Phase 3: Places & search
 **Goal:** Search places by text, proximity and accessibility filters.

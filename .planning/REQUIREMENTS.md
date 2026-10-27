@@ -16,7 +16,7 @@
 - [ ] **REF-01**: The API lists categories with multilingual labels (fr/en/es/de/it)
 - [ ] **REF-02**: The API exposes the criteria tree per category (groups → criteria → options)
 - [ ] **REF-03**: The API lists accessibility filters (search) and official labels
-- [ ] **REF-04**: The initial seed is loaded from the reconstructed data (158 categories, 182 criteria, category-1 grid)
+- [ ] **REF-04**: The initial seed is loaded from the reconstructed data (158 categories, 182 vocabulary rows, category-1 grid)
 - [ ] **REF-05**: A minimal admin/CLI can edit categories, criteria and options
 
 ### Places & search
