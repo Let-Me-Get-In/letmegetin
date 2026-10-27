@@ -1,0 +1,8 @@
+# gitleaks configuration (shared by pre-commit and CI).
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+  '''data/referential/raw/.*''',
+]

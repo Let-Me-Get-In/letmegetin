@@ -8,14 +8,14 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from letmegetin.db import get_session
-from letmegetin.main import app
-from letmegetin.models import (
-    AccessibilityFilter,
-    Category,
-    Criterion,
-    OtherInformation,
+from letmegetin.core.db import get_session
+from letmegetin.infrastructure.persistence.models import (
+    AccessibilityFilterModel,
+    CategoryModel,
+    CriterionModel,
+    OtherInformationModel,
 )
+from letmegetin.main import app
 
 
 class _Result:
@@ -59,7 +59,7 @@ def _use(session: FakeSession) -> None:
 
 
 def test_list_categories(client: TestClient) -> None:
-    category = Category(slug="restaurant", name="Restaurant", label={"fr": "Restaurant"})
+    category = CategoryModel(slug="restaurant", name="Restaurant", label={"fr": "Restaurant"})
     _use(FakeSession(scalars_queue=[_Result([category])]))
     response = client.get("/api/v1/categories")
     assert response.status_code == 200
@@ -67,7 +67,7 @@ def test_list_categories(client: TestClient) -> None:
 
 
 def test_category_criteria_tree(client: TestClient) -> None:
-    root = Criterion(
+    root = CriterionModel(
         id=1,
         slug="entree",
         parent_id=None,
@@ -76,7 +76,7 @@ def test_category_criteria_tree(client: TestClient) -> None:
         label={"fr": "Entrée"},
         description={},
     )
-    child = Criterion(
+    child = CriterionModel(
         id=2,
         slug="entree-acces",
         parent_id=1,
@@ -87,7 +87,7 @@ def test_category_criteria_tree(client: TestClient) -> None:
     )
     _use(
         FakeSession(
-            scalar_queue=[Category(id=1, slug="restaurant", name="Restaurant", label={})],
+            scalar_queue=[CategoryModel(id=1, slug="restaurant", name="Restaurant", label={})],
             scalars_queue=[_Result([2]), _Result([root, child])],
         )
     )
@@ -108,7 +108,7 @@ def test_list_filters(client: TestClient) -> None:
     _use(
         FakeSession(
             scalars_queue=[
-                _Result([AccessibilityFilter(slug="slope", label={"fr": "Pente"}, position=0)])
+                _Result([AccessibilityFilterModel(slug="slope", label={"fr": "Pente"}, position=0)])
             ]
         )
     )
@@ -121,7 +121,9 @@ def test_list_other_information(client: TestClient) -> None:
     _use(
         FakeSession(
             scalars_queue=[
-                _Result([OtherInformation(slug="th", name="th", label={"fr": "TH"}, link=None)])
+                _Result(
+                    [OtherInformationModel(slug="th", name="th", label={"fr": "TH"}, link=None)]
+                )
             ]
         )
     )

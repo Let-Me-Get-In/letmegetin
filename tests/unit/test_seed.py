@@ -1,4 +1,4 @@
-"""Tests du chargeur de seed (session factice, sans base de données)."""
+"""Seed loader tests (fake session, no database)."""
 
 from __future__ import annotations
 
@@ -9,7 +9,12 @@ from typing import Any
 import pytest
 
 from letmegetin import seed as seed_module
-from letmegetin.models import Category, CategoryCriterion, Criterion, OtherInformation
+from letmegetin.infrastructure.persistence.models import (
+    CategoryCriterionModel,
+    CategoryModel,
+    CriterionModel,
+    OtherInformationModel,
+)
 
 _GRID = [
     {
@@ -51,7 +56,7 @@ class FakeSession:
         return None
 
     async def scalars(self, statement: Any) -> _Result:
-        return _Result([obj for obj in self.added if isinstance(obj, Category)])
+        return _Result([obj for obj in self.added if isinstance(obj, CategoryModel)])
 
     def add(self, obj: Any) -> None:
         if getattr(obj, "id", None) is None:
@@ -123,10 +128,10 @@ async def test_seed_loads_data_without_schema(
     await seed_module.seed()
 
     assert session.committed
-    assert any(isinstance(obj, Category) for obj in session.added)
-    assert any(isinstance(obj, OtherInformation) for obj in session.added)
-    assert any(isinstance(obj, Criterion) for obj in session.added)
-    assert any(isinstance(obj, CategoryCriterion) for obj in session.added)
+    assert any(isinstance(obj, CategoryModel) for obj in session.added)
+    assert any(isinstance(obj, OtherInformationModel) for obj in session.added)
+    assert any(isinstance(obj, CriterionModel) for obj in session.added)
+    assert any(isinstance(obj, CategoryCriterionModel) for obj in session.added)
 
 
 def test_seed_has_no_schema_engine() -> None:

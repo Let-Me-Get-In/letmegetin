@@ -1,4 +1,4 @@
-"""Modèles du référentiel d'accessibilité."""
+"""SQLAlchemy ORM models for the referential (infrastructure layer)."""
 
 from __future__ import annotations
 
@@ -10,18 +10,18 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
-    """Base déclarative SQLAlchemy."""
+    """Declarative base shared by every ORM model."""
 
 
 class TimestampMixin:
-    """Colonnes created/updated communes."""
+    """Common created/updated columns."""
 
     created: Mapped[datetime] = mapped_column(server_default=func.now())
     updated: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
 
 
-class Category(Base, TimestampMixin):
-    """Catégorie de lieu (restaurant, hôtel, pharmacie…)."""
+class CategoryModel(Base, TimestampMixin):
+    """Place categories (restaurant, hotel, pharmacy…)."""
 
     __tablename__ = "categories"
 
@@ -32,8 +32,8 @@ class Category(Base, TimestampMixin):
     parent_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id"), index=True)
 
 
-class Criterion(Base, TimestampMixin):
-    """Critère d'accessibilité hiérarchique et typé (groupe → critère → option)."""
+class CriterionModel(Base, TimestampMixin):
+    """Hierarchical, typed accessibility criteria (group → criterion → option)."""
 
     __tablename__ = "criteria"
 
@@ -47,8 +47,8 @@ class Criterion(Base, TimestampMixin):
     description: Mapped[dict] = mapped_column(JSONB, default=dict)
 
 
-class CategoryCriterion(Base):
-    """Association catégorie ↔ critère."""
+class CategoryCriterionModel(Base):
+    """Association between a category and a criterion."""
 
     __tablename__ = "category_criteria"
 
@@ -60,8 +60,8 @@ class CategoryCriterion(Base):
     )
 
 
-class AccessibilityFilter(Base, TimestampMixin):
-    """Filtre d'accessibilité exposé à la recherche."""
+class AccessibilityFilterModel(Base, TimestampMixin):
+    """Accessibility filter exposed to search."""
 
     __tablename__ = "accessibility_filters"
 
@@ -73,8 +73,8 @@ class AccessibilityFilter(Base, TimestampMixin):
     active: Mapped[bool] = mapped_column(default=True)
 
 
-class OtherInformation(Base, TimestampMixin):
-    """Label officiel / information complémentaire (ex. Tourisme & Handicap)."""
+class OtherInformationModel(Base, TimestampMixin):
+    """Official label / complementary information (e.g. Tourisme & Handicap)."""
 
     __tablename__ = "other_information"
     __table_args__ = (UniqueConstraint("name", name="other_information_name_uc"),)

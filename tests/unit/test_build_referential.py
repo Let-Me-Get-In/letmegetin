@@ -14,7 +14,7 @@ from scripts.build_referential import (
     extract_category_one_grid,
 )
 
-RAW_DIR = Path(__file__).resolve().parents[1] / "data" / "referential" / "raw"
+RAW_DIR = Path(__file__).resolve().parents[2] / "data" / "referential" / "raw"
 
 pytestmark = pytest.mark.skipif(
     not (RAW_DIR / "category.csv").exists(),

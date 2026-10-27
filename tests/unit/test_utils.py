@@ -1,10 +1,10 @@
-"""Tests du slugify (utilitaires purs, sans base de données)."""
+"""Tests for slugify (pure utilities, no database)."""
 
 from __future__ import annotations
 
 import pytest
 
-from letmegetin.utils import slugify
+from letmegetin.core.utils import slugify
 
 
 @pytest.mark.parametrize(

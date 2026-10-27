@@ -163,15 +163,31 @@ letmegetin/
 ├── scripts/build_referential.py
 ├── src/letmegetin/
 │   ├── config.py           # pydantic-settings (LETMEGETIN_*)
-│   ├── db.py               # engine/session async
-│   ├── models.py           # référentiel (Category, Criterion, …)
-│   ├── schemas.py          # Pydantic v2
-│   ├── api.py              # /api/v1/{categories,criteria,filters,other-information}
-│   ├── seed.py
-│   └── main.py             # app FastAPI + /health
+│   ├── main.py             # app FastAPI + /health
+│   ├── seed.py             # seed loader (assumes `alembic upgrade head`)
+│   ├── core/               # shared kernel: db.py, exceptions.py, utils.py
+│   ├── domain/             # pure domain: entities + repository ports
+│   │   └── referential/
+│   ├── application/        # use cases (orchestration)
+│   │   └── referential/
+│   ├── infrastructure/     # adapters: SQLAlchemy models, mappers, repositories
+│   │   └── persistence/
+│   └── api/                # presentation: deps, schemas, v1 endpoints
+│       ├── deps.py
+│       ├── schemas/
+│       └── v1/
 ├── tests/
+│   ├── unit/
+│   └── integration/        # later (real PostGIS)
 └── web/                    # Next.js (à venir)
 ```
+
+**Layering (DDD):** `api → application → domain ← infrastructure`.
+
+- `domain/` is pure (no SQLAlchemy, no FastAPI): entities + repository `Protocol`s.
+- `application/` holds use cases; it depends only on the domain ports.
+- `infrastructure/` implements the ports (SQLAlchemy `*Model`s, mappers, repositories).
+- `api/` maps HTTP ↔ use cases; it never touches the ORM.
 
 ## Key design decisions
 

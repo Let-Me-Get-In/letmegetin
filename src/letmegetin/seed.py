@@ -1,8 +1,8 @@
-"""Charge le seed reconstitué dans PostgreSQL/PostGIS.
+"""Load the reconstructed seed into PostgreSQL/PostGIS.
 
-Le schéma doit exister au préalable : `uv run alembic upgrade head`.
-Usage : `uv run python -m letmegetin.seed`
-Idempotent : les enregistrements existants ne sont pas dupliqués.
+The schema must exist first: `uv run alembic upgrade head`.
+Usage: `uv run python -m letmegetin.seed`
+Idempotent: existing rows are not duplicated.
 """
 
 from __future__ import annotations
@@ -14,15 +14,15 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from letmegetin.config import settings
-from letmegetin.db import SessionLocal
-from letmegetin.models import (
-    AccessibilityFilter,
-    Category,
-    CategoryCriterion,
-    Criterion,
-    OtherInformation,
+from letmegetin.core.db import SessionLocal
+from letmegetin.core.utils import slugify
+from letmegetin.infrastructure.persistence.models import (
+    AccessibilityFilterModel,
+    CategoryCriterionModel,
+    CategoryModel,
+    CriterionModel,
+    OtherInformationModel,
 )
-from letmegetin.utils import slugify
 
 
 def _criterion_type(data: dict) -> str:
@@ -41,11 +41,11 @@ async def _upsert_criterion(
     position: int,
     label: dict[str, str],
     description: dict[str, str] | None = None,
-) -> Criterion:
-    existing = await session.scalar(select(Criterion).where(Criterion.slug == slug))
+) -> CriterionModel:
+    existing = await session.scalar(select(CriterionModel).where(CriterionModel.slug == slug))
     if existing is not None:
         return existing
-    criterion = Criterion(
+    criterion = CriterionModel(
         slug=slug,
         parent_id=parent_id,
         type=kind,
@@ -59,32 +59,42 @@ async def _upsert_criterion(
 
 
 async def seed() -> None:
-    """Insère catégories, filtres, labels et grille catégorie 1 (schéma déjà migré)."""
+    """Insert categories, filters, labels and the category-1 grid (schema already migrated)."""
     data_dir = settings.data_dir
     async with SessionLocal() as session:
         for entry in json.loads((data_dir / "categories.json").read_text(encoding="utf-8")):
-            exists = await session.scalar(select(Category).where(Category.slug == entry["slug"]))
+            exists = await session.scalar(
+                select(CategoryModel).where(CategoryModel.slug == entry["slug"])
+            )
             if exists is None:
-                session.add(Category(slug=entry["slug"], name=entry["name"], label=entry["label"]))
+                session.add(
+                    CategoryModel(slug=entry["slug"], name=entry["name"], label=entry["label"])
+                )
 
         for position, entry in enumerate(
             json.loads((data_dir / "filters.json").read_text(encoding="utf-8"))
         ):
             exists = await session.scalar(
-                select(AccessibilityFilter).where(AccessibilityFilter.slug == entry["slug"])
+                select(AccessibilityFilterModel).where(
+                    AccessibilityFilterModel.slug == entry["slug"]
+                )
             )
             if exists is None:
                 session.add(
-                    AccessibilityFilter(slug=entry["slug"], label=entry["label"], position=position)
+                    AccessibilityFilterModel(
+                        slug=entry["slug"], label=entry["label"], position=position
+                    )
                 )
 
         for entry in json.loads((data_dir / "th.json").read_text(encoding="utf-8")):
             exists = await session.scalar(
-                select(OtherInformation).where(OtherInformation.slug == entry["slug"])
+                select(OtherInformationModel).where(OtherInformationModel.slug == entry["slug"])
             )
             if exists is None:
                 session.add(
-                    OtherInformation(slug=entry["slug"], name=entry["name"], label=entry["label"])
+                    OtherInformationModel(
+                        slug=entry["slug"], name=entry["name"], label=entry["label"]
+                    )
                 )
 
         await session.flush()
@@ -94,13 +104,13 @@ async def seed() -> None:
         )
         linked_ids: list[int] = []
         for group_index, group in enumerate(grid):
-            group_name = group.get("name") or f"Groupe {group_index + 1}"
+            group_name = group.get("name") or f"Group {group_index + 1}"
             group_slug = slugify(group_name)
             group_node = await _upsert_criterion(
                 session, group_slug, None, "array", group_index, {"fr": group_name}
             )
             for criterion_index, criterion in enumerate(group.get("criteria", [])):
-                criterion_name = criterion.get("name") or f"Critère {criterion_index + 1}"
+                criterion_name = criterion.get("name") or f"Criterion {criterion_index + 1}"
                 criterion_slug = f"{group_slug}-{slugify(criterion_name)}"
                 criterion_node = await _upsert_criterion(
                     session,
@@ -125,18 +135,18 @@ async def seed() -> None:
                         {"fr": label},
                     )
 
-        categories = list((await session.scalars(select(Category))).all())
+        categories = list((await session.scalars(select(CategoryModel))).all())
         for category in categories:
             for criterion_id in linked_ids:
                 exists = await session.scalar(
-                    select(CategoryCriterion).where(
-                        CategoryCriterion.category_id == category.id,
-                        CategoryCriterion.criterion_id == criterion_id,
+                    select(CategoryCriterionModel).where(
+                        CategoryCriterionModel.category_id == category.id,
+                        CategoryCriterionModel.criterion_id == criterion_id,
                     )
                 )
                 if exists is None:
                     session.add(
-                        CategoryCriterion(category_id=category.id, criterion_id=criterion_id)
+                        CategoryCriterionModel(category_id=category.id, criterion_id=criterion_id)
                     )
 
         await session.commit()

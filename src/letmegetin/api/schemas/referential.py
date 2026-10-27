@@ -1,4 +1,4 @@
-"""Schémas Pydantic exposés par l'API."""
+"""Pydantic response schemas exposed by the referential API."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class CategoryOut(BaseModel):
-    """Catégorie de lieu."""
+    """A place category."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -16,7 +16,7 @@ class CategoryOut(BaseModel):
 
 
 class CriterionOut(BaseModel):
-    """Nœud de l'arbre d'accessibilité."""
+    """A node of the accessibility criteria tree."""
 
     slug: str
     label: dict[str, str]
@@ -26,7 +26,7 @@ class CriterionOut(BaseModel):
 
 
 class FilterOut(BaseModel):
-    """Filtre de recherche."""
+    """A search filter."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -36,7 +36,7 @@ class FilterOut(BaseModel):
 
 
 class OtherInformationOut(BaseModel):
-    """Label officiel / information complémentaire."""
+    """An official label / complementary information."""
 
     model_config = ConfigDict(from_attributes=True)
 
