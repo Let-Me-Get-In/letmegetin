@@ -46,6 +46,7 @@ def test_token_rejects_expired() -> None:
 def test_token_rejects_tampering() -> None:
     token = security.create_token(42, "user", "access", 60)
     header, payload, signature = token.split(".")
+    tampered = ("A" if payload[0] != "A" else "B") + payload[1:]
 
     with pytest.raises(InvalidToken):
-        security.decode_token(f"{header}.{payload}.{signature[:-1]}A", "access")
+        security.decode_token(f"{header}.{tampered}.{signature}", "access")
