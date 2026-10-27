@@ -91,7 +91,7 @@ Plans:
 | Phase | Ticket | Status | Completed |
 |-------|--------|--------|-----------|
 | 1. Foundation & CI | LET-6 | Complete | 2026-10-27 |
-| 2. Referential & seed | LET-7 | Executed | — |
+| 2. Referential & seed | LET-7 | Complete | 2026-10-27 |
 | 3. Places & search | LET-8 | Pending | — |
 | 4. Record & reviews (read) | LET-9 | Pending | — |
 | 5. Auth & contribution | LET-10 | Pending | — |
