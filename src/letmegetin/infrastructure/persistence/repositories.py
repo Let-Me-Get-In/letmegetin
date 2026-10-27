@@ -10,6 +10,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from letmegetin.core.exceptions import DomainError
+from letmegetin.domain.accounts.entities import User
 from letmegetin.domain.places.dedup import normalize_name
 from letmegetin.domain.places.entities import (
     HandicapFamily,
@@ -45,6 +46,7 @@ from letmegetin.infrastructure.persistence.models import (
     CategoryGridModel,
     CategoryMappingModel,
     CategoryModel,
+    ContributionModel,
     CriterionModel,
     CriterionVocabularyModel,
     OtherInformationModel,
@@ -55,6 +57,7 @@ from letmegetin.infrastructure.persistence.models import (
     PlacePhotoModel,
     ReferentialVersionModel,
     ReviewModel,
+    UserModel,
 )
 
 
@@ -292,6 +295,42 @@ class SqlAlchemyOtherInformationRepository:
 def _point(lat: float, lng: float) -> object:
     """A geography point built from bound parameters (never from interpolated SQL)."""
     return func.ST_SetSRID(func.ST_MakePoint(lng, lat), 4326).cast(Geography)
+
+
+class SqlAlchemyUserRepository:
+    """Account repository backed by SQLAlchemy (no commit: the caller owns the work)."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def get_by_email(self, email: str) -> User | None:
+        model = await self._session.scalar(select(UserModel).where(UserModel.email == email))
+        return _user_from_model(model) if model is not None else None
+
+    async def get_by_id(self, user_id: int) -> User | None:
+        model = await self._session.get(UserModel, user_id)
+        return _user_from_model(model) if model is not None else None
+
+    async def add(self, user: User) -> User:
+        model = UserModel(
+            email=user.email,
+            password_hash=user.password_hash,
+            role=user.role,
+            display_name=user.display_name,
+        )
+        self._session.add(model)
+        await self._session.flush()
+        return _user_from_model(model)
+
+
+def _user_from_model(model: UserModel) -> User:
+    return User(
+        id=model.id,
+        email=model.email,
+        password_hash=model.password_hash,
+        role=model.role,
+        display_name=model.display_name,
+    )
 
 
 class SqlAlchemyPlaceRepository:
@@ -545,6 +584,7 @@ class SqlAlchemyPlaceRepository:
                     body=row.body,
                     author_name=row.author_name,
                     created=row.created,
+                    status=row.status,
                 )
                 for row in rows
             ],
@@ -560,6 +600,55 @@ class SqlAlchemyPlaceRepository:
             )
         ).one()
         return (round(float(average), 1) if average is not None else None, int(count or 0))
+
+    async def add_contribution(
+        self, place_id: int, user_id: int, criterion_id: int, value: dict[str, object]
+    ) -> None:
+        self._session.add(
+            ContributionModel(
+                place_id=place_id, user_id=user_id, criterion_id=criterion_id, value=value
+            )
+        )
+        await self._session.flush()
+
+    async def add_review(
+        self,
+        place_id: int,
+        user_id: int,
+        rating: int,
+        body: str,
+        author_name: str | None,
+    ) -> Review:
+        model = ReviewModel(
+            place_id=place_id,
+            user_id=user_id,
+            rating=rating,
+            body=body,
+            author_name=author_name,
+            status="published",
+        )
+        self._session.add(model)
+        await self._session.flush()
+        return _review_from_model(model)
+
+    async def set_review_status(self, review_id: int, status: str) -> Review | None:
+        model = await self._session.get(ReviewModel, review_id)
+        if model is None:
+            return None
+        model.status = status
+        await self._session.flush()
+        return _review_from_model(model)
+
+
+def _review_from_model(model: ReviewModel) -> Review:
+    return Review(
+        id=model.id,
+        rating=model.rating,
+        body=model.body,
+        author_name=model.author_name,
+        created=model.created,
+        status=model.status,
+    )
 
 
 class SqlAlchemyPlaceAliasRepository:

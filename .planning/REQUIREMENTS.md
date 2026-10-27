@@ -30,15 +30,15 @@
 ### Reviews & contribution
 
 - [x] **REV-01**: Users can read a place's reviews (rating 1–5 + text)
-- [ ] **REV-02**: Authenticated users can post a review
-- [ ] **CONTRIB-01**: Authenticated users can complete/edit a record's accessibility values
-- [ ] **CONTRIB-02**: Every contribution is logged and the completion rate is recomputed
+- [x] **REV-02**: Authenticated users can post a review
+- [x] **CONTRIB-01**: Authenticated users can complete/edit a record's accessibility values
+- [x] **CONTRIB-02**: Every contribution is logged and the completion rate is recomputed
 
 ### Auth
 
-- [ ] **AUTH-01**: Users can create an account (email + password)
-- [ ] **AUTH-02**: Users can log in and receive a JWT (access + refresh)
-- [ ] **AUTH-03**: `user` and `admin` roles gate sensitive actions
+- [x] **AUTH-01**: Users can create an account (email + password)
+- [x] **AUTH-02**: Users can log in and receive a JWT (access + refresh)
+- [x] **AUTH-03**: `user` and `admin` roles gate sensitive actions
 
 ### Public API
 
@@ -93,12 +93,12 @@
 | PLACE-04 | Phase 4 | Complete |
 | PLACE-05 | Phase 3 | Complete |
 | REV-01 | Phase 4 | Complete |
-| REV-02 | Phase 5 | Pending |
-| CONTRIB-01 | Phase 5 | Pending |
-| CONTRIB-02 | Phase 5 | Pending |
-| AUTH-01 | Phase 5 | Pending |
-| AUTH-02 | Phase 5 | Pending |
-| AUTH-03 | Phase 5 | Pending |
+| REV-02 | Phase 5 | Complete |
+| CONTRIB-01 | Phase 5 | Complete |
+| CONTRIB-02 | Phase 5 | Complete |
+| AUTH-01 | Phase 5 | Complete |
+| AUTH-02 | Phase 5 | Complete |
+| AUTH-03 | Phase 5 | Complete |
 | API-01 | Phase 7 | Pending |
 | API-02 | Phase 7 | Pending |
 | FRONT-01 | Phase 6 | Pending |
