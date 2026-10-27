@@ -36,6 +36,27 @@ and building a competing database. Legal, not just cost.
 | **Tourisme & Handicap** (Atout France) | Label referentials (public PDFs) | **Criteria ontology** (not place data). |
 | **EN 17210:2021 / ISO 21542:2021** | Standards (paid docs) | Canonical **criteria ontology** for the built environment. |
 
+### Other open-data resources (survey, 2026-10-27)
+
+| Resource | License | Contribution |
+|---|---|---|
+| **accessibilite.data.gouv.fr** | Etalab 2.0 | Thematic **catalogue** of French accessibility datasets (entry point to harvest). |
+| **Acceslibre** (data.gouv.fr dump) | Etalab 2.0 | Consolidated French ERP accessibility dataset. |
+| **Registre Public d'Accessibilité (RPA)** | Legal requirement | Per-ERP accessibility register; Acceslibre is the recommended platform. |
+| **SIRENE / API Entreprise** | Etalab 2.0 | Establishment identity (SIRET) and addresses — a canonical dedup key. |
+| **BAN (Base Adresse Nationale)** | Etalab 2.0 | Address normalization + geocoding. |
+| **INSEE BPE** | Etalab 2.0 | Equipment/facilities base (category cross-check). |
+| **Wheelmap / accessibility.cloud** | OSM ODbL + per-partner | ~2M places; **accessibility.cloud** exposes a unified API and already aggregates Jaccede, Foursquare, AXSMap, HERE, Parkopedia. |
+| **Project Sidewalk** | **CC0 1.0** | Sidewalk accessibility labels + **AccessScores** APIs (US/international cities). |
+| **AccessNow / AXSMap / Mapy bez barier / bahnhof.de** | crowdsourced / open | Additional place coverage (global / US / SK / DE). |
+| **AccessibleEU / data.europa.eu** | EU | Standards, guidance and the EU open-data catalogue. |
+| **OpenRouteService (HeiGIT)** | open source | Wheelchair **routing** (not place data) — useful for the frontend. |
+| **Transport open data** (Twisto, Île-de-France Mobilités…) | variable | Station/stop accessibility. |
+
+**License caution:** ODbL sources (OSM/Wheelmap) are share-alike; permissive sources (Overture
+CDLA, Acceslibre Etalab, Project Sidewalk CC0) are not. Keep **provenance per row** and treat
+the community layer as ODbL; do not blend ODbL data into a permissively-licensed export.
+
 Decisions:
 - **Overture** as the global place seed; **Acceslibre** as the French accessibility seed.
 - Do **not** duplicate Acceslibre: aggregate it, credit it, and add our community layer.
