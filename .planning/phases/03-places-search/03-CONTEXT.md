@@ -22,6 +22,9 @@ Out of scope: auth/contribution writes (Phase 5), Next.js UI (Phase 6), mobile.
 - **Place sources**: Overture + Acceslibre as primary, **OSM opt-in** per deployment.
 - **Community data license**: **ODbL** (attribution + share-alike).
 - **Funding**: **open data + paid service/SLA + grants/sponsorship**.
+- **Rollout: France first.** The Phase 3 MVP seeds from **French open data** (Acceslibre + BAN +
+  SIRENE + the `accessibilite.data.gouv.fr` catalogue). Overture (global) and OSM are integrated
+  **later**; `source`/`source_id` and `category_mapping` keep that additive, not a rewrite.
 
 ## Data sources & licensing (research-backed)
 
@@ -30,8 +33,8 @@ and building a competing database. Legal, not just cost.
 
 | Source | License | Role |
 |---|---|---|
-| **Overture Places** (~88M POIs, global) | CDLA-Permissive 2.0 + Apache-2.0 (Foursquare subset) — **no OSM data, no ODbL** | Primary global seed. Stable **GERS ID**; built by an ML conflation pipeline. |
-| **Acceslibre** (French ERP accessibility, Ministère de la Transition écologique) | **Licence Ouverte / Etalab 2.0** (data), **MIT** (source) | Primary French accessibility source; has a public **API** and a documented **schema**. Reuse with attribution. |
+| **Overture Places** (~88M POIs, global) | CDLA-Permissive 2.0 + Apache-2.0 (Foursquare subset) — **no OSM data, no ODbL** | Global seed (**later**; the Phase 3 MVP is France-first). Stable **GERS ID**; built by an ML conflation pipeline. |
+| **Acceslibre** (French ERP accessibility, Ministère de la Transition écologique) | **Licence Ouverte / Etalab 2.0** (data), **MIT** (source) | **Primary seed for the Phase 3 MVP** (France-first); public **API** + documented **schema**. Reuse with attribution. |
 | **OpenStreetMap** | ODbL (share-alike) | Optional complement (POIs + accessibility tags). Joining OSM makes the derived DB ODbL. |
 | **Tourisme & Handicap** (Atout France) | Label referentials (public PDFs) | **Criteria ontology** (not place data). |
 | **EN 17210:2021 / ISO 21542:2021** | Standards (paid docs) | Canonical **criteria ontology** for the built environment. |
