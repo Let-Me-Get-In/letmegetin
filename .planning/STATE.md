@@ -9,18 +9,18 @@ See: .planning/PROJECT.md (updated 2026-10-26)
 
 ## Current Position
 
-Ticket: LET-6 (Phase 1 — complete); next LET-7
-Phase: 1 complete / 7; next Phase 2
-Plan: 01-01 (verified)
-Status: Complete — verified
-Last activity: 2026-10-27 — Phase 1 verified (VERIFICATION.md passed); 22 tests, 97.5% coverage, CI green.
+Ticket: LET-7 (Phase 2 — plan 02-01 executed, verification pending)
+Phase: 2 in progress / 7
+Plan: 02-01 (executed)
+Status: Awaiting verification (`/gsd-verify-work 2`)
+Last activity: 2026-10-27 — Phase 2 plan 02-01 executed; 84 tests, 97.5% coverage, vocabulary 182, mapping is_default data.
 
 ## Performance Metrics
 
 - Requirements: 26 v1
 - Phases: 7
 - Linear tickets: LET-5..LET-12
-- Plans completed: 1
+- Plans completed: 2
 - Phases complete: 1
 
 ## Accumulated Context
@@ -37,8 +37,7 @@ Last activity: 2026-10-27 — Phase 1 verified (VERIFICATION.md passed); 22 test
 
 ### Pending Todos
 
-- Validate the seed (see `data/referential/`).
-- Curate the full vocabulary (182 criteria) in the database (REF-05).
+- Curate the vocabulary beyond the import: promote entries and translate labels (en/es/de) by hand.
 
 ### Blockers/Concerns
 
@@ -46,6 +45,6 @@ Last activity: 2026-10-27 — Phase 1 verified (VERIFICATION.md passed); 22 test
 
 ## Session Continuity
 
-Last session: 2026-10-26
-Stopped at: bootstrap + conventions + public repo
-Resume file: .planning/PROJECT.md
+Last session: 2026-10-27
+Stopped at: Phase 2 plan 02-01 executed (SUMMARY written)
+Resume file: .planning/phases/02-referential-seed/02-01-SUMMARY.md
