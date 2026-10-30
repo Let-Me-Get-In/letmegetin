@@ -18,6 +18,7 @@ class CategoryOut(BaseModel):
 class CriterionOut(BaseModel):
     """A node of the accessibility criteria tree."""
 
+    id: int
     slug: str
     label: dict[str, str]
     description: dict[str, str] = {}

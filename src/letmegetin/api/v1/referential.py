@@ -48,6 +48,7 @@ async def get_criteria(
 
 def _to_out(node: Criterion) -> CriterionOut:
     return CriterionOut(
+        id=node.id,
         slug=node.slug,
         label=node.label,
         description=node.description,
