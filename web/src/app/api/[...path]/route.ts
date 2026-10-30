@@ -16,7 +16,17 @@ function cookieOptions(maxAge: number) {
   };
 }
 
-async function handler(request: NextRequest, context: Context) {
+export async function handler(request: NextRequest, context: Context) {
+  const origin = request.headers.get("origin");
+  if (
+    request.method !== "GET" &&
+    request.method !== "HEAD" &&
+    origin !== null &&
+    origin !== request.nextUrl.origin
+  ) {
+    return NextResponse.json({ detail: "Cross-origin request rejected" }, { status: 403 });
+  }
+
   const { path } = await context.params;
   const route = path.join("/");
   const isLogin = route === "v1/auth/login";

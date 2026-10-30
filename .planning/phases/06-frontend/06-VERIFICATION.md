@@ -19,17 +19,17 @@ gates:
   pytest: pass (166 passed)
   web_lint: pass
   web_typecheck: pass
-  web_tests: pass (14 Vitest tests)
+  web_tests: pass (24 Vitest tests, including BFF, forms and axe)
   web_build: pass (Next 16 production build)
   alembic_current: "0006 (head)"
   pr_checks: pass (7/7, including the new web job)
 gaps: []
 warnings:
-  - "No automated axe/Lighthouse run: the accessibility review is a code review plus keyboard checks."
-  - "The map uses the public OpenStreetMap tile server; a production tile provider is required before launch."
+  - "The map still uses the public OpenStreetMap tile server by default; a production tile provider can be set with NEXT_PUBLIC_MAP_TILE_URL."
+  - "The axe check runs on the tree component only; the full pages are reviewed manually, not with Lighthouse."
   - "Criterion filters require selecting a category first, because the API endpoint is category-scoped."
-  - "The refresh cookie is SameSite=Lax and httpOnly; there is no separate CSRF token, acceptable for a same-origin JSON BFF but to revisit if the surface grows."
-  - "No browser e2e in this repo (deferred to a separate repo), so the contribution/review submissions are covered by the API tests and the form tests, not by a browser."
+  - "The BFF rejects cross-origin state changes (Origin check) in addition to the SameSite=Lax httpOnly cookie; there is no separate CSRF token."
+  - "No browser e2e in this repo (deferred to a separate repo), so the contribution/review submissions are covered by the API tests and the component tests, not by a browser."
   - "The map's screen-reader experience relies on the parallel list; it has not been tested with a real screen reader."
 deferred:
   - item: "Browser e2e (search, record, contribution, review)"
