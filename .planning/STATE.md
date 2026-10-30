@@ -13,7 +13,7 @@ Ticket: LET-11 (Phase 6 — complete); next LET-12
 Phase: 6 complete / 7; next Phase 7
 Plan: 06-01 (verified)
 Status: Complete — verified
-Last activity: 2026-10-30 — Phase 6 verified (VERIFICATION.md passed); 166 backend tests, 14 web tests, CI 7/7.
+Last activity: 2026-10-30 — Phase 6 verified (VERIFICATION.md passed); 166 backend tests, 24 web tests, CI 7/7.
 
 ## Performance Metrics
 
