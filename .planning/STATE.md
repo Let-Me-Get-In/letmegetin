@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** LET-11 — Phase 6 (Next.js frontend)
+**Current focus:** LET-12 — Phase 7 (Public API & deployment)
 
 ## Current Position
 
-Ticket: LET-10 (Phase 5 — complete); next LET-11
-Phase: 5 complete / 7; next Phase 6
-Plan: 05-01 (verified)
+Ticket: LET-11 (Phase 6 — complete); next LET-12
+Phase: 6 complete / 7; next Phase 7
+Plan: 06-01 (verified)
 Status: Complete — verified
-Last activity: 2026-10-30 — Phase 5 merged (PR #9); Phase 6 plan created (06-01-PLAN.md), not executed.
+Last activity: 2026-10-30 — Phase 6 verified (VERIFICATION.md passed); 166 backend tests, 14 web tests, CI 7/7.
 
 ## Performance Metrics
 
 - Requirements: 26 v1
 - Phases: 7
 - Linear tickets: LET-5..LET-12
-- Plans completed: 5
-- Phases complete: 5
+- Plans completed: 6
+- Phases complete: 6
 
 ## Accumulated Context
 
@@ -46,5 +46,5 @@ Last activity: 2026-10-30 — Phase 5 merged (PR #9); Phase 6 plan created (06-0
 ## Session Continuity
 
 Last session: 2026-10-27
-Stopped at: Phase 6 planned (06-01-PLAN.md), not executed
-Resume file: .planning/phases/06-frontend/06-01-PLAN.md
+Stopped at: Phase 6 verified (VERIFICATION.md passed)
+Resume file: .planning/phases/06-frontend/06-VERIFICATION.md
