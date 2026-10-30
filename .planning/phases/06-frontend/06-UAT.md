@@ -46,7 +46,7 @@ evidence: "166 pytest tests pass; ruff, mypy and bandit clean."
 expected: on PR #11, the six backend jobs plus the new web job pass.
 result: pass
 source: automated
-evidence: "GitHub Actions run 41139499538: 7/7 jobs pass."
+evidence: "GitHub Actions run 41141483879: 7/7 jobs pass."
 
 ### 7. Accessibility review
 expected: skip link, semantic headings, labelled controls, visible focus, status live regions, reduced-motion handling, map text alternative.
