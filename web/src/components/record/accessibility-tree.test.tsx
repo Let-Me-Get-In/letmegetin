@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import axe from "axe-core";
 import { describe, expect, it } from "vitest";
 
 import { AccessibilityTree } from "@/components/record/accessibility-tree";
@@ -49,5 +50,16 @@ describe("AccessibilityTree", () => {
     render(<AccessibilityTree tree={[]} />);
 
     expect(screen.getByText(/Aucune grille/)).toBeInTheDocument();
+  });
+
+  it("has no WCAG A/AA violations", async () => {
+    const { container } = render(<AccessibilityTree tree={tree} />);
+
+    const results = await axe.run(container, {
+      runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] },
+      rules: { "color-contrast": { enabled: false } },
+    });
+
+    expect(results.violations).toEqual([]);
   });
 });

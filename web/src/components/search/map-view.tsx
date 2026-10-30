@@ -11,14 +11,19 @@ import { useEffect, useRef } from "react";
 
 import type { PlaceSummary } from "@/lib/types";
 
+const TILE_URL =
+  process.env.NEXT_PUBLIC_MAP_TILE_URL ?? "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const ATTRIBUTION =
+  process.env.NEXT_PUBLIC_MAP_ATTRIBUTION ?? "© OpenStreetMap contributors";
+
 const STYLE: StyleSpecification = {
   version: 8,
   sources: {
     osm: {
       type: "raster",
-      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      tiles: [TILE_URL],
       tileSize: 256,
-      attribution: "© OpenStreetMap contributors",
+      attribution: ATTRIBUTION,
     },
   },
   layers: [{ id: "osm", type: "raster", source: "osm" }],

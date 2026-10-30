@@ -26,6 +26,15 @@ npm run build
 
 ## Map tiles
 
-The map uses the OpenStreetMap raster tile server. It is fine for development and low volume; a
-production deployment must use a tile provider that allows the traffic (and keep the OSM
-attribution).
+The map defaults to the OpenStreetMap raster tile server (fine for development and low volume).
+A production deployment sets a provider that allows the traffic:
+
+```bash
+NEXT_PUBLIC_MAP_TILE_URL=https://your-tile-provider/{z}/{x}/{y}.png
+NEXT_PUBLIC_MAP_ATTRIBUTION=© Your provider
+```
+
+## Security
+
+The BFF sets the refresh token in an httpOnly, SameSite=Lax cookie and rejects state-changing
+requests whose `Origin` is not the app origin. The access token stays in memory.
