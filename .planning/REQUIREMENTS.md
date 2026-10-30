@@ -47,10 +47,10 @@
 
 ### Frontend
 
-- [ ] **FRONT-01**: Users can search places (map + list + filters)
-- [ ] **FRONT-02**: Users can view a complete place record
-- [ ] **FRONT-03**: Authenticated users can contribute from the frontend
-- [ ] **FRONT-04**: Users can manage their account and profile
+- [x] **FRONT-01**: Users can search places (map + list + filters)
+- [x] **FRONT-02**: Users can view a complete place record
+- [x] **FRONT-03**: Authenticated users can contribute from the frontend
+- [x] **FRONT-04**: Users can manage their account and profile
 
 ## v2 Requirements
 
@@ -101,10 +101,10 @@
 | AUTH-03 | Phase 5 | Complete |
 | API-01 | Phase 7 | Pending |
 | API-02 | Phase 7 | Pending |
-| FRONT-01 | Phase 6 | Pending |
-| FRONT-02 | Phase 6 | Pending |
-| FRONT-03 | Phase 6 | Pending |
-| FRONT-04 | Phase 6 | Pending |
+| FRONT-01 | Phase 6 | Complete |
+| FRONT-02 | Phase 6 | Complete |
+| FRONT-03 | Phase 6 | Complete |
+| FRONT-04 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 26 total
