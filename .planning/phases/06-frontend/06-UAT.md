@@ -54,10 +54,28 @@ result: pass
 source: manual
 evidence: "Code review of the layout, forms, tree and map; keyboard paths on the list and forms. Not a full axe/Lighthouse run."
 
+### 8. BFF security
+expected: login sets an httpOnly/SameSite=Lax cookie and strips the refresh token; a cross-origin state change is rejected; refresh without the cookie is 401; logout clears the cookie.
+result: pass
+source: automated
+evidence: "4 Vitest tests: cookie flags, no refresh token in the body, cross-origin 403 (no upstream call), 401 without cookie, Max-Age=0 on logout."
+
+### 9. Write forms
+expected: contribution and review forms show the auth/verification gates, send the right payload, and surface API errors.
+result: pass
+source: automated
+evidence: "5 Vitest tests: anonymous/verify messages, PUT {value:true}, POST {rating:4, body}, 403 message."
+
+### 10. Automated WCAG check
+expected: the rendered accessibility tree has no WCAG 2.0/2.1 A/AA violations.
+result: pass
+source: automated
+evidence: "axe-core run on the tree component: zero violations (color-contrast disabled, jsdom limitation)."
+
 ## Summary
 
-total: 7
-passed: 7
+total: 10
+passed: 10
 issues: 0
 pending: 0
 skipped: 0
