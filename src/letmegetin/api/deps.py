@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+import time
 from typing import Annotated
 
-from fastapi import Depends, Header, HTTPException
+from fastapi import Depends, Header, HTTPException, Request, Response
+from fastapi.security import APIKeyHeader
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from letmegetin.config import settings
 from letmegetin.core.db import get_session
 from letmegetin.core.exceptions import InvalidToken
-from letmegetin.core.security import decode_token
+from letmegetin.core.rate_limit import check_rate_limit
+from letmegetin.core.security import decode_token, token_fingerprint
 from letmegetin.domain.accounts.entities import User
 from letmegetin.domain.accounts.repositories import RefreshTokenRepository, UserRepository
 from letmegetin.domain.places.repositories import PlaceRepository
@@ -21,6 +25,7 @@ from letmegetin.domain.referential.repositories import (
     OtherInformationRepository,
 )
 from letmegetin.infrastructure.persistence.repositories import (
+    SqlAlchemyApiKeyRepository,
     SqlAlchemyCategoryGridRepository,
     SqlAlchemyCategoryRepository,
     SqlAlchemyCriterionRepository,
@@ -115,3 +120,54 @@ RefreshRepo = Annotated[RefreshTokenRepository, Depends(get_refresh_token_reposi
 CurrentUser = Annotated[User, Depends(get_current_user)]
 AdminUser = Annotated[User, Depends(require_admin)]
 VerifiedUser = Annotated[User, Depends(require_verified)]
+
+
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
+def _rate_limit_dependency(default_setting: str):
+    async def dependency(
+        request: Request,
+        response: Response,
+        session: DbSession,
+        api_key: Annotated[str | None, Depends(_api_key_header)] = None,
+    ) -> None:
+        key_row = None
+        if api_key:
+            key_row = await SqlAlchemyApiKeyRepository(session).get_by_hash(
+                token_fingerprint(api_key)
+            )
+            if key_row is None or not key_row.active:
+                raise HTTPException(
+                    status_code=401,
+                    detail="Invalid API key",
+                    headers={"WWW-Authenticate": "ApiKey"},
+                )
+        limit = key_row.rpm if key_row is not None else int(getattr(settings, default_setting))
+        bucket = (
+            f"key:{key_row.id}"
+            if key_row is not None
+            else f"ip:{request.client.host if request.client else 'unknown'}"
+        )
+        result = await check_rate_limit(bucket, limit)
+        reset_at = str(int(time.time()) + result.retry_after)
+        response.headers["X-RateLimit-Limit"] = str(result.limit)
+        response.headers["X-RateLimit-Remaining"] = str(result.remaining)
+        response.headers["X-RateLimit-Reset"] = reset_at
+        if not result.allowed:
+            raise HTTPException(
+                status_code=429,
+                detail="Rate limit exceeded",
+                headers={
+                    "Retry-After": str(result.retry_after),
+                    "X-RateLimit-Limit": str(result.limit),
+                    "X-RateLimit-Remaining": "0",
+                    "X-RateLimit-Reset": reset_at,
+                },
+            )
+
+    return dependency
+
+
+public_rate_limit = _rate_limit_dependency("rate_limit_default_rpm")
+auth_rate_limit = _rate_limit_dependency("rate_limit_auth_rpm")

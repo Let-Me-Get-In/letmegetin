@@ -43,6 +43,7 @@ export async function handler(request: NextRequest, context: Context) {
   if (contentType) headers.set("content-type", contentType);
   const authorization = request.headers.get("authorization");
   if (authorization) headers.set("authorization", authorization);
+  if (process.env.API_KEY) headers.set("x-api-key", process.env.API_KEY);
 
   if (isRefresh || isLogout) {
     const refresh = request.cookies.get(REFRESH_COOKIE)?.value;
