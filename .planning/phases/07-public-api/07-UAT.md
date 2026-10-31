@@ -70,7 +70,7 @@ evidence: "api /health 200, /docs 200, /openapi.json 200, web / 200, BFF /catego
 expected: lint, types, SAST, secrets, unit, tests, web, OpenAPI drift and image builds all pass.
 result: pass
 source: automated
-evidence: "GitHub Actions run pending; see the PR check list."
+evidence: "GitHub Actions run 41184870853: 9/9 jobs pass (including OpenAPI drift and Docker images)."
 
 ## Summary
 

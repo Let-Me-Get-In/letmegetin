@@ -23,7 +23,7 @@ gates:
   docker_images: pass (api + web)
   compose_stack: pass (api /health 200, web / 200, BFF /categories 200)
   alembic_current: "0007 (head)"
-  pr_checks: pending
+  pr_checks: pass (9/9, including OpenAPI drift and Docker images)
 gaps: []
 warnings:
   - "Rate limiting is a fixed window; a burst at a window boundary can briefly double the allowed rate."
