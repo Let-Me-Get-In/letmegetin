@@ -70,7 +70,7 @@ evidence: "api /health 200, /docs 200, /openapi.json 200, web / 200, BFF /catego
 expected: lint, types, SAST, secrets, unit, tests, web, OpenAPI drift and image builds all pass.
 result: pass
 source: automated
-evidence: "GitHub Actions run 41184870853: 9/9 jobs pass (including OpenAPI drift and Docker images)."
+evidence: "GitHub Actions run 41186751065: 9/9 jobs pass (including OpenAPI drift and Docker images)."
 
 ### 11. Idempotent writes
 expected: the same `Idempotency-Key` + payload replays the stored contribution/review; a different payload is 409; an unchanged PUT does not duplicate the audit log; logout is 204 without a session.
