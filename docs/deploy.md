@@ -46,5 +46,13 @@ Web: `API_URL` (server-side), optional `API_KEY` for a partner key, and the
 - `/health` is database-free; compose uses it for the API healthcheck.
 - Redis is used for rate limits and the referential cache; if it is down the API falls back to
   in-process limits and skips the cache.
-- A real host (TLS, backups, secrets, monitoring) is a follow-up; this stack is the reproducible
-  local target.
+## Production checklist (before a real host)
+
+- [ ] `LETMEGETIN_ENVIRONMENT=production` and a long random `LETMEGETIN_JWT_SECRET` (the API
+      refuses to start with the development secret).
+- [ ] TLS termination in front of the API and web (Caddy/Traefik/Cloudflare).
+- [ ] Postgres and Redis backups, with a restore test.
+- [ ] Monitoring on `/health`, the 429 rate and Redis availability.
+- [ ] SMTP configured, or verification links only appear in the logs.
+- [ ] A named tile provider via `NEXT_PUBLIC_MAP_TILE_URL`.
+- [ ] A retention/purge job for `idempotency_key` and old `contribution` rows.

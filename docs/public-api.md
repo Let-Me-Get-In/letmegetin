@@ -29,8 +29,9 @@ X-RateLimit-Remaining: 59
 X-RateLimit-Reset: 1793400123
 ```
 
-Over the limit: `429` with `Retry-After` (seconds). Limits are fixed windows; Redis is shared
-across API workers, with an in-memory fallback if Redis is unavailable.
+Over the limit: `429` with `Retry-After` (seconds). Limits are **sliding windows**; Redis is
+shared across API workers, with an in-memory fallback (the budget is divided by the configured
+worker count) if Redis is unavailable.
 
 ## Endpoints
 
@@ -48,6 +49,22 @@ across API workers, with an in-memory fallback if Redis is unavailable.
 Writes: `POST /auth/register|login|refresh|logout|verify-email|resend-verification`,
 `PUT /places/{slug}/accessibility/{criterion}` and `POST /places/{slug}/reviews` (bearer token,
 verified email); `PATCH /reviews/{id}` (admin).
+
+## Idempotency
+
+Write endpoints accept an `Idempotency-Key` header (max 128 characters):
+
+- `PUT /places/{slug}/accessibility/{criterion}`
+- `POST /places/{slug}/reviews`
+
+The same key with the same payload replays the stored response (200/201) instead of repeating the
+write. The same key with a different payload returns `409`. Keys are scoped to the authenticated
+user; operators purge rows older than 24 hours.
+
+`PUT .../accessibility/...` is also idempotent without a key: repeating an unchanged value does not
+append a contribution row. `POST /auth/logout` is idempotent (204 even without a session);
+`POST /auth/refresh` is intentionally **not** idempotent (rotation and replay protection), and
+`POST /auth/register` returns 409 for an existing email.
 
 ## Errors
 

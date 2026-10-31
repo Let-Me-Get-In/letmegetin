@@ -29,6 +29,7 @@ services:
       dockerfile: docker/Dockerfile
       target: api
     environment:
+      LETMEGETIN_ENVIRONMENT: production
       LETMEGETIN_DATABASE_URL: postgresql+asyncpg://letmegetin:letmegetin@db:5432/letmegetin
       LETMEGETIN_REDIS_URL: redis://redis:6379/0
       LETMEGETIN_JWT_SECRET: ${LETMEGETIN_JWT_SECRET:?set LETMEGETIN_JWT_SECRET}

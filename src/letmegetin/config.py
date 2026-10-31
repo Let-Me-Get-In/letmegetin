@@ -12,6 +12,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", env_prefix="LETMEGETIN_", extra="ignore")
 
+    environment: str = "development"
     database_url: str = "postgresql+asyncpg://letmegetin:letmegetin@localhost:55433/letmegetin"
     api_title: str = "LetMeGetIn API"
     api_version: str = "0.1.0"
@@ -30,6 +31,7 @@ class Settings(BaseSettings):
     rate_limit_default_rpm: int = 60
     rate_limit_auth_rpm: int = 10
     rate_limit_window: int = 60
+    worker_count: int = 1
     cache_ttl: int = 3600
 
 
