@@ -22,7 +22,14 @@ Let anyone know in seconds whether a place is truly accessible — through a str
 - [ ] Place detail with the accessibility tree and reviews
 - [ ] Auth (JWT) + contribution (complete a record, post a review)
 - [ ] Next.js frontend: search (map + list), detail, contribution, account
-- [ ] Public API: API keys, OpenAPI, documentation
+- [x] Public API: API keys, OpenAPI, documentation
+
+### V1.1 — Production & quality
+
+- [ ] Real deployment: TLS, secrets, backups, monitoring, retention
+- [ ] Data quality: handicap families, category mapping, duplicate review queue, coverage metrics
+- [ ] Search quality: multi-criterion AND, category filter, ranking/pagination
+- [ ] E2E suite (separate repo) + screen-reader audit + fr/en UI
 
 ### Out of Scope
 
@@ -51,12 +58,12 @@ The exact per-category grid is not fully recoverable: category 1 is used as the 
 ### Monorepo
 
 - **Backend**: repo root (`src/letmegetin`, `tests/`, `data/`).
-- **Frontend**: `web/` (Next.js, coming).
+- **Frontend**: `web/` (Next.js, shipped in V1).
 - **E2E**: later, in a **separate repository** (same model as interview-challenger).
 
 ### Tracking
 
-Linear: dedicated **LetMeGetIn** workspace (`letmegetin`), team **LET**, project **LetMeGetIn**. Every branch/commit/PR starts with `LET-<n>`. Mapping in `.planning/LINEAR.md`.
+Linear: dedicated **LetMeGetIn** workspace (`letmegetin`), team **LET**; one project per milestone (V1, V1.1). Every branch/commit/PR starts with `LET-<n>`. Mapping in `.planning/LINEAR.md`.
 
 ## Constraints
 
@@ -76,7 +83,7 @@ Linear: dedicated **LetMeGetIn** workspace (`letmegetin`), team **LET**, project
 | PostGIS + JSONB i18n | Native geo search; simple i18n | — Pending |
 | Reconstructed seed (no dump) | Only data available; editable | — Pending |
 | Backend + frontend monorepo | Simplicity for now; e2e separate later | — Pending |
-| Linear (team LET) at the start of branch/commit/PR | Ticket ↔ code traceability | — Pending |
+| Linear (team LET) at the start of branch/commit/PR | Ticket ↔ code traceability | — Shipped |
 | V1 without gamification/messaging/mobile | Focus on the core | — Pending |
 
 ## Evolution
