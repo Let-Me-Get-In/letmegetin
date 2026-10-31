@@ -301,3 +301,79 @@ def test_verification_token_and_resend(client: TestClient) -> None:
 
     _verify(client, user)
     assert client.post("/api/v1/auth/resend-verification", headers=_auth(tokens)).status_code == 409
+
+
+def test_contribution_is_idempotent_with_a_key(client: TestClient) -> None:
+    user = _register(client)
+    tokens = _tokens(client)
+    _verify(client, user)
+    headers = {**_auth(tokens), "Idempotency-Key": "contrib-1"}
+    payload = {"value": True}
+
+    first = client.put(
+        f"/api/v1/places/{_SLUG}/accessibility/test-p5-a", json=payload, headers=headers
+    )
+    second = client.put(
+        f"/api/v1/places/{_SLUG}/accessibility/test-p5-a", json=payload, headers=headers
+    )
+
+    assert (first.status_code, second.status_code) == (200, 200)
+    assert first.json() == second.json()
+    log = _scalar(
+        "SELECT count(*) FROM contribution WHERE place_id = "
+        "(SELECT id FROM place WHERE source = 'test-p5')"
+    )
+    assert log == 1
+
+    conflict = client.put(
+        f"/api/v1/places/{_SLUG}/accessibility/test-p5-a",
+        json={"value": False},
+        headers=headers,
+    )
+    assert conflict.status_code == 409
+
+
+def test_contribution_value_repeat_does_not_duplicate_the_log(client: TestClient) -> None:
+    user = _register(client)
+    tokens = _tokens(client)
+    _verify(client, user)
+
+    first = client.put(
+        f"/api/v1/places/{_SLUG}/accessibility/test-p5-a",
+        json={"value": True},
+        headers=_auth(tokens),
+    )
+    second = client.put(
+        f"/api/v1/places/{_SLUG}/accessibility/test-p5-a",
+        json={"value": True},
+        headers=_auth(tokens),
+    )
+
+    assert (first.status_code, second.status_code) == (200, 200)
+    log = _scalar(
+        "SELECT count(*) FROM contribution WHERE place_id = "
+        "(SELECT id FROM place WHERE source = 'test-p5')"
+    )
+    assert log == 1
+
+
+def test_review_is_idempotent_with_a_key(client: TestClient) -> None:
+    user = _register(client)
+    tokens = _tokens(client)
+    _verify(client, user)
+    headers = {**_auth(tokens), "Idempotency-Key": "review-1"}
+    payload = {"rating": 5, "body": "Accueil parfait"}
+
+    first = client.post(f"/api/v1/places/{_SLUG}/reviews", json=payload, headers=headers)
+    second = client.post(f"/api/v1/places/{_SLUG}/reviews", json=payload, headers=headers)
+
+    assert (first.status_code, second.status_code) == (201, 201)
+    assert first.json()["id"] == second.json()["id"]
+    assert client.get(f"/api/v1/places/{_SLUG}/reviews").json()["total"] == 1
+
+    conflict = client.post(
+        f"/api/v1/places/{_SLUG}/reviews",
+        json={"rating": 1, "body": "Autre"},
+        headers=headers,
+    )
+    assert conflict.status_code == 409

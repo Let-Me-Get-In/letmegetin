@@ -13,7 +13,7 @@ Ticket: LET-12 (Phase 7 — complete); V1 milestone complete
 Phase: 7 complete / 7
 Plan: 07-01 (verified)
 Status: Complete — verified
-Last activity: 2026-10-31 — Phase 7 verified (VERIFICATION.md passed); 181 backend tests, 24 web tests, compose stack healthy.
+Last activity: 2026-10-31 — Phase 7 verified (VERIFICATION.md passed); 186 backend tests, 25 web tests, compose stack healthy (sliding limits, idempotent writes).
 
 ## Performance Metrics
 

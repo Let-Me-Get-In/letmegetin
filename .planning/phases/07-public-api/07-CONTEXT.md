@@ -26,10 +26,10 @@ Out of scope: billing, self-service key portal, OAuth, multi-region, a real clou
   the admin CLI. `api_key(id, label, key_hash unique, rpm, active, created)`.
 - **No write path over HTTP** for keys: the operator CLI (`letmegetin.admin api-key`) creates,
   lists and revokes them, like the rest of the referential.
-- **Rate limiting is a fixed window in Redis** (`INCR` + `EXPIRE` in one Lua script), keyed by
+- **Rate limiting is a sliding window in Redis** (`INCR` + `EXPIRE` in one Lua script), keyed by
   key id or client IP. Headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`;
-  `429` with `Retry-After`. If Redis is unreachable, fall back to the in-memory limiter so the API
-  stays up.
+  `429` with `Retry-After`. If Redis is unreachable, fall back to the in-memory limiter (budget
+  divided by the worker count) so the API stays up.
 - **Redis also serves the cache**: the referential reads (categories, criteria trees, precomputed
   grids) are cached under the current `referential_version`, so an admin edit naturally
   invalidates them. Place data is **not** cached (contributions/reviews must be fresh). Without
@@ -38,6 +38,11 @@ Out of scope: billing, self-service key portal, OAuth, multi-region, a real clou
   endpoints (10 rpm/IP) to slow credential stuffing.
 - **No CORS for partners**: they call server-side. The web app uses its own BFF, which can send an
   `API_KEY` server-side.
+- **Write endpoints are idempotent**: `Idempotency-Key` (user-scoped, stored response) on the
+  contribution and review writes; an unchanged contribution value does not duplicate the audit
+  log; logout is 204 even without a session. Refresh rotation stays intentionally non-idempotent.
+- **Production guard**: `LETMEGETIN_ENVIRONMENT=production` refuses the development JWT secret and
+  warns when Redis is absent; Docker base images are pinned by digest.
 - **OpenAPI is a deliverable**: a title/description/tags, the `X-API-Key` security scheme,
   `/docs` and `/openapi.json`; a generated `docs/openapi.json` is checked in and compared in CI.
 - **Deployment is local-first**: a multi-stage Dockerfile (`api`, `web`), a compose stack with

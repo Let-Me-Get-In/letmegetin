@@ -88,6 +88,19 @@ describe("auth BFF", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("is idempotent on logout without a cookie", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await handler(
+      request("/api/v1/auth/logout", { method: "POST" }),
+      context(["v1", "auth", "logout"]),
+    );
+
+    expect(response.status).toBe(204);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("clears the cookie on logout", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(null, { status: 204 })));
 

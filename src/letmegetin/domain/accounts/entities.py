@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 
-__all__ = ["ApiKey", "RefreshToken", "User"]
+__all__ = ["ApiKey", "IdempotencyRecord", "RefreshToken", "User"]
 
 
 @dataclass
@@ -38,3 +38,14 @@ class ApiKey:
     key_hash: str
     rpm: int = 60
     active: bool = True
+
+
+@dataclass
+class IdempotencyRecord:
+    """A stored write response, replayed when the same key is retried."""
+
+    user_id: int
+    key: str
+    request_hash: str
+    status_code: int
+    body: dict[str, object]
