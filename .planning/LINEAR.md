@@ -10,7 +10,7 @@ Team: **LET**
 - GSD **phase** → Linear **issue** (`LET-<n>`).
 - **No Linear milestones**: a Linear milestone is a sub-checkpoint inside a project and has
   no GSD equivalent, so we do not use them (the project *is* the milestone).
-Current milestone: **V1 — Accessibility Referential** (tickets LET-5..LET-12).
+Current milestone: **V1.1 — Production & Quality** (tickets LET-23..LET-26). V1 (LET-5..LET-12) is shipped.
 Create a new project for each new GSD milestone.
 
 **Linear is link-only**: it may link existing branches/PRs, but it must **never create**
@@ -30,6 +30,10 @@ Every branch, commit and PR starts with the ticket id (`LET-<n>`).
 | LET-10 | Phase 5 | Auth & contribution |
 | LET-11 | Phase 6 | Next.js frontend |
 | LET-12 | Phase 7 | Public API & deployment |
+| LET-23 | Phase 8 (V1.1) | Production deployment & operations |
+| LET-24 | Phase 9 (V1.1) | Data quality & curation |
+| LET-25 | Phase 10 (V1.1) | Search quality |
+| LET-26 | Phase 11 (V1.1) | E2E & accessibility |
 
 ## CLI
 
