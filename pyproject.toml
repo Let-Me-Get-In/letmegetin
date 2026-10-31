@@ -13,6 +13,7 @@ dependencies = [
     "pydantic>=2.8.0",
     "pydantic-settings>=2.4.0",
     "typer>=0.12.0",
+    "redis>=8.1.0",
 ]
 
 [project.scripts]
@@ -28,6 +29,7 @@ dev = [
     "bandit>=1.7.9",
     "pytest-cov>=7.1.0",
     "pre-commit>=4.7.0",
+    "fakeredis>=2.40.0",
 ]
 
 [build-system]

@@ -5,13 +5,13 @@ A modern rewrite of Jaccede: a **normalized accessibility referential** exposed 
 ## Monorepo
 
 - **Backend** (repo root): FastAPI + SQLAlchemy 2 async + PostgreSQL/PostGIS.
-- **Frontend**: `web/` — Next.js (App Router), TypeScript, Tailwind, MapLibre (coming).
+- **Frontend**: `web/` — Next.js (App Router), TypeScript, Tailwind, MapLibre.
 - **E2E**: later, in a separate repository.
 
 ## Quick start
 
 ```bash
-docker compose up -d                        # PostGIS on localhost:55433
+docker compose up -d                        # PostGIS on localhost:55433 + Redis on 6379
 uv sync
 git config core.hooksPath .githooks         # enable the commit-msg hook (once per clone)
 
@@ -20,6 +20,9 @@ uv run python -m letmegetin.seed            # load the committed seed into the d
 uv run uvicorn letmegetin.main:app --reload
 # http://localhost:8000/docs  •  /health  •  /api/v1/categories
 ```
+
+Set `LETMEGETIN_REDIS_URL=redis://localhost:6380/0` to use Redis for rate limits and the
+referential cache; without it the API falls back to in-process limits and no cache.
 
 The one-command-equivalent smoke path is
 `docker compose up -d --wait db && uv run alembic upgrade head && uv run uvicorn letmegetin.main:app`:
@@ -133,6 +136,14 @@ The **4 handicap families** (`moteur`, `auditif`, `visuel`, `mental`) are
 first-class: criteria and filters carry `handicap_families`, `?family=` filters
 search, and a place detail reports `accessibility_by_family`. Jaccede's grid was
 motor-only; this fixes the hearing, visual and cognitive gap.
+
+## Public API and deployment
+
+- [Public API v1](docs/public-api.md): partner keys, limits, endpoints, errors, licence.
+- [OpenAPI](docs/openapi.json): generated from the app and checked in CI.
+- [Deployment](docs/deploy.md): the compose stack (PostGIS + Redis + API + web).
+
+Create a partner key with `uv run python -m letmegetin.admin api-key create --label "Partner"`.
 
 ## Quality
 

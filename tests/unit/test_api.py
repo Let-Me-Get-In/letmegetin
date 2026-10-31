@@ -88,7 +88,7 @@ def test_category_criteria_tree(client: TestClient) -> None:
     )
     _use(
         FakeSession(
-            scalar_queue=[CategoryModel(id=1, slug="restaurant", name="Restaurant", label={})],
+            scalar_queue=[1, CategoryModel(id=1, slug="restaurant", name="Restaurant", label={})],
             scalars_queue=[
                 _Result([root, child]),
                 _Result([CategoryCriterionModel(category_id=1, criterion_id=2, excluded=False)]),
@@ -180,7 +180,7 @@ def _criteria_session() -> FakeSession:
         description={},
     )
     return FakeSession(
-        scalar_queue=[CategoryModel(id=1, slug="restaurant", name="Restaurant", label={})],
+        scalar_queue=[1, CategoryModel(id=1, slug="restaurant", name="Restaurant", label={})],
         scalars_queue=[
             _Result([root]),
             _Result([CategoryCriterionModel(category_id=1, criterion_id=1, excluded=False)]),
@@ -239,7 +239,7 @@ def test_criteria_tree_exposes_description_and_option_nodes(client: TestClient) 
     )
     _use(
         FakeSession(
-            scalar_queue=[CategoryModel(id=1, slug="restaurant", name="Restaurant", label={})],
+            scalar_queue=[1, CategoryModel(id=1, slug="restaurant", name="Restaurant", label={})],
             scalars_queue=[
                 _Result([root, child, option]),
                 _Result([CategoryCriterionModel(category_id=1, criterion_id=2, excluded=False)]),

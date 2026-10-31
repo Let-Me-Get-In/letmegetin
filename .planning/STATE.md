@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** LET-12 — Phase 7 (Public API & deployment)
+**Current focus:** V1 complete — next: post-v1 (Monetization project)
 
 ## Current Position
 
-Ticket: LET-11 (Phase 6 — complete); next LET-12
-Phase: 7 planned / 7
-Plan: 07-01 (planned)
+Ticket: LET-12 (Phase 7 — complete); V1 milestone complete
+Phase: 7 complete / 7
+Plan: 07-01 (verified)
 Status: Complete — verified
-Last activity: 2026-10-31 — Phase 6 merged (PR #11); Phase 7 plan created (07-01-PLAN.md), not executed.
+Last activity: 2026-10-31 — Phase 7 verified (VERIFICATION.md passed); 181 backend tests, 24 web tests, compose stack healthy.
 
 ## Performance Metrics
 
 - Requirements: 26 v1
 - Phases: 7
 - Linear tickets: LET-5..LET-12
-- Plans completed: 6
-- Phases complete: 6
+- Plans completed: 7
+- Phases complete: 7
 
 ## Accumulated Context
 
@@ -46,5 +46,5 @@ Last activity: 2026-10-31 — Phase 6 merged (PR #11); Phase 7 plan created (07-
 ## Session Continuity
 
 Last session: 2026-10-27
-Stopped at: Phase 7 planned (07-01-PLAN.md), not executed
-Resume file: .planning/phases/07-public-api/07-01-PLAN.md
+Stopped at: Phase 7 verified — V1 milestone complete
+Resume file: .planning/phases/07-public-api/07-VERIFICATION.md

@@ -80,6 +80,11 @@ def token_fingerprint(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
 
 
+def generate_api_key() -> str:
+    """A partner key shown once; only its fingerprint is stored."""
+    return f"lmg_{secrets.token_urlsafe(32)}"
+
+
 def create_token(user_id: int, role: str, kind: str, ttl: int) -> str:
     """Issue a signed token of the given kind (`access` or `refresh`)."""
     now = int(time.time())

@@ -13,6 +13,7 @@ from sqlalchemy import (
     Double,
     ForeignKey,
     Index,
+    Integer,
     SmallInteger,
     String,
     Text,
@@ -52,6 +53,19 @@ class UserModel(Base, TimestampMixin):
     role: Mapped[str] = mapped_column(String(16), server_default="user")
     display_name: Mapped[str | None] = mapped_column(String(120))
     email_verified: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
+
+
+class ApiKeyModel(Base):
+    """A partner API key (only the SHA-256 fingerprint is stored)."""
+
+    __tablename__ = "api_key"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    label: Mapped[str] = mapped_column(String(120))
+    key_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    rpm: Mapped[int] = mapped_column(Integer, server_default="60")
+    active: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
+    created: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
 class RefreshTokenModel(Base):

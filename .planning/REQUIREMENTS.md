@@ -42,8 +42,8 @@
 
 ### Public API
 
-- [ ] **API-01**: Partners consume the API with an API key (rate-limited)
-- [ ] **API-02**: OpenAPI documentation is generated and published
+- [x] **API-01**: Partners consume the API with an API key (rate-limited)
+- [x] **API-02**: OpenAPI documentation is generated and published
 
 ### Frontend
 
@@ -99,8 +99,8 @@
 | AUTH-01 | Phase 5 | Complete |
 | AUTH-02 | Phase 5 | Complete |
 | AUTH-03 | Phase 5 | Complete |
-| API-01 | Phase 7 | Pending |
-| API-02 | Phase 7 | Pending |
+| API-01 | Phase 7 | Complete |
+| API-02 | Phase 7 | Complete |
 | FRONT-01 | Phase 6 | Complete |
 | FRONT-02 | Phase 6 | Complete |
 | FRONT-03 | Phase 6 | Complete |

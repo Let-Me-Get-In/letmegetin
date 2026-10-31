@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Protocol
 
-from letmegetin.domain.accounts.entities import RefreshToken, User
+from letmegetin.domain.accounts.entities import ApiKey, RefreshToken, User
 
 
 class UserRepository(Protocol):
@@ -28,3 +28,15 @@ class RefreshTokenRepository(Protocol):
     async def get(self, token_hash: str) -> RefreshToken | None: ...
 
     async def revoke(self, token_hash: str) -> None: ...
+
+
+class ApiKeyRepository(Protocol):
+    """Partner API keys, looked up by their fingerprint."""
+
+    async def add(self, api_key: ApiKey) -> ApiKey: ...
+
+    async def list_all(self) -> list[ApiKey]: ...
+
+    async def get_by_hash(self, key_hash: str) -> ApiKey | None: ...
+
+    async def revoke(self, key_id: int) -> ApiKey | None: ...

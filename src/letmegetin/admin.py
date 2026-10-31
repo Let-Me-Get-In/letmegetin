@@ -13,6 +13,11 @@ from typing import Annotated, Literal
 import typer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from letmegetin.application.accounts.api_keys import (
+    create_api_key,
+    list_api_keys,
+    revoke_api_key,
+)
 from letmegetin.application.places.import_acceslibre import (
     import_acceslibre,
     load_acceslibre_file,
@@ -40,6 +45,7 @@ from letmegetin.core.exceptions import CategoryNotFound, DomainError
 from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
 from letmegetin.domain.referential.labels import parse_label_pairs
 from letmegetin.infrastructure.persistence.repositories import (
+    SqlAlchemyApiKeyRepository,
     SqlAlchemyCategoryGridRepository,
     SqlAlchemyCategoryMappingRepository,
     SqlAlchemyCategoryRepository,
@@ -57,11 +63,13 @@ criterion_app = typer.Typer(help="Add, edit and list criteria and options.")
 vocabulary_app = typer.Typer(help="Import, list and promote the flat criteria vocabulary.")
 labels_app = typer.Typer(help="Set multilingual labels on any referential entity.")
 import_app = typer.Typer(help="Import open place datasets (Acceslibre first).")
+api_key_app = typer.Typer(help="Create, list and revoke partner API keys.")
 app.add_typer(category_app, name="category")
 app.add_typer(criterion_app, name="criterion")
 app.add_typer(vocabulary_app, name="vocabulary")
 app.add_typer(labels_app, name="labels")
 app.add_typer(import_app, name="import")
+app.add_typer(api_key_app, name="api-key")
 
 AdminCallback = Callable[[AsyncSession], Awaitable[str]]
 LabelPairs = Annotated[
@@ -446,6 +454,67 @@ def import_acceslibre_command(
         )
 
     _run_admin(callback, bump=False)
+
+
+def _run_api_key_admin(
+    callback: Callable[[SqlAlchemyApiKeyRepository], Awaitable[str]],
+) -> None:
+    async def run() -> str:
+        async with SessionLocal() as session:
+            message = await callback(SqlAlchemyApiKeyRepository(session))
+            await session.commit()
+            return message
+
+    try:
+        message = asyncio.run(run())
+    except DomainError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(message)
+
+
+@api_key_app.command("create")
+def api_key_create(
+    label: Annotated[str, typer.Option("--label", "-l", help="Partner name")],
+    rpm: Annotated[int, typer.Option("--rpm", help="Requests per minute")] = 60,
+) -> None:
+    """Create a key and print it once; only its hash is stored."""
+
+    async def callback(keys: SqlAlchemyApiKeyRepository) -> str:
+        raw, key = await create_api_key(keys, label, rpm)
+        return (
+            f"created api key #{key.id} ({key.label}, {key.rpm} rpm)\n{raw}\n"
+            "Store it now: it is not shown again."
+        )
+
+    _run_api_key_admin(callback)
+
+
+@api_key_app.command("list")
+def api_key_list() -> None:
+    """List keys without their secret."""
+
+    async def callback(keys: SqlAlchemyApiKeyRepository) -> str:
+        rows = await list_api_keys(keys)
+        if not rows:
+            return "no api keys"
+        return "\n".join(
+            f"#{row.id}\t{'active' if row.active else 'revoked'}\t{row.rpm} rpm\t{row.label}"
+            for row in rows
+        )
+
+    _run_api_key_admin(callback)
+
+
+@api_key_app.command("revoke")
+def api_key_revoke(key_id: Annotated[int, typer.Argument(help="Key id")]) -> None:
+    """Disable a key without deleting its audit trail."""
+
+    async def callback(keys: SqlAlchemyApiKeyRepository) -> str:
+        key = await revoke_api_key(keys, key_id)
+        return f"revoked api key #{key.id} ({key.label})"
+
+    _run_api_key_admin(callback)
 
 
 if __name__ == "__main__":
