@@ -23,7 +23,7 @@ gates:
   docker_images: pass (api + web)
   compose_stack: pass (api /health 200, web / 200, BFF /categories 200)
   alembic_current: "0007 (head)"
-  pr_checks: pass (9/9 after the risk/idempotency commit)
+  pr_checks: pass (9/9, run 41186751065)
 gaps: []
 warnings:
   - "If Redis is unavailable the limiter falls back to per-process memory; the budget is divided by LETMEGETIN_WORKER_COUNT, but per-worker windows remain an approximation."
