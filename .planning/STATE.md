@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** V1 complete — next: post-v1 (Monetization project)
+**Current focus:** V1.1 — Production & Quality (milestone started)
 
 ## Current Position
 
-Ticket: LET-12 (Phase 7 — complete); V1 milestone complete
-Phase: 7 complete / 7
-Plan: 07-01 (verified)
+Ticket: LET-23 (Phase 8 — next); milestone V1.1
+Phase: 0 / 4 of V1.1 (V1: 7/7 complete)
+Plan: — (plan Phase 8 next)
 Status: Complete — verified
-Last activity: 2026-10-31 — Phase 7 verified (VERIFICATION.md passed); 186 backend tests, 25 web tests, compose stack healthy (sliding limits, idempotent writes).
+Last activity: 2026-10-31 — V1.1 milestone created (Production & Quality, phases 8-11, LET-23..26).
 
 ## Performance Metrics
 
@@ -21,7 +21,7 @@ Last activity: 2026-10-31 — Phase 7 verified (VERIFICATION.md passed); 186 bac
 - Phases: 7
 - Linear tickets: LET-5..LET-12
 - Plans completed: 7
-- Phases complete: 7
+- Phases complete: V1 7/7; V1.1 0/4
 
 ## Accumulated Context
 
@@ -46,5 +46,5 @@ Last activity: 2026-10-31 — Phase 7 verified (VERIFICATION.md passed); 186 bac
 ## Session Continuity
 
 Last session: 2026-10-27
-Stopped at: Phase 7 verified — V1 milestone complete
-Resume file: .planning/phases/07-public-api/07-VERIFICATION.md
+Stopped at: V1.1 milestone created — Phase 8 not planned
+Resume file: .planning/ROADMAP.md

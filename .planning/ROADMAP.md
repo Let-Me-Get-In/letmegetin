@@ -2,7 +2,7 @@
 
 ## Overview
 
-Modern rewrite of the collaborative accessible-places guide: normalized referential + public FastAPI API + Next.js frontend. V1 = the product core (referential, search, record, contribution). Gamification, integrations and mobile are deferred.
+Modern rewrite of the collaborative accessible-places guide: normalized referential + public FastAPI API + Next.js frontend. V1 = the product core (referential, search, record, contribution), shipped. V1.1 = production readiness, data quality, search quality, e2e and accessibility. Gamification, integrations and mobile are deferred.
 
 ## Phases
 
@@ -100,3 +100,58 @@ Plans:
 
 ---
 *Created: 2026-10-26*
+
+
+## V1.1 — Production & Quality
+
+### Phase 8: Production deployment & operations
+**Goal:** Run the stack on a real host with TLS, secrets, backups, monitoring and retention.
+**Mode:** mvp
+**Ticket:** LET-23
+**Requirements:** OPS-04, OPS-05, OPS-06
+**Success Criteria**:
+1. A real host serves the API and web over TLS with production secrets.
+2. Postgres and Redis backups run and a restore is tested.
+3. `/health`, the 429 rate and Redis availability are monitored/alerts.
+4. A retention job purges `idempotency_key` and stale rows; a runbook documents it.
+
+### Phase 9: Data quality & curation
+**Goal:** Make the referential trustworthy: families, categories, duplicates and coverage.
+**Mode:** mvp
+**Ticket:** LET-24
+**Requirements:** DATA-01, DATA-02, DATA-03, DATA-04
+**Success Criteria**:
+1. Every criterion and filter carries at least one handicap family.
+2. Imported categories resolve (no `bibliotheque`/`musee` NULL) and the mapping is auditable.
+3. A duplicate review queue exposes 0.60–0.90 matches with merge/reject actions and a log.
+4. Coverage metrics (by category/country) are exposed as an export or admin report.
+
+### Phase 10: Search quality
+**Goal:** Search narrows correctly and scales past the MVP limit.
+**Mode:** mvp
+**Ticket:** LET-25
+**Requirements:** SEARCH-01, SEARCH-02, SEARCH-03
+**Success Criteria**:
+1. Multiple criterion filters combine with AND (narrowing, not widening).
+2. Search filters by category.
+3. Results are ranked and paginated beyond 100 hits, with stable ordering.
+
+### Phase 11: E2E & accessibility
+**Goal:** Prove the user journey in a browser and with assistive technology.
+**Mode:** mvp
+**Ticket:** LET-26
+**Requirements:** E2E-01, A11Y-01, A11Y-02, A11Y-03
+**Success Criteria**:
+1. A Playwright suite in a separate repo covers search, record, contribution and review in CI.
+2. A screen-reader audit of search and record is documented and blocking issues are fixed.
+3. The UI ships fr/en strings with a persisted language.
+4. The map has a usable non-visual path (list + keyboard) validated by the audit.
+
+## V1.1 Progress
+
+| Phase | Ticket | Status | Completed |
+|-------|--------|--------|-----------|
+| 8. Production deployment & operations | LET-23 | Pending | — |
+| 9. Data quality & curation | LET-24 | Pending | — |
+| 10. Search quality | LET-25 | Pending | — |
+| 11. E2E & accessibility | LET-26 | Pending | — |

@@ -114,3 +114,49 @@
 ---
 *Requirements defined: 2026-10-26*
 *Last updated: 2026-10-26 after initial definition*
+
+
+## v1.1 Requirements
+
+### Production & Ops
+
+- [ ] **OPS-04**: The stack runs on a real host with TLS, production secrets and a documented runbook
+- [ ] **OPS-05**: Postgres and Redis backups run and a restore is tested
+- [ ] **OPS-06**: Monitoring covers `/health`, the 429 rate and Redis, with a retention job for idempotency keys
+
+### Data quality
+
+- [ ] **DATA-01**: Every criterion and filter carries at least one handicap family
+- [ ] **DATA-02**: Imported categories resolve to a grid (no silent NULL for `bibliotheque`/`musee`)
+- [ ] **DATA-03**: A duplicate review queue (0.60–0.90) supports merge/reject with an audit log
+- [ ] **DATA-04**: Coverage metrics by category/country are exportable
+
+### Search
+
+- [ ] **SEARCH-01**: Multiple criterion filters combine with AND
+- [ ] **SEARCH-02**: Search filters by category
+- [ ] **SEARCH-03**: Results are ranked and paginated beyond 100 hits
+
+### E2E & Accessibility
+
+- [ ] **E2E-01**: A browser e2e suite in a separate repo covers search, record, contribution and review
+- [ ] **A11Y-01**: A screen-reader audit of search and record is documented with fixes
+- [ ] **A11Y-02**: The UI ships fr/en strings with a persisted language
+- [ ] **A11Y-03**: The map has a usable non-visual path (list + keyboard)
+
+| Requirement | Phase | Status |
+|---|---|---|
+| OPS-04 | Phase 8 | Pending |
+| OPS-05 | Phase 8 | Pending |
+| OPS-06 | Phase 8 | Pending |
+| DATA-01 | Phase 9 | Pending |
+| DATA-02 | Phase 9 | Pending |
+| DATA-03 | Phase 9 | Pending |
+| DATA-04 | Phase 9 | Pending |
+| SEARCH-01 | Phase 10 | Pending |
+| SEARCH-02 | Phase 10 | Pending |
+| SEARCH-03 | Phase 10 | Pending |
+| E2E-01 | Phase 11 | Pending |
+| A11Y-01 | Phase 11 | Pending |
+| A11Y-02 | Phase 11 | Pending |
+| A11Y-03 | Phase 11 | Pending |
