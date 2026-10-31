@@ -9,11 +9,11 @@ See: .planning/PROJECT.md (updated 2026-10-26)
 
 ## Current Position
 
-Ticket: LET-23 (Phase 8 — next); milestone V1.1
-Phase: 0 / 4 of V1.1 (V1: 7/7 complete)
-Plan: — (plan Phase 8 next)
+Ticket: LET-23 (Phase 8 — planned); milestone V1.1
+Phase: 0 / 4 of V1.1 (Phase 8 planned)
+Plan: 08-01 (planned)
 Status: Complete — verified
-Last activity: 2026-10-31 — V1.1 milestone created (Production & Quality, phases 8-11, LET-23..26).
+Last activity: 2026-10-31 — Phase 8 plan created (TLS, backups, metrics, retention).
 
 ## Performance Metrics
 
@@ -46,5 +46,5 @@ Last activity: 2026-10-31 — V1.1 milestone created (Production & Quality, phas
 ## Session Continuity
 
 Last session: 2026-10-27
-Stopped at: V1.1 milestone created — Phase 8 not planned
-Resume file: .planning/ROADMAP.md
+Stopped at: Phase 8 planned (08-01-PLAN.md), not executed
+Resume file: .planning/phases/08-production-ops/08-01-PLAN.md
