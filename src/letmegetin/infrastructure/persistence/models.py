@@ -68,6 +68,21 @@ class ApiKeyModel(Base):
     created: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
+class IdempotencyKeyModel(Base):
+    """A stored write response, keyed by user + Idempotency-Key."""
+
+    __tablename__ = "idempotency_key"
+    __table_args__ = (UniqueConstraint("user_id", "key", name="idempotency_user_key_uc"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    key: Mapped[str] = mapped_column(String(128))
+    request_hash: Mapped[str] = mapped_column(String(64))
+    status_code: Mapped[int] = mapped_column(Integer)
+    body: Mapped[dict] = mapped_column(JSONB, default=dict)
+    created: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
 class RefreshTokenModel(Base):
     """A refresh token the server can revoke (only its SHA-256 fingerprint is stored)."""
 

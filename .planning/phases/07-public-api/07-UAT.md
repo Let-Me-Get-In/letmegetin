@@ -46,13 +46,13 @@ evidence: "Unit test on app.openapi(); CI `openapi` job regenerates and diffs do
 expected: 85% coverage floor and all tests green after the keys/limits/cache changes.
 result: pass
 source: automated
-evidence: "181 pytest tests pass; ruff, mypy and bandit clean."
+evidence: "186 pytest tests pass; ruff, mypy and bandit clean."
 
 ### 7. Web suite
 expected: the BFF forwards the optional API key and the app still builds with the standalone output.
 result: pass
 source: automated
-evidence: "24 Vitest tests pass; lint, typecheck and `next build` (standalone) pass."
+evidence: "25 Vitest tests pass; lint, typecheck and `next build` (standalone) pass."
 
 ### 8. Docker images
 expected: the API and web images build.
@@ -72,10 +72,28 @@ result: pass
 source: automated
 evidence: "GitHub Actions run 41184870853: 9/9 jobs pass (including OpenAPI drift and Docker images)."
 
+### 11. Idempotent writes
+expected: the same `Idempotency-Key` + payload replays the stored contribution/review; a different payload is 409; an unchanged PUT does not duplicate the audit log; logout is 204 without a session.
+result: pass
+source: automated
+evidence: "4 backend tests + 1 BFF test: replay 200/201, 409 on payload change, contribution log stays at 1, unchanged PUT without a key logs once, logout no-cookie 204."
+
+### 12. Sliding-window limits and worker fallback
+expected: the limiter counts a true sliding window, and the in-memory fallback divides the budget by the worker count.
+result: pass
+source: automated
+evidence: "3 unit tests (memory allow/deny/reset, Redis fakeredis); the fallback uses max(1, limit // worker_count)."
+
+### 13. Production guard and dependency hygiene
+expected: production refuses the development JWT secret; images are pinned by digest; production dependencies have no known advisory.
+result: pass
+source: automated
+evidence: "2 settings tests; Dockerfile FROM lines pinned to multi-arch digests; `npm audit --omit=dev` → 0 vulnerabilities (16 moderate remain dev-only)."
+
 ## Summary
 
-total: 10
-passed: 10
+total: 13
+passed: 13
 issues: 0
 pending: 0
 skipped: 0

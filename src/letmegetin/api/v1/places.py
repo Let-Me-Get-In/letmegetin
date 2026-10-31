@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import hashlib
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from fastapi.responses import JSONResponse
 
 from letmegetin.api.deps import (
     AdminUser,
@@ -15,6 +17,7 @@ from letmegetin.api.deps import (
     VerifiedUser,
     public_rate_limit,
 )
+from letmegetin.api.idempotency import remember, replay
 from letmegetin.api.schemas.places import (
     CandidateOut,
     ContributionIn,
@@ -40,6 +43,10 @@ from letmegetin.core.exceptions import CriterionNotFound, PlaceNotFound, ReviewN
 from letmegetin.domain.referential.entities import HandicapFamily
 
 router = APIRouter(prefix="/api/v1", tags=["places"], dependencies=[Depends(public_rate_limit)])
+
+
+def _request_hash(method: str, path: str, body: str) -> str:
+    return hashlib.sha256(f"{method}:{path}:{body}".encode()).hexdigest()
 
 
 def _criterion_ids(raw: str | None) -> list[int]:
@@ -127,8 +134,13 @@ async def write_accessibility(
     grids: CategoryGridRepo,
     user: VerifiedUser,
     session: DbSession,
-) -> ContributionOut:
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key", max_length=128)] = None,
+) -> ContributionOut | JSONResponse:
     """Authenticated write of one accessibility value (CONTRIB-01/02)."""
+    request_hash = _request_hash("PUT", f"{slug}/{criterion_slug}", payload.model_dump_json())
+    replayed = await replay(session, user.id, idempotency_key, request_hash)
+    if replayed is not None:
+        return replayed
     try:
         await contribute(places, criteria, slug, criterion_slug, user, payload.value)
         detail = await get_place(places, criteria, grids, slug)
@@ -136,10 +148,19 @@ async def write_accessibility(
         raise HTTPException(status_code=404, detail="Place not found") from None
     except CriterionNotFound:
         raise HTTPException(status_code=404, detail="Criterion not found") from None
-    await session.commit()
-    return ContributionOut(
+    response = ContributionOut(
         criterion=criterion_slug, value=payload.value, filled_rate=detail.filled_rate
     )
+    await remember(
+        session,
+        user.id,
+        idempotency_key,
+        request_hash,
+        200,
+        response.model_dump(mode="json"),
+    )
+    await session.commit()
+    return response
 
 
 @router.post("/places/{slug}/reviews", response_model=ReviewOut, status_code=201)
@@ -149,14 +170,28 @@ async def write_review(
     places: PlaceRepo,
     user: VerifiedUser,
     session: DbSession,
-) -> ReviewOut:
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key", max_length=128)] = None,
+) -> ReviewOut | JSONResponse:
     """Authenticated review creation (REV-02)."""
+    request_hash = _request_hash("POST", slug, payload.model_dump_json())
+    replayed = await replay(session, user.id, idempotency_key, request_hash)
+    if replayed is not None:
+        return replayed
     try:
         review = await create_review(places, slug, user, payload.rating, payload.body)
     except PlaceNotFound:
         raise HTTPException(status_code=404, detail="Place not found") from None
+    response = ReviewOut.from_review(review)
+    await remember(
+        session,
+        user.id,
+        idempotency_key,
+        request_hash,
+        201,
+        response.model_dump(mode="json"),
+    )
     await session.commit()
-    return ReviewOut.from_review(review)
+    return response
 
 
 @router.patch("/reviews/{review_id}", response_model=ReviewOut)

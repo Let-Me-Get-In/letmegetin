@@ -48,6 +48,7 @@ export async function handler(request: NextRequest, context: Context) {
   if (isRefresh || isLogout) {
     const refresh = request.cookies.get(REFRESH_COOKIE)?.value;
     if (!refresh) {
+      if (isLogout) return new NextResponse(null, { status: 204 });
       return NextResponse.json({ detail: "Not authenticated" }, { status: 401 });
     }
     if (!headers.has("content-type")) headers.set("content-type", "application/json");

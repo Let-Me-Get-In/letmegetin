@@ -11,7 +11,12 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from letmegetin.core.exceptions import DomainError
-from letmegetin.domain.accounts.entities import ApiKey, RefreshToken, User
+from letmegetin.domain.accounts.entities import (
+    ApiKey,
+    IdempotencyRecord,
+    RefreshToken,
+    User,
+)
 from letmegetin.domain.places.dedup import normalize_name
 from letmegetin.domain.places.entities import (
     HandicapFamily,
@@ -51,6 +56,7 @@ from letmegetin.infrastructure.persistence.models import (
     ContributionModel,
     CriterionModel,
     CriterionVocabularyModel,
+    IdempotencyKeyModel,
     OtherInformationModel,
     PlaceAccessibilityModel,
     PlaceAliasModel,
@@ -392,6 +398,44 @@ def _api_key_from_model(model: ApiKeyModel) -> ApiKey:
     )
 
 
+class SqlAlchemyIdempotencyRepository:
+    """Idempotency replay store (no commit: the caller owns the work)."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def get(self, user_id: int, key: str) -> IdempotencyRecord | None:
+        model = await self._session.scalar(
+            select(IdempotencyKeyModel).where(
+                IdempotencyKeyModel.user_id == user_id,
+                IdempotencyKeyModel.key == key,
+            )
+        )
+        return _idempotency_from_model(model) if model is not None else None
+
+    async def add(self, record: IdempotencyRecord) -> None:
+        statement = insert(IdempotencyKeyModel).values(
+            user_id=record.user_id,
+            key=record.key,
+            request_hash=record.request_hash,
+            status_code=record.status_code,
+            body=record.body,
+        )
+        await self._session.execute(
+            statement.on_conflict_do_nothing(constraint="idempotency_user_key_uc")
+        )
+
+
+def _idempotency_from_model(model: IdempotencyKeyModel) -> IdempotencyRecord:
+    return IdempotencyRecord(
+        user_id=model.user_id,
+        key=model.key,
+        request_hash=model.request_hash,
+        status_code=model.status_code,
+        body=model.body,
+    )
+
+
 class SqlAlchemyRefreshTokenRepository:
     """Refresh-token store backed by SQLAlchemy (no commit: the caller owns the work)."""
 
@@ -694,6 +738,19 @@ class SqlAlchemyPlaceRepository:
     async def add_contribution(
         self, place_id: int, user_id: int, criterion_id: int, value: dict[str, object]
     ) -> None:
+        # HTTP PUT is idempotent: an unchanged value must not duplicate the audit log.
+        last = await self._session.scalar(
+            select(ContributionModel.value)
+            .where(
+                ContributionModel.place_id == place_id,
+                ContributionModel.user_id == user_id,
+                ContributionModel.criterion_id == criterion_id,
+            )
+            .order_by(ContributionModel.created.desc(), ContributionModel.id.desc())
+            .limit(1)
+        )
+        if last == value:
+            return
         self._session.add(
             ContributionModel(
                 place_id=place_id, user_id=user_id, criterion_id=criterion_id, value=value

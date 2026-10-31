@@ -5,7 +5,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Protocol
 
-from letmegetin.domain.accounts.entities import ApiKey, RefreshToken, User
+from letmegetin.domain.accounts.entities import (
+    ApiKey,
+    IdempotencyRecord,
+    RefreshToken,
+    User,
+)
 
 
 class UserRepository(Protocol):
@@ -40,3 +45,11 @@ class ApiKeyRepository(Protocol):
     async def get_by_hash(self, key_hash: str) -> ApiKey | None: ...
 
     async def revoke(self, key_id: int) -> ApiKey | None: ...
+
+
+class IdempotencyRepository(Protocol):
+    """Replay store for write requests carrying an ``Idempotency-Key``."""
+
+    async def get(self, user_id: int, key: str) -> IdempotencyRecord | None: ...
+
+    async def add(self, record: IdempotencyRecord) -> None: ...
