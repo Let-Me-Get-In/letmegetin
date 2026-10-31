@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     smtp_user: str | None = None
     smtp_password: str | None = None
     smtp_from: str = "no-reply@letmegetin.org"
+    redis_url: str | None = None
+    rate_limit_default_rpm: int = 60
+    rate_limit_auth_rpm: int = 10
+    rate_limit_window: int = 60
+    cache_ttl: int = 3600
 
 
 settings = Settings()

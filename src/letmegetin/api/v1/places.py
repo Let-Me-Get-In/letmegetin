@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from letmegetin.api.deps import (
     AdminUser,
@@ -13,6 +13,7 @@ from letmegetin.api.deps import (
     DbSession,
     PlaceRepo,
     VerifiedUser,
+    public_rate_limit,
 )
 from letmegetin.api.schemas.places import (
     CandidateOut,
@@ -38,7 +39,7 @@ from letmegetin.application.places.search import (
 from letmegetin.core.exceptions import CriterionNotFound, PlaceNotFound, ReviewNotFound
 from letmegetin.domain.referential.entities import HandicapFamily
 
-router = APIRouter(prefix="/api/v1", tags=["places"])
+router = APIRouter(prefix="/api/v1", tags=["places"], dependencies=[Depends(public_rate_limit)])
 
 
 def _criterion_ids(raw: str | None) -> list[int]:

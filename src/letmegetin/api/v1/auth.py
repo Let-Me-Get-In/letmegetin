@@ -5,9 +5,9 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
-from letmegetin.api.deps import CurrentUser, DbSession, RefreshRepo, UserRepo
+from letmegetin.api.deps import CurrentUser, DbSession, RefreshRepo, UserRepo, auth_rate_limit
 from letmegetin.api.schemas.auth import (
     LoginIn,
     LogoutIn,
@@ -33,7 +33,7 @@ from letmegetin.domain.accounts.entities import User
 from letmegetin.domain.accounts.repositories import RefreshTokenRepository
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+router = APIRouter(prefix="/api/v1/auth", tags=["auth"], dependencies=[Depends(auth_rate_limit)])
 
 
 async def _issue_tokens(user: User, refresh_tokens: RefreshTokenRepository) -> TokenPairOut:

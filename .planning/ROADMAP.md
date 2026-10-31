@@ -96,7 +96,7 @@ Plans:
 | 4. Record & reviews (read) | LET-9 | Complete | 2026-10-27 |
 | 5. Auth & contribution | LET-10 | Complete | 2026-10-27 |
 | 6. Next.js frontend | LET-11 | Complete | 2026-10-30 |
-| 7. Public API & deployment | LET-12 | Pending | — |
+| 7. Public API & deployment | LET-12 | Complete | 2026-10-31 |
 
 ---
 *Created: 2026-10-26*

@@ -11,7 +11,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from letmegetin.core.exceptions import DomainError
-from letmegetin.domain.accounts.entities import RefreshToken, User
+from letmegetin.domain.accounts.entities import ApiKey, RefreshToken, User
 from letmegetin.domain.places.dedup import normalize_name
 from letmegetin.domain.places.entities import (
     HandicapFamily,
@@ -43,6 +43,7 @@ from letmegetin.infrastructure.persistence.mappers import (
 )
 from letmegetin.infrastructure.persistence.models import (
     AccessibilityFilterModel,
+    ApiKeyModel,
     CategoryCriterionModel,
     CategoryGridModel,
     CategoryMappingModel,
@@ -342,6 +343,52 @@ def _user_from_model(model: UserModel) -> User:
         role=model.role,
         display_name=model.display_name,
         email_verified=model.email_verified,
+    )
+
+
+class SqlAlchemyApiKeyRepository:
+    """Partner API-key store backed by SQLAlchemy (no commit: the caller owns the work)."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def add(self, api_key: ApiKey) -> ApiKey:
+        model = ApiKeyModel(
+            label=api_key.label,
+            key_hash=api_key.key_hash,
+            rpm=api_key.rpm,
+            active=api_key.active,
+        )
+        self._session.add(model)
+        await self._session.flush()
+        return _api_key_from_model(model)
+
+    async def list_all(self) -> list[ApiKey]:
+        rows = (await self._session.scalars(select(ApiKeyModel).order_by(ApiKeyModel.id))).all()
+        return [_api_key_from_model(row) for row in rows]
+
+    async def get_by_hash(self, key_hash: str) -> ApiKey | None:
+        model = await self._session.scalar(
+            select(ApiKeyModel).where(ApiKeyModel.key_hash == key_hash)
+        )
+        return _api_key_from_model(model) if model is not None else None
+
+    async def revoke(self, key_id: int) -> ApiKey | None:
+        model = await self._session.get(ApiKeyModel, key_id)
+        if model is None:
+            return None
+        model.active = False
+        await self._session.flush()
+        return _api_key_from_model(model)
+
+
+def _api_key_from_model(model: ApiKeyModel) -> ApiKey:
+    return ApiKey(
+        id=model.id,
+        label=model.label,
+        key_hash=model.key_hash,
+        rpm=model.rpm,
+        active=model.active,
     )
 
 
