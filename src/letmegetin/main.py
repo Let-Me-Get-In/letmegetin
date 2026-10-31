@@ -7,10 +7,10 @@ import logging
 from fastapi import FastAPI
 
 from letmegetin.api.v1.router import router
-from letmegetin.config import settings
+from letmegetin.config import Settings, settings
 
 logger = logging.getLogger(__name__)
-DEFAULT_JWT_SECRET = "dev-insecure-secret-change-me"
+DEFAULT_JWT_SECRET = Settings.model_fields["jwt_secret"].default
 
 
 def _validate_settings() -> None:
