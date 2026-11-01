@@ -1,0 +1,10 @@
+[Unit]
+Description=LetMeGetIn Postgres and Redis backup
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/letmegetin
+EnvironmentFile=/opt/letmegetin/deploy/.env.prod
+ExecStart=/opt/letmegetin/scripts/backup.sh

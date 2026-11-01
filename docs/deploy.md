@@ -1,58 +1,73 @@
 # Deployment
 
-## Local stack
+The production stack is **Caddy + web + API + PostGIS + Redis**. Only Caddy publishes ports
+(80/443); the API and web listen on the internal network. Metrics are internal only.
+
+## First deploy
 
 ```bash
-export LETMEGETIN_JWT_SECRET="$(openssl rand -hex 32)"
-docker compose -p letmegetin-prod -f docker-compose.prod.yml up --build
+cp deploy/.env.prod.example deploy/.env.prod
+# fill APP_DOMAIN, API_DOMAIN, ACME_EMAIL, POSTGRES_PASSWORD, REDIS_PASSWORD,
+# LETMEGETIN_JWT_SECRET (openssl rand -hex 32), SMTP, Sentry DSNs
+
+docker compose -p letmegetin-prod --env-file deploy/.env.prod -f docker-compose.prod.yml up -d --build
+docker compose -p letmegetin-prod --env-file deploy/.env.prod -f docker-compose.prod.yml \
+  exec api python -m letmegetin.seed
 ```
 
-- API: http://localhost:8000 (`/health`, `/docs`)
-- Web: http://localhost:3000
-- PostGIS and Redis are internal; migrations run on API start.
+- Web: `https://$APP_DOMAIN`
+- API: `https://$API_DOMAIN` (`/health`, `/docs`, `/openapi.json`)
+- `/metrics` is **not** routed publicly; Prometheus scrapes `api:8000` internally.
+- Migrations run on API start (entrypoint).
+- The compose project is `letmegetin-prod`; it never shares volumes with the dev PostGIS
+  (`letmegetin-db` on 55433).
 
-Seed the fresh database once:
+## Local TLS smoke test
+
+Caddy can use its internal CA for `app.localhost` / `api.localhost`:
 
 ```bash
-docker compose -p letmegetin-prod -f docker-compose.prod.yml exec api python -m letmegetin.seed
+export POSTGRES_PASSWORD=test REDIS_PASSWORD=test LETMEGETIN_JWT_SECRET=test
+export APP_DOMAIN=app.localhost API_DOMAIN=api.localhost ACME_EMAIL=test@example.org
+export CADDY_CONFIG=Caddyfile.local
+docker compose -p letmegetin-prod -f docker-compose.prod.yml up -d --build
+
+curl -k --resolve app.localhost:443:127.0.0.1 https://app.localhost/
+curl -k --resolve api.localhost:443:127.0.0.1 https://api.localhost/health
+curl -k --resolve api.localhost:443:127.0.0.1 -o /dev/null -w '%{http_code}\n' \
+  https://api.localhost/metrics   # 404: blocked by Caddy
 ```
 
-The compose project is named `letmegetin-prod` so it never shares containers or volumes with
-the dev PostGIS (`letmegetin-db` on port 55433).
-
-## Images
+## Observability profile
 
 ```bash
-docker build -f docker/Dockerfile --target api -t letmegetin-api .
-docker build -f docker/Dockerfile --target web -t letmegetin-web .
+docker compose -p letmegetin-prod --env-file deploy/.env.prod -f docker-compose.prod.yml \
+  --profile observability up -d prometheus alertmanager
 ```
 
-The API image runs `alembic upgrade head` then uvicorn. The web image is a Next standalone build.
+Prometheus scrapes `api:8000/metrics`; the alert rules cover API down, 5xx rate, 429 rate and
+Redis down. Alertmanager forwards to `ALERT_WEBHOOK`.
 
-## Required settings (API)
+## Required API settings
 
 | Variable | Purpose |
 |---|---|
+| `LETMEGETIN_ENVIRONMENT` | `production` (required to enforce the secret guard) |
 | `LETMEGETIN_DATABASE_URL` | `postgresql+asyncpg://…` (PostGIS) |
-| `LETMEGETIN_REDIS_URL` | `redis://redis:6379/0` for limits + cache |
+| `LETMEGETIN_REDIS_URL` | `redis://:password@redis:6379/0` |
 | `LETMEGETIN_JWT_SECRET` | **required**, long random string |
+| `LETMEGETIN_SENTRY_DSN` | optional; no DSN → Sentry disabled |
 | `LETMEGETIN_SMTP_*` | verification emails (otherwise logged) |
+| `LETMEGETIN_GIT_SHA` | Sentry release |
 
-Web: `API_URL` (server-side), optional `API_KEY` for a partner key, and the
-`NEXT_PUBLIC_MAP_TILE_*` pair.
+Web (build-time): `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_MAP_TILE_URL`,
+`NEXT_PUBLIC_MAP_ATTRIBUTION`. Runtime: `API_URL`, optional `API_KEY`.
 
 ## Operations
 
-- `/health` is database-free; compose uses it for the API healthcheck.
-- Redis is used for rate limits and the referential cache; if it is down the API falls back to
-  in-process limits and skips the cache.
-## Production checklist (before a real host)
-
-- [ ] `LETMEGETIN_ENVIRONMENT=production` and a long random `LETMEGETIN_JWT_SECRET` (the API
-      refuses to start with the development secret).
-- [ ] TLS termination in front of the API and web (Caddy/Traefik/Cloudflare).
-- [ ] Postgres and Redis backups, with a restore test.
-- [ ] Monitoring on `/health`, the 429 rate and Redis availability.
-- [ ] SMTP configured, or verification links only appear in the logs.
-- [ ] A named tile provider via `NEXT_PUBLIC_MAP_TILE_URL`.
-- [ ] A retention/purge job for `idempotency_key` and old `contribution` rows.
+- Backups/restore: `scripts/backup.sh`, `scripts/restore.sh`, systemd units in `deploy/systemd/`.
+- Retention: `letmegetin-admin retention [--dry-run]`, daily timer.
+- Runbook: [runbook.md](runbook.md).
+- `/health` is database-free; the API healthcheck uses it.
+- Redis is used for limits and the cache; if it is down the API falls back to in-process limits
+  and skips the cache.

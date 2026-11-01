@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from letmegetin.config import settings
 from letmegetin.core.db import get_session
 from letmegetin.core.exceptions import InvalidToken
+from letmegetin.core.metrics import RATE_LIMITED
 from letmegetin.core.rate_limit import check_rate_limit
 from letmegetin.core.security import decode_token, token_fingerprint
 from letmegetin.domain.accounts.entities import User
@@ -155,6 +156,7 @@ def _rate_limit_dependency(default_setting: str):
         response.headers["X-RateLimit-Remaining"] = str(result.remaining)
         response.headers["X-RateLimit-Reset"] = reset_at
         if not result.allowed:
+            RATE_LIMITED.inc()
             raise HTTPException(
                 status_code=429,
                 detail="Rate limit exceeded",

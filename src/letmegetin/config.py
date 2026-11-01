@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     rate_limit_window: int = 60
     worker_count: int = 1
     cache_ttl: int = 3600
+    sentry_dsn: str | None = None
+    git_sha: str = "dev"
+    retention_idempotency_hours: int = 24
+    retention_refresh_days: int = 30
 
 
 settings = Settings()
