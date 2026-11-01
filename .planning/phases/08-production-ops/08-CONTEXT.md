@@ -25,7 +25,7 @@ Out of scope: cloud-specific IaC (Terraform), multi-region/HA, WAF, a paid obser
   headers. Only 80/443 are published; API and web stay on the internal network.
 - **Secrets** live in `deploy/.env.prod` (git-ignored): Postgres password, **Redis password**,
   `LETMEGETIN_JWT_SECRET`, SMTP. Compose reads them; no secret in a committed file.
-- **Backups**: `pg_dump` custom format + Redis RDB snapshot, timestamped, 7 daily / 4 weekly
+- **Backups**: `pg_dump` custom format + Redis RDB snapshot, timestamped, 7 daily
   retention. A restore script restores into a **scratch database** first; the runbook includes the
   restore test, not only the backup command.
 - **Metrics**: `prometheus-client` on the API at `/metrics` (internal network only, not routed by

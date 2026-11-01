@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from datetime import datetime
 
 from geoalchemy2 import Geography
-from sqlalchemy import func, or_, select, update
+from sqlalchemy import and_, delete, func, or_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -434,6 +434,48 @@ def _idempotency_from_model(model: IdempotencyKeyModel) -> IdempotencyRecord:
         status_code=model.status_code,
         body=model.body,
     )
+
+
+class SqlAlchemyRetentionRepository:
+    """Operational retention (no commit: the caller owns the work)."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def purge(
+        self,
+        *,
+        idempotency_before: datetime,
+        refresh_before: datetime,
+        dry_run: bool,
+    ) -> tuple[int, int]:
+        idempotency_condition = IdempotencyKeyModel.created < idempotency_before
+        refresh_condition = and_(
+            RefreshTokenModel.created < refresh_before,
+            or_(
+                RefreshTokenModel.expires_at < refresh_before,
+                RefreshTokenModel.revoked.is_(True),
+            ),
+        )
+        if dry_run:
+            idempotency_count = await self._session.scalar(
+                select(func.count()).select_from(IdempotencyKeyModel).where(idempotency_condition)
+            )
+            refresh_count = await self._session.scalar(
+                select(func.count()).select_from(RefreshTokenModel).where(refresh_condition)
+            )
+            return int(idempotency_count or 0), int(refresh_count or 0)
+
+        idempotency_result = await self._session.execute(
+            delete(IdempotencyKeyModel).where(idempotency_condition)
+        )
+        refresh_result = await self._session.execute(
+            delete(RefreshTokenModel).where(refresh_condition)
+        )
+        return (
+            int(getattr(idempotency_result, "rowcount", 0) or 0),
+            int(getattr(refresh_result, "rowcount", 0) or 0),
+        )
 
 
 class SqlAlchemyRefreshTokenRepository:

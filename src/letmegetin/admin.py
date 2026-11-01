@@ -39,6 +39,7 @@ from letmegetin.application.referential.admin import (
     set_vocabulary_labels,
     unlink_criterion,
 )
+from letmegetin.application.retention import run_retention
 from letmegetin.config import settings
 from letmegetin.core.db import SessionLocal
 from letmegetin.core.exceptions import CategoryNotFound, DomainError
@@ -54,6 +55,7 @@ from letmegetin.infrastructure.persistence.repositories import (
     SqlAlchemyMergeLogRepository,
     SqlAlchemyPlaceAliasRepository,
     SqlAlchemyPlaceRepository,
+    SqlAlchemyRetentionRepository,
     SqlAlchemyVocabularyRepository,
 )
 
@@ -515,6 +517,22 @@ def api_key_revoke(key_id: Annotated[int, typer.Argument(help="Key id")]) -> Non
         return f"revoked api key #{key.id} ({key.label})"
 
     _run_api_key_admin(callback)
+
+
+@app.command("retention")
+def retention(
+    dry_run: Annotated[bool, typer.Option("--dry-run", help="Count without deleting")] = False,
+) -> None:
+    """Purge expired idempotency keys and refresh tokens (OPS-06)."""
+
+    async def callback(session: AsyncSession) -> str:
+        report = await run_retention(SqlAlchemyRetentionRepository(session), dry_run=dry_run)
+        return (
+            f"retention: idempotency={report.idempotency_deleted} "
+            f"refresh={report.refresh_deleted} dry_run={report.dry_run}"
+        )
+
+    _run_admin(callback, bump=False)
 
 
 if __name__ == "__main__":

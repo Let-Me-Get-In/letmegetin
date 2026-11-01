@@ -121,8 +121,8 @@
 ### Production & Ops
 
 - [ ] **OPS-04**: The stack runs on a real host with TLS, production secrets and a documented runbook
-- [ ] **OPS-05**: Postgres and Redis backups run and a restore is tested
-- [ ] **OPS-06**: Monitoring covers `/health`, the 429 rate and Redis, with a retention job for idempotency keys
+- [x] **OPS-05**: Postgres and Redis backups run and a restore is tested
+- [x] **OPS-06**: Monitoring covers `/health`, the 429 rate and Redis, with a retention job for idempotency keys
 
 ### Data quality
 
@@ -146,9 +146,9 @@
 
 | Requirement | Phase | Status |
 |---|---|---|
-| OPS-04 | Phase 8 | Pending |
-| OPS-05 | Phase 8 | Pending |
-| OPS-06 | Phase 8 | Pending |
+| OPS-04 | Phase 8 | Partial (host cutover) |
+| OPS-05 | Phase 8 | Complete |
+| OPS-06 | Phase 8 | Complete |
 | DATA-01 | Phase 9 | Pending |
 | DATA-02 | Phase 9 | Pending |
 | DATA-03 | Phase 9 | Pending |

@@ -1,0 +1,36 @@
+groups:
+  - name: letmegetin
+    rules:
+      - alert: ApiDown
+        expr: up{job="letmegetin-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "LetMeGetIn API is down"
+
+      - alert: High5xxRate
+        expr: >
+          sum(rate(letmegetin_http_requests_total{status=~"5.."}[5m]))
+          / clamp_min(sum(rate(letmegetin_http_requests_total[5m])), 1) > 0.05
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "More than 5% of API responses are 5xx"
+
+      - alert: High429Rate
+        expr: sum(rate(letmegetin_rate_limited_total[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rate limiting is firing more than once per second"
+
+      - alert: RedisDown
+        expr: letmegetin_redis_up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is unreachable (limits fall back per worker)"

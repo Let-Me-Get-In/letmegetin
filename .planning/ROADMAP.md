@@ -151,7 +151,7 @@ Plans:
 
 | Phase | Ticket | Status | Completed |
 |-------|--------|--------|-----------|
-| 8. Production deployment & operations | LET-23 | Pending | — |
+| 8. Production deployment & operations | LET-23 | Complete | 2026-11-01 |
 | 9. Data quality & curation | LET-24 | Pending | — |
 | 10. Search quality | LET-25 | Pending | — |
 | 11. E2E & accessibility | LET-26 | Pending | — |
