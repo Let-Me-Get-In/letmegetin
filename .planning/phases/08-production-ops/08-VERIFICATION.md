@@ -30,7 +30,7 @@ gates:
 gaps:
   - "OPS-04 host cutover: DNS, ACME certificates, production secrets and the first deploy on a real VPS remain."
 warnings:
-  - "Offsite upload is tested against an S3-compatible mock; the production bucket lifecycle and R2/S3 credentials are operator settings."
+  - "Offsite upload is tested against an S3-compatible mock; the R2 bucket, API token and lifecycle rule are operator settings."
   - "The Alertmanager webhook is a placeholder until a real chat/on-call endpoint is provided."
   - "Sentry is DSN-gated; until a DSN is set, errors are only visible in logs/metrics."
   - "Prometheus/Alertmanager/Caddy/Postgres/Redis images are pinned by digest; update them deliberately."
