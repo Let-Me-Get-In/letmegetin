@@ -26,7 +26,7 @@ gates:
   backup_restore: pass (marker recovered)
   offsite_upload: pass (S3-compatible endpoint, archive + checksum)
   alembic_current: "0008 (head)"
-  pr_checks: pass (10/10, run 41348828247)
+  pr_checks: pass (10/10, run 41349628601)
 gaps:
   - "OPS-04 host cutover: DNS, ACME certificates, production secrets and the first deploy on a real VPS remain."
 warnings:
