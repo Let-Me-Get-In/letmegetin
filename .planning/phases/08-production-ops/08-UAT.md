@@ -58,7 +58,7 @@ evidence: "dry-run 1/1 leaving 2/2 rows; real run leaves 1/1; second dry-run 0/0
 expected: backend and web suites pass; CI covers the new observability job.
 result: pass
 source: automated
-evidence: "192 backend tests, 25 web tests; CI 10/10 (run 41346125526, including Observability config)."
+evidence: "192 backend tests, 25 web tests; CI 10/10 (run 41348828247, including Observability config)."
 
 ### 9. Offsite backup
 expected: the backup archive and its checksum are uploaded to an S3-compatible bucket.
