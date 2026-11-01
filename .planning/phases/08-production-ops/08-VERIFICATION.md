@@ -25,7 +25,7 @@ gates:
   compose_smoke: pass (Caddy TLS, health, docs, metrics blocked, BFF)
   backup_restore: pass (marker recovered)
   alembic_current: "0008 (head)"
-  pr_checks: pending
+  pr_checks: pass (10/10, run 41346125526)
 gaps:
   - "OPS-04 host cutover: DNS, ACME certificates, production secrets and the first deploy on a real VPS remain."
 warnings:
