@@ -65,7 +65,7 @@ Web (build-time): `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_MAP_TILE_URL`,
 
 ## Operations
 
-- Backups/restore: `scripts/backup.sh` (optional S3/R2 offsite via `S3_BUCKET`),
+- Backups/restore: `scripts/backup.sh` (Cloudflare R2 offsite via `R2_*`, generic S3 supported),
   `scripts/restore.sh`, systemd units in `deploy/systemd/`.
 - Retention: `letmegetin-admin retention [--dry-run]`, daily timer.
 - Runbook: [runbook.md](runbook.md).

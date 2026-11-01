@@ -29,12 +29,22 @@ POSTGRES_PASSWORD=... REDIS_PASSWORD=... ./scripts/backup.sh
 
 - Writes `backups/<UTC timestamp>.tar.gz` (Postgres custom dump + Redis RDB) and a `.sha256`.
 - Keeps the last 7 local archives.
-- **Offsite**: set `S3_BUCKET` (plus `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`,
-  `AWS_DEFAULT_REGION=auto` for R2, optional `S3_ENDPOINT_URL`, `S3_PREFIX`) and the script uploads
-  the archive and its checksum through the AWS CLI container. Without `S3_BUCKET` it warns and stays
-  local.
-- Configure a **lifecycle rule** on the bucket (e.g. keep 30 days / transition to cold storage);
-  the script does not delete remote objects.
+- **Offsite (Cloudflare R2)**: set `R2_ACCOUNT_ID`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`,
+  `R2_SECRET_ACCESS_KEY` (and `S3_PREFIX`, default `letmegetin`). The script derives
+  `https://<account>.r2.cloudflarestorage.com` and uploads the archive and its checksum through the
+  AWS CLI container. Without `R2_BUCKET`/`S3_BUCKET` it warns and stays local. Generic S3 is still
+  supported through `S3_BUCKET` + `AWS_*`.
+
+### Cloudflare R2 setup
+
+1. Create the bucket `letmegetin-backups` (EU jurisdiction if required).
+2. **Manage R2 API Tokens** → create a token with **Object Read & Write**, scoped to that bucket.
+3. Put the Access Key ID / Secret Access Key and the account ID in `deploy/.env.prod`.
+4. **Lifecycle**: bucket → Settings → Object lifecycle → delete after 30 days (or transition to
+   Infrequent Access after 7 days, delete after 90). The script does not delete remote objects.
+5. EU jurisdiction: set
+   `S3_ENDPOINT_URL=https://<account>.eu.r2.cloudflarestorage.com`; otherwise it is derived.
+6. R2 has no egress fees; keep the token bucket-scoped and rotate it like any secret.
 - Installed as `deploy/systemd/letmegetin-backup.{service,timer}` (daily 02:00, `EnvironmentFile`
   points at `deploy/.env.prod`).
 
@@ -44,11 +54,14 @@ POSTGRES_PASSWORD=... REDIS_PASSWORD=... ./scripts/backup.sh
 POSTGRES_PASSWORD=... ./scripts/restore.sh backups/<timestamp>.tar.gz
 ```
 
-Download from S3 first:
+Download from R2 first (same env as the backup):
 
 ```bash
-docker run --rm -v "$PWD/backups:/out" -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
-  amazon/aws-cli s3 cp "s3://$S3_BUCKET/$S3_PREFIX/<timestamp>.tar.gz" /out/
+docker run --rm -v "$PWD/backups:/out" \
+  -e AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" \
+  -e AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
+  amazon/aws-cli --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com" \
+  s3 cp "s3://$R2_BUCKET/$S3_PREFIX/<timestamp>.tar.gz" /out/
 sha256sum -c backups/<timestamp>.tar.gz.sha256
 ```
 
