@@ -13,7 +13,7 @@ Ticket: LET-23 (Phase 8 — complete); next LET-24
 Phase: 1 / 4 of V1.1 (Phase 8 verified)
 Plan: 08-01 (verified)
 Status: Complete — verified
-Last activity: 2026-11-01 — Phase 8 verified (TLS, local + S3 backups, metrics, Sentry, retention; OPS-04 host cutover pending).
+Last activity: 2026-11-01 — Phase 8 verified (TLS, Infisical secrets, R2 backups, metrics, Sentry, retention; OPS-04 host cutover pending).
 
 ## Performance Metrics
 

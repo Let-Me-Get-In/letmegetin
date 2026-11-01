@@ -16,3 +16,4 @@ dist/
 data/referential/raw/
 backups/
 deploy/.env.prod
+deploy/infisical.env

@@ -33,6 +33,7 @@ warnings:
   - "Offsite upload uses Wrangler (no AWS); the command and flow are validated, but the R2 bucket/API token/lifecycle are operator settings and were not exercised against a live Cloudflare account."
   - "The Alertmanager webhook is a placeholder until a real chat/on-call endpoint is provided."
   - "Sentry is DSN-gated; until a DSN is set, errors are only visible in logs/metrics."
+  - "Infisical is wired through scripts/with-secrets.sh and the systemd units; a live machine identity was not exercised here."
   - "Prometheus/Alertmanager/Caddy/Postgres/Redis images are pinned by digest; update them deliberately."
   - "The retention job only covers idempotency keys and refresh tokens; logs/backups have their own retention."
 deferred:

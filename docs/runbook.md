@@ -24,7 +24,7 @@ Operational procedures for the LetMeGetIn production stack (Caddy, web, API, Pos
 ## Backup
 
 ```bash
-POSTGRES_PASSWORD=... REDIS_PASSWORD=... ./scripts/backup.sh
+./scripts/with-secrets.sh ./scripts/backup.sh
 ```
 
 - Writes `backups/<UTC timestamp>.tar.gz` (Postgres custom dump + Redis RDB) and a `.sha256`.
@@ -44,23 +44,23 @@ POSTGRES_PASSWORD=... REDIS_PASSWORD=... ./scripts/backup.sh
    Infrequent Access after 7 days, delete after 90). The script does not delete remote objects.
 5. EU jurisdiction: set `R2_JURISDICTION=eu` (adds `--jurisdiction eu`).
 6. R2 has no egress fees; keep the token bucket-scoped and rotate it like any secret.
-- Installed as `deploy/systemd/letmegetin-backup.{service,timer}` (daily 02:00, `EnvironmentFile`
-  points at `deploy/.env.prod`).
+- Installed as `deploy/systemd/letmegetin-backup.{service,timer}` (daily 02:00). The unit reads
+  `/etc/letmegetin/infisical.env` and runs the wrapper, so no application secret sits on disk.
 
 ## Restore (tested path)
 
 ```bash
-POSTGRES_PASSWORD=... ./scripts/restore.sh backups/<timestamp>.tar.gz
+./scripts/with-secrets.sh ./scripts/restore.sh backups/<timestamp>.tar.gz
 ```
 
-Download from R2 first (same env as the backup):
+Download from R2 first (the wrapper injects the R2/Cloudflare secrets):
 
 ```bash
-docker run --rm -v "$PWD/backups:/out" \
+./scripts/with-secrets.sh bash -c 'docker run --rm -v "$PWD/backups:/out" \
   -e CLOUDFLARE_ACCOUNT_ID -e CLOUDFLARE_API_TOKEN \
   node:22-alpine npx --yes wrangler@4 r2 object get \
   "$R2_BUCKET/$R2_PREFIX/<timestamp>.tar.gz" \
-  --file=/out/<timestamp>.tar.gz --remote
+  --file=/out/<timestamp>.tar.gz --remote'
 sha256sum -c backups/<timestamp>.tar.gz.sha256
 ```
 
@@ -68,7 +68,7 @@ Then restore into **`letmegetin_restore`**, never the live DB.
 - Prints the row counts of `place`, `categories`, `review`, `users`.
 - Inspect the scratch DB; then promote deliberately:
   ```bash
-  POSTGRES_PASSWORD=... ./scripts/restore.sh backups/<timestamp>.tar.gz --promote
+  ./scripts/with-secrets.sh ./scripts/restore.sh backups/<timestamp>.tar.gz --promote
   ```
   Promotion stops the API, replaces the database and restarts the API. Verify `/health` before
   reopening traffic.
@@ -117,7 +117,13 @@ docker compose ... exec api letmegetin-admin retention
 
 ## Secrets
 
-- `deploy/.env.prod` is git-ignored and owned by the deploy user (mode 600).
-- Rotate `LETMEGETIN_JWT_SECRET` by restarting the API (all sessions invalidated).
-- Rotate Postgres/Redis passwords with a maintenance window; update `deploy/.env.prod` and restart
-  the dependent services.
+- Application secrets live in **Infisical** (project, environment `prod`, path `/`). The server
+  holds only `/etc/letmegetin/infisical.env` (machine identity, mode 600).
+- `./scripts/with-secrets.sh <command>` authenticates and injects secrets; systemd timers use the
+  same wrapper.
+- Rotate `LETMEGETIN_JWT_SECRET` in Infisical and restart the API (all sessions invalidated).
+- Rotate Postgres/Redis/R2/SMTP secrets in Infisical and restart the affected services;
+  `infisical run` injects at process start, so a running container keeps the old value.
+- Rotate the machine identity client secret in Infisical and `/etc/letmegetin/infisical.env`;
+  timers log in on each run.
+- `deploy/.env.prod` is a fallback only; do not use it on the production host.
