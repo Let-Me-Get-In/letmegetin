@@ -32,6 +32,13 @@ Out of scope: cloud-specific IaC (Terraform), multi-region/HA, WAF, a paid obser
   Caddy): request count/status, latency histogram, 429 count, Redis-up gauge. Prometheus scrapes
   it; alert rules cover API down, 429 spikes, Redis down, 5xx rate. Alertmanager receives the
   alerts via a configurable webhook.
+- **Error tracking: Sentry, DSN-gated**. Backend `sentry-sdk[fastapi]` and web `@sentry/nextjs`,
+  EU region, `send_default_pii=False`, request bodies/headers scrubbed, release = git SHA,
+  sample 10 %. Without a DSN, Sentry is a no-op. It complements Prometheus: metrics tell us *that*
+  something is wrong, Sentry tells us *where*.
+- **PostHog is deferred**. Product analytics needs a consent/CMP, a privacy review (session replay
+  of accessibility contributions is sensitive) and an accessibility review of the injected
+  script. It is not an operations need; revisit after V1.1 in a dedicated ticket.
 - **Retention** is an operator CLI command (`letmegetin-admin retention`) scheduled by systemd
   timers: idempotency keys older than 24h, expired/revoked refresh tokens older than 30 days.
   Contributions and reviews are audit data and are never purged.
@@ -57,6 +64,7 @@ Out of scope: cloud-specific IaC (Terraform), multi-region/HA, WAF, a paid obser
 
 <deferred>
 - Terraform/Ansible, multi-region, HA Postgres, managed Redis, WAF, paging integrations.
+- **PostHog / product analytics**: consent, privacy and accessibility review first; later ticket.
 </deferred>
 
 ---
