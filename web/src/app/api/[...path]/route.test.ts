@@ -88,6 +88,22 @@ describe("auth BFF", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("forwards the client IP to the API", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await handler(
+      request("/api/v1/categories", {
+        method: "GET",
+        headers: { "x-forwarded-for": "203.0.113.9" },
+      }),
+      context(["v1", "categories"]),
+    );
+
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    expect(new Headers(init.headers).get("x-forwarded-for")).toBe("203.0.113.9");
+  });
+
   it("is idempotent on logout without a cookie", async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);

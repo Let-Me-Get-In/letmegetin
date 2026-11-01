@@ -31,7 +31,8 @@ X-RateLimit-Reset: 1793400123
 
 Over the limit: `429` with `Retry-After` (seconds). Limits are **sliding windows**; Redis is
 shared across API workers, with an in-memory fallback (the budget is divided by the configured
-worker count) if Redis is unavailable.
+worker count) if Redis is unavailable. Behind Caddy the client IP is read from
+`X-Forwarded-For`; the API itself is not publicly reachable.
 
 ## Endpoints
 

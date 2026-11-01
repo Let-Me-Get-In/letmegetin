@@ -61,7 +61,8 @@ Redis down. Alertmanager forwards to `ALERT_WEBHOOK`.
 | `LETMEGETIN_GIT_SHA` | Sentry release |
 
 Web (build-time): `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_MAP_TILE_URL`,
-`NEXT_PUBLIC_MAP_ATTRIBUTION`. Runtime: `API_URL`, optional `API_KEY`.
+`NEXT_PUBLIC_MAP_ATTRIBUTION`. Runtime: `API_URL`; leave `API_KEY` empty for the public web so
+each visitor keeps their own per-IP limit (the BFF forwards `X-Forwarded-For`).
 
 ## Operations
 
