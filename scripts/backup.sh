@@ -25,20 +25,15 @@ compose cp redis:/data/dump.rdb "$WORK/redis.rdb"
 tar -czf "$DEST/$TS.tar.gz" -C "$DEST" "$TS"
 echo "backup: $DEST/$TS.tar.gz"
 
-# Offsite copy to Cloudflare R2 (or any S3-compatible store).
-# R2_* names are the documented path; S3_*/AWS_* still work for other providers.
-R2_ACCOUNT_ID=${R2_ACCOUNT_ID:-}
-S3_BUCKET=${S3_BUCKET:-${R2_BUCKET:-}}
-S3_PREFIX=${S3_PREFIX:-letmegetin}
-S3_ENDPOINT_URL=${S3_ENDPOINT_URL:-${R2_ACCOUNT_ID:+https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com}}
-AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-${R2_ACCESS_KEY_ID:-}}
-AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-${R2_SECRET_ACCESS_KEY:-}}
-AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-auto}
+# Offsite copy to Cloudflare R2 through Wrangler (no AWS tooling).
+R2_BUCKET=${R2_BUCKET:-}
+R2_PREFIX=${R2_PREFIX:-letmegetin}
+R2_JURISDICTION=${R2_JURISDICTION:-}
 
-if [ -n "$S3_BUCKET" ]; then
-  : "${AWS_ACCESS_KEY_ID:?R2_ACCESS_KEY_ID (or AWS_ACCESS_KEY_ID) is required}"
-  : "${AWS_SECRET_ACCESS_KEY:?R2_SECRET_ACCESS_KEY (or AWS_SECRET_ACCESS_KEY) is required}"
-  KEY="${S3_PREFIX}/$(basename "$DEST/$TS.tar.gz")"
+if [ -n "$R2_BUCKET" ]; then
+  : "${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN is required for R2_BUCKET}"
+  : "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID is required for R2_BUCKET}"
+  KEY="$R2_PREFIX/$(basename "$DEST/$TS.tar.gz")"
 
   if command -v sha256sum >/dev/null 2>&1; then
     sha256sum "$DEST/$TS.tar.gz" > "$DEST/$TS.tar.gz.sha256"
@@ -46,30 +41,25 @@ if [ -n "$S3_BUCKET" ]; then
     shasum -a 256 "$DEST/$TS.tar.gz" > "$DEST/$TS.tar.gz.sha256"
   fi
 
-  ENDPOINT_ARGS=()
-  if [ -n "${S3_ENDPOINT_URL:-}" ]; then
-    ENDPOINT_ARGS=(--endpoint-url "$S3_ENDPOINT_URL")
+  JURISDICTION_ARGS=()
+  if [ -n "$R2_JURISDICTION" ]; then
+    JURISDICTION_ARGS=(--jurisdiction "$R2_JURISDICTION")
   fi
 
-  AWS_CLI="amazon/aws-cli:latest@sha256:d557b3524475d70dd3104cf44d96568ee3188897b73a6ece2b37aa50e1af362f"
+  NODE_IMAGE="node:22-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914"
   docker run --rm \
     -v "$DEST/$TS.tar.gz:/backup.tar.gz:ro" \
-    -v "$DEST/$TS.tar.gz.sha256:/backup.tar.gz.sha256:ro" \
-    -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
-    -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
-    -e AWS_DEFAULT_REGION="$AWS_DEFAULT_REGION" \
-    "$AWS_CLI" ${ENDPOINT_ARGS[@]+"${ENDPOINT_ARGS[@]}"} \
-    s3 cp /backup.tar.gz "s3://$S3_BUCKET/$KEY"
+    -e CLOUDFLARE_API_TOKEN -e CLOUDFLARE_ACCOUNT_ID \
+    "$NODE_IMAGE" npx --yes wrangler@4 r2 object put "$R2_BUCKET/$KEY" \
+    --file=/backup.tar.gz --remote ${JURISDICTION_ARGS[@]+"${JURISDICTION_ARGS[@]}"}
   docker run --rm \
     -v "$DEST/$TS.tar.gz.sha256:/backup.tar.gz.sha256:ro" \
-    -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
-    -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
-    -e AWS_DEFAULT_REGION="$AWS_DEFAULT_REGION" \
-    "$AWS_CLI" ${ENDPOINT_ARGS[@]+"${ENDPOINT_ARGS[@]}"} \
-    s3 cp /backup.tar.gz.sha256 "s3://$S3_BUCKET/$KEY.sha256"
-  echo "offsite: s3://$S3_BUCKET/$KEY"
+    -e CLOUDFLARE_API_TOKEN -e CLOUDFLARE_ACCOUNT_ID \
+    "$NODE_IMAGE" npx --yes wrangler@4 r2 object put "$R2_BUCKET/$KEY.sha256" \
+    --file=/backup.tar.gz.sha256 --remote ${JURISDICTION_ARGS[@]+"${JURISDICTION_ARGS[@]}"}
+  echo "offsite: r2://$R2_BUCKET/$KEY"
 else
-  echo "WARNING: R2_BUCKET/S3_BUCKET is unset; the backup is local only" >&2
+  echo "WARNING: R2_BUCKET is unset; the backup is local only" >&2
 fi
 
 # Keep the most recent N local archives; remote retention is an object-store lifecycle rule.

@@ -64,7 +64,7 @@ evidence: "192 backend tests, 25 web tests; CI 10/10 (run 41349628601, including
 expected: the backup archive and its checksum are uploaded to an S3-compatible bucket.
 result: pass
 source: runtime
-evidence: "R2-compatible mock: `letmegetin/<ts>.tar.gz` (31 KB) and `.sha256` uploaded via the R2_* credentials and AWS CLI container; bucket listing confirms both."
+evidence: "Wrangler flow validated (r2 object put/get help, checksum); a live R2 upload needs the account token and was not exercised."
 
 ## Summary
 
