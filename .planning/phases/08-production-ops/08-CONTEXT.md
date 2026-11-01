@@ -23,8 +23,9 @@ Out of scope: cloud-specific IaC (Terraform), multi-region/HA, WAF, a paid obser
 - **Host-agnostic**: any Linux VPS with Docker and two DNS names (`app.` and `api.`). **Caddy**
   terminates TLS (automatic certificates), reverse-proxies the web and API, and applies security
   headers. Only 80/443 are published; API and web stay on the internal network.
-- **Secrets** live in `deploy/.env.prod` (git-ignored): Postgres password, **Redis password**,
-  `LETMEGETIN_JWT_SECRET`, SMTP. Compose reads them; no secret in a committed file.
+- **Secrets live in Infisical** (machine identity, Universal Auth; environment `prod`, path `/`).
+  The host keeps only `/etc/letmegetin/infisical.env` (client ID/secret/project/domain, mode 600);
+  `scripts/with-secrets.sh` logs in and injects the rest. `deploy/.env.prod` is a fallback only.
 - **Backups**: `pg_dump` custom format + Redis RDB snapshot, timestamped, 7 daily local retention
   and an **offsite Cloudflare R2 upload** (Wrangler, API token, checksum). A restore
   script restores into a **scratch database** first; the runbook includes the restore test, not only

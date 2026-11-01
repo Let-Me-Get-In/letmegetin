@@ -6,5 +6,5 @@ Requires=docker.service
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/letmegetin
-EnvironmentFile=/opt/letmegetin/deploy/.env.prod
-ExecStart=/usr/bin/docker compose -p letmegetin-prod --env-file /opt/letmegetin/deploy/.env.prod -f docker-compose.prod.yml exec -T api letmegetin-admin retention
+EnvironmentFile=/etc/letmegetin/infisical.env
+ExecStart=/opt/letmegetin/scripts/with-secrets.sh /usr/bin/docker compose -p letmegetin-prod -f docker-compose.prod.yml exec -T api letmegetin-admin retention

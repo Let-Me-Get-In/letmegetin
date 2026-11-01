@@ -6,5 +6,5 @@ Requires=docker.service
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/letmegetin
-EnvironmentFile=/opt/letmegetin/deploy/.env.prod
-ExecStart=/opt/letmegetin/scripts/backup.sh
+EnvironmentFile=/etc/letmegetin/infisical.env
+ExecStart=/opt/letmegetin/scripts/with-secrets.sh /opt/letmegetin/scripts/backup.sh

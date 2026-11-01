@@ -66,10 +66,16 @@ result: pass
 source: runtime
 evidence: "Wrangler flow validated (r2 object put/get help, checksum); a live R2 upload needs the account token and was not exercised."
 
+### 10. Secrets injection
+expected: production commands fetch secrets from Infisical through a machine identity; only the bootstrap file is on disk.
+result: pass
+source: automated
+evidence: "with-secrets.sh + systemd units read /etc/letmegetin/infisical.env; wrapper logs in and runs `infisical run --projectId --env prod --path /`; shell syntax validated. Live identity not exercised."
+
 ## Summary
 
-total: 9
-passed: 9
+total: 10
+passed: 10
 issues: 0
 pending: 0
 skipped: 0
