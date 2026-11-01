@@ -2,10 +2,10 @@ name: letmegetin-prod
 
 services:
   db:
-    image: postgis/postgis:16-3.4
+    image: postgis/postgis:16-3.4@sha256:44126d872ac91993766c341e369c539e8196614321765d36a6f1bab0419a5fa5
     environment:
       POSTGRES_USER: letmegetin
-      POSTGRES_PASSWORD: letmegetin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
       POSTGRES_DB: letmegetin
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -16,9 +16,12 @@ services:
       retries: 10
 
   redis:
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:8da19c7399dca900c6822a1cf30f9d2285585e2c4b457ff4095b0f4500054d3f
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?set REDIS_PASSWORD}"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD}
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep -q PONG"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -30,16 +33,23 @@ services:
       target: api
     environment:
       LETMEGETIN_ENVIRONMENT: production
-      LETMEGETIN_DATABASE_URL: postgresql+asyncpg://letmegetin:letmegetin@db:5432/letmegetin
-      LETMEGETIN_REDIS_URL: redis://redis:6379/0
+      LETMEGETIN_DATABASE_URL: postgresql+asyncpg://letmegetin:${POSTGRES_PASSWORD}@db:5432/letmegetin
+      LETMEGETIN_REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       LETMEGETIN_JWT_SECRET: ${LETMEGETIN_JWT_SECRET:?set LETMEGETIN_JWT_SECRET}
+      LETMEGETIN_SENTRY_DSN: ${LETMEGETIN_SENTRY_DSN:-}
+      LETMEGETIN_SMTP_HOST: ${LETMEGETIN_SMTP_HOST:-}
+      LETMEGETIN_SMTP_PORT: ${LETMEGETIN_SMTP_PORT:-587}
+      LETMEGETIN_SMTP_USER: ${LETMEGETIN_SMTP_USER:-}
+      LETMEGETIN_SMTP_PASSWORD: ${LETMEGETIN_SMTP_PASSWORD:-}
+      LETMEGETIN_SMTP_FROM: ${LETMEGETIN_SMTP_FROM:-no-reply@letmegetin.org}
+      LETMEGETIN_GIT_SHA: ${GIT_SHA:-dev}
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 10s
@@ -51,14 +61,63 @@ services:
       context: .
       dockerfile: docker/Dockerfile
       target: web
+      args:
+        NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
     environment:
       API_URL: http://api:8000
       API_KEY: ${API_KEY:-}
     depends_on:
       api:
         condition: service_healthy
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2-alpine@sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5
     ports:
-      - "3000:3000"
+      - "80:80"
+      - "443:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?set APP_DOMAIN}
+      API_DOMAIN: ${API_DOMAIN:?set API_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL}
+    volumes:
+      - ./deploy/caddy:/etc/caddy:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    command:
+      ["caddy", "run", "--config", "/etc/caddy/${CADDY_CONFIG:-Caddyfile}", "--adapter", "caddyfile"]
+    depends_on:
+      - api
+      - web
+
+  prometheus:
+    image: prom/prometheus:v3.5.0@sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996
+    profiles: ["observability"]
+    volumes:
+      - ./deploy/prometheus:/etc/prometheus:ro
+      - prometheus_data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    depends_on:
+      - api
+
+  alertmanager:
+    image: prom/alertmanager:v0.28.1@sha256:27c475db5fb156cab31d5c18a4251ac7ed567746a2483ff264516437a39b15ba
+    profiles: ["observability"]
+    volumes:
+      - ./deploy/alertmanager:/etc/alertmanager:ro
+      - alertmanager_data:/alertmanager
+    environment:
+      ALERT_WEBHOOK: ${ALERT_WEBHOOK:-}
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --config.expand-env
 
 volumes:
   pgdata:
+  caddy_data:
+  caddy_config:
+  prometheus_data:
+  alertmanager_data:

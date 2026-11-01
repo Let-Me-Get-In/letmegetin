@@ -14,3 +14,6 @@ web/out/
 dist/
 *.egg-info/
 data/referential/raw/
+backups/
+deploy/.env.prod
+deploy/infisical.env

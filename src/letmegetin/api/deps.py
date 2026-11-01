@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from letmegetin.config import settings
 from letmegetin.core.db import get_session
 from letmegetin.core.exceptions import InvalidToken
+from letmegetin.core.metrics import RATE_LIMITED
 from letmegetin.core.rate_limit import check_rate_limit
 from letmegetin.core.security import decode_token, token_fingerprint
 from letmegetin.domain.accounts.entities import User
@@ -125,6 +126,14 @@ VerifiedUser = Annotated[User, Depends(require_verified)]
 _api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
+def _client_ip(request: Request) -> str:
+    """The real client IP behind Caddy (the API is not publicly reachable)."""
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
 def _rate_limit_dependency(default_setting: str):
     async def dependency(
         request: Request,
@@ -144,17 +153,14 @@ def _rate_limit_dependency(default_setting: str):
                     headers={"WWW-Authenticate": "ApiKey"},
                 )
         limit = key_row.rpm if key_row is not None else int(getattr(settings, default_setting))
-        bucket = (
-            f"key:{key_row.id}"
-            if key_row is not None
-            else f"ip:{request.client.host if request.client else 'unknown'}"
-        )
+        bucket = f"key:{key_row.id}" if key_row is not None else f"ip:{_client_ip(request)}"
         result = await check_rate_limit(bucket, limit)
         reset_at = str(int(time.time()) + result.retry_after)
         response.headers["X-RateLimit-Limit"] = str(result.limit)
         response.headers["X-RateLimit-Remaining"] = str(result.remaining)
         response.headers["X-RateLimit-Reset"] = reset_at
         if not result.allowed:
+            RATE_LIMITED.inc()
             raise HTTPException(
                 status_code=429,
                 detail="Rate limit exceeded",

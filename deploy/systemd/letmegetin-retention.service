@@ -1,0 +1,10 @@
+[Unit]
+Description=LetMeGetIn retention (idempotency keys, refresh tokens)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/letmegetin
+EnvironmentFile=/etc/letmegetin/infisical.env
+ExecStart=/opt/letmegetin/scripts/with-secrets.sh /usr/bin/docker compose -p letmegetin-prod -f docker-compose.prod.yml exec -T api letmegetin-admin retention

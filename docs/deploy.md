@@ -1,58 +1,108 @@
 # Deployment
 
-## Local stack
+The production stack is **Caddy + web + API + PostGIS + Redis**. Only Caddy publishes ports
+(80/443); the API and web listen on the internal network. Metrics are internal only.
+
+Secrets come from **Infisical**; the repository never holds a production `.env`.
+
+## Secrets — Infisical
+
+1. Install the [Infisical CLI](https://infisical.com/docs/cli/overview) on the host.
+2. Create a **machine identity** (Universal Auth), add it to the project with read access, and
+   create a client secret.
+3. Create the bootstrap file (only the identity lives there):
+
+   ```bash
+   sudo install -d -m 700 /etc/letmegetin
+   sudo cp deploy/infisical.env.example /etc/letmegetin/infisical.env
+   sudo chmod 600 /etc/letmegetin/infisical.env
+   # fill INFISICAL_PROJECT_ID, INFISICAL_DOMAIN (EU/self-hosted), CLIENT_ID, CLIENT_SECRET
+   ```
+
+4. Put the application secrets in the project's **prod** environment, path `/`:
+
+   `APP_DOMAIN`, `API_DOMAIN`, `ACME_EMAIL`,
+   `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `LETMEGETIN_JWT_SECRET`,
+   `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `R2_BUCKET`, `R2_PREFIX`,
+   `R2_JURISDICTION` (optional), `LETMEGETIN_SMTP_*`, `LETMEGETIN_SENTRY_DSN`,
+   `NEXT_PUBLIC_SENTRY_DSN`, `ALERT_WEBHOOK`, `API_KEY` (leave empty for the web), `GIT_SHA`.
+
+5. Every production command goes through the wrapper:
+
+   ```bash
+   ./scripts/with-secrets.sh <command>
+   ```
+
+   It logs in with the machine identity (or uses `INFISICAL_TOKEN`) and runs
+   `infisical run --projectId … --env prod --path / -- <command>`.
+
+`deploy/.env.prod.example` is kept only as a **fallback/reference** if Infisical is unavailable;
+it is not the production path.
+
+## First deploy
 
 ```bash
-export LETMEGETIN_JWT_SECRET="$(openssl rand -hex 32)"
-docker compose -p letmegetin-prod -f docker-compose.prod.yml up --build
+export INFISICAL_DOMAIN=https://eu.infisical.com   # EU Cloud; omit for US Cloud
+
+./scripts/with-secrets.sh docker compose -p letmegetin-prod \
+  -f docker-compose.prod.yml up -d --build
+
+./scripts/with-secrets.sh docker compose -p letmegetin-prod \
+  -f docker-compose.prod.yml exec api python -m letmegetin.seed
 ```
 
-- API: http://localhost:8000 (`/health`, `/docs`)
-- Web: http://localhost:3000
-- PostGIS and Redis are internal; migrations run on API start.
+- Web: `https://$APP_DOMAIN`
+- API: `https://$API_DOMAIN` (`/health`, `/docs`, `/openapi.json`)
+- `/metrics` is **not** routed publicly; Prometheus scrapes `api:8000` internally.
+- Migrations run on API start (entrypoint).
+- The compose project is `letmegetin-prod`; it never shares volumes with the dev PostGIS.
 
-Seed the fresh database once:
+## Local TLS smoke test
+
+Caddy can use its internal CA for `app.localhost` / `api.localhost`:
 
 ```bash
-docker compose -p letmegetin-prod -f docker-compose.prod.yml exec api python -m letmegetin.seed
+export APP_DOMAIN=app.localhost API_DOMAIN=api.localhost ACME_EMAIL=test@example.org
+export CADDY_CONFIG=Caddyfile.local
+export POSTGRES_PASSWORD=test REDIS_PASSWORD=test LETMEGETIN_JWT_SECRET=test
+
+docker compose -p letmegetin-prod -f docker-compose.prod.yml up -d --build
+curl -k --resolve app.localhost:443:127.0.0.1 https://app.localhost/
+curl -k --resolve api.localhost:443:127.0.0.1 https://api.localhost/health
 ```
 
-The compose project is named `letmegetin-prod` so it never shares containers or volumes with
-the dev PostGIS (`letmegetin-db` on port 55433).
+This bypasses Infisical for a throwaway local stack; never use the test values in production.
 
-## Images
+## Observability profile
 
 ```bash
-docker build -f docker/Dockerfile --target api -t letmegetin-api .
-docker build -f docker/Dockerfile --target web -t letmegetin-web .
+./scripts/with-secrets.sh docker compose -p letmegetin-prod \
+  -f docker-compose.prod.yml --profile observability up -d prometheus alertmanager
 ```
 
-The API image runs `alembic upgrade head` then uvicorn. The web image is a Next standalone build.
+Prometheus scrapes `api:8000/metrics`; alerts cover API down, 5xx rate, 429 rate and Redis down.
+`ALERT_WEBHOOK` must be set before starting Alertmanager.
 
-## Required settings (API)
+## Required secret names (Infisical, env `prod`)
 
 | Variable | Purpose |
 |---|---|
-| `LETMEGETIN_DATABASE_URL` | `postgresql+asyncpg://…` (PostGIS) |
-| `LETMEGETIN_REDIS_URL` | `redis://redis:6379/0` for limits + cache |
+| `APP_DOMAIN`, `API_DOMAIN`, `ACME_EMAIL` | Caddy TLS |
+| `POSTGRES_PASSWORD`, `REDIS_PASSWORD` | internal services |
 | `LETMEGETIN_JWT_SECRET` | **required**, long random string |
+| `LETMEGETIN_ENVIRONMENT` | `production` |
+| `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `R2_BUCKET`, `R2_PREFIX` | offsite R2 backups |
+| `LETMEGETIN_SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN` | optional error tracking |
 | `LETMEGETIN_SMTP_*` | verification emails (otherwise logged) |
-
-Web: `API_URL` (server-side), optional `API_KEY` for a partner key, and the
-`NEXT_PUBLIC_MAP_TILE_*` pair.
+| `ALERT_WEBHOOK` | Alertmanager receiver (observability profile) |
+| `API_KEY` | leave empty for the public web; partner keys are server-side |
 
 ## Operations
 
-- `/health` is database-free; compose uses it for the API healthcheck.
-- Redis is used for rate limits and the referential cache; if it is down the API falls back to
-  in-process limits and skips the cache.
-## Production checklist (before a real host)
-
-- [ ] `LETMEGETIN_ENVIRONMENT=production` and a long random `LETMEGETIN_JWT_SECRET` (the API
-      refuses to start with the development secret).
-- [ ] TLS termination in front of the API and web (Caddy/Traefik/Cloudflare).
-- [ ] Postgres and Redis backups, with a restore test.
-- [ ] Monitoring on `/health`, the 429 rate and Redis availability.
-- [ ] SMTP configured, or verification links only appear in the logs.
-- [ ] A named tile provider via `NEXT_PUBLIC_MAP_TILE_URL`.
-- [ ] A retention/purge job for `idempotency_key` and old `contribution` rows.
+- Backups/restore: `./scripts/with-secrets.sh ./scripts/backup.sh` (R2 via Wrangler),
+  `./scripts/with-secrets.sh ./scripts/restore.sh <archive>`.
+- Retention: `./scripts/with-secrets.sh docker compose … exec api letmegetin-admin retention`.
+- Systemd timers read `/etc/letmegetin/infisical.env`; see `deploy/systemd/`.
+- Runbook: [runbook.md](runbook.md).
+- Changing a secret in Infisical requires **restarting the affected containers**; `infisical run`
+  injects at process start.

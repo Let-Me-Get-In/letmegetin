@@ -119,3 +119,19 @@ def test_key_quota_and_invalid_key(client: TestClient) -> None:
 
     invalid = client.get("/api/v1/categories", headers={"X-API-Key": "lmg_nope"})
     assert invalid.status_code == 401
+
+
+def test_anonymous_limit_uses_the_forwarded_client_ip(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from letmegetin.config import settings
+
+    monkeypatch.setattr(settings, "rate_limit_default_rpm", 1)
+
+    first = client.get("/api/v1/categories", headers={"X-Forwarded-For": "203.0.113.1"})
+    blocked = client.get("/api/v1/categories", headers={"X-Forwarded-For": "203.0.113.1"})
+    other = client.get("/api/v1/categories", headers={"X-Forwarded-For": "203.0.113.2"})
+
+    assert first.status_code == 200
+    assert blocked.status_code == 429
+    assert other.status_code == 200
