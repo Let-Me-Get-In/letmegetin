@@ -20,6 +20,8 @@ EXPOSE 8000
 ENTRYPOINT ["/entrypoint.sh"]
 
 FROM node:22-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914 AS web-build
+ARG NEXT_PUBLIC_SENTRY_DSN=""
+ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 WORKDIR /app
 COPY web/package.json web/package-lock.json ./
 RUN npm ci
