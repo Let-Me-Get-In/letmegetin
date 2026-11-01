@@ -126,6 +126,14 @@ VerifiedUser = Annotated[User, Depends(require_verified)]
 _api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
+def _client_ip(request: Request) -> str:
+    """The real client IP behind Caddy (the API is not publicly reachable)."""
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
 def _rate_limit_dependency(default_setting: str):
     async def dependency(
         request: Request,
@@ -145,11 +153,7 @@ def _rate_limit_dependency(default_setting: str):
                     headers={"WWW-Authenticate": "ApiKey"},
                 )
         limit = key_row.rpm if key_row is not None else int(getattr(settings, default_setting))
-        bucket = (
-            f"key:{key_row.id}"
-            if key_row is not None
-            else f"ip:{request.client.host if request.client else 'unknown'}"
-        )
+        bucket = f"key:{key_row.id}" if key_row is not None else f"ip:{_client_ip(request)}"
         result = await check_rate_limit(bucket, limit)
         reset_at = str(int(time.time()) + result.retry_after)
         response.headers["X-RateLimit-Limit"] = str(result.limit)
