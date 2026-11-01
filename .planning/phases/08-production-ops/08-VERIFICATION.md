@@ -24,18 +24,19 @@ gates:
   caddy_validate: pass
   compose_smoke: pass (Caddy TLS, health, docs, metrics blocked, BFF)
   backup_restore: pass (marker recovered)
+  offsite_upload: pass (S3-compatible endpoint, archive + checksum)
   alembic_current: "0008 (head)"
   pr_checks: pass (10/10, run 41346125526)
 gaps:
   - "OPS-04 host cutover: DNS, ACME certificates, production secrets and the first deploy on a real VPS remain."
 warnings:
-  - "Backups are stored on the host (`./backups`); an offsite copy (object storage) is still required for disaster recovery."
+  - "Offsite upload is tested against an S3-compatible mock; the production bucket lifecycle and R2/S3 credentials are operator settings."
   - "The Alertmanager webhook is a placeholder until a real chat/on-call endpoint is provided."
   - "Sentry is DSN-gated; until a DSN is set, errors are only visible in logs/metrics."
   - "Prometheus/Alertmanager/Caddy/Postgres/Redis images are pinned by digest; update them deliberately."
   - "The retention job only covers idempotency keys and refresh tokens; logs/backups have their own retention."
 deferred:
-  - item: "Offsite backups, Terraform/Ansible, HA Postgres, managed Redis, WAF, paging"
+  - item: "Terraform/Ansible, HA Postgres, managed Redis, WAF, paging"
     addressed_in: "Post-V1.1 / infrastructure work"
     evidence: "08-CONTEXT.md deferred list."
 ---

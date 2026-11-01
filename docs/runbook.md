@@ -27,8 +27,14 @@ Operational procedures for the LetMeGetIn production stack (Caddy, web, API, Pos
 POSTGRES_PASSWORD=... REDIS_PASSWORD=... ./scripts/backup.sh
 ```
 
-- Writes `backups/<UTC timestamp>.tar.gz` (Postgres custom dump + Redis RDB).
-- Keeps the last 7 archives.
+- Writes `backups/<UTC timestamp>.tar.gz` (Postgres custom dump + Redis RDB) and a `.sha256`.
+- Keeps the last 7 local archives.
+- **Offsite**: set `S3_BUCKET` (plus `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`,
+  `AWS_DEFAULT_REGION=auto` for R2, optional `S3_ENDPOINT_URL`, `S3_PREFIX`) and the script uploads
+  the archive and its checksum through the AWS CLI container. Without `S3_BUCKET` it warns and stays
+  local.
+- Configure a **lifecycle rule** on the bucket (e.g. keep 30 days / transition to cold storage);
+  the script does not delete remote objects.
 - Installed as `deploy/systemd/letmegetin-backup.{service,timer}` (daily 02:00, `EnvironmentFile`
   points at `deploy/.env.prod`).
 
@@ -38,7 +44,15 @@ POSTGRES_PASSWORD=... REDIS_PASSWORD=... ./scripts/backup.sh
 POSTGRES_PASSWORD=... ./scripts/restore.sh backups/<timestamp>.tar.gz
 ```
 
-- Restores into **`letmegetin_restore`**, never the live DB.
+Download from S3 first:
+
+```bash
+docker run --rm -v "$PWD/backups:/out" -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
+  amazon/aws-cli s3 cp "s3://$S3_BUCKET/$S3_PREFIX/<timestamp>.tar.gz" /out/
+sha256sum -c backups/<timestamp>.tar.gz.sha256
+```
+
+Then restore into **`letmegetin_restore`**, never the live DB.
 - Prints the row counts of `place`, `categories`, `review`, `users`.
 - Inspect the scratch DB; then promote deliberately:
   ```bash
@@ -63,8 +77,10 @@ Never promote during the drill.
 
 - Prometheus (profile `observability`) scrapes `api:8000/metrics`.
 - Alerts: API down, 5xx rate, 429 rate, Redis down → Alertmanager → `ALERT_WEBHOOK`.
+  **Set `ALERT_WEBHOOK` before starting the observability profile**; Alertmanager will not load with
+  an empty URL.
 - Sentry captures API and web exceptions (no request bodies, no PII; emails redacted). Without a
-  DSN it is disabled.
+  DSN it is disabled; the API logs a production warning when `LETMEGETIN_SENTRY_DSN` is missing.
 - Useful signals: `letmegetin_http_requests_total`, `letmegetin_rate_limited_total`,
   `letmegetin_redis_up`, `/health`, Caddy logs.
 

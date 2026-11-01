@@ -25,9 +25,10 @@ Out of scope: cloud-specific IaC (Terraform), multi-region/HA, WAF, a paid obser
   headers. Only 80/443 are published; API and web stay on the internal network.
 - **Secrets** live in `deploy/.env.prod` (git-ignored): Postgres password, **Redis password**,
   `LETMEGETIN_JWT_SECRET`, SMTP. Compose reads them; no secret in a committed file.
-- **Backups**: `pg_dump` custom format + Redis RDB snapshot, timestamped, 7 daily
-  retention. A restore script restores into a **scratch database** first; the runbook includes the
-  restore test, not only the backup command.
+- **Backups**: `pg_dump` custom format + Redis RDB snapshot, timestamped, 7 daily local retention
+  and an **offsite S3/R2 upload** (`S3_BUCKET`, optional endpoint for R2/MinIO, checksum). A restore
+  script restores into a **scratch database** first; the runbook includes the restore test, not only
+  the backup command.
 - **Metrics**: `prometheus-client` on the API at `/metrics` (internal network only, not routed by
   Caddy): request count/status, latency histogram, 429 count, Redis-up gauge. Prometheus scrapes
   it; alert rules cover API down, 429 spikes, Redis down, 5xx rate. Alertmanager receives the
