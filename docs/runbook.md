@@ -29,21 +29,20 @@ POSTGRES_PASSWORD=... REDIS_PASSWORD=... ./scripts/backup.sh
 
 - Writes `backups/<UTC timestamp>.tar.gz` (Postgres custom dump + Redis RDB) and a `.sha256`.
 - Keeps the last 7 local archives.
-- **Offsite (Cloudflare R2)**: set `R2_ACCOUNT_ID`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`,
-  `R2_SECRET_ACCESS_KEY` (and `S3_PREFIX`, default `letmegetin`). The script derives
-  `https://<account>.r2.cloudflarestorage.com` and uploads the archive and its checksum through the
-  AWS CLI container. Without `R2_BUCKET`/`S3_BUCKET` it warns and stays local. Generic S3 is still
-  supported through `S3_BUCKET` + `AWS_*`.
+- **Offsite (Cloudflare R2)**: set `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `R2_BUCKET`,
+  `R2_PREFIX` (default `letmegetin`) and optionally `R2_JURISDICTION=eu`. The script uploads the
+  archive and its checksum with **Wrangler** (`wrangler r2 object put`), not AWS. Without
+  `R2_BUCKET` it warns and stays local.
 
 ### Cloudflare R2 setup
 
 1. Create the bucket `letmegetin-backups` (EU jurisdiction if required).
-2. **Manage R2 API Tokens** → create a token with **Object Read & Write**, scoped to that bucket.
-3. Put the Access Key ID / Secret Access Key and the account ID in `deploy/.env.prod`.
+2. **My Profile → API Tokens → Create token** with **Workers R2 Storage: Edit**; note the account ID
+   from the dashboard.
+3. Put `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `R2_BUCKET` in `deploy/.env.prod`.
 4. **Lifecycle**: bucket → Settings → Object lifecycle → delete after 30 days (or transition to
    Infrequent Access after 7 days, delete after 90). The script does not delete remote objects.
-5. EU jurisdiction: set
-   `S3_ENDPOINT_URL=https://<account>.eu.r2.cloudflarestorage.com`; otherwise it is derived.
+5. EU jurisdiction: set `R2_JURISDICTION=eu` (adds `--jurisdiction eu`).
 6. R2 has no egress fees; keep the token bucket-scoped and rotate it like any secret.
 - Installed as `deploy/systemd/letmegetin-backup.{service,timer}` (daily 02:00, `EnvironmentFile`
   points at `deploy/.env.prod`).
@@ -58,10 +57,10 @@ Download from R2 first (same env as the backup):
 
 ```bash
 docker run --rm -v "$PWD/backups:/out" \
-  -e AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" \
-  -e AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
-  amazon/aws-cli --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com" \
-  s3 cp "s3://$R2_BUCKET/$S3_PREFIX/<timestamp>.tar.gz" /out/
+  -e CLOUDFLARE_ACCOUNT_ID -e CLOUDFLARE_API_TOKEN \
+  node:22-alpine npx --yes wrangler@4 r2 object get \
+  "$R2_BUCKET/$R2_PREFIX/<timestamp>.tar.gz" \
+  --file=/out/<timestamp>.tar.gz --remote
 sha256sum -c backups/<timestamp>.tar.gz.sha256
 ```
 

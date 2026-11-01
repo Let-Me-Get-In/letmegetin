@@ -24,13 +24,13 @@ gates:
   caddy_validate: pass
   compose_smoke: pass (Caddy TLS, health, docs, metrics blocked, BFF)
   backup_restore: pass (marker recovered)
-  offsite_upload: pass (S3-compatible endpoint, archive + checksum)
+  offsite_upload: pass (Wrangler command + checksum; live R2 not exercised)
   alembic_current: "0008 (head)"
   pr_checks: pass (10/10, run 41349628601)
 gaps:
   - "OPS-04 host cutover: DNS, ACME certificates, production secrets and the first deploy on a real VPS remain."
 warnings:
-  - "Offsite upload is tested against an S3-compatible mock; the R2 bucket, API token and lifecycle rule are operator settings."
+  - "Offsite upload uses Wrangler (no AWS); the command and flow are validated, but the R2 bucket/API token/lifecycle are operator settings and were not exercised against a live Cloudflare account."
   - "The Alertmanager webhook is a placeholder until a real chat/on-call endpoint is provided."
   - "Sentry is DSN-gated; until a DSN is set, errors are only visible in logs/metrics."
   - "Prometheus/Alertmanager/Caddy/Postgres/Redis images are pinned by digest; update them deliberately."
