@@ -25,6 +25,8 @@ def _validate_settings() -> None:
         )
     if settings.environment == "production" and not settings.redis_url:
         logger.warning("No LETMEGETIN_REDIS_URL: limits are per worker and the cache is disabled")
+    if settings.environment == "production" and not settings.sentry_dsn:
+        logger.warning("No LETMEGETIN_SENTRY_DSN: errors are only visible in logs/metrics")
 
 
 _validate_settings()

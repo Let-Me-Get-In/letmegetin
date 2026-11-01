@@ -65,7 +65,8 @@ Web (build-time): `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_MAP_TILE_URL`,
 
 ## Operations
 
-- Backups/restore: `scripts/backup.sh`, `scripts/restore.sh`, systemd units in `deploy/systemd/`.
+- Backups/restore: `scripts/backup.sh` (optional S3/R2 offsite via `S3_BUCKET`),
+  `scripts/restore.sh`, systemd units in `deploy/systemd/`.
 - Retention: `letmegetin-admin retention [--dry-run]`, daily timer.
 - Runbook: [runbook.md](runbook.md).
 - `/health` is database-free; the API healthcheck uses it.
