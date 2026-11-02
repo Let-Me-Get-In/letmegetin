@@ -9,7 +9,7 @@ See: .planning/PROJECT.md (updated 2026-10-26)
 
 ## Current Position
 
-Ticket: LET-23 (Phase 8 — complete); next LET-24
+Ticket: LET-23 (Phase 8 — complete); next LET-33
 Phase: 1 / 4 of V1.1 (Phase 8 verified)
 Plan: 08-01 (verified)
 Status: Complete — verified
