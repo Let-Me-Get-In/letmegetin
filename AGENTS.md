@@ -228,3 +228,30 @@ mutates data.
 
 - Never commit secrets; `.env` is git-ignored.
 - The historical CSV/dump sources are private data — do not publish them.
+
+### Secrets — Infisical (one project, never another)
+
+Production secrets live in **exactly one** Infisical project:
+
+```
+INFISICAL_PROJECT_ID=264a35e3-cdca-43b7-9bdd-ff437c5bf2e1
+INFISICAL_ENVIRONMENT=prod
+INFISICAL_PATH=/
+INFISICAL_DOMAIN=https://eu.infisical.com
+```
+
+- The project id is **not** a secret — it is pinned here and in
+  `deploy/infisical.env.example` so nobody creates or reads from a second project
+  (personal, staging, another product).
+- Every production command goes through `./scripts/with-secrets.sh <cmd>`, which
+  logs in with the machine identity and runs
+  `infisical run --projectId … --env prod --path /`. Never `--env-file` a
+  `deploy/.env.prod` on a server; never export secrets by hand.
+- The host holds only `/etc/letmegetin/infisical.env` (machine identity, mode
+  600). If its `INFISICAL_PROJECT_ID` differs from the value above, **stop and fix
+  it** — do not run the command against that project.
+- A new secret goes in the Infisical project above, in `prod` at `/`; changing a
+  value requires restarting the containers that consume it (`infisical run`
+  injects at process start).
+- Never create a new Infisical organization or project for this repo: projects in
+  the existing org are enough, and an extra one silently splits the secrets.
