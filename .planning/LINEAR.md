@@ -22,18 +22,19 @@ Every branch, commit and PR starts with the ticket id (`LET-<n>`).
 
 | Ticket | Phase | Scope |
 |---|---|---|
-| LET-5 | — | Bootstrap LetMeGetIn + Linear/GSD conventions |
-| LET-6 | Phase 1 | Foundation & CI (FastAPI + PostGIS + Alembic + CI) |
-| LET-7 | Phase 2 | Referential & seed |
-| LET-8 | Phase 3 | Places & search |
-| LET-9 | Phase 4 | Record & reviews (read) |
-| LET-10 | Phase 5 | Auth & contribution |
-| LET-11 | Phase 6 | Next.js frontend |
-| LET-12 | Phase 7 | Public API & deployment |
-| LET-23 | Phase 8 (V1.1) | Production deployment & operations |
-| LET-24 | Phase 9 (V1.1) | Data quality & curation |
-| LET-25 | Phase 10 (V1.1) | Search quality |
-| LET-26 | Phase 11 (V1.1) | E2E & accessibility |
+| LET-5 | — | App - Bootstrap LetMeGetIn + Linear/GSD conventions |
+| LET-6 | Phase 1 | Backend - Phase 1: Foundation & CI (FastAPI + PostGIS + Alembic + CI) |
+| LET-7 | Phase 2 | Backend - Phase 2: Referential & seed |
+| LET-8 | Phase 3 | Backend - Phase 3: Places & search |
+| LET-9 | Phase 4 | Backend - Phase 4: Record & reviews (read) |
+| LET-10 | Phase 5 | Backend - Phase 5: Auth & contribution |
+| LET-11 | Phase 6 | Front - Phase 6: Next.js frontend |
+| LET-12 | Phase 7 | Backend - Phase 7: Public API & deployment |
+| LET-23 | Phase 8 (V1.1) | Ops - Production deployment & operations |
+| LET-24 | Phase 9 (V1.1) | Backend - Data quality & curation |
+| LET-25 | Phase 10 (V1.1) | Backend - Search quality |
+| LET-26 | Phase 11 (V1.1) | Tooling - E2E & accessibility |
+| LET-27 | — | Tooling - GitNexus code intelligence |
 
 ## CLI
 
