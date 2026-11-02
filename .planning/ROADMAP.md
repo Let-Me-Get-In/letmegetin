@@ -118,7 +118,7 @@ Plans:
 ### Phase 9: Data quality & curation
 **Goal:** Make the referential trustworthy: families, categories, duplicates and coverage.
 **Mode:** mvp
-**Ticket:** LET-24
+**Ticket:** LET-33
 **Requirements:** DATA-01, DATA-02, DATA-03, DATA-04
 **Success Criteria**:
 1. Every criterion and filter carries at least one handicap family.
@@ -129,7 +129,7 @@ Plans:
 ### Phase 10: Search quality
 **Goal:** Search narrows correctly and scales past the MVP limit.
 **Mode:** mvp
-**Ticket:** LET-25
+**Ticket:** LET-34
 **Requirements:** SEARCH-01, SEARCH-02, SEARCH-03
 **Success Criteria**:
 1. Multiple criterion filters combine with AND (narrowing, not widening).
@@ -139,7 +139,7 @@ Plans:
 ### Phase 11: E2E & accessibility
 **Goal:** Prove the user journey in a browser and with assistive technology.
 **Mode:** mvp
-**Ticket:** LET-26
+**Ticket:** LET-35
 **Requirements:** E2E-01, A11Y-01, A11Y-02, A11Y-03
 **Success Criteria**:
 1. A Playwright suite in a separate repo covers search, record, contribution and review in CI.
@@ -152,6 +152,6 @@ Plans:
 | Phase | Ticket | Status | Completed |
 |-------|--------|--------|-----------|
 | 8. Production deployment & operations | LET-23 | Complete | 2026-11-01 |
-| 9. Data quality & curation | LET-24 | Pending | — |
-| 10. Search quality | LET-25 | Pending | — |
-| 11. E2E & accessibility | LET-26 | Pending | — |
+| 9. Data quality & curation | LET-33 | Pending | — |
+| 10. Search quality | LET-34 | Pending | — |
+| 11. E2E & accessibility | LET-35 | Pending | — |

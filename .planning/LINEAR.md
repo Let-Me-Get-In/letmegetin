@@ -10,7 +10,7 @@ Team: **LET**
 - GSD **phase** → Linear **issue** (`LET-<n>`).
 - **No Linear milestones**: a Linear milestone is a sub-checkpoint inside a project and has
   no GSD equivalent, so we do not use them (the project *is* the milestone).
-Current milestone: **V1.1 — Production & Quality** (tickets LET-23..LET-26). V1 (LET-5..LET-12) is shipped.
+Current milestone: **V1.1 — Production & Quality** (tickets LET-23, LET-33, LET-34, LET-35). V1 (LET-5..LET-12) is shipped.
 Create a new project for each new GSD milestone.
 
 **Linear is link-only**: it may link existing branches/PRs, but it must **never create**
@@ -19,6 +19,11 @@ and the no-auto-merge rule apply. Disable branch/PR automations in
 Settings → Integrations → GitHub → Automations.
 
 Every branch, commit and PR starts with the ticket id (`LET-<n>`).
+
+**Never predict a ticket id in the planning docs.** Linear assigns the next free
+number, so a roadmap that promises `LET-24` will point at nothing once another
+ticket takes that slot. Create the ticket first, then write its real id here (this
+is how phases 9-11 ended up as LET-33/34/35 instead of LET-24/25/26).
 
 | Ticket | Phase | Scope |
 |---|---|---|
@@ -31,9 +36,9 @@ Every branch, commit and PR starts with the ticket id (`LET-<n>`).
 | LET-11 | Phase 6 | Front - Phase 6: Next.js frontend |
 | LET-12 | Phase 7 | Backend - Phase 7: Public API & deployment |
 | LET-23 | Phase 8 (V1.1) | Ops - Production deployment & operations |
-| LET-24 | Phase 9 (V1.1) | Backend - Data quality & curation |
-| LET-25 | Phase 10 (V1.1) | Backend - Search quality |
-| LET-26 | Phase 11 (V1.1) | Tooling - E2E & accessibility |
+| LET-33 | Phase 9 (V1.1) | Backend - Data quality & curation |
+| LET-34 | Phase 10 (V1.1) | Backend - Search quality |
+| LET-35 | Phase 11 (V1.1) | Tooling - E2E & accessibility |
 | LET-27 | — | Tooling - GitNexus code intelligence |
 
 ## CLI
