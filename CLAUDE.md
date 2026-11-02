@@ -50,3 +50,15 @@ ticket, imperative, lowercase, no trailing period, under 72 characters.
 
 - `git.branching_strategy` is `none`: GSD must not create `gsd/phase-…` branches.
   All work happens on `LET-<n>-…` branches.
+
+## Infisical — one project only
+
+- Production secrets live in the single Infisical project
+  **`264a35e3-cdca-43b7-9bdd-ff437c5bf2e1`** (`env=prod`, `path=/`,
+  `domain=https://eu.infisical.com`). The id is pinned in `AGENTS.md`,
+  `deploy/infisical.env.example` and enforced by `scripts/with-secrets.sh`.
+- Run production commands through `./scripts/with-secrets.sh <cmd>`; never
+  `--env-file deploy/.env.prod` on a server, never export secrets by hand.
+- Do not create another Infisical organization or project for this repo, and do
+  not read secrets from a different project id — the wrapper refuses it.
+- Changing a secret requires restarting the containers that read it.

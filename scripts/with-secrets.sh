@@ -3,7 +3,14 @@
 # Bootstrap file: /etc/letmegetin/infisical.env (mode 600), see deploy/infisical.env.example.
 set -euo pipefail
 
-: "${INFISICAL_PROJECT_ID:?INFISICAL_PROJECT_ID is required}"
+# One project only (see AGENTS.md): a different id is a mistake, not a variant.
+INFISICAL_PROJECT_ID=${INFISICAL_PROJECT_ID:-264a35e3-cdca-43b7-9bdd-ff437c5bf2e1}
+if [ "$INFISICAL_PROJECT_ID" != "264a35e3-cdca-43b7-9bdd-ff437c5bf2e1" ]; then
+  echo "with-secrets: refusing project '$INFISICAL_PROJECT_ID' (expected 264a35e3-cdca-43b7-9bdd-ff437c5bf2e1)" >&2
+  echo "with-secrets: fix INFISICAL_PROJECT_ID in /etc/letmegetin/infisical.env" >&2
+  exit 1
+fi
+
 : "${INFISICAL_ENVIRONMENT:=prod}"
 : "${INFISICAL_PATH:=/}"
 
