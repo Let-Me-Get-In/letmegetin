@@ -29,6 +29,13 @@ Every unit of work is tracked by a Linear ticket `LET-<n>` (team `LET`). The
 ticket id is the **first token** of the branch name, the commit subject and the
 PR title.
 
+**Ticket titles carry an area prefix** — `<Area> - <title>`, so the board is
+readable without opening a ticket. Areas in use: `Config` (the
+`letmegetin-config` repo), `Backend`, `Front`, `Ops`, `Tooling`, `App`.
+Examples: `Config - Phase 3: Host baseline`,
+`Front - Phase 6: Next.js Frontend`. The prefix is cosmetic: it never replaces
+the ticket id, which stays the first token of branch, commit and PR.
+
 **Linear is link-only.** Linear may *link* existing branches/PRs, but it must
 **never create** them: branches are created manually as `LET-<n>-…` so the
 `commit-msg` hook, the stack and the no-auto-merge rule apply. Disable the
