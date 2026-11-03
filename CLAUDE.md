@@ -54,7 +54,7 @@ ticket, imperative, lowercase, no trailing period, under 72 characters.
 ## Infisical — one project only
 
 - Production secrets live in the single Infisical project
-  **`264a35e3-cdca-43b7-9bdd-ff437c5bf2e1`** (`env=prod`, `path=/`,
+  **`39c0bbf4-d1c8-476e-ae35-8d82c998d704`** (`env=prod`, `path=/`,
   `domain=https://eu.infisical.com`). The id is pinned in `AGENTS.md`,
   `deploy/infisical.env.example` and enforced by `scripts/with-secrets.sh`.
 - Run production commands through `./scripts/with-secrets.sh <cmd>`; never
