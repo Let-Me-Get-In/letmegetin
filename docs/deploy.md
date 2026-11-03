@@ -5,7 +5,7 @@ The production stack is **Caddy + web + API + PostGIS + Redis**. Only Caddy publ
 
 Secrets come from **Infisical**; the repository never holds a production `.env`.
 
-The project is pinned: **`264a35e3-cdca-43b7-9bdd-ff437c5bf2e1`**, environment `prod`,
+The project is pinned: **`39c0bbf4-d1c8-476e-ae35-8d82c998d704`**, environment `prod`,
 path `/`, EU Cloud (`https://eu.infisical.com`). `scripts/with-secrets.sh` refuses
 any other project id, so a stray bootstrap file cannot read the wrong secrets.
 

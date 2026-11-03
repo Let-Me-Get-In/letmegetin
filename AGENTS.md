@@ -241,7 +241,7 @@ mutates data.
 Production secrets live in **exactly one** Infisical project:
 
 ```
-INFISICAL_PROJECT_ID=264a35e3-cdca-43b7-9bdd-ff437c5bf2e1
+INFISICAL_PROJECT_ID=39c0bbf4-d1c8-476e-ae35-8d82c998d704
 INFISICAL_ENVIRONMENT=prod
 INFISICAL_PATH=/
 INFISICAL_DOMAIN=https://eu.infisical.com
