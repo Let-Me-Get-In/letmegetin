@@ -1,0 +1,23 @@
+# Postgres 16 + PostGIS, built here instead of pulled.
+#
+# Why this file exists: the VPS is a Hetzner CAX21 (arm64) and the official
+# `postgis/postgis` images publish **no arm64 manifest** — pulling one on that
+# host fails with "no matching manifest for linux/arm64". The upstream base
+# `postgres:16-bookworm` *is* multi-arch, and the PostGIS packages come from the
+# same PGDG repository the base image already configures, so this is the same
+# software assembled from official parts rather than a third-party mirror.
+#
+# Keep the major version in step with `postgres:16`: the extension must match the
+# server ABI, and `postgresql-16-postgis-3` is the package that does.
+FROM postgres:16-bookworm
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        postgresql-16-postgis-3 \
+        postgresql-16-postgis-3-scripts \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installed once, at initdb. Without it the image passes `pg_isready` and dies on
+# the first migration that calls ST_MakePoint, which is a far worse failure than
+# a container that refuses to start.
+COPY docker/db/10-postgis.sql /docker-entrypoint-initdb.d/10-postgis.sql
