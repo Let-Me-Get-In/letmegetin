@@ -4,9 +4,9 @@
 set -euo pipefail
 
 # One project only (see AGENTS.md): a different id is a mistake, not a variant.
-INFISICAL_PROJECT_ID=${INFISICAL_PROJECT_ID:-264a35e3-cdca-43b7-9bdd-ff437c5bf2e1}
-if [ "$INFISICAL_PROJECT_ID" != "264a35e3-cdca-43b7-9bdd-ff437c5bf2e1" ]; then
-  echo "with-secrets: refusing project '$INFISICAL_PROJECT_ID' (expected 264a35e3-cdca-43b7-9bdd-ff437c5bf2e1)" >&2
+INFISICAL_PROJECT_ID=${INFISICAL_PROJECT_ID:-39c0bbf4-d1c8-476e-ae35-8d82c998d704}
+if [ "$INFISICAL_PROJECT_ID" != "39c0bbf4-d1c8-476e-ae35-8d82c998d704" ]; then
+  echo "with-secrets: refusing project '$INFISICAL_PROJECT_ID' (expected 39c0bbf4-d1c8-476e-ae35-8d82c998d704)" >&2
   echo "with-secrets: fix INFISICAL_PROJECT_ID in /etc/letmegetin/infisical.env" >&2
   exit 1
 fi
