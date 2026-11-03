@@ -2,15 +2,21 @@ name: letmegetin-prod
 
 services:
   db:
-    image: postgis/postgis:16-3.4@sha256:44126d872ac91993766c341e369c539e8196614321765d36a6f1bab0419a5fa5
+    # Defaults to the official pinned image so production behaviour is
+    # unchanged; an arm64 host (Hetzner CAX) sets DB_IMAGE to the image built
+    # from docker/Dockerfile.db, because postgis/postgis publishes no arm64
+    # manifest.
+    image: ${DB_IMAGE:-postgis/postgis:16-3.4@sha256:44126d872ac91993766c341e369c539e8196614321765d36a6f1bab0419a5fa5}
     environment:
       POSTGRES_USER: letmegetin
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
-      POSTGRES_DB: letmegetin
+      POSTGRES_DB: ${POSTGRES_DB:-letmegetin}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U letmegetin"]
+      # -d matters: without it pg_isready probes a database named after the
+      # user, which does not exist once POSTGRES_DB is overridden.
+      test: ["CMD-SHELL", "pg_isready -U letmegetin -d ${POSTGRES_DB:-letmegetin}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -32,8 +38,8 @@ services:
       dockerfile: docker/Dockerfile
       target: api
     environment:
-      LETMEGETIN_ENVIRONMENT: production
-      LETMEGETIN_DATABASE_URL: postgresql+asyncpg://letmegetin:${POSTGRES_PASSWORD}@db:5432/letmegetin
+      LETMEGETIN_ENVIRONMENT: ${LETMEGETIN_ENVIRONMENT:-production}
+      LETMEGETIN_DATABASE_URL: postgresql+asyncpg://letmegetin:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-letmegetin}
       LETMEGETIN_REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       LETMEGETIN_JWT_SECRET: ${LETMEGETIN_JWT_SECRET:?set LETMEGETIN_JWT_SECRET}
       LETMEGETIN_SENTRY_DSN: ${LETMEGETIN_SENTRY_DSN:-}
