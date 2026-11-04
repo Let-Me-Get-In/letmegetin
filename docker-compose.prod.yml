@@ -84,6 +84,12 @@ services:
       # would then serve the other environment's data under this hostname.
       API_URL: http://${EDGE_API_ALIAS:?set EDGE_API_ALIAS}:8000
       API_KEY: ${API_KEY:-}
+      # Next's standalone server binds `$HOSTNAME` when it is set, and Docker
+      # sets it to the container ID — which resolves to this stack's *default*
+      # network address first. On two networks that leaves the shared edge
+      # unreachable (502 on this hostname only). 0.0.0.0 listens on every
+      # interface the container joins.
+      HOSTNAME: "0.0.0.0"
     depends_on:
       api:
         condition: service_healthy
