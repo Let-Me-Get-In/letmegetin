@@ -1,0 +1,62 @@
+{
+	email {$ACME_EMAIL}
+}
+
+# One Caddy for every environment on the host.
+#
+# Each site block proxies to a qualified alias (`lmgi-<env>-api|web`) rather than
+# the bare service name `api`/`web`: Compose publishes the bare name on every
+# network a service joins, so two stacks sharing the edge network would both
+# answer to `api` and each hostname could reach the other environment. The
+# aliases are set in docker-compose.prod.yml from EDGE_API_ALIAS/EDGE_WEB_ALIAS,
+# which the config repo renders from the values file's `project`.
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	reverse_proxy lmgi-prod-web:3000
+}
+
+{$API_DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	@metrics path /metrics
+	respond @metrics 404
+	reverse_proxy lmgi-prod-api:8000
+}
+
+{$DEV_APP_DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	reverse_proxy lmgi-dev-web:3000
+}
+
+{$DEV_API_DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	@metrics path /metrics
+	respond @metrics 404
+	reverse_proxy lmgi-dev-api:8000
+}
