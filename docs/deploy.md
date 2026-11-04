@@ -61,21 +61,30 @@ export INFISICAL_DOMAIN=https://eu.infisical.com   # EU Cloud; omit for US Cloud
 - Migrations run on API start (entrypoint).
 - The compose project is `letmegetin-prod`; it never shares volumes with the dev PostGIS.
 
-## Local TLS smoke test
+## The shared TLS edge
 
-Caddy can use its internal CA for `app.localhost` / `api.localhost`:
+Only one container can publish 80/443, so the edge is its own compose project
+(`lmgi-edge`, `deploy/vps/docker-compose.edge.yml`) and every stack joins the
+`lmgi-edge` network. Its `Caddyfile` serves one block per hostname: the apex pair
+reaches `lmgi-prod-api` / `lmgi-prod-web`, the `dev.` pair reaches `lmgi-dev-*`.
+
+The network must exist first, or a stack whose `networks.edge` is `external`
+refuses to start:
 
 ```bash
-export APP_DOMAIN=app.localhost API_DOMAIN=api.localhost ACME_EMAIL=test@example.org
-export CADDY_CONFIG=Caddyfile.local
-export POSTGRES_PASSWORD=test REDIS_PASSWORD=test LETMEGETIN_JWT_SECRET=test
-
-docker compose -p letmegetin-prod -f docker-compose.prod.yml up -d --build
-curl -k --resolve app.localhost:443:127.0.0.1 https://app.localhost/
-curl -k --resolve api.localhost:443:127.0.0.1 https://api.localhost/health
+docker network create lmgi-edge
+docker compose -p lmgi-edge -f deploy/vps/docker-compose.edge.yml up -d
 ```
 
-This bypasses Infisical for a throwaway local stack; never use the test values in production.
+Each stack then runs from `docker-compose.prod.yml` with `EDGE_API_ALIAS` /
+`EDGE_WEB_ALIAS` set (the config repo renders them from the values file's
+`project`). The aliases are qualified on purpose: Compose publishes the bare
+service name `api` on every network a service joins, so two stacks would both
+answer to it and a hostname could reach the wrong environment.
+
+The local TLS smoke test is gone with the extraction — a throwaway stack now
+needs the edge project too, and the config repo's `deploy` playbook is the
+supported path.
 
 ## Observability profile
 
