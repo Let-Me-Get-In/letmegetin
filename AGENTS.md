@@ -110,6 +110,12 @@ LET-6 docs(referential): document the reconstruction sources
   to run verbatim.** Translate `docs(${phase}): …` into
   `LET-<n> docs(<feature>): …` and move the plan id to the body.
 - Never let GSD emit `feat(01-02)`-style scopes; the hook will reject them.
+- **Granularity is per layer, not per commit.** A layer carries several commits
+  (GSD commits once per task) and a phase spans one to three stacked PRs. A fix
+  or a review comment is another commit on the open layer — `gh stack submit`
+  updates that PR — and a new layer appears only when the concern changes.
+- **Do not run `/gsd-ship`**: its `gh pr create` step bypasses the stack. Publish
+  with `gh stack submit`.
 
 ## Code conventions
 
