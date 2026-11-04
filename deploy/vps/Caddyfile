@@ -1,5 +1,9 @@
 {
 	email {$ACME_EMAIL}
+	# Caddy prefers ZeroSSL as soon as an email is configured, and the requirement
+	# is a Let's Encrypt certificate for all four names (EDGE-01). Pin the CA
+	# rather than relying on the default order.
+	acme_ca https://acme-v02.api.letsencrypt.org/directory
 }
 
 # One Caddy for every environment on the host.
