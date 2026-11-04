@@ -48,6 +48,7 @@ services:
       LETMEGETIN_SMTP_USER: ${LETMEGETIN_SMTP_USER:-}
       LETMEGETIN_SMTP_PASSWORD: ${LETMEGETIN_SMTP_PASSWORD:-}
       LETMEGETIN_SMTP_FROM: ${LETMEGETIN_SMTP_FROM:-no-reply@letmegetin.org}
+      LETMEGETIN_PUBLIC_BASE_URL: ${LETMEGETIN_PUBLIC_BASE_URL:-http://localhost:3000}
       LETMEGETIN_GIT_SHA: ${GIT_SHA:-dev}
     depends_on:
       db:
@@ -56,6 +57,14 @@ services:
         condition: service_healthy
     expose:
       - "8000"
+    networks:
+      default: {}
+      edge:
+        # Qualified alias: the bare service name `api` is published on every
+        # network a service joins, so two stacks would both answer to it and a
+        # hostname could reach the other environment's API.
+        aliases:
+          - ${EDGE_API_ALIAS:?set EDGE_API_ALIAS}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 10s
@@ -70,32 +79,21 @@ services:
       args:
         NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
     environment:
-      API_URL: http://api:8000
+      # Qualified on purpose: `http://api` would resolve to whichever stack
+      # Docker DNS returns first once both are on the edge network, and the BFF
+      # would then serve the other environment's data under this hostname.
+      API_URL: http://${EDGE_API_ALIAS:?set EDGE_API_ALIAS}:8000
       API_KEY: ${API_KEY:-}
     depends_on:
       api:
         condition: service_healthy
     expose:
       - "3000"
-
-  caddy:
-    image: caddy:2-alpine@sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      APP_DOMAIN: ${APP_DOMAIN:?set APP_DOMAIN}
-      API_DOMAIN: ${API_DOMAIN:?set API_DOMAIN}
-      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL}
-    volumes:
-      - ./deploy/caddy:/etc/caddy:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    command:
-      ["caddy", "run", "--config", "/etc/caddy/${CADDY_CONFIG:-Caddyfile}", "--adapter", "caddyfile"]
-    depends_on:
-      - api
-      - web
+    networks:
+      default: {}
+      edge:
+        aliases:
+          - ${EDGE_WEB_ALIAS:?set EDGE_WEB_ALIAS}
 
   prometheus:
     image: prom/prometheus:v3.5.0@sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996
@@ -121,9 +119,12 @@ services:
       - --config.file=/etc/alertmanager/alertmanager.yml
       - --config.expand-env
 
+networks:
+  edge:
+    external: true
+    name: lmgi-edge
+
 volumes:
   pgdata:
-  caddy_data:
-  caddy_config:
   prometheus_data:
   alertmanager_data:

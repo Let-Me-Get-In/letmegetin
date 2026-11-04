@@ -1,0 +1,48 @@
+# The shared TLS edge: one Caddy for every environment on the host.
+#
+# It is a compose project of its own (`lmgi-edge`) rather than a service inside
+# docker-compose.prod.yml, because only one container can publish 80/443. Two
+# stacks cannot each own the edge, so the edge owns the ports and both stacks
+# join its network.
+#
+#   docker compose -p lmgi-edge -f deploy/vps/docker-compose.edge.yml up -d
+#
+# The `lmgi-edge` network is created by the config repo's playbook before any
+# stack starts: a stack whose `networks.edge` is `external: true` refuses to
+# start while the network is missing.
+
+name: lmgi-edge
+
+services:
+  caddy:
+    image: caddy:2-alpine@sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL}
+      APP_DOMAIN: ${APP_DOMAIN:?set APP_DOMAIN}
+      API_DOMAIN: ${API_DOMAIN:?set API_DOMAIN}
+      DEV_APP_DOMAIN: ${DEV_APP_DOMAIN:?set DEV_APP_DOMAIN}
+      DEV_API_DOMAIN: ${DEV_API_DOMAIN:?set DEV_API_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - edge
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "caddy", "validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  edge:
+    external: true
+    name: lmgi-edge
+
+volumes:
+  caddy-data:
+  caddy-config:

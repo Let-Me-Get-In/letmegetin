@@ -158,5 +158,6 @@ jobs:
       - name: Caddyfile
         run: |
           docker run --rm -e APP_DOMAIN=app.example.org -e API_DOMAIN=api.example.org \
-            -e ACME_EMAIL=ops@example.org -v "$PWD/deploy/caddy:/etc/caddy:ro" \
+            -e DEV_APP_DOMAIN=app.dev.example.org -e DEV_API_DOMAIN=api.dev.example.org \
+            -e ACME_EMAIL=ops@example.org -v "$PWD/deploy/vps:/etc/caddy:ro" \
             caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
