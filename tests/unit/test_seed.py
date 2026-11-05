@@ -9,6 +9,7 @@ from typing import Any
 import pytest
 
 from letmegetin import seed as seed_module
+from letmegetin.application.referential.families import FamiliesReport
 from letmegetin.infrastructure.persistence.models import (
     CategoryCriterionModel,
     CategoryModel,
@@ -106,13 +107,18 @@ class FakeSessionFactory:
 
 
 @pytest.fixture(autouse=True)
-def _skip_grids(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Grid precomputation needs PostGIS upserts; it is covered by the integration tests."""
+def _skip_persistence(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Grids and families need PostGIS upserts; integration tests cover both."""
 
     async def noop(*args: Any, **kwargs: Any) -> int:
         return 1
 
+    async def no_families(*args: Any, **kwargs: Any) -> FamiliesReport:
+        return FamiliesReport()
+
     monkeypatch.setattr(seed_module, "rebuild_category_grids", noop)
+    monkeypatch.setattr(seed_module, "apply_families", no_families)
+    monkeypatch.setattr(seed_module, "load_families", lambda path: {})
 
 
 @pytest.mark.parametrize(

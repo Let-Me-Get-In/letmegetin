@@ -112,6 +112,10 @@ Prometheus scrapes `api:8000/metrics`; alerts cover API down, 5xx rate, 429 rate
 
 ## Operations
 
+- After a deploy that changes the referential seed, fill the handicap families and
+  check them: `./scripts/with-secrets.sh docker compose -p letmegetin-prod -f
+  docker-compose.prod.yml exec api letmegetin-admin families sync`, then
+  `… families audit` — it exits `1` while any criterion or filter has no family.
 - Backups/restore: `./scripts/with-secrets.sh ./scripts/backup.sh` (R2 via Wrangler),
   `./scripts/with-secrets.sh ./scripts/restore.sh <archive>`.
 - Retention: `./scripts/with-secrets.sh docker compose … exec api letmegetin-admin retention`.

@@ -35,6 +35,8 @@ _COUNTS = (
     ("categories", "categories"),
     ("criteria", "criteria"),
     ("defaults", "criteria WHERE is_default"),
+    ("criteria_without_families", "criteria WHERE handicap_families = '{}'"),
+    ("filters_without_families", "accessibility_filters WHERE handicap_families = '{}'"),
 )
 
 
@@ -73,6 +75,8 @@ def test_seed_loads_vocabulary_without_polluting_criteria(db: None) -> None:
     assert counts["categories"] == _EXPECTED_CATEGORIES
     assert counts["criteria"] == _EXPECTED_CRITERIA
     assert counts["defaults"] > 0
+    assert counts["criteria_without_families"] == 0
+    assert counts["filters_without_families"] == 0
 
 
 def test_second_seed_changes_nothing(db: None) -> None:

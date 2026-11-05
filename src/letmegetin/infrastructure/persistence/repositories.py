@@ -270,10 +270,18 @@ class SqlAlchemyVocabularyRepository:
 
 
 class SqlAlchemyFilterRepository:
-    """Filter read repository backed by SQLAlchemy."""
+    """Filter repository backed by SQLAlchemy (no commit: the caller owns the work)."""
 
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
+
+    async def list_all(self) -> list[AccessibilityFilter]:
+        rows = (
+            await self._session.scalars(
+                select(AccessibilityFilterModel).order_by(AccessibilityFilterModel.position)
+            )
+        ).all()
+        return [filter_from_model(row) for row in rows]
 
     async def list_active(self) -> list[AccessibilityFilter]:
         rows = (
@@ -284,6 +292,13 @@ class SqlAlchemyFilterRepository:
             )
         ).all()
         return [filter_from_model(row) for row in rows]
+
+    async def update_families(self, filter_id: int, families: list[str]) -> None:
+        model = await self._session.get(AccessibilityFilterModel, filter_id)
+        if model is None:
+            raise DomainError(f"filter #{filter_id} is not persisted")
+        model.handicap_families = families
+        await self._session.flush()
 
 
 class SqlAlchemyOtherInformationRepository:

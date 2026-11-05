@@ -65,9 +65,13 @@ class VocabularyRepository(Protocol):
 
 
 class FilterRepository(Protocol):
-    """Read access to search filters."""
+    """Read/write access to search filters."""
+
+    async def list_all(self) -> list[AccessibilityFilter]: ...
 
     async def list_active(self) -> list[AccessibilityFilter]: ...
+
+    async def update_families(self, filter_id: int, families: list[str]) -> None: ...
 
 
 class OtherInformationRepository(Protocol):

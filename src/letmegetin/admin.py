@@ -39,6 +39,11 @@ from letmegetin.application.referential.admin import (
     set_vocabulary_labels,
     unlink_criterion,
 )
+from letmegetin.application.referential.families import (
+    apply_families,
+    audit_families,
+    load_families,
+)
 from letmegetin.application.retention import run_retention
 from letmegetin.config import settings
 from letmegetin.core.db import SessionLocal
@@ -51,6 +56,7 @@ from letmegetin.infrastructure.persistence.repositories import (
     SqlAlchemyCategoryMappingRepository,
     SqlAlchemyCategoryRepository,
     SqlAlchemyCriterionRepository,
+    SqlAlchemyFilterRepository,
     SqlAlchemyMappingRepository,
     SqlAlchemyMergeLogRepository,
     SqlAlchemyPlaceAliasRepository,
@@ -64,12 +70,14 @@ category_app = typer.Typer(help="Add, edit and list place categories.")
 criterion_app = typer.Typer(help="Add, edit and list criteria and options.")
 vocabulary_app = typer.Typer(help="Import, list and promote the flat criteria vocabulary.")
 labels_app = typer.Typer(help="Set multilingual labels on any referential entity.")
+families_app = typer.Typer(help="Fill and audit handicap families (moteur, auditif, visuel…).")
 import_app = typer.Typer(help="Import open place datasets (Acceslibre first).")
 api_key_app = typer.Typer(help="Create, list and revoke partner API keys.")
 app.add_typer(category_app, name="category")
 app.add_typer(criterion_app, name="criterion")
 app.add_typer(vocabulary_app, name="vocabulary")
 app.add_typer(labels_app, name="labels")
+app.add_typer(families_app, name="families")
 app.add_typer(import_app, name="import")
 app.add_typer(api_key_app, name="api-key")
 
@@ -226,6 +234,10 @@ def criterion_add(
         typer.Option("--description", help="locale=value, repeatable"),
     ] = None,
     default: Annotated[bool, typer.Option("--default/--no-default")] = False,
+    family: Annotated[
+        list[str] | None,
+        typer.Option("--family", help="moteur, auditif, visuel, mental — repeatable"),
+    ] = None,
 ) -> None:
     """Create a criterion (an option is a criterion with --type option and --parent)."""
     labels = _labels(label)
@@ -240,6 +252,7 @@ def criterion_add(
             parent,
             descriptions,
             default,
+            families=family,
         )
         return f"criterion added: {criterion.slug}"
 
@@ -298,6 +311,51 @@ def criterion_families(
         return f"criterion families set: {criterion.slug} {criterion.handicap_families}"
 
     _run_admin(callback)
+
+
+@families_app.command("sync")
+def families_sync(
+    file: Annotated[Path | None, typer.Option("--file", "-f", help="Reviewed families CSV")] = None,
+    force: Annotated[
+        bool, typer.Option("--force", help="Overwrite families an operator edited by hand")
+    ] = False,
+) -> None:
+    """Fill empty handicap families from data/referential/families.csv."""
+    path = file or settings.data_dir / "families.csv"
+
+    async def callback(session: AsyncSession) -> str:
+        report = await apply_families(
+            SqlAlchemyCriterionRepository(session),
+            SqlAlchemyFilterRepository(session),
+            load_families(path),
+            overwrite=force,
+        )
+        return (
+            f"families sync: criteria={report.criteria_updated} filters={report.filters_updated} "
+            f"inherited={report.inherited} unchanged={report.unchanged}"
+        )
+
+    _run_admin(callback)
+
+
+@families_app.command("audit")
+def families_audit() -> None:
+    """Fail when a criterion or filter carries no handicap family (DATA-01 gate)."""
+
+    async def missing() -> list[str]:
+        async with SessionLocal() as session:
+            return await audit_families(
+                SqlAlchemyCriterionRepository(session), SqlAlchemyFilterRepository(session)
+            )
+
+    slugs = asyncio.run(missing())
+    if not slugs:
+        typer.echo("families ok: every criterion and filter has at least one family")
+        return
+    typer.echo("missing families:")
+    for slug in slugs:
+        typer.echo(slug)
+    raise typer.Exit(code=1)
 
 
 @app.command("link")
