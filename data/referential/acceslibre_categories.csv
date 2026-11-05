@@ -97,61 +97,61 @@ Groupe scolaire;school;767
 Sécurité sociale, mutuelle santé;insurance_agency;766
 Parfumerie, cosmétique;perfume_store;748
 Salle de spectacle;performing_arts_theater;708
-Décoration Design;;706
-Centre médical;;685
+Décoration Design;home_goods_store;706
+Centre médical;doctor;685
 Tabac;tobacco_shop;676
-Sophrologue;;668
+Sophrologue;doctor;668
 Complexe sportif;sports_complex;655
-Magasin d'appareils auditifs;;654
-Bazar;;642
-Notaire;;624
-Epicerie fine;;607
-Commerce automobile;;592
-Centre de loisirs;;581
-Centre de protection maternelle et infantile (pmi);;577
-Concessionnaire automobile;;573
+Magasin d'appareils auditifs;wheelchair_store;654
+Bazar;bazar;642
+Notaire;lawyer;624
+Epicerie fine;grocery_store;607
+Commerce automobile;car_dealer;592
+Centre de loisirs;recreation_center;581
+Centre de protection maternelle et infantile (pmi);child_care_agency;577
+Concessionnaire automobile;car_dealer;573
 Hypermarché;supermarket;572
-Commerce bio;;555
-Traiteur, gastronomie;;525
-Téléphonie;;507
-Orthophonie;;501
-Point information jeunesse;;488
-Université ou école supérieure;;483
-Électroménager et matériel audio-vidéo;;482
-Maison de santé ou centre de santé;;469
-Commissariat de Police;;454
+Commerce bio;green_grocers;555
+Traiteur, gastronomie;catering_service;525
+Téléphonie;cell_phone_store;507
+Orthophonie;physiotherapist;501
+Point information jeunesse;social_services_organization;488
+Université ou école supérieure;university;483
+Électroménager et matériel audio-vidéo;electronics_store;482
+Maison de santé ou centre de santé;doctor;469
+Commissariat de Police;police;454
 Tribunal;courthouse;445
-Naturopathie, herboristerie;;444
-Établissement de santé;;434
-Jeux jouets;;432
-Avocat;;421
-Accessoires;;418
-Salle de remise en forme;;415
-Construction, rénovation;;407
-Salle multisports;;407
-Vente de cafés et thés;;405
-Salle de réunion ou réception;;384
-Sage-femme;;384
-Lieu de visite;;383
-Lingerie sous-vêtements;;382
-Pédicure-podologue;;377
+Naturopathie, herboristerie;doctor;444
+Établissement de santé;hospital;434
+Jeux jouets;toy_store;432
+Avocat;lawyer;421
+Accessoires;store;418
+Salle de remise en forme;gym;415
+Construction, rénovation;electrician;407
+Salle multisports;sports_complex;407
+Vente de cafés et thés;tea_house;405
+Salle de réunion ou réception;function_room_facility;384
+Sage-femme;doctor;384
+Lieu de visite;tourist_information_center;383
+Lingerie sous-vêtements;clothing_store;382
+Pédicure-podologue;physiotherapist;377
 Centre commercial;shopping_mall;376
-Service ou aide à domicile;;374
-Résidence de tourisme;;373
-Achat, vente, réparation de matériel informatique et téléphonique;;362
-Caisse d'allocations familiales (caf);;361
-Papeterie, presse, journaux;;352
-Cigarette électronique;;349
-Point d'information local dédié aux personnes âgées;;337
-Organisme de conseil;;332
-Informatique;;329
-Salon de thé;;318
-Vente de matériel médical;;318
-Jardinerie;;317
-Réparation auto et de matériel agricole;;311
-Centre d’information et d’orientation;;309
-Maroquinerie sellerie articles de voyage;;283
-Cordonnerie serrurerie;;280
+Service ou aide à domicile;social_services_organization;374
+Résidence de tourisme;vacation_appartment;373
+Achat, vente, réparation de matériel informatique et téléphonique;electronics_store;362
+Caisse d'allocations familiales (caf);government_office;361
+Papeterie, presse, journaux;copy_shop;352
+Cigarette électronique;tobacco_shop;349
+Point d'information local dédié aux personnes âgées;social_services_organization;337
+Organisme de conseil;corporate_office;332
+Informatique;electronics_store;329
+Salon de thé;tea_house;318
+Vente de matériel médical;wheelchair_store;318
+Jardinerie;home_improvement_store;317
+Réparation auto et de matériel agricole;car_repair;311
+Centre d’information et d’orientation;training_center;309
+Maroquinerie sellerie articles de voyage;luggage_store;283
+Cordonnerie serrurerie;locksmith;280
 Tatouage Piercing;;276
 Laverie;;274
 Centre de ressources et d'information;;272
