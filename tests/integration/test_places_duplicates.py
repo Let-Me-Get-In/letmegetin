@@ -40,7 +40,7 @@ _FIXTURE = (
 
 # Two countries, one place without values, one merged row and one unresolved category.
 _COVERAGE_FIXTURE = (
-    "id;nom;adresse;commune;code_postal;latitude;longitude;categorie;acces_entree\n"
+    "id;nom;adresse;commune;code_postal;latitude;longitude;categorie;entree_pmr\n"
     "cli-test-cov-1;Lieu Couverture Un;1 rue des Tests;Testville;99001;45.5000;5.5000;"
     "Bibliothèque médiathèque;true\n"
     "cli-test-cov-2;Lieu Couverture Deux;1 rue des Tests;Testville;99001;45.5100;5.5000;"

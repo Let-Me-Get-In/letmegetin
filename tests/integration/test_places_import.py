@@ -135,7 +135,7 @@ def test_acceslibre_import_logs_the_merge_and_keeps_the_alias(db: None, tmp_path
 
 _ACCESSIBILITY_FIXTURE = (
     "id;nom;adresse;commune;code_postal;latitude;longitude;categorie;"
-    "acces_entree;acces_entree_largeur;photo_url\n"
+    "entree_pmr;entree_largeur_mini;photo_url\n"
     "test-p4-imp-1;Lieu Import Test;1 rue des Tests;Testville;99001;45.2;5.2;bibliotheque;"
     "true;90;https://example.test/p4.jpg\n"
 )
@@ -153,10 +153,10 @@ def test_acceslibre_import_writes_accessibility_values_and_photos(db: None, tmp_
         "ORDER BY c.position"
     )
     assert values == [
-        ("entree-acces", {"value": "true", "source": "acceslibre", "key": "acces_entree"}),
+        ("entree-acces", {"value": "true", "source": "acceslibre", "key": "entree_pmr"}),
         (
             "entree-largeur-de-porte-cm",
-            {"value": "90", "source": "acceslibre", "key": "acces_entree_largeur"},
+            {"value": "90", "source": "acceslibre", "key": "entree_largeur_mini"},
         ),
     ]
 
