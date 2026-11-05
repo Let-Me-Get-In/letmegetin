@@ -133,7 +133,7 @@ Plans:
 - [x] 09-03-PLAN.md — Add the duplicate review queue and the coverage export
 
 ### Phase 10: Search quality
-**Goal:** Search narrows correctly and scales past the MVP limit.
+**Goal:** As a person looking for an accessible place, I want to narrow my search by category and accessibility criteria, so that I do not travel there for nothing.
 **Mode:** mvp
 **Ticket:** LET-34
 **Requirements:** SEARCH-01, SEARCH-02, SEARCH-03
