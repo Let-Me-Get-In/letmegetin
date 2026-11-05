@@ -524,6 +524,13 @@ def import_acceslibre_command(
     dry_run: Annotated[
         bool, typer.Option("--dry-run", help="Report resolution and write nothing")
     ] = False,
+    no_dedup: Annotated[
+        bool,
+        typer.Option(
+            "--no-dedup",
+            help="Skip the per-row duplicate lookup (first bulk load; run the dedup pass after)",
+        ),
+    ] = False,
 ) -> None:
     """Import a local Acceslibre export; idempotent by (source, source_id)."""
     alias_path = aliases or settings.data_dir / "acceslibre_categories.csv"
@@ -540,6 +547,7 @@ def import_acceslibre_command(
             iter_acceslibre_rows(file),
             aliases=alias_map,
             dry_run=dry_run,
+            dedup=not no_dedup,
         )
         lines = [
             f"acceslibre import: created={report.created} linked={report.linked} "

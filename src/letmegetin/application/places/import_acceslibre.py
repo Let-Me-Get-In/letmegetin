@@ -212,6 +212,7 @@ async def _import_row(
     resolved: dict[str, int | None],
     *,
     dry_run: bool,
+    dedup: bool,
 ) -> None:
     # Persisted raw value is capped at the column width so one long label cannot abort the run.
     source_category = (row.category or "").strip()[:120] or None
@@ -233,7 +234,7 @@ async def _import_row(
         report.skipped += 1
         return
 
-    candidate, score = await _candidate(places, row)
+    candidate, score = await _candidate(places, row) if dedup else (None, 0.0)
     kind = classify_match(score) if candidate is not None else "new"
     place = Place(
         id=0,
@@ -283,7 +284,16 @@ async def import_acceslibre(
     *,
     aliases: Mapping[str, str] | None = None,
     dry_run: bool = False,
+    dedup: bool = True,
 ) -> ImportReport:
+    """Import rows; ``dedup=False`` skips the per-row candidate lookup.
+
+    shortcut: a first national load into an empty table has nothing to compare
+    against, yet pays one PostGIS proximity query per row — four hours for 22 %
+    of 634 931 places, measured. Turn it off for the initial load and compute
+    the duplicates afterwards in one SQL pass; keep the default for incremental
+    imports, where the table is already populated.
+    """
     """Upsert Acceslibre rows by ``(source, source_id)`` and deduplicate on insert."""
     report = ImportReport()
     # shortcut: category resolution is memoised per label (391 distinct values in
@@ -302,5 +312,6 @@ async def import_acceslibre(
             report,
             resolved,
             dry_run=dry_run,
+            dedup=dedup,
         )
     return report
