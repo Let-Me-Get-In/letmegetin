@@ -203,59 +203,59 @@ Information Touristique;tourist_information_center;129
 Mercerie;clothing_store;129
 Antiquaire;antique_furniture_store;123
 Cycle vente et entretien;bicycle_store;121
-Immobilier;;120
-Centre religieux;;120
-Charcuterie;;120
-Organisation patronale, professionnelle, syndicale;;118
-Plomberie, chauffage;;117
-Toiletteur;;112
+Immobilier;real_estate_agency;120
+Centre religieux;place_of_worship;120
+Charcuterie;butcher_shop;120
+Organisation patronale, professionnelle, syndicale;association_or_organization;118
+Plomberie, chauffage;electrician;117
+Toiletteur;pet_store;112
 Station service;gas_station;111
-Magasin de cbd;;110
-Ophtalmologie;;110
-Centre de vacances;;109
-Spa;;108
-Accompagnement personnes agees;;108
-Location articles loisirs et sport;;106
-Personnes âgées : hébergement;;105
-Confiserie;;101
-Brocante;;100
-Numérique;;100
-Instruments et matériel de musique;;99
-Distribution spécialisée / commerce de gros;;99
-Plage, zone de baignade;;98
-Ferme;;96
-Village de vacances;;95
-Oenotourisme;;93
-Loisirs créatifs;;93
-Tiers lieu;;93
-Gare sncf;;91
-Marché;;91
-Radiodiagnostic et imagerie médicale;;90
-Huissier;;89
-Location saisonnière;;89
+Magasin de cbd;store;110
+Ophtalmologie;doctor;110
+Centre de vacances;lodging;109
+Spa;spa;108
+Accompagnement personnes agees;social_services_organization;108
+Location articles loisirs et sport;sporting_goods_store;106
+Personnes âgées : hébergement;nursing_agency;105
+Confiserie;chocolate_shop;101
+Brocante;antique_furniture_store;100
+Numérique;corporate_office;100
+Instruments et matériel de musique;music_store;99
+Distribution spécialisée / commerce de gros;store;99
+Plage, zone de baignade;beach_resort;98
+Ferme;establishment;96
+Village de vacances;vacation_appartment;95
+Oenotourisme;wine_store;93
+Loisirs créatifs;store;93
+Tiers lieu;corporate_office;93
+Gare sncf;train_station;91
+Marché;market;91
+Radiodiagnostic et imagerie médicale;medical_lab;90
+Huissier;lawyer;89
+Location saisonnière;vacation_appartment;89
 Bowling;bowling_alley;88
-Friperie;;88
-Location véhicules;;87
+Friperie;clothing_store;88
+Location véhicules;car_rental;87
 Clinique;hospital;87
-Salle de danse;;85
-Puériculture;;85
-Bureau de douane;;85
-Etablissement pénitentiaire;;84
-Restaurant scolaire;;83
-Pédiatrie;;83
-Auberge de jeunesse, centre international de séjour;;82
-Armurerie coutellerie;;82
-Courtier;;81
-Kiosque (théâtre, pizza, journaux);;80
-Centre équestre;;78
-Gynécologie;;78
-Poterie verrerie céramique;;76
-Ordre des avocats;;75
-Diététicien, nutritionniste;;75
-Centre d'information sur les droits des femmes et des familles;;75
-Transport;;75
-Discothèque;;74
-Cardiologie;;74
+Salle de danse;performing_arts_theater;85
+Puériculture;store;85
+Bureau de douane;government_office;85
+Etablissement pénitentiaire;government_office;84
+Restaurant scolaire;school;83
+Pédiatrie;doctor;83
+Auberge de jeunesse, centre international de séjour;hotel;82
+Armurerie coutellerie;store;82
+Courtier;insurance_agency;81
+Kiosque (théâtre, pizza, journaux);tobacco_shop;80
+Centre équestre;recreation_center;78
+Gynécologie;doctor;78
+Poterie verrerie céramique;home_goods_store;76
+Ordre des avocats;lawyer;75
+Diététicien, nutritionniste;doctor;75
+Centre d'information sur les droits des femmes et des familles;social_services_organization;75
+Transport;transit_station;75
+Discothèque;night_club;74
+Cardiologie;doctor;74
 Revêtements murs et sols;;71
 Auditorium et salle de conférence;;71
 Musique;;69
