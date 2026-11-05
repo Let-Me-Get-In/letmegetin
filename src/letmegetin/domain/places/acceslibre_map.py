@@ -14,15 +14,19 @@ SOURCE = "acceslibre"
 
 # One source column per criterion: where Acceslibre splits a criterion into several columns
 # (plain-pied/rampe/marches), the importer keeps the coarse field and leaves the detail out.
+# The keys are the export's real column names (verified against acceslibre.csv,
+# 2026-11-05, 101 columns). The previous keys ("acces_entree", ...) matched no
+# column at all, so every accessibility value was silently dropped and
+# `coverage.fill_rate` sat at 0 for 634 931 places.
 FIELD_MAP: dict[str, str] = {
-    "acces_entree": "entree-acces",
-    "acces_entree_largeur": "entree-largeur-de-porte-cm",
-    "acces_entree_marches": "entree-obstacles-a-la-porte-d-entree",
-    "acces_entree_automatique": "entree-ouverture-de-porte",
-    "acces_cheminement": "circulation-circulation-dans-les-allees",
-    "acces_toilettes": "services-et-equipements-sanitaires",
-    "acces_stationnement": "exterieur-place-gig-gic-a-proximite",
-    "acces_transport": "exterieur-transports-accessibles-a-proximite",
+    "entree_pmr": "entree-acces",
+    "entree_largeur_mini": "entree-largeur-de-porte-cm",
+    "entree_marches": "entree-obstacles-a-la-porte-d-entree",
+    "entree_porte_manoeuvre": "entree-ouverture-de-porte",
+    "accueil_cheminement_plain_pied": "circulation-circulation-dans-les-allees",
+    "sanitaires_presence": "services-et-equipements-sanitaires",
+    "stationnement_ext_pmr": "exterieur-place-gig-gic-a-proximite",
+    "transport_station_presence": "exterieur-transports-accessibles-a-proximite",
 }
 
 _EMPTY = (None, "")
