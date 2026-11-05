@@ -19,7 +19,7 @@ from typer.testing import CliRunner
 
 from letmegetin import admin
 from letmegetin.config import settings
-from letmegetin.infrastructure.persistence.models import CriterionVocabularyModel
+from letmegetin.infrastructure.persistence.models import CriterionModel, CriterionVocabularyModel
 
 # NullPool: each CLI invocation runs its own event loop via asyncio.run, and a pooled
 # asyncpg connection cannot be reused from another loop.
@@ -277,3 +277,57 @@ def test_admin_cli_promotes_vocabulary(db: None) -> None:
     )
     assert again.exit_code == 1
     assert "already promoted" in again.output
+
+
+async def _blank_families(slug: str) -> None:
+    async with _TestSessionLocal() as session:
+        await session.execute(
+            text("UPDATE criteria SET handicap_families = '{}' WHERE slug = :slug"),
+            {"slug": slug},
+        )
+        await session.commit()
+
+
+async def _criterion_families(slug: str) -> list[str]:
+    async with _TestSessionLocal() as session:
+        return list(
+            await session.scalar(
+                select(CriterionModel.handicap_families).where(CriterionModel.slug == slug)
+            )
+            or []
+        )
+
+
+def test_families_sync_then_audit_passes(db: None) -> None:
+    runner = CliRunner()
+
+    synced = runner.invoke(admin.app, ["families", "sync"])
+    assert synced.exit_code == 0, synced.output
+    assert "families sync:" in synced.output
+
+    audited = runner.invoke(admin.app, ["families", "audit"])
+    assert audited.exit_code == 0, audited.output
+    assert "families ok" in audited.output
+
+
+def test_families_audit_names_a_criterion_that_lost_its_families(db: None) -> None:
+    runner = CliRunner()
+    assert runner.invoke(admin.app, ["families", "sync"]).exit_code == 0
+    asyncio.run(_blank_families("entree-acces"))
+
+    audited = runner.invoke(admin.app, ["families", "audit"])
+    assert audited.exit_code == 1
+    assert "missing families:" in audited.output
+    assert "entree-acces" in audited.output
+
+    restored = runner.invoke(admin.app, ["families", "sync"])
+    assert restored.exit_code == 0, restored.output
+    assert runner.invoke(admin.app, ["families", "audit"]).exit_code == 0
+
+
+def test_criterion_add_accepts_families(db: None) -> None:
+    added = CliRunner().invoke(
+        admin.app, ["criterion", "add", "cli-test-famille", "--family", "visuel"]
+    )
+    assert added.exit_code == 0, added.output
+    assert asyncio.run(_criterion_families("cli-test-famille")) == ["visuel"]

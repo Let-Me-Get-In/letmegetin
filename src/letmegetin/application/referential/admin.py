@@ -155,6 +155,7 @@ async def add_criterion(
     parent_slug: str | None = None,
     description: Label | None = None,
     is_default: bool = False,
+    families: list[str] | None = None,
 ) -> Criterion:
     """Create a criterion, option or group; the parent is resolved by slug."""
     criterion_type = _validated_type(kind)
@@ -170,6 +171,7 @@ async def add_criterion(
             label=normalize_label(label or {}),
             description=normalize_label(description or {}),
             is_default=is_default,
+            handicap_families=_validated_families(families or []),
         )
     )
 

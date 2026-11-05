@@ -20,6 +20,7 @@ from letmegetin.application.referential.admin import (
     load_vocabulary_file,
     rebuild_category_grids,
 )
+from letmegetin.application.referential.families import apply_families, load_families
 from letmegetin.config import settings
 from letmegetin.core.db import SessionLocal
 from letmegetin.core.utils import slugify
@@ -35,6 +36,7 @@ from letmegetin.infrastructure.persistence.repositories import (
     SqlAlchemyCategoryGridRepository,
     SqlAlchemyCategoryRepository,
     SqlAlchemyCriterionRepository,
+    SqlAlchemyFilterRepository,
 )
 
 
@@ -213,6 +215,12 @@ async def seed() -> None:
 
         mapping_written = await _load_category_mapping(session, data_dir / "category_mapping.csv")
 
+        families = await apply_families(
+            SqlAlchemyCriterionRepository(session),
+            SqlAlchemyFilterRepository(session),
+            load_families(data_dir / "families.csv"),
+        )
+
         version = await rebuild_category_grids(
             SqlAlchemyCategoryRepository(session),
             SqlAlchemyCriterionRepository(session),
@@ -223,7 +231,9 @@ async def seed() -> None:
         print(
             f"seed ok: categories={len(categories)} base_criteria={base_criteria} "
             f"vocabulary_created={vocabulary_created} vocabulary_skipped={vocabulary_skipped} "
-            f"mapping={mapping_written} referential_version={version}"
+            f"mapping={mapping_written} "
+            f"families={families.criteria_updated}/{families.filters_updated} "
+            f"referential_version={version}"
         )
 
 

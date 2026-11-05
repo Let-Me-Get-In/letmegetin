@@ -82,6 +82,10 @@ uv run python -m letmegetin.admin criterion families entree-automatique \
   --family moteur --family visuel
 uv run python -m letmegetin.admin criterion edit entree-automatique --en17210 "EN 17210 §5.4"
 
+# Fill empty families from the reviewed data file, then audit (the DATA-01 gate)
+uv run python -m letmegetin.admin families sync
+uv run python -m letmegetin.admin families audit
+
 # Category mapping to the Overture/OSM/Acceslibre vocabularies
 uv run python -m letmegetin.admin category map restaurant \
   --overture restaurant --osm amenity=restaurant --acceslibre restauration
@@ -93,6 +97,13 @@ uv run python -m letmegetin.admin import acceslibre --file /path/to/acceslibre.c
 Labels are JSONB maps over **fr, en, es, de, it**, set by hand: no machine
 translation ships in this phase, and the API always returns the full map so the
 client picks the locale.
+
+The handicap family of every criterion and filter is reviewed data, not code:
+`data/referential/families.csv` assigns one or more of `moteur`, `auditif`,
+`visuel`, `mental`; options inherit their parent and a group unions its children.
+`families sync` fills only the empty rows, so an operator edit is never reverted,
+and `families audit` exits `1` naming every slug without a family — run it after
+every referential change.
 
 The default mapping is data, not code: `criteria.is_default` marks the base set
 and `category_criteria.excluded` records a per-category opt-out, so re-running

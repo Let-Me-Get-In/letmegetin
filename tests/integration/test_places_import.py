@@ -138,7 +138,8 @@ def test_acceslibre_import_writes_accessibility_values_and_photos(db: None, tmp_
     values = _places(
         "SELECT c.slug, pa.value FROM place_accessibility pa "
         "JOIN criteria c ON c.id = pa.criterion_id "
-        "JOIN place p ON p.id = pa.place_id WHERE p.source_id = 'test-p4-imp-1'"
+        "JOIN place p ON p.id = pa.place_id WHERE p.source_id = 'test-p4-imp-1' "
+        "ORDER BY c.position"
     )
     assert values == [
         ("entree-acces", {"value": "true", "source": "acceslibre", "key": "acces_entree"}),
