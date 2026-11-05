@@ -229,6 +229,7 @@ class PlaceModel(Base, TimestampMixin):
     category_id: Mapped[int | None] = mapped_column(
         ForeignKey("categories.id", ondelete="SET NULL"), index=True
     )
+    source_category: Mapped[str | None] = mapped_column(String(120), index=True)
     address_full: Mapped[str | None] = mapped_column(String(500))
     city: Mapped[str | None] = mapped_column(String(120))
     postal_code: Mapped[str | None] = mapped_column(String(16))

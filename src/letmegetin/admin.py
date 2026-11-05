@@ -18,9 +18,10 @@ from letmegetin.application.accounts.api_keys import (
     list_api_keys,
     revoke_api_key,
 )
+from letmegetin.application.places.category_resolution import load_category_aliases
 from letmegetin.application.places.import_acceslibre import (
     import_acceslibre,
-    load_acceslibre_file,
+    iter_acceslibre_rows,
 )
 from letmegetin.application.referential.admin import (
     add_category,
@@ -87,11 +88,12 @@ LabelPairs = Annotated[
 ]
 
 
-def _run_admin(callback: AdminCallback, *, bump: bool = True) -> None:
+def _run_admin(callback: AdminCallback, *, bump: bool = True, commit: bool = True) -> None:
     """Run a use case in one session, commit on success, and map domain errors to exit 1.
 
     Any write bumps the referential version and recomputes the grids, so clients refetch
-    their cached grid only when it actually changed.
+    their cached grid only when it actually changed. ``commit=False`` rolls back, which is
+    what a dry run needs.
     """
 
     async def run() -> str:
@@ -103,7 +105,10 @@ def _run_admin(callback: AdminCallback, *, bump: bool = True) -> None:
                     SqlAlchemyCriterionRepository(session),
                     SqlAlchemyCategoryGridRepository(session),
                 )
-            await session.commit()
+            if commit:
+                await session.commit()
+            else:
+                await session.rollback()
             return message
 
     try:
@@ -497,23 +502,64 @@ def labels_set(
 @import_app.command("acceslibre")
 def import_acceslibre_command(
     file: Annotated[Path, typer.Option("--file", "-f", help="Local Acceslibre CSV/JSON export")],
+    aliases: Annotated[
+        Path | None,
+        typer.Option("--aliases", help="Activity → category CSV (default: data/referential)"),
+    ] = None,
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", help="Report resolution and write nothing")
+    ] = False,
 ) -> None:
     """Import a local Acceslibre export; idempotent by (source, source_id)."""
+    alias_path = aliases or settings.data_dir / "acceslibre_categories.csv"
+    alias_map = load_category_aliases(alias_path)
 
     async def callback(session: AsyncSession) -> str:
+        # The iterator is the contract: a national export is never materialised as a list.
         report = await import_acceslibre(
             SqlAlchemyPlaceRepository(session),
+            SqlAlchemyCategoryRepository(session),
             SqlAlchemyCategoryMappingRepository(session),
             SqlAlchemyPlaceAliasRepository(session),
             SqlAlchemyMergeLogRepository(session),
-            load_acceslibre_file(file),
+            iter_acceslibre_rows(file),
+            aliases=alias_map,
+            dry_run=dry_run,
         )
-        return (
+        lines = [
             f"acceslibre import: created={report.created} linked={report.linked} "
-            f"review={report.review} skipped={report.skipped}"
-        )
+            f"review={report.review} skipped={report.skipped} resolved={report.resolved} "
+            f"unresolved={len(report.unresolved)} dry_run={dry_run}"
+        ]
+        ranked = sorted(report.unresolved.items(), key=lambda item: (-item[1], item[0]))
+        lines.extend(f"  unresolved: {value}={count}" for value, count in ranked[:20])
+        return "\n".join(lines)
 
-    _run_admin(callback, bump=False)
+    _run_admin(callback, bump=False, commit=not dry_run)
+
+
+@import_app.command("report")
+def import_report(
+    limit: Annotated[int, typer.Option("--limit", help="Max unresolved values listed")] = 50,
+) -> None:
+    """List places per source and every imported category that did not resolve (DATA-02 gate)."""
+
+    async def collect() -> tuple[list[tuple[str, int]], list[tuple[str, int]]]:
+        async with SessionLocal() as session:
+            places = SqlAlchemyPlaceRepository(session)
+            return await places.count_by_source(), await places.unresolved_categories()
+
+    by_source, unresolved = asyncio.run(collect())
+    for source, count in by_source:
+        typer.echo(f"places by source: {source}={count}")
+    if not by_source:
+        typer.echo("places by source: none")
+    for value, count in unresolved[:limit]:
+        typer.echo(f"{value}={count}")
+    total = sum(count for _, count in unresolved)
+    typer.echo(f"unresolved total={total} across {len(unresolved)} source values")
+    if total:
+        raise typer.Exit(code=1)
 
 
 def _run_api_key_admin(

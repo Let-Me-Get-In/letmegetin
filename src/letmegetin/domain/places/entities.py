@@ -35,6 +35,8 @@ class Place:
     source: str
     source_id: str | None = None
     category_id: int | None = None
+    # Raw source vocabulary value (Acceslibre ``activite``), kept even when unresolved.
+    source_category: str | None = None
     address_full: str | None = None
     city: str | None = None
     postal_code: str | None = None

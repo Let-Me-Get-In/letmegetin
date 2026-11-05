@@ -116,6 +116,10 @@ Prometheus scrapes `api:8000/metrics`; alerts cover API down, 5xx rate, 429 rate
   check them: `./scripts/with-secrets.sh docker compose -p letmegetin-prod -f
   docker-compose.prod.yml exec api letmegetin-admin families sync`, then
   `… families audit` — it exits `1` while any criterion or filter has no family.
+- First Acceslibre load on a host: download the *établissements* CSV from
+  data.gouv.fr (Etalab 2.0), `… exec api letmegetin-admin import acceslibre --file
+  /tmp/acceslibre.csv --dry-run`, complete `data/referential/acceslibre_categories.csv`
+  until `unresolved=0`, import for real, then `… import report` (exit `0`).
 - Backups/restore: `./scripts/with-secrets.sh ./scripts/backup.sh` (R2 via Wrangler),
   `./scripts/with-secrets.sh ./scripts/restore.sh <archive>`.
 - Retention: `./scripts/with-secrets.sh docker compose … exec api letmegetin-admin retention`.
