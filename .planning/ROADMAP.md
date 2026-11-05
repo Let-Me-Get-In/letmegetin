@@ -136,17 +136,28 @@ Plans:
 **Goal:** As a person looking for an accessible place, I want to narrow my search by category and accessibility criteria, so that I do not travel there for nothing.
 **Mode:** mvp
 **Ticket:** LET-34
-**Requirements:** SEARCH-01, SEARCH-02, SEARCH-03
+**Requirements:** SEARCH-01, SEARCH-02
 **Success Criteria**:
 1. Multiple criterion filters combine with AND (narrowing, not widening).
 2. Search filters by category.
-3. Results are ranked and paginated beyond 100 hits, with stable ordering.
 
-**Plans:** 3 plans
+**Plans:** 2 plans
 Plans:
 - [ ] 10-01-PLAN.md — Filter places by category, end to end (tracer: HTTP → PostGIS → contract → web)
 - [ ] 10-02-PLAN.md — Combine multiple criterion filters with AND and publish the corrected semantics
-- [ ] 10-03-PLAN.md — Total ordering, `offset` paging with `X-Has-More`, and a stable page contract
+
+### Phase 10.1: Search pagination (INSERTED)
+**Goal:** As a person browsing a long result list, I want to go past the first 100 hits without losing my place, so that I can compare every place that fits.
+**Mode:** mvp
+**Ticket:** LET-34
+**Requirements:** SEARCH-03
+**Success Criteria**:
+1. Results have a total ordering (distance, then a stable tie-breaker) so a page boundary never duplicates or drops a place.
+2. `offset` paging works beyond 100 hits, `X-Has-More` says whether another page exists, and the web client offers "load more".
+
+**Plans:** 1 plan
+Plans:
+- [ ] 10.1-01-PLAN.md — Total ordering, `offset` paging with `X-Has-More`, and a stable page contract
 
 ### Phase 11: E2E & accessibility
 **Goal:** Prove the user journey in a browser and with assistive technology.
