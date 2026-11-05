@@ -1,0 +1,392 @@
+activite;category_slug;places
+Mairie;city_hall;38006
+Restauration rapide;fast_food_restaurant;37044
+Coiffure;hair_care;31293
+Restaurant;restaurant;25239
+Pharmacie;pharmacy;22302
+Boulangerie Pâtisserie;bakery;21633
+Soins de beauté, esthétique;beauty_salon;20393
+Boucherie / commerce de viande;butcher_shop;19977
+Carrosserie;car_repair;17583
+Agence immobilière;real_estate_agency;17314
+Dentiste, chirurgien dentiste;dentist;15969
+Hôtel;hotel;14997
+Opticien;optician;13076
+Banques, caisses d'épargne;bank;12530
+Fleuriste;florist;12194
+Café, bar, brasserie;cafe;11989
+Supermarché;supermarket;10565
+Salle des fêtes;function_room_facility;10012
+Auto école;driving_school;9119
+Pompes funèbres;funeral_home;8871
+Bijouterie joaillerie;jewelry_store;8767
+Bibliothèque médiathèque;library;8759
+Photographie;photo_lab;8141
+Stade;stadium;7939
+Droguerie;hardware_store;7042
+Collège;middle_school;6950
+Laboratoire d'analyse médicale;;6913
+Bureau de poste;;6776
+Vétérinaire;veterinary_care;6705
+Librairie;;6668
+Vêtements;;6063
+Toilettes publiques;public_bathroom;5854
+Cimetière;cemetery;5795
+Supérette;convenience_store;5436
+Chocolatier;;5289
+Fromagerie;;4449
+Ehpad;;4387
+Sports et loisirs;;4169
+Association;association_or_organization;4114
+Chambre d'hôtes, gîte, pension, meublé de tourisme;;4111
+Piscine, centre aquatique;;3971
+Administration publique;;3808
+Hôpital;hospital;3790
+Gendarmerie;;3661
+Coworking;;3620
+Office de tourisme;tourist_information_center;3515
+Assurance;;3505
+Théâtre;performing_arts_theater;3485
+Lycée;high_school;3451
+Hôtel restaurant;;3193
+Commerce;;3057
+Bien-être;;2974
+Garage automobile;car_repair;2333
+Emploi, formation;;2130
+Médecin généraliste;doctor;2107
+Psychologie, Psychiatrie;;2089
+Centre des finances publiques;;1955
+Musée;museum;1869
+Infirmier;;1739
+Artisanat;;1666
+École primaire (regroupement maternelle et élémentaire);;1629
+Institut de formation, de recherche;;1505
+Guichet france services;;1491
+Épicerie;grocery_store;1465
+Point justice;;1409
+Hypnothérapeute;;1398
+Bijouterie fantaisie;;1227
+Bricolage, matériaux, travaux;;1221
+Lieu de culte;;1132
+Cinéma;movie_theater;1130
+Chaussures;shoe_store;1127
+Camping caravaning;;1125
+Kinésithérapeute;physiotherapist;1065
+Ostéopathie;;1060
+Produits surgelés;;1021
+Massages;;992
+École maternelle;elementary_school;970
+Collectivité territoriale;;970
+Bar tabac;;952
+Vente d'articles de sport;;946
+Gymnase;gym;937
+Agence de travail temporaire;;935
+Bureau de vote;;919
+Caviste / commerce de détail de boissons;;899
+Meubles ameublement;;891
+École élémentaire;;852
+Crèche;child_care_agency;849
+Aménagement intérieur de la maison;;849
+Autre;;848
+Agence de voyage;travel_agency;847
+Architecte;;843
+Art, centre d'art;;825
+Club de sport;;804
+Centre culturel;cultural_center;768
+Groupe scolaire;;767
+Sécurité sociale, mutuelle santé;;766
+Parfumerie, cosmétique;;748
+Salle de spectacle;performing_arts_theater;708
+Décoration Design;;706
+Centre médical;;685
+Tabac;tobacco_shop;676
+Sophrologue;;668
+Complexe sportif;sports_complex;655
+Magasin d'appareils auditifs;;654
+Bazar;;642
+Notaire;;624
+Epicerie fine;;607
+Commerce automobile;;592
+Centre de loisirs;;581
+Centre de protection maternelle et infantile (pmi);;577
+Concessionnaire automobile;;573
+Hypermarché;supermarket;572
+Commerce bio;;555
+Traiteur, gastronomie;;525
+Téléphonie;;507
+Orthophonie;;501
+Point information jeunesse;;488
+Université ou école supérieure;;483
+Électroménager et matériel audio-vidéo;;482
+Maison de santé ou centre de santé;;469
+Commissariat de Police;;454
+Tribunal;courthouse;445
+Naturopathie, herboristerie;;444
+Établissement de santé;;434
+Jeux jouets;;432
+Avocat;;421
+Accessoires;;418
+Salle de remise en forme;;415
+Construction, rénovation;;407
+Salle multisports;;407
+Vente de cafés et thés;;405
+Salle de réunion ou réception;;384
+Sage-femme;;384
+Lieu de visite;;383
+Lingerie sous-vêtements;;382
+Pédicure-podologue;;377
+Centre commercial;shopping_mall;376
+Service ou aide à domicile;;374
+Résidence de tourisme;;373
+Achat, vente, réparation de matériel informatique et téléphonique;;362
+Caisse d'allocations familiales (caf);;361
+Papeterie, presse, journaux;;352
+Cigarette électronique;;349
+Point d'information local dédié aux personnes âgées;;337
+Organisme de conseil;;332
+Informatique;;329
+Salon de thé;;318
+Vente de matériel médical;;318
+Jardinerie;;317
+Réparation auto et de matériel agricole;;311
+Centre d’information et d’orientation;;309
+Maroquinerie sellerie articles de voyage;;283
+Cordonnerie serrurerie;;280
+Tatouage Piercing;;276
+Laverie;;274
+Centre de ressources et d'information;;272
+Galerie d'art;;270
+Résidence, foyer;;264
+Salle non spécialisée;;264
+Agence de publicité;;260
+Centre social;social_services_organization;247
+Animalerie;;244
+Point conseil budget;;243
+Pressing, nettoyage;;238
+Equipement sportif;;237
+Poissonnerie / commerce de poissons, crustacés et mollusques;;229
+Activités nautiques;;227
+Association aide aux victimes;;220
+Barbier;;219
+Magasin de tissus;;211
+Primeur;;207
+Salle spécialisée;;201
+Équipements du foyer;;196
+Salle de concert;;191
+Achat or;;189
+Chambre de commerce et d'industrie;;178
+Salle de jeux;;177
+Menuiserie, ébénisterie;;175
+Motocycle vente et entretien;;174
+Orthoptie;;174
+Imprimerie photocopie reliure;;172
+Literie;;172
+Glacier;;168
+Conservatoire et école de musique;;165
+Contrôle technique auto;;162
+Produits de terroir;;161
+Espace vert et naturel;;159
+Hébergement insolite;;155
+Point accueil numerique;;152
+Horlogerie;;149
+Bâtiment d'accueil;;145
+Couture, retouche;;145
+Agence événementielle;;142
+Fruits et légumes;;141
+Comptable expert-comptable;;139
+Vente à distance;;138
+Monument historique;;135
+Magasin de souvenirs;;133
+Parking & stationnement;;130
+Centre de vaccination;;130
+Information Touristique;;129
+Mercerie;;129
+Antiquaire;;123
+Cycle vente et entretien;;121
+Immobilier;;120
+Centre religieux;;120
+Charcuterie;;120
+Organisation patronale, professionnelle, syndicale;;118
+Plomberie, chauffage;;117
+Toiletteur;;112
+Station service;gas_station;111
+Magasin de cbd;;110
+Ophtalmologie;;110
+Centre de vacances;;109
+Spa;;108
+Accompagnement personnes agees;;108
+Location articles loisirs et sport;;106
+Personnes âgées : hébergement;;105
+Confiserie;;101
+Brocante;;100
+Numérique;;100
+Instruments et matériel de musique;;99
+Distribution spécialisée / commerce de gros;;99
+Plage, zone de baignade;;98
+Ferme;;96
+Village de vacances;;95
+Oenotourisme;;93
+Loisirs créatifs;;93
+Tiers lieu;;93
+Gare sncf;;91
+Marché;;91
+Radiodiagnostic et imagerie médicale;;90
+Huissier;;89
+Location saisonnière;;89
+Bowling;bowling_alley;88
+Friperie;;88
+Location véhicules;;87
+Clinique;hospital;87
+Salle de danse;;85
+Puériculture;;85
+Bureau de douane;;85
+Etablissement pénitentiaire;;84
+Restaurant scolaire;;83
+Pédiatrie;;83
+Auberge de jeunesse, centre international de séjour;;82
+Armurerie coutellerie;;82
+Courtier;;81
+Kiosque (théâtre, pizza, journaux);;80
+Centre équestre;;78
+Gynécologie;;78
+Poterie verrerie céramique;;76
+Ordre des avocats;;75
+Diététicien, nutritionniste;;75
+Centre d'information sur les droits des femmes et des familles;;75
+Transport;;75
+Discothèque;;74
+Cardiologie;;74
+Revêtements murs et sols;;71
+Auditorium et salle de conférence;;71
+Musique;;69
+Autres établissements pour adultes et familles en difficulté;;69
+Orthopédie;;67
+Plateaux et terrains de jeux extérieurs;;67
+Tennis;;67
+Chirurgie;;66
+Dermatologie vénéréologie;;64
+Chambre metier;;64
+Espace numérique;;63
+Jardin botanique et/ou zoologique;;62
+Salle de combat;;61
+Personnes âgées : foyer restaurant;;59
+Vente de matériel pour piscine;;58
+Parc;park;58
+Vente de matériel et équipement industriels;;57
+Port;;57
+Location de matériels;;56
+Casino;casino;56
+Fédération départementale pour la pêche et la protection du milieu aquatique;;56
+Chambre agriculture;;54
+Coaching;;53
+Autres activités des médecins spécialistes;;53
+Boulodrome;;52
+Evénement culturel;;51
+Château;;50
+Électricien;;48
+Établissement militaire;;48
+Agence départementale d'information sur le logement;;48
+Maison de services au public;;48
+Jeux vidéo;;47
+Parc d’attraction;;47
+Aide sociale à l'enfance;;46
+Ambulances;;46
+Services techniques;;45
+Arts de la table, vaisselle;;44
+Bailleur social;;43
+Service médico-social;;42
+Rhumatologie;;42
+Blanchisserie teinturerie;;41
+Soin, médecine douce;;41
+Neurologie;;40
+Mission d'accueil et d'information des associations;;40
+Rempailleur tapissier chaises fauteuils;;39
+Biscuiterie;;39
+Disquaire;;38
+Luminaire;;37
+Maison départementale des personnes handicapées;;37
+Ecole de danse;;36
+Mission locale pour l'insertion professionnelle et sociale des jeunes;;36
+Viticulteur;;35
+Accrobranche;;34
+Boutique de mariage;;34
+Centre d'examen;;33
+Circuit sportif deux roues / voiture;;33
+Espace collaboratif;;33
+Pneumologie;;33
+Endocrinologue;;33
+Station lavage auto;;33
+Enseignement culturel;;33
+Cyclisme;;33
+Pépinière;;32
+Cantine;;31
+Orthodontie;;31
+Syndic, gérance immo;;30
+Etablissement de prévention;;30
+Garderie;;28
+Psychomotricien;;28
+Textile hors habillement;;27
+Astrologie, voyance, spiritisme;;27
+Géomètre;;25
+Taxi;;25
+Magasin de bois de chauffage;;25
+Médecin orl;;25
+Gastro-entérologie hépatologie;;25
+Encadreur enlumineur;;24
+Chapeaux et couvre-chefs;;24
+Aéroport, aérodrome;;23
+Déchetterie;;23
+Acupuncture;;23
+Parc des expositions;;23
+Bureau de change;;22
+Patinoire;;22
+Ressourcerie;;21
+Profession libérale;;20
+Gare tgv;;20
+Opéra;;19
+Ergothérapeute;;19
+Skatepark;;19
+Sex shop;;18
+Produits d'occasion;;18
+Gare routière;;18
+Matériel de pêche;;17
+Médecine du travail;;15
+Aquarium;aquarium;15
+Athlétisme;;15
+Anesthésie;;15
+Kinésiologue;;15
+Aire d'accueil de gens du voyage;;14
+Urologie;;14
+Apiculteur;;14
+Randonnées pédestres ou vélos;;14
+Établissement thermal;;14
+Déménageur;;13
+Oto-rhino-laryngologie;;11
+Agence matrimoniale;;9
+Désinfection, lutte contre les nuisibles;;9
+Arène;;9
+Vitrerie, miroiterie;;9
+Thalassothérapie;;8
+Magasin de déguisements;;7
+Traduction et interprétation;;7
+Archives;;7
+Ecole de ski et snowboard;;7
+Néphrologue;;7
+Karaoké;;6
+Stockage;;6
+Coopérative agricole;;6
+Métallerie, chaudronnerie;;6
+Garde meuble;;5
+Entretien de piscine;;5
+Centre de gestion de la fonction publique territoriale;;5
+Refuge animalier;;4
+Articles de fête, carnaval ou divertissement;;4
+Dressage, éducation canine;;4
+Observatoire, astronomie;;4
+Centre national de la fonction publique territoriale;;2
+Stomatologie;;2
+Hématologie;;2
+Médiation;;2
+Taxidermie;;1
+Direction départementale de la protection des populations;;1
+Direction départementale de l'emploi, du travail, des solidarités et de la protection des populations;;1
