@@ -142,6 +142,12 @@ Plans:
 2. Search filters by category.
 3. Results are ranked and paginated beyond 100 hits, with stable ordering.
 
+**Plans:** 3 plans
+Plans:
+- [ ] 10-01-PLAN.md — Filter places by category, end to end (tracer: HTTP → PostGIS → contract → web)
+- [ ] 10-02-PLAN.md — Combine multiple criterion filters with AND and publish the corrected semantics
+- [ ] 10-03-PLAN.md — Total ordering, `offset` paging with `X-Has-More`, and a stable page contract
+
 ### Phase 11: E2E & accessibility
 **Goal:** Prove the user journey in a browser and with assistive technology.
 **Mode:** mvp
