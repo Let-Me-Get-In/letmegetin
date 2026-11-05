@@ -126,6 +126,12 @@ Plans:
 3. A duplicate review queue exposes 0.60–0.90 matches with merge/reject actions and a log.
 4. Coverage metrics (by category/country) are exposed as an export or admin report.
 
+**Plans:** 3 plans
+Plans:
+- [ ] 09-01-PLAN.md — Assign handicap families to every criterion and filter from `families.csv`
+- [ ] 09-02-PLAN.md — Resolve Acceslibre categories through an auditable alias mapping
+- [ ] 09-03-PLAN.md — Add the duplicate review queue and the coverage export
+
 ### Phase 10: Search quality
 **Goal:** Search narrows correctly and scales past the MVP limit.
 **Mode:** mvp
