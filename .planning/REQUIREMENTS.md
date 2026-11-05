@@ -126,10 +126,10 @@
 
 ### Data quality
 
-- [ ] **DATA-01**: Every criterion and filter carries at least one handicap family
-- [ ] **DATA-02**: Imported categories resolve to a grid (no silent NULL for `bibliotheque`/`musee`)
-- [ ] **DATA-03**: A duplicate review queue (0.60–0.90) supports merge/reject with an audit log
-- [ ] **DATA-04**: Coverage metrics by category/country are exportable
+- [x] **DATA-01**: Every criterion and filter carries at least one handicap family
+- [x] **DATA-02**: Imported categories resolve to a grid (no silent NULL for `bibliotheque`/`musee`)
+- [x] **DATA-03**: A duplicate review queue (0.60–0.90) supports merge/reject with an audit log
+- [x] **DATA-04**: Coverage metrics by category/country are exportable
 
 ### Search
 
@@ -149,10 +149,10 @@
 | OPS-04 | Phase 8 | Partial (host cutover) |
 | OPS-05 | Phase 8 | Complete |
 | OPS-06 | Phase 8 | Complete |
-| DATA-01 | Phase 9 | Pending |
-| DATA-02 | Phase 9 | Pending |
-| DATA-03 | Phase 9 | Pending |
-| DATA-04 | Phase 9 | Pending |
+| DATA-01 | Phase 9 | Complete |
+| DATA-02 | Phase 9 | Complete |
+| DATA-03 | Phase 9 | Complete |
+| DATA-04 | Phase 9 | Complete |
 | SEARCH-01 | Phase 10 | Pending |
 | SEARCH-02 | Phase 10 | Pending |
 | SEARCH-03 | Phase 10 | Pending |
