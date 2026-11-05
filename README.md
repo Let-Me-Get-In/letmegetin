@@ -91,8 +91,21 @@ uv run python -m letmegetin.admin category map restaurant \
   --overture restaurant --osm amenity=restaurant --acceslibre restauration
 
 # Places: France-first import of a local Acceslibre export (idempotent)
+uv run python -m letmegetin.admin import acceslibre --file /path/to/acceslibre.csv \
+  --dry-run
 uv run python -m letmegetin.admin import acceslibre --file /path/to/acceslibre.csv
+uv run python -m letmegetin.admin import report
 ```
+
+The Acceslibre export is not vendored: download the *établissements* CSV from the
+open dataset on [data.gouv.fr](https://www.data.gouv.fr/fr/datasets/acceslibre/)
+(Etalab 2.0). Its `activite` column is resolved through
+`data/referential/acceslibre_categories.csv`, reviewed in git. Workflow for the
+first real load: `--dry-run`, complete the alias CSV from the `unresolved:`
+lines, re-run `--dry-run` until `unresolved=0`, run the real import, then
+`import report` — it exits `1` while any imported place has no category and names
+each remaining `activite` value with its count. Without the export, the fixture
+tests and `import report` still exercise the whole pipeline.
 
 Labels are JSONB maps over **fr, en, es, de, it**, set by hand: no machine
 translation ships in this phase, and the API always returns the full map so the

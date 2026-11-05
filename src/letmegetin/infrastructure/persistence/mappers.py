@@ -74,6 +74,7 @@ def place_from_model(model: PlaceModel) -> Place:
         source=model.source,
         source_id=model.source_id,
         category_id=model.category_id,
+        source_category=model.source_category,
         address_full=model.address_full,
         city=model.city,
         postal_code=model.postal_code,

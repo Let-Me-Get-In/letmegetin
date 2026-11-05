@@ -6,6 +6,7 @@ Skips cleanly when the container or migration 0003 is absent.
 from __future__ import annotations
 
 import asyncio
+import importlib
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from sqlalchemy.pool import NullPool
 from typer.testing import CliRunner
 
 from letmegetin import admin
+from letmegetin.application.places.import_acceslibre import iter_acceslibre_rows
 from letmegetin.config import settings
 
 # NullPool: each CLI invocation runs its own event loop via asyncio.run.
@@ -26,11 +28,20 @@ _FIXTURE = (
     "id;nom;adresse;commune;code_postal;latitude;longitude;categorie;site_internet;"
     "telephone\n"
     "test-1;Médiathèque Test Alpha;1 rue des Tests;Testville;99001;45.1000;5.1000;"
-    "bibliotheque;https://example.test;+33400000000\n"
+    "Bibliothèque médiathèque;https://example.test;+33400000000\n"
     "test-2;Mediatheque Test Alpha;1 rue des Tests;Testville;99001;45.1000;5.1000;"
-    "bibliotheque;;\n"
+    "Bibliothèque médiathèque;;\n"
     "test-3;Mediatheque Test Alpha Annexe;1 rue des Tests;Testville;99001;45.1000;5.1000;"
-    "bibliotheque;;\n"
+    "Bibliothèque médiathèque;;\n"
+)
+
+_CATEGORY_FIXTURE = (
+    "id;nom;adresse;commune;code_postal;latitude;longitude;categorie\n"
+    "test-cat-1;Bibliothèque Test;1 rue des Tests;Testville;99001;45.3000;5.3000;"
+    "Bibliothèque médiathèque\n"
+    "test-cat-2;Musée Test;1 rue des Tests;Testville;99001;45.3100;5.3100;Musée\n"
+    "test-cat-3;Château Imaginaire;1 rue des Tests;Testville;99001;45.3200;5.3200;"
+    "Château imaginaire\n"
 )
 
 
@@ -71,8 +82,8 @@ def _places(statement: str) -> list[tuple]:
     return asyncio.run(_query(statement))
 
 
-def _import(path: Path) -> str:
-    result = CliRunner().invoke(admin.app, ["import", "acceslibre", "--file", str(path)])
+def _import(path: Path, *extra: str) -> str:
+    result = CliRunner().invoke(admin.app, ["import", "acceslibre", "--file", str(path), *extra])
     assert result.exit_code == 0, result.output
     return result.output
 
@@ -175,3 +186,79 @@ def test_acceslibre_import_writes_accessibility_values_and_photos(db: None, tmp_
         )
         == 1
     )
+
+
+def test_imported_categories_resolve_and_the_raw_value_is_kept(db: None, tmp_path: Path) -> None:
+    path = tmp_path / "categories.csv"
+    path.write_text(_CATEGORY_FIXTURE, encoding="utf-8")
+
+    output = _import(path)
+
+    assert "resolved=2" in output
+    assert "unresolved=1" in output
+    assert "unresolved: Château imaginaire=1" in output
+    rows = _places(
+        "SELECT p.source_id, c.slug, p.source_category FROM place p "
+        "LEFT JOIN categories c ON c.id = p.category_id "
+        "WHERE p.source_id LIKE 'test-cat-%' ORDER BY p.source_id"
+    )
+    assert rows == [
+        ("test-cat-1", "library", "Bibliothèque médiathèque"),
+        ("test-cat-2", "museum", "Musée"),
+        ("test-cat-3", None, "Château imaginaire"),
+    ]
+
+
+def test_dry_run_reports_resolution_and_writes_nothing(db: None, tmp_path: Path) -> None:
+    path = tmp_path / "categories.csv"
+    path.write_text(_CATEGORY_FIXTURE, encoding="utf-8")
+
+    output = _import(path, "--dry-run")
+
+    assert "created=3" in output
+    assert "dry_run=True" in output
+    assert "resolved=2" in output
+    assert "unresolved: Château imaginaire=1" in output
+    assert _places("SELECT id FROM place WHERE source_id LIKE 'test-cat-%'") == []
+
+
+def test_import_report_fails_while_a_category_is_unresolved(db: None, tmp_path: Path) -> None:
+    path = tmp_path / "categories.csv"
+    path.write_text(_CATEGORY_FIXTURE, encoding="utf-8")
+    _import(path)
+
+    result = CliRunner().invoke(admin.app, ["import", "report"])
+    assert result.exit_code == 1, result.output
+    assert "places by source: acceslibre=3" in result.output
+    assert "Château imaginaire=1" in result.output
+    assert "unresolved total=1 across 1 source values" in result.output
+
+    asyncio.run(_delete_unresolved())
+
+    clean = CliRunner().invoke(admin.app, ["import", "report"])
+    assert clean.exit_code == 0, clean.output
+    assert "unresolved total=0 across 0 source values" in clean.output
+
+
+async def _delete_unresolved() -> None:
+    async with _TestSessionLocal() as session:
+        await session.execute(
+            text("DELETE FROM place WHERE source_id LIKE 'test-cat-%' AND category_id IS NULL")
+        )
+        await session.commit()
+
+
+def test_cli_streams_the_export_instead_of_building_a_list(
+    db: None, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = tmp_path / "categories.csv"
+    path.write_text(_CATEGORY_FIXTURE, encoding="utf-8")
+    rows = iter_acceslibre_rows(path)
+    assert iter(rows) is rows  # a generator, not a materialised list
+
+    def _boom(_: Path) -> list[object]:
+        raise AssertionError("the CLI must not call load_acceslibre_file")
+
+    module = importlib.import_module("letmegetin.application.places.import_acceslibre")
+    monkeypatch.setattr(module, "load_acceslibre_file", _boom)
+    assert "created=3" in _import(path)

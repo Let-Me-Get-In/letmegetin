@@ -549,6 +549,33 @@ class SqlAlchemyPlaceRepository:
         place.category_slug = found[1]
         return place
 
+    async def count_by_source(self) -> list[tuple[str, int]]:
+        """Places per ``source`` (``acceslibre``, ``overture``…)."""
+        rows = (
+            await self._session.execute(
+                select(PlaceModel.source, func.count())
+                .group_by(PlaceModel.source)
+                .order_by(PlaceModel.source)
+            )
+        ).all()
+        return [(str(source), int(count)) for source, count in rows]
+
+    async def unresolved_categories(self, limit: int | None = None) -> list[tuple[str, int]]:
+        """Imported ``source_category`` values with no resolved category, most frequent first."""
+        statement = (
+            select(PlaceModel.source_category, func.count())
+            .where(
+                PlaceModel.source_category.is_not(None),
+                PlaceModel.category_id.is_(None),
+            )
+            .group_by(PlaceModel.source_category)
+            .order_by(func.count().desc(), PlaceModel.source_category)
+        )
+        if limit is not None:
+            statement = statement.limit(limit)
+        rows = (await self._session.execute(statement)).all()
+        return [(str(value), int(count)) for value, count in rows]
+
     async def add(self, place: Place) -> Place:
         model = PlaceModel(
             source=place.source,
@@ -557,6 +584,7 @@ class SqlAlchemyPlaceRepository:
             name_normalized=normalize_name(place.name),
             slug=place.slug,
             category_id=place.category_id,
+            source_category=place.source_category,
             address_full=place.address_full,
             city=place.city,
             postal_code=place.postal_code,
@@ -580,6 +608,7 @@ class SqlAlchemyPlaceRepository:
         model.name = place.name
         model.name_normalized = normalize_name(place.name)
         model.category_id = place.category_id
+        model.source_category = place.source_category
         model.address_full = place.address_full
         model.city = place.city
         model.postal_code = place.postal_code
@@ -906,6 +935,8 @@ class SqlAlchemyCategoryMappingRepository:
                     CategoryMappingModel.overture_category == slug,
                 )
             )
+            # Deterministic: a slug with several buckets always resolves to the same grid.
+            .order_by(CategoryMappingModel.category_id)
             .limit(1)
         )
         if mapped is not None:

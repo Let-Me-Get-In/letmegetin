@@ -12,12 +12,12 @@ from __future__ import annotations
 
 import csv
 import json
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from letmegetin.core.utils import slugify
+from letmegetin.application.places.category_resolution import resolve_category
 from letmegetin.domain.places.acceslibre_map import accessibility_values
 from letmegetin.domain.places.dedup import classify_match, similar_score
 from letmegetin.domain.places.entities import Place, PlacePhoto, make_slug
@@ -27,6 +27,7 @@ from letmegetin.domain.places.repositories import (
     PlaceAliasRepository,
     PlaceRepository,
 )
+from letmegetin.domain.referential.repositories import CategoryRepository
 
 SOURCE_ACCESLIBRE = "acceslibre"
 
@@ -71,6 +72,8 @@ class ImportReport:
     linked: int = 0
     review: int = 0
     skipped: int = 0
+    resolved: int = 0
+    unresolved: dict[str, int] = field(default_factory=dict)
 
 
 def _field(record: dict[str, Any], key: str) -> Any:
@@ -150,26 +153,36 @@ def _sniff_delimiter(sample: str) -> str:
         return ";"
 
 
+def iter_acceslibre_rows(path: Path) -> Iterator[AcceslibreRow]:
+    """Stream a local Acceslibre CSV export (malformed rows are skipped, never fatal).
+
+    A national export is hundreds of MB, so the CSV branch reads the file handle row by
+    row. JSON support is kept for small exports only.
+    """
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        sample = handle.read(2048)
+        if sample.lstrip().startswith(("[", "{")):
+            # shortcut: JSON exports are parsed in memory; switch to ijson if one exceeds RAM
+            payload = json.loads(path.read_text(encoding="utf-8-sig"))
+            records: Iterable[dict[str, Any]] = (
+                payload if isinstance(payload, list) else payload.get("results", [])
+            )
+            for record in records:
+                if isinstance(record, dict):
+                    row = _to_row(record)
+                    if row is not None:
+                        yield row
+            return
+        handle.seek(0)
+        for record in csv.DictReader(handle, delimiter=_sniff_delimiter(sample)):
+            row = _to_row(record)
+            if row is not None:
+                yield row
+
+
 def load_acceslibre_file(path: Path) -> list[AcceslibreRow]:
-    """Read a local Acceslibre CSV or JSON export into rows (malformed rows are skipped)."""
-    text = path.read_text(encoding="utf-8-sig")
-    stripped = text.lstrip()
-    if stripped.startswith("[") or stripped.startswith("{"):
-        payload = json.loads(stripped)
-        records: Iterable[dict[str, Any]] = (
-            payload if isinstance(payload, list) else payload.get("results", [])
-        )
-    else:
-        reader = csv.DictReader(text.splitlines(), delimiter=_sniff_delimiter(text[:2048]))
-        records = list(reader)
-    rows = (_to_row(record) for record in records if isinstance(record, dict))
-    return [row for row in rows if row is not None]
-
-
-async def _resolve_category(mapping: CategoryMappingRepository, category: str | None) -> int | None:
-    if not category:
-        return None
-    return await mapping.resolve_slug(slugify(category))
+    """Materialise the export (tests and small files only; the CLI streams)."""
+    return list(iter_acceslibre_rows(path))
 
 
 async def _candidate(places: PlaceRepository, row: AcceslibreRow) -> tuple[Place | None, float]:
@@ -189,16 +202,30 @@ async def _write_source_data(places: PlaceRepository, place_id: int, row: Accesl
 
 async def _import_row(
     places: PlaceRepository,
+    categories: CategoryRepository,
     mapping: CategoryMappingRepository,
-    aliases: PlaceAliasRepository,
+    place_aliases: PlaceAliasRepository,
     merges: MergeLogRepository,
+    aliases: Mapping[str, str],
     row: AcceslibreRow,
     report: ImportReport,
+    *,
+    dry_run: bool,
 ) -> None:
+    # Persisted raw value is capped at the column width so one long label cannot abort the run.
+    source_category = (row.category or "").strip()[:120] or None
+    category_id = await resolve_category(aliases, categories, mapping, row.category)
+    if source_category is not None:
+        if category_id is None:
+            report.unresolved[source_category] = report.unresolved.get(source_category, 0) + 1
+        else:
+            report.resolved += 1
+
     existing = await places.get_by_source_id(SOURCE_ACCESLIBRE, row.source_id)
     if existing is not None:
         # Re-import refreshes the source-owned values without touching contributions.
-        await _write_source_data(places, existing.id, row)
+        if not dry_run:
+            await _write_source_data(places, existing.id, row)
         report.skipped += 1
         return
 
@@ -210,7 +237,8 @@ async def _import_row(
         slug=make_slug(row.name, SOURCE_ACCESLIBRE, row.source_id),
         source=SOURCE_ACCESLIBRE,
         source_id=row.source_id,
-        category_id=await _resolve_category(mapping, row.category),
+        category_id=category_id,
+        source_category=source_category,
         address_full=row.address,
         city=row.city,
         postal_code=row.postal_code,
@@ -222,28 +250,46 @@ async def _import_row(
         phone=row.phone,
         canonical_id=candidate.id if kind == "auto" and candidate is not None else None,
     )
-    created = await places.add(place)
-    await _write_source_data(places, created.id, row)
     report.created += 1
-
     if kind == "auto" and candidate is not None:
         report.linked += 1
-        await merges.add(candidate.id, created.id, score, actor=SOURCE_ACCESLIBRE)
-        if candidate.name.casefold() != created.name.casefold():
-            await aliases.add(candidate.id, created.name)
     elif kind == "review":
         report.review += 1
+    if dry_run:
+        return
+
+    created = await places.add(place)
+    await _write_source_data(places, created.id, row)
+
+    if kind == "auto" and candidate is not None:
+        await merges.add(candidate.id, created.id, score, actor=SOURCE_ACCESLIBRE)
+        if candidate.name.casefold() != created.name.casefold():
+            await place_aliases.add(candidate.id, created.name)
 
 
 async def import_acceslibre(
     places: PlaceRepository,
+    categories: CategoryRepository,
     mapping: CategoryMappingRepository,
-    aliases: PlaceAliasRepository,
+    place_aliases: PlaceAliasRepository,
     merges: MergeLogRepository,
     rows: Iterable[AcceslibreRow],
+    *,
+    aliases: Mapping[str, str] | None = None,
+    dry_run: bool = False,
 ) -> ImportReport:
     """Upsert Acceslibre rows by ``(source, source_id)`` and deduplicate on insert."""
     report = ImportReport()
     for row in rows:
-        await _import_row(places, mapping, aliases, merges, row, report)
+        await _import_row(
+            places,
+            categories,
+            mapping,
+            place_aliases,
+            merges,
+            aliases or {},
+            row,
+            report,
+            dry_run=dry_run,
+        )
     return report
