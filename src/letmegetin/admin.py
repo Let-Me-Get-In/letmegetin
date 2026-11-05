@@ -19,6 +19,18 @@ from letmegetin.application.accounts.api_keys import (
     revoke_api_key,
 )
 from letmegetin.application.places.category_resolution import load_category_aliases
+from letmegetin.application.places.coverage import (
+    COVERAGE_HEADER,
+    coverage,
+    coverage_csv,
+    coverage_table,
+)
+from letmegetin.application.places.duplicates import (
+    in_review_band,
+    list_pending,
+    merge_duplicate,
+    reject_duplicate,
+)
 from letmegetin.application.places.import_acceslibre import (
     import_acceslibre,
     iter_acceslibre_rows,
@@ -56,6 +68,7 @@ from letmegetin.infrastructure.persistence.repositories import (
     SqlAlchemyCategoryGridRepository,
     SqlAlchemyCategoryMappingRepository,
     SqlAlchemyCategoryRepository,
+    SqlAlchemyCoverageRepository,
     SqlAlchemyCriterionRepository,
     SqlAlchemyFilterRepository,
     SqlAlchemyMappingRepository,
@@ -73,6 +86,7 @@ vocabulary_app = typer.Typer(help="Import, list and promote the flat criteria vo
 labels_app = typer.Typer(help="Set multilingual labels on any referential entity.")
 families_app = typer.Typer(help="Fill and audit handicap families (moteur, auditif, visuel…).")
 import_app = typer.Typer(help="Import open place datasets (Acceslibre first).")
+duplicates_app = typer.Typer(help="Review, merge or reject duplicate candidates from the import.")
 api_key_app = typer.Typer(help="Create, list and revoke partner API keys.")
 app.add_typer(category_app, name="category")
 app.add_typer(criterion_app, name="criterion")
@@ -80,6 +94,7 @@ app.add_typer(vocabulary_app, name="vocabulary")
 app.add_typer(labels_app, name="labels")
 app.add_typer(families_app, name="families")
 app.add_typer(import_app, name="import")
+app.add_typer(duplicates_app, name="duplicates")
 app.add_typer(api_key_app, name="api-key")
 
 AdminCallback = Callable[[AsyncSession], Awaitable[str]]
@@ -560,6 +575,83 @@ def import_report(
     typer.echo(f"unresolved total={total} across {len(unresolved)} source values")
     if total:
         raise typer.Exit(code=1)
+
+
+@duplicates_app.command("list")
+def duplicates_list(
+    limit: Annotated[int, typer.Option("--limit", help="Max rows shown")] = 50,
+) -> None:
+    """List the duplicate candidates waiting for an operator decision (DATA-03)."""
+
+    async def callback(session: AsyncSession) -> str:
+        rows = await list_pending(SqlAlchemyPlaceRepository(session), limit)
+        return "\n".join(
+            f"{row.place_id}\t{row.score:.3f}\t{row.place_name} -> {row.candidate_name}"
+            f"\t{row.place_city or ''}"
+            f"{'' if in_review_band(row.score) else '  [out of band]'}"
+            for row in rows
+        )
+
+    _run_admin(callback, bump=False)
+
+
+@duplicates_app.command("merge")
+def duplicates_merge(
+    place_id: Annotated[int, typer.Argument(help="Place id from `duplicates list`")],
+    note: Annotated[str | None, typer.Option("--note", help="Why they are the same place")] = None,
+) -> None:
+    """Soft-merge a place into its candidate: canonical link, alias, merge log, decision."""
+
+    async def callback(session: AsyncSession) -> str:
+        merged = await merge_duplicate(
+            SqlAlchemyPlaceRepository(session),
+            SqlAlchemyPlaceAliasRepository(session),
+            SqlAlchemyMergeLogRepository(session),
+            place_id,
+            note=note,
+        )
+        return f"duplicate merged: {place_id} -> {merged.canonical_id}"
+
+    _run_admin(callback)
+
+
+@duplicates_app.command("reject")
+def duplicates_reject(
+    place_id: Annotated[int, typer.Argument(help="Place id from `duplicates list`")],
+    note: Annotated[str | None, typer.Option("--note", help="Why they are distinct places")] = None,
+) -> None:
+    """Keep both places, record the rejection, and drop the pair from the queue."""
+
+    async def callback(session: AsyncSession) -> str:
+        await reject_duplicate(SqlAlchemyPlaceRepository(session), place_id, note=note)
+        return f"duplicate rejected: {place_id} (both places kept)"
+
+    _run_admin(callback)
+
+
+@app.command("coverage")
+def coverage_export(
+    fmt: Annotated[
+        Literal["table", "csv"], typer.Option("--format", help="table or csv")
+    ] = "table",
+    out: Annotated[Path | None, typer.Option("--out", help="Write the CSV to this file")] = None,
+) -> None:
+    """Export places, places with values and fill rate per category and country (DATA-04)."""
+
+    async def callback(session: AsyncSession) -> str:
+        rows = await coverage(SqlAlchemyCoverageRepository(session))
+        if not rows:
+            header = ",".join(COVERAGE_HEADER) if fmt == "csv" else "\t".join(COVERAGE_HEADER)
+            return f"{header}\nno places yet"
+        if fmt != "csv":
+            return coverage_table(rows)
+        payload = coverage_csv(rows)
+        if out is None:
+            return payload.rstrip("\n")
+        out.write_text(payload, encoding="utf-8")
+        return f"coverage csv: {len(rows) - 1} rows -> {out}"
+
+    _run_admin(callback, bump=False)
 
 
 def _run_api_key_admin(

@@ -249,6 +249,8 @@ async def _import_row(
         website=row.website,
         phone=row.phone,
         canonical_id=candidate.id if kind == "auto" and candidate is not None else None,
+        # Persisting the candidate is what turns the review bucket into a query.
+        duplicate_of_id=candidate.id if kind == "review" and candidate is not None else None,
     )
     report.created += 1
     if kind == "auto" and candidate is not None:

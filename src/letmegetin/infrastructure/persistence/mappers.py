@@ -86,6 +86,7 @@ def place_from_model(model: PlaceModel) -> Place:
         website=model.website,
         phone=model.phone,
         canonical_id=model.canonical_id,
+        duplicate_of_id=model.duplicate_of_id,
     )
 
 

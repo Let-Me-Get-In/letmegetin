@@ -7,11 +7,13 @@ from typing import Protocol
 
 from letmegetin.domain.places.entities import (
     HandicapFamily,
+    PendingDuplicate,
     Place,
     PlaceAccessibility,
     PlaceHit,
     PlacePhoto,
     Review,
+    ReviewDecision,
 )
 
 DEFAULT_CANDIDATE_RADIUS = 100.0
@@ -20,9 +22,27 @@ DEFAULT_CANDIDATE_RADIUS = 100.0
 class PlaceRepository(Protocol):
     """Read/write access to places, including the spatial queries."""
 
+    async def get_by_id(self, place_id: int) -> Place | None: ...
+
     async def get_by_source_id(self, source: str, source_id: str) -> Place | None: ...
 
     async def get_by_slug(self, slug: str) -> Place | None: ...
+
+    async def list_pending_reviews(self, limit: int = 50) -> list[PendingDuplicate]:
+        """Places the importer flagged for review, scored candidate first."""
+        ...
+
+    async def set_review_state(
+        self,
+        place_id: int,
+        canonical_id: int | None,
+        duplicate_of_id: int | None,
+        operating_status: str,
+    ) -> Place:
+        """Move a place out of the review queue without ever deleting it."""
+        ...
+
+    async def add_review_decision(self, decision: ReviewDecision) -> None: ...
 
     async def count_by_source(self) -> list[tuple[str, int]]:
         """Places per ``source``."""
@@ -114,6 +134,14 @@ class MergeLogRepository(Protocol):
     async def add(
         self, kept_id: int, merged_id: int, score: float, actor: str = "importer"
     ) -> None: ...
+
+
+class CoverageRepository(Protocol):
+    """Aggregate counts for the coverage export (read-only, safe on production)."""
+
+    async def by_category_country(self) -> list[tuple[str, str, int, int]]:
+        """``(category slug or '(unresolved)', country, places, places with values)``."""
+        ...
 
 
 class CategoryMappingRepository(Protocol):

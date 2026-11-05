@@ -9,6 +9,7 @@ from geoalchemy2 import Geography
 from sqlalchemy import and_, delete, func, or_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
 
 from letmegetin.core.exceptions import DomainError
 from letmegetin.domain.accounts.entities import (
@@ -20,11 +21,13 @@ from letmegetin.domain.accounts.entities import (
 from letmegetin.domain.places.dedup import normalize_name
 from letmegetin.domain.places.entities import (
     HandicapFamily,
+    PendingDuplicate,
     Place,
     PlaceAccessibility,
     PlaceHit,
     PlacePhoto,
     Review,
+    ReviewDecision,
 )
 from letmegetin.domain.places.repositories import DEFAULT_CANDIDATE_RADIUS
 from letmegetin.domain.referential.entities import (
@@ -63,6 +66,7 @@ from letmegetin.infrastructure.persistence.models import (
     PlaceMergeLogModel,
     PlaceModel,
     PlacePhotoModel,
+    PlaceReviewDecisionModel,
     ReferentialVersionModel,
     RefreshTokenModel,
     ReviewModel,
@@ -530,6 +534,10 @@ class SqlAlchemyPlaceRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
+    async def get_by_id(self, place_id: int) -> Place | None:
+        row = await self._session.get(PlaceModel, place_id)
+        return place_from_model(row) if row is not None else None
+
     async def get_by_source_id(self, source: str, source_id: str) -> Place | None:
         row = await self._session.scalar(
             select(PlaceModel).where(PlaceModel.source == source, PlaceModel.source_id == source_id)
@@ -576,6 +584,63 @@ class SqlAlchemyPlaceRepository:
         rows = (await self._session.execute(statement)).all()
         return [(str(value), int(count)) for value, count in rows]
 
+    async def list_pending_reviews(self, limit: int = 50) -> list[PendingDuplicate]:
+        candidate = aliased(PlaceModel)
+        rows = (
+            await self._session.execute(
+                select(PlaceModel, candidate)
+                .join(candidate, candidate.id == PlaceModel.duplicate_of_id)
+                .where(PlaceModel.canonical_id.is_(None))
+                .order_by(
+                    PlaceModel.confidence.desc().nulls_last(),
+                    PlaceModel.id,
+                )
+                .limit(limit)
+            )
+        ).all()
+        return [
+            PendingDuplicate(
+                place_id=place.id,
+                place_slug=place.slug,
+                place_name=place.name,
+                place_city=place.city,
+                candidate_id=other.id,
+                candidate_slug=other.slug,
+                candidate_name=other.name,
+                score=float(place.confidence or 0.0),
+            )
+            for place, other in rows
+        ]
+
+    async def set_review_state(
+        self,
+        place_id: int,
+        canonical_id: int | None,
+        duplicate_of_id: int | None,
+        operating_status: str,
+    ) -> Place:
+        model = await self._session.get(PlaceModel, place_id)
+        if model is None:
+            raise DomainError(f"place #{place_id} is not persisted")
+        model.canonical_id = canonical_id
+        model.duplicate_of_id = duplicate_of_id
+        model.operating_status = operating_status
+        await self._session.flush()
+        return place_from_model(model)
+
+    async def add_review_decision(self, decision: ReviewDecision) -> None:
+        self._session.add(
+            PlaceReviewDecisionModel(
+                place_id=decision.place_id,
+                candidate_id=decision.candidate_id,
+                score=decision.score,
+                decision=decision.decision,
+                actor=decision.actor,
+                note=decision.note,
+            )
+        )
+        await self._session.flush()
+
     async def add(self, place: Place) -> Place:
         model = PlaceModel(
             source=place.source,
@@ -596,6 +661,7 @@ class SqlAlchemyPlaceRepository:
             website=place.website,
             phone=place.phone,
             canonical_id=place.canonical_id,
+            duplicate_of_id=place.duplicate_of_id,
         )
         self._session.add(model)
         await self._session.flush()
@@ -620,6 +686,7 @@ class SqlAlchemyPlaceRepository:
         model.website = place.website
         model.phone = place.phone
         model.canonical_id = place.canonical_id
+        model.duplicate_of_id = place.duplicate_of_id
         await self._session.flush()
         return place_from_model(model)
 
@@ -918,6 +985,36 @@ class SqlAlchemyMergeLogRepository:
             PlaceMergeLogModel(kept_id=kept_id, merged_id=merged_id, score=score, actor=actor)
         )
         await self._session.flush()
+
+
+class SqlAlchemyCoverageRepository:
+    """Coverage aggregates per category and country (read-only: one query, never mutates)."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def by_category_country(self) -> list[tuple[str, str, int, int]]:
+        category = func.coalesce(CategoryModel.slug, "(unresolved)")
+        statement = (
+            select(
+                category,
+                PlaceModel.country_code,
+                func.count(func.distinct(PlaceModel.id)),
+                func.count(func.distinct(PlaceAccessibilityModel.place_id)),
+            )
+            .select_from(PlaceModel)
+            .outerjoin(CategoryModel, CategoryModel.id == PlaceModel.category_id)
+            .outerjoin(PlaceAccessibilityModel, PlaceAccessibilityModel.place_id == PlaceModel.id)
+            # A merged place is counted once, on its canonical row.
+            .where(PlaceModel.canonical_id.is_(None))
+            .group_by(category, PlaceModel.country_code)
+            .order_by(category, PlaceModel.country_code)
+        )
+        rows = (await self._session.execute(statement)).all()
+        return [
+            (str(name), str(country), int(places), int(with_accessibility))
+            for name, country, places, with_accessibility in rows
+        ]
 
 
 class SqlAlchemyCategoryMappingRepository:
