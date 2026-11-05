@@ -25,77 +25,77 @@ Photographie;photo_lab;8141
 Stade;stadium;7939
 Droguerie;hardware_store;7042
 Collège;middle_school;6950
-Laboratoire d'analyse médicale;;6913
-Bureau de poste;;6776
+Laboratoire d'analyse médicale;medical_lab;6913
+Bureau de poste;post_office;6776
 Vétérinaire;veterinary_care;6705
-Librairie;;6668
-Vêtements;;6063
+Librairie;book_store;6668
+Vêtements;clothing_store;6063
 Toilettes publiques;public_bathroom;5854
 Cimetière;cemetery;5795
 Supérette;convenience_store;5436
-Chocolatier;;5289
-Fromagerie;;4449
-Ehpad;;4387
-Sports et loisirs;;4169
+Chocolatier;chocolate_shop;5289
+Fromagerie;cheese_shop;4449
+Ehpad;nursing_agency;4387
+Sports et loisirs;sporting_goods_store;4169
 Association;association_or_organization;4114
-Chambre d'hôtes, gîte, pension, meublé de tourisme;;4111
-Piscine, centre aquatique;;3971
-Administration publique;;3808
+Chambre d'hôtes, gîte, pension, meublé de tourisme;bed_and_breakfast;4111
+Piscine, centre aquatique;public_swimming_pool;3971
+Administration publique;government_office;3808
 Hôpital;hospital;3790
-Gendarmerie;;3661
-Coworking;;3620
+Gendarmerie;police;3661
+Coworking;corporate_office;3620
 Office de tourisme;tourist_information_center;3515
-Assurance;;3505
+Assurance;insurance_agency;3505
 Théâtre;performing_arts_theater;3485
 Lycée;high_school;3451
-Hôtel restaurant;;3193
-Commerce;;3057
-Bien-être;;2974
+Hôtel restaurant;hotel;3193
+Commerce;store;3057
+Bien-être;spa;2974
 Garage automobile;car_repair;2333
-Emploi, formation;;2130
+Emploi, formation;training_center;2130
 Médecin généraliste;doctor;2107
-Psychologie, Psychiatrie;;2089
-Centre des finances publiques;;1955
+Psychologie, Psychiatrie;doctor;2089
+Centre des finances publiques;government_office;1955
 Musée;museum;1869
-Infirmier;;1739
-Artisanat;;1666
-École primaire (regroupement maternelle et élémentaire);;1629
-Institut de formation, de recherche;;1505
-Guichet france services;;1491
+Infirmier;nursing_agency;1739
+Artisanat;store;1666
+École primaire (regroupement maternelle et élémentaire);elementary_school;1629
+Institut de formation, de recherche;training_center;1505
+Guichet france services;government_office;1491
 Épicerie;grocery_store;1465
-Point justice;;1409
-Hypnothérapeute;;1398
-Bijouterie fantaisie;;1227
-Bricolage, matériaux, travaux;;1221
-Lieu de culte;;1132
+Point justice;courthouse;1409
+Hypnothérapeute;doctor;1398
+Bijouterie fantaisie;jewelry_store;1227
+Bricolage, matériaux, travaux;hardware_store;1221
+Lieu de culte;place_of_worship;1132
 Cinéma;movie_theater;1130
 Chaussures;shoe_store;1127
-Camping caravaning;;1125
+Camping caravaning;campground;1125
 Kinésithérapeute;physiotherapist;1065
-Ostéopathie;;1060
-Produits surgelés;;1021
-Massages;;992
+Ostéopathie;physiotherapist;1060
+Produits surgelés;grocery_store;1021
+Massages;spa;992
 École maternelle;elementary_school;970
-Collectivité territoriale;;970
-Bar tabac;;952
-Vente d'articles de sport;;946
+Collectivité territoriale;government_office;970
+Bar tabac;bar;952
+Vente d'articles de sport;sporting_goods_store;946
 Gymnase;gym;937
-Agence de travail temporaire;;935
-Bureau de vote;;919
-Caviste / commerce de détail de boissons;;899
-Meubles ameublement;;891
-École élémentaire;;852
+Agence de travail temporaire;corporate_office;935
+Bureau de vote;government_office;919
+Caviste / commerce de détail de boissons;liquor_store;899
+Meubles ameublement;furniture_store;891
+École élémentaire;elementary_school;852
 Crèche;child_care_agency;849
-Aménagement intérieur de la maison;;849
-Autre;;848
+Aménagement intérieur de la maison;home_improvement_store;849
+Autre;establishment;848
 Agence de voyage;travel_agency;847
-Architecte;;843
-Art, centre d'art;;825
-Club de sport;;804
+Architecte;corporate_office;843
+Art, centre d'art;art_gallery;825
+Club de sport;fitness_center;804
 Centre culturel;cultural_center;768
-Groupe scolaire;;767
-Sécurité sociale, mutuelle santé;;766
-Parfumerie, cosmétique;;748
+Groupe scolaire;school;767
+Sécurité sociale, mutuelle santé;insurance_agency;766
+Parfumerie, cosmétique;perfume_store;748
 Salle de spectacle;performing_arts_theater;708
 Décoration Design;;706
 Centre médical;;685
