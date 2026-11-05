@@ -152,57 +152,57 @@ Réparation auto et de matériel agricole;car_repair;311
 Centre d’information et d’orientation;training_center;309
 Maroquinerie sellerie articles de voyage;luggage_store;283
 Cordonnerie serrurerie;locksmith;280
-Tatouage Piercing;;276
-Laverie;;274
-Centre de ressources et d'information;;272
-Galerie d'art;;270
-Résidence, foyer;;264
-Salle non spécialisée;;264
-Agence de publicité;;260
+Tatouage Piercing;tattoo_shop;276
+Laverie;laundry;274
+Centre de ressources et d'information;library;272
+Galerie d'art;art_gallery;270
+Résidence, foyer;lodging;264
+Salle non spécialisée;function_room_facility;264
+Agence de publicité;corporate_office;260
 Centre social;social_services_organization;247
-Animalerie;;244
-Point conseil budget;;243
-Pressing, nettoyage;;238
-Equipement sportif;;237
-Poissonnerie / commerce de poissons, crustacés et mollusques;;229
-Activités nautiques;;227
-Association aide aux victimes;;220
-Barbier;;219
-Magasin de tissus;;211
-Primeur;;207
-Salle spécialisée;;201
-Équipements du foyer;;196
-Salle de concert;;191
-Achat or;;189
-Chambre de commerce et d'industrie;;178
-Salle de jeux;;177
-Menuiserie, ébénisterie;;175
-Motocycle vente et entretien;;174
-Orthoptie;;174
-Imprimerie photocopie reliure;;172
-Literie;;172
-Glacier;;168
-Conservatoire et école de musique;;165
-Contrôle technique auto;;162
-Produits de terroir;;161
-Espace vert et naturel;;159
-Hébergement insolite;;155
-Point accueil numerique;;152
-Horlogerie;;149
-Bâtiment d'accueil;;145
-Couture, retouche;;145
-Agence événementielle;;142
-Fruits et légumes;;141
-Comptable expert-comptable;;139
-Vente à distance;;138
-Monument historique;;135
-Magasin de souvenirs;;133
-Parking & stationnement;;130
-Centre de vaccination;;130
-Information Touristique;;129
-Mercerie;;129
-Antiquaire;;123
-Cycle vente et entretien;;121
+Animalerie;pet_store;244
+Point conseil budget;social_services_organization;243
+Pressing, nettoyage;laundry;238
+Equipement sportif;sports_complex;237
+Poissonnerie / commerce de poissons, crustacés et mollusques;seafood_market;229
+Activités nautiques;recreation_center;227
+Association aide aux victimes;association_or_organization;220
+Barbier;hair_care;219
+Magasin de tissus;home_goods_store;211
+Primeur;green_grocers;207
+Salle spécialisée;function_room_facility;201
+Équipements du foyer;home_goods_store;196
+Salle de concert;performing_arts_theater;191
+Achat or;jewelry_store;189
+Chambre de commerce et d'industrie;government_office;178
+Salle de jeux;recreation_center;177
+Menuiserie, ébénisterie;home_improvement_store;175
+Motocycle vente et entretien;car_dealer;174
+Orthoptie;physiotherapist;174
+Imprimerie photocopie reliure;copy_shop;172
+Literie;home_goods_store;172
+Glacier;restaurant;168
+Conservatoire et école de musique;training_center;165
+Contrôle technique auto;car_repair;162
+Produits de terroir;grocery_store;161
+Espace vert et naturel;park;159
+Hébergement insolite;lodging;155
+Point accueil numerique;government_office;152
+Horlogerie;jewelry_store;149
+Bâtiment d'accueil;establishment;145
+Couture, retouche;clothing_store;145
+Agence événementielle;corporate_office;142
+Fruits et légumes;green_grocers;141
+Comptable expert-comptable;accounting;139
+Vente à distance;store;138
+Monument historique;monument;135
+Magasin de souvenirs;store;133
+Parking & stationnement;parking;130
+Centre de vaccination;doctor;130
+Information Touristique;tourist_information_center;129
+Mercerie;clothing_store;129
+Antiquaire;antique_furniture_store;123
+Cycle vente et entretien;bicycle_store;121
 Immobilier;;120
 Centre religieux;;120
 Charcuterie;;120
