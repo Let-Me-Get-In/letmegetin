@@ -16,11 +16,11 @@ def test_accessibility_values_maps_known_columns(key: str) -> None:
 
 @pytest.mark.parametrize("raw", [None, ""])
 def test_accessibility_values_skips_empty_columns(raw: object) -> None:
-    assert accessibility_values({"acces_entree": raw}) == {}
+    assert accessibility_values({"entree_pmr": raw}) == {}
 
 
 def test_accessibility_values_keeps_a_false_answer() -> None:
-    values = accessibility_values({"acces_entree": False})
+    values = accessibility_values({"entree_pmr": False})
 
     assert values["entree-acces"]["value"] is False
 
