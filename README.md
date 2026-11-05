@@ -95,7 +95,23 @@ uv run python -m letmegetin.admin import acceslibre --file /path/to/acceslibre.c
   --dry-run
 uv run python -m letmegetin.admin import acceslibre --file /path/to/acceslibre.csv
 uv run python -m letmegetin.admin import report
+
+# Duplicate review queue (0.60-0.90 name matches) and its audit trail
+uv run python -m letmegetin.admin duplicates list
+uv run python -m letmegetin.admin duplicates merge 42 --note "same library"
+uv run python -m letmegetin.admin duplicates reject 43 --note "annexe is separate"
+
+# Coverage export by category and country (CSV for partner/reporting questions)
+uv run python -m letmegetin.admin coverage --format csv --out coverage.csv
 ```
+
+`duplicates merge` is the same soft merge the importer does for ≥ 0.90 matches:
+`canonical_id` set, the merged name kept as an alias, `place_merge_log` written;
+`reject` keeps both places. Both append a `place_review_decision` row (actor,
+timestamp, note), so the queue has an audit trail for rejections too. Nothing is
+deleted. `coverage` is read-only: it counts each real place once (canonical rows
+excluded) and is safe to run on production; the CSV carries aggregated counts
+only — "how many restaurants in France are covered, and how many have values".
 
 The Acceslibre export is not vendored: download the *établissements* CSV from the
 open dataset on [data.gouv.fr](https://www.data.gouv.fr/fr/datasets/acceslibre/)

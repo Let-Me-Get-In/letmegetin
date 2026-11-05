@@ -14,11 +14,13 @@ __all__ = [
     "HANDICAP_FAMILIES",
     "HandicapFamily",
     "MatchKind",
+    "PendingDuplicate",
     "Place",
     "PlaceAccessibility",
     "PlaceHit",
     "PlacePhoto",
     "Review",
+    "ReviewDecision",
     "make_slug",
 ]
 
@@ -48,6 +50,8 @@ class Place:
     website: str | None = None
     phone: str | None = None
     canonical_id: int | None = None
+    # Review-queue candidate: what makes the 0.60-0.90 bucket a query, not a recomputation.
+    duplicate_of_id: int | None = None
     # Read-only projection: filled by the repository when it joins the category.
     category_slug: str | None = None
 
@@ -90,6 +94,32 @@ class PlaceHit:
     place: Place
     distance: float
     score: float = 0.0
+
+
+@dataclass
+class PendingDuplicate:
+    """One row of the operator review queue: a place and the candidate it may duplicate."""
+
+    place_id: int
+    place_slug: str
+    place_name: str
+    place_city: str | None
+    candidate_id: int
+    candidate_slug: str
+    candidate_name: str
+    score: float
+
+
+@dataclass
+class ReviewDecision:
+    """An operator's merge or rejection, kept as the audit trail for both."""
+
+    place_id: int
+    candidate_id: int | None
+    score: float
+    decision: Literal["merge", "reject"]
+    actor: str = "operator"
+    note: str | None = None
 
 
 def make_slug(name: str, source: str, source_id: str | None) -> str:

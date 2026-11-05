@@ -248,6 +248,27 @@ class PlaceModel(Base, TimestampMixin):
     canonical_id: Mapped[int | None] = mapped_column(
         ForeignKey("place.id", ondelete="SET NULL"), index=True
     )
+    duplicate_of_id: Mapped[int | None] = mapped_column(
+        ForeignKey("place.id", ondelete="SET NULL"), index=True
+    )
+
+
+class PlaceReviewDecisionModel(Base):
+    """An operator's merge or rejection of a duplicate candidate (audit trail)."""
+
+    __tablename__ = "place_review_decision"
+    __table_args__ = (
+        CheckConstraint("decision IN ('merge','reject')", name="place_review_decision_decision_ck"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("place.id", ondelete="CASCADE"), index=True)
+    candidate_id: Mapped[int | None] = mapped_column(ForeignKey("place.id", ondelete="SET NULL"))
+    score: Mapped[float] = mapped_column(Double)
+    decision: Mapped[str] = mapped_column(String(16))
+    actor: Mapped[str] = mapped_column(String(32), server_default="operator")
+    note: Mapped[str | None] = mapped_column(String(500))
+    created: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
 class PlaceAliasModel(Base):
