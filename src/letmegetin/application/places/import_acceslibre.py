@@ -209,12 +209,16 @@ async def _import_row(
     aliases: Mapping[str, str],
     row: AcceslibreRow,
     report: ImportReport,
+    resolved: dict[str, int | None],
     *,
     dry_run: bool,
 ) -> None:
     # Persisted raw value is capped at the column width so one long label cannot abort the run.
     source_category = (row.category or "").strip()[:120] or None
-    category_id = await resolve_category(aliases, categories, mapping, row.category)
+    label = row.category or ""
+    if label not in resolved:
+        resolved[label] = await resolve_category(aliases, categories, mapping, row.category)
+    category_id = resolved[label]
     if source_category is not None:
         if category_id is None:
             report.unresolved[source_category] = report.unresolved.get(source_category, 0) + 1
@@ -282,6 +286,10 @@ async def import_acceslibre(
 ) -> ImportReport:
     """Upsert Acceslibre rows by ``(source, source_id)`` and deduplicate on insert."""
     report = ImportReport()
+    # shortcut: category resolution is memoised per label (391 distinct values in
+    # the national export). The dedup proximity query below is still per row and
+    # is what dominates a 634k-row load; batch it only if that ever runs again.
+    resolved: dict[str, int | None] = {}
     for row in rows:
         await _import_row(
             places,
@@ -292,6 +300,7 @@ async def import_acceslibre(
             aliases or {},
             row,
             report,
+            resolved,
             dry_run=dry_run,
         )
     return report
