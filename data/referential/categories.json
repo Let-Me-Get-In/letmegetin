@@ -3,1106 +3,1264 @@
     "slug": "campground",
     "name": "campground",
     "label": {
-      "it": "Campeggio"
+      "it": "Campeggio",
+      "fr": "Camping"
     }
   },
   {
     "slug": "bed_and_breakfast",
     "name": "bed_and_breakfast",
     "label": {
-      "it": "Bed & Breakfast"
+      "it": "Bed & Breakfast",
+      "fr": "Chambre d'hôtes"
     }
   },
   {
     "slug": "recreation_center",
     "name": "recreation_center",
     "label": {
-      "it": "Centro ricreativo"
+      "it": "Centro ricreativo",
+      "fr": "Centre de loisirs"
     }
   },
   {
     "slug": "gite",
     "name": "gite",
     "label": {
-      "it": "Casa"
+      "it": "Casa",
+      "fr": "Gîte"
     }
   },
   {
     "slug": "hotel",
     "name": "hotel",
     "label": {
-      "it": "Hotel"
+      "it": "Hotel",
+      "fr": "Hôtel"
     }
   },
   {
     "slug": "aquarium",
     "name": "aquarium",
     "label": {
-      "it": "Acquario"
+      "it": "Acquario",
+      "fr": "Aquarium"
     }
   },
   {
     "slug": "antique_furniture_store",
     "name": "antique_furniture_store",
     "label": {
-      "it": "Negozio di antiquariato"
+      "it": "Negozio di antiquariato",
+      "fr": "Magasin d'antiquités"
     }
   },
   {
     "slug": "cemetery",
     "name": "cemetery",
     "label": {
-      "it": "Cimitero"
+      "it": "Cimitero",
+      "fr": "Cimetière"
     }
   },
   {
     "slug": "funeral_home",
     "name": "funeral_home",
     "label": {
-      "it": "Camera funeraria"
+      "it": "Camera funeraria",
+      "fr": "Pompes funèbres"
     }
   },
   {
     "slug": "luggage_store",
     "name": "luggage_store",
     "label": {
-      "it": "Negozio di borse e valigie"
+      "it": "Negozio di borse e valigie",
+      "fr": "Maroquinerie"
     }
   },
   {
     "slug": "association_or_organization",
     "name": "association_or_organization",
     "label": {
-      "it": "Associazione o organizzazione"
+      "it": "Associazione o organizzazione",
+      "fr": "Association"
     }
   },
   {
     "slug": "car_dealer",
     "name": "car_dealer",
     "label": {
-      "it": "Concessionaria automobilistica"
+      "it": "Concessionaria automobilistica",
+      "fr": "Concessionnaire automobile"
     }
   },
   {
     "slug": "lodging",
     "name": "lodging",
     "label": {
-      "it": "Alloggio"
+      "it": "Alloggio",
+      "fr": "Hébergement"
     }
   },
   {
     "slug": "shopping_center",
     "name": "shopping_center",
     "label": {
-      "it": "Centro commerciale"
+      "it": "Centro commerciale",
+      "fr": "Centre commercial"
     }
   },
   {
     "slug": "boot_store",
     "name": "boot_store",
     "label": {
-      "it": "Negozio di Scarpe"
+      "it": "Negozio di Scarpe",
+      "fr": "Bottier"
     }
   },
   {
     "slug": "chocolate_shop",
     "name": "chocolate_shop",
     "label": {
-      "it": "Cioccolataio"
+      "it": "Cioccolataio",
+      "fr": "Chocolaterie"
     }
   },
   {
     "slug": "home_goods_store",
     "name": "home_goods_store",
     "label": {
-      "it": "Negozio di arredamento, decorazione ed elettrodomestici"
+      "it": "Negozio di arredamento, decorazione ed elettrodomestici",
+      "fr": "Magasin d'équipement de la maison"
     }
   },
   {
     "slug": "grocery_store",
     "name": "grocery_store",
     "label": {
-      "it": "Drogheria"
+      "it": "Drogheria",
+      "fr": "Épicerie"
     }
   },
   {
     "slug": "tobacco_shop",
     "name": "tobacco_shop",
     "label": {
-      "it": "Tabaccaio"
+      "it": "Tabaccaio",
+      "fr": "Bureau de tabac"
     }
   },
   {
     "slug": "cell_phone_store",
     "name": "cell_phone_store",
     "label": {
-      "it": "Negozio di telefonia mobile"
+      "it": "Negozio di telefonia mobile",
+      "fr": "Magasin de téléphonie"
     }
   },
   {
     "slug": "catering_service",
     "name": "catering_service",
     "label": {
-      "it": "Salumeria"
+      "it": "Salumeria",
+      "fr": "Traiteur"
     }
   },
   {
     "slug": "clothing_store",
     "name": "clothing_store",
     "label": {
-      "it": "Negozio di abbigliamento"
+      "it": "Negozio di abbigliamento",
+      "fr": "Magasin de vêtements"
     }
   },
   {
     "slug": "movie_rental_store",
     "name": "movie_rental_store",
     "label": {
-      "it": "Negozio di noleggio film"
+      "it": "Negozio di noleggio film",
+      "fr": "Boutique de location de vidéos"
     }
   },
   {
     "slug": "corporate_office",
     "name": "corporate_office",
     "label": {
-      "it": "Sede sociale"
+      "it": "Sede sociale",
+      "fr": "Bureau / entreprise"
     }
   },
   {
     "slug": "driving_school",
     "name": "driving_school",
     "label": {
-      "it": "Autoscuola"
+      "it": "Autoscuola",
+      "fr": "Auto-école"
     }
   },
   {
     "slug": "middle_school",
     "name": "middle_school",
     "label": {
-      "it": "Scuola media"
+      "it": "Scuola media",
+      "fr": "Collège"
     }
   },
   {
     "slug": "elementary_school",
     "name": "elementary_school",
     "label": {
-      "it": "Scuola elementare"
+      "it": "Scuola elementare",
+      "fr": "École primaire"
     }
   },
   {
     "slug": "college",
     "name": "college",
     "label": {
-      "it": "Scuola di insegnamento superiore"
+      "it": "Scuola di insegnamento superiore",
+      "fr": "Enseignement supérieur"
     }
   },
   {
     "slug": "high_school",
     "name": "high_school",
     "label": {
-      "it": "Liceo"
+      "it": "Liceo",
+      "fr": "Lycée"
     }
   },
   {
     "slug": "florist",
     "name": "florist",
     "label": {
-      "it": "Fiorista"
+      "it": "Fiorista",
+      "fr": "Fleuriste"
     }
   },
   {
     "slug": "cheese_shop",
     "name": "cheese_shop",
     "label": {
-      "it": "Formaggiaio"
+      "it": "Formaggiaio",
+      "fr": "Fromagerie"
     }
   },
   {
     "slug": "department_store",
     "name": "department_store",
     "label": {
-      "it": "Grande magazzino"
+      "it": "Grande magazzino",
+      "fr": "Grand magasin"
     }
   },
   {
     "slug": "toy_store",
     "name": "toy_store",
     "label": {
-      "it": "Negozio di giocattoli"
+      "it": "Negozio di giocattoli",
+      "fr": "Magasin de jouets"
     }
   },
   {
     "slug": "laundry",
     "name": "laundry",
     "label": {
-      "it": "Tintoria"
+      "it": "Tintoria",
+      "fr": "Pressing / laverie"
     }
   },
   {
     "slug": "book_store",
     "name": "book_store",
     "label": {
-      "it": "Libreria-Cartoleria"
+      "it": "Libreria-Cartoleria",
+      "fr": "Librairie"
     }
   },
   {
     "slug": "market",
     "name": "market",
     "label": {
-      "it": "Mercato"
+      "it": "Mercato",
+      "fr": "Marché"
     }
   },
   {
     "slug": "music_store",
     "name": "music_store",
     "label": {
-      "it": "Negozio di musica"
+      "it": "Negozio di musica",
+      "fr": "Magasin de musique"
     }
   },
   {
     "slug": "home_improvement_store",
     "name": "home_improvement_store",
     "label": {
-      "it": "Negozio di bricolage e decorazione"
+      "it": "Negozio di bricolage e decorazione",
+      "fr": "Bricolage / jardinage"
     }
   },
   {
     "slug": "locksmith",
     "name": "locksmith",
     "label": {
-      "it": "Ferramenta"
+      "it": "Ferramenta",
+      "fr": "Serrurier"
     }
   },
   {
     "slug": "lawyer",
     "name": "lawyer",
     "label": {
-      "it": "Avvocato"
+      "it": "Avvocato",
+      "fr": "Avocat"
     }
   },
   {
     "slug": "bazar",
     "name": "bazar",
     "label": {
-      "it": "Bazar"
+      "it": "Bazar",
+      "fr": "Bazar"
     }
   },
   {
     "slug": "jewelry_store",
     "name": "jewelry_store",
     "label": {
-      "it": "Gioielleria"
+      "it": "Gioielleria",
+      "fr": "Bijouterie"
     }
   },
   {
     "slug": "butcher_shop",
     "name": "butcher_shop",
     "label": {
-      "it": "Macelleria"
+      "it": "Macelleria",
+      "fr": "Boucherie"
     }
   },
   {
     "slug": "bakery",
     "name": "bakery",
     "label": {
-      "it": "Panettiere"
+      "it": "Panettiere",
+      "fr": "Boulangerie"
     }
   },
   {
     "slug": "wine_store",
     "name": "wine_store",
     "label": {
-      "it": "Enoteca"
+      "it": "Enoteca",
+      "fr": "Caviste"
     }
   },
   {
     "slug": "perfume_store",
     "name": "perfume_store",
     "label": {
-      "it": "Profumeria"
+      "it": "Profumeria",
+      "fr": "Parfumerie"
     }
   },
   {
     "slug": "seafood_market",
     "name": "seafood_market",
     "label": {
-      "it": "Mercato del pesce e dei crostacei"
+      "it": "Mercato del pesce e dei crostacei",
+      "fr": "Poissonnerie"
     }
   },
   {
     "slug": "green_grocers",
     "name": "green_grocers",
     "label": {
-      "it": "Fruttivendolo"
+      "it": "Fruttivendolo",
+      "fr": "Primeur"
     }
   },
   {
     "slug": "photo_lab",
     "name": "photo_lab",
     "label": {
-      "it": "Laboratorio fotografico"
+      "it": "Laboratorio fotografico",
+      "fr": "Photographe"
     }
   },
   {
     "slug": "sporting_goods_store",
     "name": "sporting_goods_store",
     "label": {
-      "it": "Negozio di articoli sportivi"
+      "it": "Negozio di articoli sportivi",
+      "fr": "Magasin d'articles de sport"
     }
   },
   {
     "slug": "supermarket",
     "name": "supermarket",
     "label": {
-      "it": "Supermercato"
+      "it": "Supermercato",
+      "fr": "Supermarché"
     }
   },
   {
     "slug": "car_rental",
     "name": "car_rental",
     "label": {
-      "it": "Noleggio di auto"
+      "it": "Noleggio di auto",
+      "fr": "Location de voitures"
     }
   },
   {
     "slug": "car_wash",
     "name": "car_wash",
     "label": {
-      "it": "Lavaggio auto"
+      "it": "Lavaggio auto",
+      "fr": "Lavage automobile"
     }
   },
   {
     "slug": "church",
     "name": "church",
     "label": {
-      "it": "Chiesa"
+      "it": "Chiesa",
+      "fr": "Église"
     }
   },
   {
     "slug": "city_hall",
     "name": "city_hall",
     "label": {
-      "it": "Municipio"
+      "it": "Municipio",
+      "fr": "Mairie"
     }
   },
   {
     "slug": "convenience_store",
     "name": "convenience_store",
     "label": {
-      "it": "Carro-attrezzi"
+      "it": "Carro-attrezzi",
+      "fr": "Supérette"
     }
   },
   {
     "slug": "courthouse",
     "name": "courthouse",
     "label": {
-      "it": "Tribunale"
+      "it": "Tribunale",
+      "fr": "Tribunal"
     }
   },
   {
     "slug": "embassy",
     "name": "embassy",
     "label": {
-      "it": "Ambasciata"
+      "it": "Ambasciata",
+      "fr": "Ambassade"
     }
   },
   {
     "slug": "fire_station",
     "name": "fire_station",
     "label": {
-      "it": "Pompieri"
+      "it": "Pompieri",
+      "fr": "Caserne de pompiers"
     }
   },
   {
     "slug": "furniture_store",
     "name": "furniture_store",
     "label": {
-      "it": "Negozio di mobili"
+      "it": "Negozio di mobili",
+      "fr": "Magasin de meubles"
     }
   },
   {
     "slug": "grocery_or_supermarket",
     "name": "grocery_or_supermarket",
     "label": {
-      "it": "Drogheria / Supermercato"
+      "it": "Drogheria / Supermercato",
+      "fr": "Épicerie / supermarché"
     }
   },
   {
     "slug": "training_center",
     "name": "training_center",
     "label": {
-      "it": "Centro di formazione"
+      "it": "Centro di formazione",
+      "fr": "Centre de formation"
     }
   },
   {
     "slug": "parking",
     "name": "parking",
     "label": {
-      "it": "Parcheggio"
+      "it": "Parcheggio",
+      "fr": "Parking"
     }
   },
   {
     "slug": "fitness_center",
     "name": "fitness_center",
     "label": {
-      "it": "Palestra"
+      "it": "Palestra",
+      "fr": "Salle de sport"
     }
   },
   {
     "slug": "public_swimming_pool",
     "name": "public_swimming_pool",
     "label": {
-      "it": "Piscina pubblica"
+      "it": "Piscina pubblica",
+      "fr": "Piscine publique"
     }
   },
   {
     "slug": "beauty_salon",
     "name": "beauty_salon",
     "label": {
-      "it": "Salone di bellezza"
+      "it": "Salone di bellezza",
+      "fr": "Institut de beauté"
     }
   },
   {
     "slug": "hair_care",
     "name": "hair_care",
     "label": {
-      "it": "Parrucchiere"
+      "it": "Parrucchiere",
+      "fr": "Coiffure"
     }
   },
   {
     "slug": "tattoo_shop",
     "name": "tattoo_shop",
     "label": {
-      "it": "Tatuatore"
+      "it": "Tatuatore",
+      "fr": "Tatoueur / piercing"
     }
   },
   {
     "slug": "spa",
     "name": "spa",
     "label": {
-      "it": "Spa"
+      "it": "Spa",
+      "fr": "Spa"
     }
   },
   {
     "slug": "hostel",
     "name": "hostel",
     "label": {
-      "it": "Ostello della gioventù"
+      "it": "Ostello della gioventù",
+      "fr": "Auberge de jeunesse"
     }
   },
   {
     "slug": "luxury_hotel",
     "name": "luxury_hotel",
     "label": {
-      "it": "Albergo di lusso"
+      "it": "Albergo di lusso",
+      "fr": "Hôtel de luxe"
     }
   },
   {
     "slug": "library",
     "name": "library",
     "label": {
-      "it": "Biblioteca"
+      "it": "Biblioteca",
+      "fr": "Bibliothèque / médiathèque"
     }
   },
   {
     "slug": "bowling_alley",
     "name": "bowling_alley",
     "label": {
-      "it": "Bowling"
+      "it": "Bowling",
+      "fr": "Bowling"
     }
   },
   {
     "slug": "casino",
     "name": "casino",
     "label": {
-      "it": "Casiṇ"
+      "it": "Casiṇ",
+      "fr": "Casino"
     }
   },
   {
     "slug": "movie_theater",
     "name": "movie_theater",
     "label": {
-      "it": "Cinema"
+      "it": "Cinema",
+      "fr": "Cinéma"
     }
   },
   {
     "slug": "circus",
     "name": "circus",
     "label": {
-      "it": "Circo"
+      "it": "Circo",
+      "fr": "Cirque"
     }
   },
   {
     "slug": "night_club",
     "name": "night_club",
     "label": {
-      "it": "Discoteca"
+      "it": "Discoteca",
+      "fr": "Discothèque"
     }
   },
   {
     "slug": "art_gallery",
     "name": "art_gallery",
     "label": {
-      "it": "Galleria d'arte"
+      "it": "Galleria d'arte",
+      "fr": "Galerie d'art"
     }
   },
   {
     "slug": "monument",
     "name": "monument",
     "label": {
-      "it": "Monumento"
+      "it": "Monumento",
+      "fr": "Monument"
     }
   },
   {
     "slug": "museum",
     "name": "museum",
     "label": {
-      "it": "Museo"
+      "it": "Museo",
+      "fr": "Musée"
     }
   },
   {
     "slug": "sports_complex",
     "name": "sports_complex",
     "label": {
-      "it": "Complesso sportivo"
+      "it": "Complesso sportivo",
+      "fr": "Complexe sportif"
     }
   },
   {
     "slug": "opera_house",
     "name": "opera_house",
     "label": {
-      "it": "Opera"
+      "it": "Opera",
+      "fr": "Opéra"
     }
   },
   {
     "slug": "park",
     "name": "park",
     "label": {
-      "it": "Parco"
+      "it": "Parco",
+      "fr": "Parc"
     }
   },
   {
     "slug": "amusement_park",
     "name": "amusement_park",
     "label": {
-      "it": "Parco dei divertimenti"
+      "it": "Parco dei divertimenti",
+      "fr": "Parc d'attractions"
     }
   },
   {
     "slug": "beach_resort",
     "name": "beach_resort",
     "label": {
-      "it": "Complesso balneare"
+      "it": "Complesso balneare",
+      "fr": "Station balnéaire"
     }
   },
   {
     "slug": "national_park",
     "name": "national_park",
     "label": {
-      "it": "Parco nazionale"
+      "it": "Parco nazionale",
+      "fr": "Parc national"
     }
   },
   {
     "slug": "stadium",
     "name": "stadium",
     "label": {
-      "it": "Stadio"
+      "it": "Stadio",
+      "fr": "Stade"
     }
   },
   {
     "slug": "performing_arts_theater",
     "name": "performing_arts_theater",
     "label": {
-      "it": "Sala spettacoli"
+      "it": "Sala spettacoli",
+      "fr": "Salle de spectacle"
     }
   },
   {
     "slug": "zoo",
     "name": "zoo",
     "label": {
-      "it": "Zoo"
+      "it": "Zoo",
+      "fr": "Zoo"
     }
   },
   {
     "slug": "cultural_center",
     "name": "cultural_center",
     "label": {
-      "it": "Centro culturale"
+      "it": "Centro culturale",
+      "fr": "Centre culturel"
     }
   },
   {
     "slug": "government_office",
     "name": "government_office",
     "label": {
-      "it": "Amministrazione"
+      "it": "Amministrazione",
+      "fr": "Administration"
     }
   },
   {
     "slug": "airport",
     "name": "airport",
     "label": {
-      "it": "Aeroporto"
+      "it": "Aeroporto",
+      "fr": "Aéroport"
     }
   },
   {
     "slug": "travel_agency",
     "name": "travel_agency",
     "label": {
-      "it": "Agenzia viaggi"
+      "it": "Agenzia viaggi",
+      "fr": "Agence de voyage"
     }
   },
   {
     "slug": "real_estate_agency",
     "name": "real_estate_agency",
     "label": {
-      "it": "Agenzia immobiliare"
+      "it": "Agenzia immobiliare",
+      "fr": "Agence immobilière"
     }
   },
   {
     "slug": "insurance_agency",
     "name": "insurance_agency",
     "label": {
-      "it": "Agenzia assicurativa"
+      "it": "Agenzia assicurativa",
+      "fr": "Assurance"
     }
   },
   {
     "slug": "bank",
     "name": "bank",
     "label": {
-      "it": "Banca"
+      "it": "Banca",
+      "fr": "Banque"
     }
   },
   {
     "slug": "child_care_agency",
     "name": "child_care_agency",
     "label": {
-      "it": "Asilo nido"
+      "it": "Asilo nido",
+      "fr": "Crèche"
     }
   },
   {
     "slug": "atm",
     "name": "atm",
     "label": {
-      "it": "Distributore automatico di banconote"
+      "it": "Distributore automatico di banconote",
+      "fr": "Distributeur de billets"
     }
   },
   {
     "slug": "internet_cafe",
     "name": "internet_cafe",
     "label": {
-      "it": "Cyber-caffè"
+      "it": "Cyber-caffè",
+      "fr": "Cybercafé"
     }
   },
   {
     "slug": "train_station",
     "name": "train_station",
     "label": {
-      "it": "Stazione"
+      "it": "Stazione",
+      "fr": "Gare"
     }
   },
   {
     "slug": "place_of_worship",
     "name": "place_of_worship",
     "label": {
-      "it": "Luogo di culto"
+      "it": "Luogo di culto",
+      "fr": "Lieu de culte"
     }
   },
   {
     "slug": "social_services_organization",
     "name": "social_services_organization",
     "label": {
-      "it": "Organismo dei servizi sociali"
+      "it": "Organismo dei servizi sociali",
+      "fr": "Services sociaux"
     }
   },
   {
     "slug": "copy_shop",
     "name": "copy_shop",
     "label": {
-      "it": "Centro di reprografia"
+      "it": "Centro di reprografia",
+      "fr": "Papeterie / reprographie"
     }
   },
   {
     "slug": "function_room_facility",
     "name": "function_room_facility",
     "label": {
-      "it": "Sala ricevimento"
+      "it": "Sala ricevimento",
+      "fr": "Salle des fêtes"
     }
   },
   {
     "slug": "bicycle_store",
     "name": "bicycle_store",
     "label": {
-      "it": "Negozio di biciclette"
+      "it": "Negozio di biciclette",
+      "fr": "Magasin de vélos"
     }
   },
   {
     "slug": "electrician",
     "name": "electrician",
     "label": {
-      "it": "Elettricista"
+      "it": "Elettricista",
+      "fr": "Électricien"
     }
   },
   {
     "slug": "bus_station",
     "name": "bus_station",
     "label": {
-      "it": "Stazione autobus"
+      "it": "Stazione autobus",
+      "fr": "Gare routière"
     }
   },
   {
     "slug": "cafe",
     "name": "cafe",
     "label": {
-      "it": "Caffè"
+      "it": "Caffè",
+      "fr": "Café"
     }
   },
   {
     "slug": "police",
     "name": "police",
     "label": {
-      "it": "Polizia"
+      "it": "Polizia",
+      "fr": "Police"
     }
   },
   {
     "slug": "appliance_store",
     "name": "appliance_store",
     "label": {
-      "it": "Negozio di elettrodomestici"
+      "it": "Negozio di elettrodomestici",
+      "fr": "Électroménager"
     }
   },
   {
     "slug": "unemployment_office",
     "name": "unemployment_office",
     "label": {
-      "it": "Agenzia per il lavoro"
+      "it": "Agenzia per il lavoro",
+      "fr": "Pôle emploi"
     }
   },
   {
     "slug": "hindu_temple",
     "name": "hindu_temple",
     "label": {
-      "it": "Tempio indù"
+      "it": "Tempio indù",
+      "fr": "Temple hindou"
     }
   },
   {
     "slug": "vacation_appartment",
     "name": "vacation_appartment",
     "label": {
-      "it": "Appartamento di vacanze"
+      "it": "Appartamento di vacanze",
+      "fr": "Appartement de vacances"
     }
   },
   {
     "slug": "transit_station",
     "name": "transit_station",
     "label": {
-      "it": "Fermata dell'autobus"
+      "it": "Fermata dell'autobus",
+      "fr": "Arrêt de transport"
     }
   },
   {
     "slug": "bar",
     "name": "bar",
     "label": {
-      "it": "Bar"
+      "it": "Bar",
+      "fr": "Bar"
     }
   },
   {
     "slug": "fast_food_restaurant",
     "name": "fast_food_restaurant",
     "label": {
-      "it": "Fast Food"
+      "it": "Fast Food",
+      "fr": "Restauration rapide"
     }
   },
   {
     "slug": "dentist",
     "name": "dentist",
     "label": {
-      "it": "Dentista"
+      "it": "Dentista",
+      "fr": "Dentiste"
     }
   },
   {
     "slug": "hospital",
     "name": "hospital",
     "label": {
-      "it": "Ospedale"
+      "it": "Ospedale",
+      "fr": "Hôpital"
     }
   },
   {
     "slug": "physiotherapist",
     "name": "physiotherapist",
     "label": {
-      "it": "Fisioterapista"
+      "it": "Fisioterapista",
+      "fr": "Kinésithérapeute"
     }
   },
   {
     "slug": "university",
     "name": "university",
     "label": {
-      "it": "Edificio universitario"
+      "it": "Edificio universitario",
+      "fr": "Université"
     }
   },
   {
     "slug": "store",
     "name": "store",
     "label": {
-      "it": "Negozio"
+      "it": "Negozio",
+      "fr": "Commerce"
     }
   },
   {
     "slug": "liquor_store",
     "name": "liquor_store",
     "label": {
-      "it": "Negozio di alcolici"
+      "it": "Negozio di alcolici",
+      "fr": "Caviste"
     }
   },
   {
     "slug": "local_government_office",
     "name": "local_government_office",
     "label": {
-      "it": "Uffici governamentali"
+      "it": "Uffici governamentali",
+      "fr": "Service public de proximité"
     }
   },
   {
     "slug": "meal_delivery",
     "name": "meal_delivery",
     "label": {
-      "it": "Servizio di ristorazione a domicilio"
+      "it": "Servizio di ristorazione a domicilio",
+      "fr": "Livraison de repas"
     }
   },
   {
     "slug": "school",
     "name": "school",
     "label": {
-      "it": "Scuola"
+      "it": "Scuola",
+      "fr": "Établissement scolaire"
     }
   },
   {
     "slug": "shoe_store",
     "name": "shoe_store",
     "label": {
-      "it": "Negozio di Scarpe"
+      "it": "Negozio di Scarpe",
+      "fr": "Magasin de chaussures"
     }
   },
   {
     "slug": "storage",
     "name": "storage",
     "label": {
-      "it": "Magazzino"
+      "it": "Magazzino",
+      "fr": "Stockage"
     }
   },
   {
     "slug": "subway_station",
     "name": "subway_station",
     "label": {
-      "it": "Stazione della metropolitana"
+      "it": "Stazione della metropolitana",
+      "fr": "Station de métro"
     }
   },
   {
     "slug": "pet_store",
     "name": "pet_store",
     "label": {
-      "it": "Negozio di animali"
+      "it": "Negozio di animali",
+      "fr": "Animalerie"
     }
   },
   {
     "slug": "post_office",
     "name": "post_office",
     "label": {
-      "it": "Ufficio postale"
+      "it": "Ufficio postale",
+      "fr": "Bureau de poste"
     }
   },
   {
     "slug": "tea_house",
     "name": "tea_house",
     "label": {
-      "it": "Salone da tè"
+      "it": "Salone da tè",
+      "fr": "Salon de thé"
     }
   },
   {
     "slug": "tourist_information_center",
     "name": "tourist_information_center",
     "label": {
-      "it": "Ufficio del turismo"
+      "it": "Ufficio del turismo",
+      "fr": "Office de tourisme"
     }
   },
   {
     "slug": "restaurant",
     "name": "restaurant",
     "label": {
-      "it": "Ristorante"
+      "it": "Ristorante",
+      "fr": "Restaurant"
     }
   },
   {
     "slug": "nursing_agency",
     "name": "nursing_agency",
     "label": {
-      "it": "Infermeria"
+      "it": "Infermeria",
+      "fr": "Soins à domicile"
     }
   },
   {
     "slug": "medical_lab",
     "name": "medical_lab",
     "label": {
-      "it": "Laboratorio medico"
+      "it": "Laboratorio medico",
+      "fr": "Laboratoire d'analyses"
     }
   },
   {
     "slug": "wheelchair_store",
     "name": "wheelchair_store",
     "label": {
-      "it": "Negozio di sedie a rotelle"
+      "it": "Negozio di sedie a rotelle",
+      "fr": "Matériel médical"
     }
   },
   {
     "slug": "optician",
     "name": "optician",
     "label": {
-      "it": "Ottico"
+      "it": "Ottico",
+      "fr": "Opticien"
     }
   },
   {
     "slug": "meal_takeaway",
     "name": "meal_takeaway",
     "label": {
-      "it": "Take-away"
+      "it": "Take-away",
+      "fr": "Vente à emporter"
     }
   },
   {
     "slug": "mosque",
     "name": "mosque",
     "label": {
-      "it": "Moschea"
+      "it": "Moschea",
+      "fr": "Mosquée"
     }
   },
   {
     "slug": "movie_rental",
     "name": "movie_rental",
     "label": {
-      "it": "Videoclub"
+      "it": "Videoclub",
+      "fr": "Location de vidéos"
     }
   },
   {
     "slug": "synagogue",
     "name": "synagogue",
     "label": {
-      "it": "Sinagoga"
+      "it": "Sinagoga",
+      "fr": "Synagogue"
     }
   },
   {
     "slug": "rv_park",
     "name": "rv_park",
     "label": {
-      "it": "Area per camper"
+      "it": "Area per camper",
+      "fr": "Aire de camping-car"
     }
   },
   {
     "slug": "accounting",
     "name": "accounting",
     "label": {
-      "it": "Studio contabile"
+      "it": "Studio contabile",
+      "fr": "Comptabilité"
     }
   },
   {
     "slug": "car_repair",
     "name": "car_repair",
     "label": {
-      "it": "Garage"
+      "it": "Garage",
+      "fr": "Garage automobile"
     }
   },
   {
     "slug": "electronics_store",
     "name": "electronics_store",
     "label": {
-      "it": "Negozio di elettronica"
+      "it": "Negozio di elettronica",
+      "fr": "Magasin d'électronique"
     }
   },
   {
     "slug": "establishment",
     "name": "establishment",
     "label": {
-      "it": "Struttura"
+      "it": "Struttura",
+      "fr": "Établissement"
     }
   },
   {
     "slug": "gym",
     "name": "gym",
     "label": {
-      "it": "Fitness"
+      "it": "Fitness",
+      "fr": "Gymnase"
     }
   },
   {
     "slug": "gas_station",
     "name": "gas_station",
     "label": {
-      "it": "Stazione di servizio"
+      "it": "Stazione di servizio",
+      "fr": "Station-service"
     }
   },
   {
     "slug": "taxi_service",
     "name": "taxi_service",
     "label": {
-      "it": "Servizio di taxi"
+      "it": "Servizio di taxi",
+      "fr": "Service de taxi"
     }
   },
   {
     "slug": "doctor",
     "name": "doctor",
     "label": {
-      "it": "Medico"
+      "it": "Medico",
+      "fr": "Médecin"
     }
   },
   {
     "slug": "physiotherapy_center",
     "name": "physiotherapy_center",
     "label": {
-      "it": "Centro riabilitativo"
+      "it": "Centro riabilitativo",
+      "fr": "Centre de kinésithérapie"
     }
   },
   {
     "slug": "pharmacy",
     "name": "pharmacy",
     "label": {
-      "it": "Farmacia"
+      "it": "Farmacia",
+      "fr": "Pharmacie"
     }
   },
   {
     "slug": "orthesist",
     "name": "orthesist",
     "label": {
-      "it": "Ortopedista"
+      "it": "Ortopedista",
+      "fr": "Orthoprothésiste"
     }
   },
   {
     "slug": "public_bathroom",
     "name": "public_bathroom",
     "label": {
-      "it": "Toilette pubbliche"
+      "it": "Toilette pubbliche",
+      "fr": "Toilettes publiques"
     }
   },
   {
     "slug": "veterinary_care",
     "name": "veterinary_care",
     "label": {
-      "it": "Veterinario"
+      "it": "Veterinario",
+      "fr": "Vétérinaire"
     }
   },
   {
     "slug": "hardware_store",
     "name": "hardware_store",
     "label": {
-      "it": "Ferramenta"
+      "it": "Ferramenta",
+      "fr": "Quincaillerie"
     }
   },
   {
     "slug": "shopping_mall",
     "name": "shopping_mall",
     "label": {
-      "it": "Centro commerciale"
+      "it": "Centro commerciale",
+      "fr": "Galerie marchande"
     }
   },
   {
     "slug": "taxi_stand",
     "name": "taxi_stand",
     "label": {
-      "it": "Stazione di taxi"
+      "it": "Stazione di taxi",
+      "fr": "Station de taxi"
     }
   }
 ]

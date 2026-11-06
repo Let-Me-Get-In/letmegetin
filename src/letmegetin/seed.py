@@ -141,6 +141,11 @@ async def seed() -> None:
                 session.add(
                     CategoryModel(slug=entry["slug"], name=entry["name"], label=entry["label"])
                 )
+            elif exists.label != entry["label"]:
+                # The data file is the source of truth for labels: adding a
+                # translation must reach an already-seeded database, otherwise a
+                # locale fix never ships.
+                exists.label = entry["label"]
 
         for position, entry in enumerate(
             json.loads((data_dir / "filters.json").read_text(encoding="utf-8"))
