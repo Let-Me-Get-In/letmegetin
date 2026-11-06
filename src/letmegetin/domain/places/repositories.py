@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from typing import Protocol
 
 from letmegetin.domain.places.entities import (
+    DedupRow,
     HandicapFamily,
     PendingDuplicate,
     Place,
@@ -27,6 +28,12 @@ class PlaceRepository(Protocol):
     async def get_by_source_id(self, source: str, source_id: str) -> Place | None: ...
 
     async def get_by_slug(self, slug: str) -> Place | None: ...
+
+    async def list_for_dedup(self, limit: int | None = None) -> list[DedupRow]:
+        """Places with a location and no canonical parent, for the duplicate pass."""
+
+    async def set_duplicate_candidate(self, place_id: int, candidate_id: int, score: float) -> None:
+        """Record a 0.60-0.90 candidate so the operator can review it."""
 
     async def list_pending_reviews(self, limit: int = 50) -> list[PendingDuplicate]:
         """Places the importer flagged for review, scored candidate first."""

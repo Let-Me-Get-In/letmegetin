@@ -26,6 +26,7 @@ from letmegetin.application.places.coverage import (
     coverage_csv,
     coverage_table,
 )
+from letmegetin.application.places.dedup_pass import recompute_duplicates
 from letmegetin.application.places.duplicates import (
     in_review_band,
     list_pending,
@@ -611,6 +612,25 @@ def duplicates_list(
         )
 
     _run_admin(callback, bump=False)
+
+
+@duplicates_app.command("recompute")
+def duplicates_recompute(
+    dry_run: Annotated[bool, typer.Option("--dry-run", help="Count without writing")] = False,
+    radius: Annotated[float, typer.Option("--radius", help="Search radius in metres")] = 50.0,
+) -> None:
+    """Fill the review queue in one pass over the whole table (the import leaves it empty)."""
+
+    async def callback(session: AsyncSession) -> str:
+        report = await recompute_duplicates(
+            SqlAlchemyPlaceRepository(session), radius_m=radius, dry_run=dry_run
+        )
+        return (
+            f"duplicates recompute: places={report.places} pairs={report.pairs} "
+            f"flagged={report.flagged} dry_run={report.dry_run}"
+        )
+
+    _run_admin(callback, bump=False, commit=not dry_run)
 
 
 @duplicates_app.command("merge")
