@@ -15,6 +15,8 @@ const MapView = dynamic(() => import("./map-view").then((mod) => mod.MapView), {
   loading: () => <div className="h-[420px] w-full animate-pulse rounded-card border border-line" />,
 });
 
+const PAGE_SIZE = 100;
+
 export function SearchView() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -25,6 +27,8 @@ export function SearchView() {
   const [places, setPlaces] = useState<PlaceSummary[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [more, setMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [criteria, setCriteria] = useState<CriterionNode[]>([]);
@@ -43,11 +47,13 @@ export function SearchView() {
       .then((data) => {
         if (!active) return;
         setPlaces(data);
+        setMore(data.length === PAGE_SIZE);
         setSelected(data[0]?.slug ?? null);
       })
       .catch((cause) => {
         if (!active) return;
         setPlaces([]);
+        setMore(false);
         setError(cause instanceof ApiError ? cause.message : "Recherche indisponible.");
       })
       .finally(() => {
@@ -85,6 +91,21 @@ export function SearchView() {
   const submit = useCallback(() => {
     router.push(`/?${toSearchParams(draft).toString()}`);
   }, [router, draft]);
+
+  const loadMore = useCallback(() => {
+    if (loadingMore) return;
+    setLoadingMore(true);
+    // A new search resets `places`; the effect below then restarts at page 1.
+    api<PlaceSummary[]>(placesPath(state, places.length))
+      .then((next) => {
+        setPlaces((current) => [...current, ...next]);
+        setMore(next.length === PAGE_SIZE);
+      })
+      .catch((cause) => {
+        setError(cause instanceof ApiError ? cause.message : "Recherche indisponible.");
+      })
+      .finally(() => setLoadingMore(false));
+  }, [state, places.length, loadingMore]);
 
   const locate = useCallback(() => {
     if (!navigator.geolocation) {
@@ -167,6 +188,16 @@ export function SearchView() {
             onSelect={setSelected}
             loading={loading}
           />
+          {more && !loading ? (
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={loadingMore}
+              className="mt-3 w-full rounded-md border border-line px-3 py-2 text-sm hover:border-accent hover:text-accent disabled:opacity-50"
+            >
+              {loadingMore ? "Chargement…" : "Voir plus"}
+            </button>
+          ) : null}
         </div>
       </div>
     </section>

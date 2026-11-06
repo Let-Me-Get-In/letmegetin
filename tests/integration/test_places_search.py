@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import json
 from collections.abc import AsyncIterator, Iterator
+from itertools import groupby
 from typing import Any
 
 import pytest
@@ -27,6 +28,10 @@ _engine = create_async_engine(settings.database_url, poolclass=NullPool)
 _TestSessionLocal = async_sessionmaker(_engine, expire_on_commit=False)
 
 _ORIGIN = (45.0, 5.0)
+# Far from _ORIGIN and from any real AccesLibre row, so the bulk page tests see
+# exactly the 150 seeded rows even on a national dev database.
+_BULK_ORIGIN = (30.0, 4.0)
+_BULK_COUNT = 150
 _PLACES = [
     ("test-search-alpha", "Test Café Alpha", 45.0010, 5.0000),
     ("test-search-beta", "Test Librairie Beta", 45.0030, 5.0000),
@@ -127,6 +132,18 @@ async def _seed() -> None:
             ),
             {"value": json.dumps({"value": True})},
         )
+        await session.execute(
+            text(
+                "INSERT INTO place (source, source_id, name, name_normalized, slug, lat, lng) "
+                "SELECT 'test-search', 'test-search-bulk-' || i, 'Test Bulk ' || i, "
+                "'test bulk ' || i, 'test-search-bulk-' || i, "
+                # Ten coordinates, fifteen rows each: identical coordinates force the
+                # distance ties that a plain ORDER BY could not page deterministically.
+                ":lat + mod(i, 10) * 0.001, :lng + mod(i, 10) * 0.001 "
+                "FROM generate_series(1, :count) AS i"
+            ),
+            {"lat": _BULK_ORIGIN[0], "lng": _BULK_ORIGIN[1], "count": _BULK_COUNT},
+        )
         await session.commit()
 
 
@@ -135,6 +152,17 @@ async def _criterion_id(slug: str) -> int:
         return int(
             await session.scalar(text("SELECT id FROM criteria WHERE slug = :slug"), {"slug": slug})
         )
+
+
+async def _bulk_ids() -> dict[str, int]:
+    async with _TestSessionLocal() as session:
+        rows = await session.execute(
+            text(
+                "SELECT slug, id FROM place "
+                "WHERE source = 'test-search' AND source_id LIKE 'test-search-bulk-%'"
+            )
+        )
+        return {str(slug): int(place_id) for slug, place_id in rows}
 
 
 async def _override() -> AsyncIterator[AsyncSession]:
@@ -282,3 +310,58 @@ def test_place_detail_is_404_when_missing(client: TestClient) -> None:
     response = client.get("/api/v1/places/does-not-exist")
 
     assert response.status_code == 404
+
+
+def _bulk_search(client: TestClient, **params: Any) -> list[dict[str, Any]]:
+    return _search(client, lat=_BULK_ORIGIN[0], lng=_BULK_ORIGIN[1], radius=5000, **params)
+
+
+def test_search_pages_beyond_one_hundred(client: TestClient) -> None:
+    first = _bulk_search(client, limit=100)
+    second = _bulk_search(client, limit=100, offset=100)
+
+    assert len(first) == 100
+    assert len(second) == _BULK_COUNT - 100
+    slugs = [item["slug"] for item in first + second]
+    assert len(set(slugs)) == _BULK_COUNT
+    assert {item["slug"] for item in first}.isdisjoint({item["slug"] for item in second})
+
+
+def test_search_order_is_stable_across_calls(client: TestClient) -> None:
+    once = _bulk_search(client, limit=100)
+    twice = _bulk_search(client, limit=100)
+
+    assert [item["slug"] for item in once] == [item["slug"] for item in twice]
+
+    # Every maximal run of equal distances is a tie group: it must be ordered by id,
+    # which is what a bare ORDER BY distance could not promise.
+    ids = asyncio.run(_bulk_ids())
+    tie_groups = 0
+    for _, group in groupby(once, key=lambda item: item["distance"]):
+        rows = list(group)
+        if len(rows) > 1:
+            tie_groups += 1
+            assert [ids[row["slug"]] for row in rows] == sorted(ids[row["slug"]] for row in rows)
+    assert tie_groups > 0
+
+
+def test_search_has_more_header(client: TestClient) -> None:
+    query = {"lat": _BULK_ORIGIN[0], "lng": _BULK_ORIGIN[1], "radius": 5000}
+
+    full_page = client.get("/api/v1/places", params={**query, "limit": 100})
+    last_page = client.get("/api/v1/places", params={**query, "limit": 100, "offset": 100})
+    past_end = client.get("/api/v1/places", params={**query, "limit": 100, "offset": 200})
+
+    assert full_page.headers["X-Has-More"] == "true"
+    assert last_page.headers["X-Has-More"] == "false"
+    assert past_end.json() == []
+    assert past_end.headers["X-Has-More"] == "false"
+
+
+def test_search_rejects_offset_beyond_cap(client: TestClient) -> None:
+    response = client.get(
+        "/api/v1/places",
+        params={"lat": _BULK_ORIGIN[0], "lng": _BULK_ORIGIN[1], "offset": 20_000},
+    )
+
+    assert response.status_code == 422

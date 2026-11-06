@@ -53,7 +53,7 @@ export function toSearchParams(state: SearchState): URLSearchParams {
   return params;
 }
 
-export function placesPath(state: SearchState): string {
+export function placesPath(state: SearchState, offset = 0): string {
   const params = new URLSearchParams({
     lat: String(state.lat),
     lng: String(state.lng),
@@ -64,6 +64,8 @@ export function placesPath(state: SearchState): string {
   if (state.family) params.set("family", state.family);
   if (state.category) params.set("category", state.category);
   if (state.criteria.length > 0) params.set("filters", state.criteria.join(","));
+  // Page 1 keeps the URL shape it always had, so shared links stay unchanged.
+  if (offset > 0) params.set("offset", String(offset));
   return `/api/v1/places?${params.toString()}`;
 }
 

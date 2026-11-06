@@ -38,7 +38,7 @@ worker count) if Redis is unavailable. Behind Caddy the client IP is read from
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/places?lat&lng&radius&q&family&category&filters&limit` | Distance-sorted search |
+| GET | `/places?lat&lng&radius&q&family&category&filters&limit&offset` | Distance-sorted search, pageable |
 | GET | `/places/candidates?lat&lng&name` | Duplicate prevention |
 | GET | `/places/{slug}` | Record, tree, `filled_rate`, reviews summary, photos |
 | GET | `/places/{slug}/reviews?page&size` | Paginated published reviews |
@@ -49,6 +49,27 @@ worker count) if Redis is unavailable. Behind Caddy the client IP is read from
 
 The `category` value of `/places` is a slug from `GET /api/v1/categories`; an unknown slug is
 `422`, like an unknown `family`.
+
+Results are ordered by **distance ascending**, and ties are broken by **place id ascending**.
+The order is therefore *total* and stable: two identical requests return the same places in the
+same order, and a place never appears on two pages of the same paged search.
+
+### Pagination
+
+`/places` returns at most **100** hits per request (`limit`, default 50). `offset` is the number
+of hits to skip (default 0, maximum 10 000); `offset=100&limit=100` is the second page.
+
+Whether another page exists is carried by the **`X-Has-More`** response header, `true` or
+`false`, so a client never has to fetch an empty tail page. The response body stays a **bare
+JSON array** — existing consumers keep working unchanged and can ignore both parameters.
+
+```bash
+curl -D - "https://api.letmegetin.org/api/v1/places?lat=48.85&lng=2.35&limit=100&offset=100"
+# X-Has-More: false
+```
+
+Pages are consistent only while the underlying data does not change: a contribution or an
+import between two requests can shift a place across a page boundary.
 
 ### Combining filters
 

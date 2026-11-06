@@ -1413,7 +1413,7 @@
     },
     "/api/v1/places": {
       "get": {
-        "description": "Search places by proximity, text and accessibility filters, nearest first.",
+        "description": "Search places by proximity, text and accessibility filters, nearest first.\n\nOrdering is total (distance, then place id), so ``offset`` pages never overlap.",
         "operationId": "search_api_v1_places_get",
         "parameters": [
           {
@@ -1537,6 +1537,20 @@
               "title": "Limit",
               "type": "integer"
             }
+          },
+          {
+            "description": "Number of hits to skip",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Number of hits to skip",
+              "maximum": 10000,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
           }
         ],
         "responses": {
@@ -1552,7 +1566,19 @@
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "X-Has-More": {
+                "description": "Whether another page exists after this one (offset paging)",
+                "schema": {
+                  "enum": [
+                    "true",
+                    "false"
+                  ],
+                  "type": "string"
+                }
+              }
+            }
           },
           "422": {
             "content": {
