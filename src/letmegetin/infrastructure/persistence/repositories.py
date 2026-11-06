@@ -20,6 +20,7 @@ from letmegetin.domain.accounts.entities import (
 )
 from letmegetin.domain.places.dedup import normalize_name
 from letmegetin.domain.places.entities import (
+    DedupRow,
     HandicapFamily,
     PendingDuplicate,
     Place,
@@ -583,6 +584,27 @@ class SqlAlchemyPlaceRepository:
             statement = statement.limit(limit)
         rows = (await self._session.execute(statement)).all()
         return [(str(value), int(count)) for value, count in rows]
+
+    async def list_for_dedup(self, limit: int | None = None) -> list[DedupRow]:
+        query = (
+            select(PlaceModel.id, PlaceModel.name_normalized, PlaceModel.lat, PlaceModel.lng)
+            .where(PlaceModel.canonical_id.is_(None), PlaceModel.lat.is_not(None))
+            .order_by(PlaceModel.id)
+        )
+        if limit is not None:
+            query = query.limit(limit)
+        rows = (await self._session.execute(query)).all()
+        return [
+            DedupRow(id=row.id, name_normalized=row.name_normalized, lat=row.lat, lng=row.lng)
+            for row in rows
+        ]
+
+    async def set_duplicate_candidate(self, place_id: int, candidate_id: int, score: float) -> None:
+        await self._session.execute(
+            update(PlaceModel)
+            .where(PlaceModel.id == place_id)
+            .values(duplicate_of_id=candidate_id, confidence=round(score, 3))
+        )
 
     async def list_pending_reviews(self, limit: int = 50) -> list[PendingDuplicate]:
         candidate = aliased(PlaceModel)

@@ -96,7 +96,17 @@ class PlaceHit:
     score: float = 0.0
 
 
-@dataclass
+@dataclass(frozen=True, slots=True)
+class DedupRow:
+    """The minimum a duplicate pass needs: identity, comparable name, position."""
+
+    id: int
+    name_normalized: str
+    lat: float
+    lng: float
+
+
+@dataclass(frozen=True, slots=True)
 class PendingDuplicate:
     """One row of the operator review queue: a place and the candidate it may duplicate."""
 
