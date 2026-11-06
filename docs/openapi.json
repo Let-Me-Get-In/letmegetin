@@ -1468,7 +1468,7 @@
             }
           },
           {
-            "description": "Comma-separated criterion ids",
+            "description": "Comma-separated criterion ids; a place must match every id (AND)",
             "in": "query",
             "name": "filters",
             "required": false,
@@ -1481,7 +1481,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Comma-separated criterion ids",
+              "description": "Comma-separated criterion ids; a place must match every id (AND)",
               "title": "Filters"
             }
           },

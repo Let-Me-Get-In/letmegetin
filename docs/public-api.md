@@ -50,6 +50,24 @@ worker count) if Redis is unavailable. Behind Caddy the client IP is read from
 The `category` value of `/places` is a slug from `GET /api/v1/categories`; an unknown slug is
 `422`, like an unknown `family`.
 
+### Combining filters
+
+`filters` takes a comma-separated list of criterion ids (from
+`GET /api/v1/categories/{slug}/criteria`) and combines them with **AND**: a place is returned
+only if it holds a value for **every** id, so each added id narrows the result set.
+
+```bash
+curl "https://api.letmegetin.org/api/v1/places?lat=48.85&lng=2.35&filters=12,34"
+```
+
+returns the places that hold both criterion 12 and criterion 34. Repeated ids are ignored.
+
+**Behaviour change.** Before this release the ids were combined with **OR** (any matching value
+qualified), so adding an id widened the results. A consumer that relied on the union must now
+issue one request per criterion (or union the `slug` lists client-side); a consumer that wanted
+the intersection now gets it from a single request. Parameter names and response shapes are
+unchanged.
+
 Writes: `POST /auth/register|login|refresh|logout|verify-email|resend-verification`,
 `PUT /places/{slug}/accessibility/{criterion}` and `POST /places/{slug}/reviews` (bearer token,
 verified email); `PATCH /reviews/{id}` (admin).

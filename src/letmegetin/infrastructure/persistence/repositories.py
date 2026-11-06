@@ -725,14 +725,18 @@ class SqlAlchemyPlaceRepository:
             )
         if criterion_ids:
             # Existence is the MVP semantic: a value exists for the criterion requested.
-            statement = statement.where(
-                select(PlaceAccessibilityModel.place_id)
-                .where(
-                    PlaceAccessibilityModel.place_id == PlaceModel.id,
-                    PlaceAccessibilityModel.criterion_id.in_(list(criterion_ids)),
+            # Criteria narrow (AND), so each distinct id gets its own indexed EXISTS probe.
+            # shortcut: filters match on value existence, not on the value meaning, revisit
+            # when boolean/option filters need a truth test
+            for criterion_id in dict.fromkeys(criterion_ids):
+                statement = statement.where(
+                    select(PlaceAccessibilityModel.place_id)
+                    .where(
+                        PlaceAccessibilityModel.place_id == PlaceModel.id,
+                        PlaceAccessibilityModel.criterion_id == criterion_id,
+                    )
+                    .exists()
                 )
-                .exists()
-            )
         if family is not None:
             statement = statement.where(
                 select(PlaceAccessibilityModel.place_id)
