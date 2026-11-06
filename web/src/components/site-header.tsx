@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 
+import { LocaleSwitch } from "@/components/locale-switch";
+import { t, type Locale } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 
-export function SiteHeader() {
+export function SiteHeader({ locale }: { locale: Locale }) {
   const { user, loading, logout } = useSession();
 
   return (
@@ -13,9 +15,12 @@ export function SiteHeader() {
         <Link href="/" className="font-display text-xl font-semibold tracking-tight">
           Let<span className="text-accent">Me</span>GetIn
         </Link>
-        <nav aria-label="Navigation principale" className="flex items-center gap-4 text-sm">
+        <nav
+          aria-label={locale === "en" ? "Main navigation" : "Navigation principale"}
+          className="flex items-center gap-4 text-sm"
+        >
           <Link className="hover:text-accent" href="/">
-            Rechercher
+            {t(locale, "search")}
           </Link>
           {loading ? (
             <span className="text-muted" aria-hidden="true">
@@ -24,14 +29,14 @@ export function SiteHeader() {
           ) : user ? (
             <>
               <Link className="hover:text-accent" href="/account">
-                Mon compte
+                {t(locale, "account")}
               </Link>
               <button
                 type="button"
                 className="rounded-md border border-line px-3 py-1.5 hover:border-accent hover:text-accent"
                 onClick={() => void logout()}
               >
-                Déconnexion
+                {t(locale, "logout")}
               </button>
             </>
           ) : (
@@ -39,9 +44,10 @@ export function SiteHeader() {
               className="rounded-md bg-accent px-3 py-1.5 text-paper hover:opacity-90"
               href="/login"
             >
-              Connexion
+              {t(locale, "login")}
             </Link>
           )}
+          <LocaleSwitch locale={locale} label={t(locale, "language")} />
         </nav>
       </div>
     </header>
