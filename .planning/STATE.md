@@ -64,3 +64,25 @@ Resume file: .planning/phases/10.1-search-pagination/10.1-01-SUMMARY.md
   now lives in that same database, so five search tests fail locally while CI
   stays green (empty database). Fix: point the suite at a dedicated
   `letmegetin_test` database. Decided, not done.
+
+### Browser UAT — dev, 2026-11-06 (`d9665bd`, 634 962 places)
+
+Verified with Playwright on `https://app.dev.letmegetin.org`:
+
+- Search returns real places sorted by distance (5 km around Paris → 100 first hits).
+- **"Voir plus" works end to end**: 100 → 200 entries, heading "200 lieux", and the live
+  region announces "100 lieux supplémentaires." — the a11y fix is effective.
+- Map renders with markers; `role="application"` carries an aria-label pointing at the list.
+
+Three defects found, none fixed yet:
+
+1. **Category labels are Italian.** The select shows "Studio contabile", "Aeroporto",
+   "Negozio di antiquariato": `categories.json` carries only `it` labels, so a French UI
+   lists Italian categories. A 158-row translation, not a code change.
+2. **MapLibre worker fails to load** — two console errors per search page; the map still
+   renders (markers are drawn) but vector tiles are degraded.
+3. **`/api/v1/auth/refresh` logs a 403 on every anonymous page load.** The session bootstrap
+   calls refresh unconditionally; the browser records a failed request for every visitor.
+
+Also confirmed absent: **no language switcher** — `layout.tsx` hardcodes `lang="fr"`, which
+makes A11Y-02 (fr/en persisted) unimplemented, not merely untested.
