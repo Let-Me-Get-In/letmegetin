@@ -67,10 +67,13 @@ class PlaceRepository(Protocol):
         family: HandicapFamily | None = None,
         category_id: int | None = None,
         limit: int = 50,
+        offset: int = 0,
     ) -> list[PlaceHit]:
         """Distance-sorted places around a point, optionally filtered.
 
         ``category_id`` narrows to one resolved category; the caller resolves the slug.
+        The order is total (distance, then place id), so callers may page the result with
+        ``limit``/``offset`` without a row repeating or disappearing between pages.
         """
         ...
 

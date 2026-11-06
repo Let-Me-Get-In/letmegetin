@@ -6,7 +6,7 @@ import hashlib
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from letmegetin.api.deps import (
     AdminUser,
@@ -37,6 +37,7 @@ from letmegetin.application.places.list_reviews import list_reviews
 from letmegetin.application.places.reviews import create_review, set_review_status
 from letmegetin.application.places.search import (
     DEFAULT_LIMIT,
+    DEFAULT_OFFSET,
     DEFAULT_RADIUS_METRES,
     search_places,
 )
@@ -61,10 +62,25 @@ def _criterion_ids(raw: str | None) -> list[int]:
         ) from None
 
 
-@router.get("/places", response_model=list[PlaceSummaryOut])
+@router.get(
+    "/places",
+    response_model=list[PlaceSummaryOut],
+    # FastAPI does not publish headers set through `response.headers`, so declare it.
+    responses={
+        200: {
+            "headers": {
+                "X-Has-More": {
+                    "schema": {"type": "string", "enum": ["true", "false"]},
+                    "description": "Whether another page exists after this one (offset paging)",
+                }
+            }
+        }
+    },
+)
 async def search(
     places: PlaceRepo,
     categories: CategoryRepo,
+    response: Response,
     lat: Annotated[float, Query(ge=-90, le=90)],
     lng: Annotated[float, Query(ge=-180, le=180)],
     radius: Annotated[float, Query(gt=0, le=50_000)] = DEFAULT_RADIUS_METRES,
@@ -78,15 +94,21 @@ async def search(
         str | None, Query(max_length=120, description="Category slug, see /api/v1/categories")
     ] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = DEFAULT_LIMIT,
+    offset: Annotated[
+        int, Query(ge=0, le=10_000, description="Number of hits to skip")
+    ] = DEFAULT_OFFSET,
 ) -> list[PlaceSummaryOut]:
-    """Search places by proximity, text and accessibility filters, nearest first."""
+    """Search places by proximity, text and accessibility filters, nearest first.
+
+    Ordering is total (distance, then place id), so ``offset`` pages never overlap.
+    """
     category_id = None
     if category:
         found = await categories.get_by_slug(category)
         if found is None:
             raise HTTPException(status_code=422, detail="unknown category")
         category_id = found.id
-    hits = await search_places(
+    page = await search_places(
         places,
         lat,
         lng,
@@ -96,8 +118,10 @@ async def search(
         family=family,
         category_id=category_id,
         limit=limit,
+        offset=offset,
     )
-    return [PlaceSummaryOut.from_place(hit.place, hit.distance) for hit in hits]
+    response.headers["X-Has-More"] = "true" if page.has_more else "false"
+    return [PlaceSummaryOut.from_place(hit.place, hit.distance) for hit in page.hits]
 
 
 @router.get("/places/candidates", response_model=list[CandidateOut])

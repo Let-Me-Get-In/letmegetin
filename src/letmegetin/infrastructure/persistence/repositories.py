@@ -701,6 +701,7 @@ class SqlAlchemyPlaceRepository:
         family: HandicapFamily | None = None,
         category_id: int | None = None,
         limit: int = 50,
+        offset: int = 0,
     ) -> list[PlaceHit]:
         point = _point(lat, lng)
         distance = func.ST_Distance(PlaceModel.location, point).label("distance")
@@ -712,8 +713,13 @@ class SqlAlchemyPlaceRepository:
                 PlaceModel.location.is_not(None),
                 func.ST_DWithin(PlaceModel.location, point, radius),
             )
-            .order_by(distance)
+            # Ties on distance are routine (several activities at one address), and Postgres
+            # may return tied rows in any order — which would duplicate or drop rows across
+            # LIMIT/OFFSET pages. The primary key makes the sort total: distance first, the
+            # documented contract, then id only as the deterministic tie-breaker.
+            .order_by(distance, PlaceModel.id)
             .limit(limit)
+            .offset(offset)
         )
         if q:
             pattern = f"%{q.lower()}%"

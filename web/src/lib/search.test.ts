@@ -51,4 +51,9 @@ describe("search state", () => {
 
     expect(path).not.toContain("category=");
   });
+
+  it("sends offset only past the first page", () => {
+    expect(placesPath(DEFAULT_SEARCH)).not.toContain("offset=");
+    expect(placesPath(DEFAULT_SEARCH, 100)).toContain("offset=100");
+  });
 });
