@@ -6,7 +6,8 @@ Usage: ``uv run python -m letmegetin.admin --help`` or ``uv run letmegetin-admin
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Awaitable, Callable
+import sys
+from collections.abc import Awaitable, Callable, Iterable, Iterator
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -32,6 +33,7 @@ from letmegetin.application.places.duplicates import (
     reject_duplicate,
 )
 from letmegetin.application.places.import_acceslibre import (
+    AcceslibreRow,
     import_acceslibre,
     iter_acceslibre_rows,
 )
@@ -536,6 +538,14 @@ def import_acceslibre_command(
     alias_path = aliases or settings.data_dir / "acceslibre_categories.csv"
     alias_map = load_category_aliases(alias_path)
 
+    def _progress(rows: Iterable[AcceslibreRow], every: int = 5000) -> Iterator[AcceslibreRow]:
+        # One transaction means the table shows nothing until the end: this is the
+        # only way to tell "slow" apart from "stuck" while a national load runs.
+        for index, row in enumerate(rows, 1):
+            if index % every == 0:
+                print(f"  ... {index} lignes lues", file=sys.stderr, flush=True)
+            yield row
+
     async def callback(session: AsyncSession) -> str:
         # The iterator is the contract: a national export is never materialised as a list.
         report = await import_acceslibre(
@@ -544,7 +554,7 @@ def import_acceslibre_command(
             SqlAlchemyCategoryMappingRepository(session),
             SqlAlchemyPlaceAliasRepository(session),
             SqlAlchemyMergeLogRepository(session),
-            iter_acceslibre_rows(file),
+            _progress(iter_acceslibre_rows(file)),
             aliases=alias_map,
             dry_run=dry_run,
             dedup=not no_dedup,
