@@ -143,8 +143,8 @@ Plans:
 
 **Plans:** 2 plans
 Plans:
-- [ ] 10-01-PLAN.md — Filter places by category, end to end (tracer: HTTP → PostGIS → contract → web)
-- [ ] 10-02-PLAN.md — Combine multiple criterion filters with AND and publish the corrected semantics
+- [x] 10-01-PLAN.md — Filter places by category, end to end (tracer: HTTP → PostGIS → contract → web)
+- [x] 10-02-PLAN.md — Combine multiple criterion filters with AND and publish the corrected semantics
 
 ### Phase 10.1: Search pagination (INSERTED)
 **Goal:** As a person browsing a long result list, I want to go past the first 100 hits without losing my place, so that I can compare every place that fits.
@@ -176,5 +176,5 @@ Plans:
 |-------|--------|--------|-----------|
 | 8. Production deployment & operations | LET-23 | Complete | 2026-11-01 |
 | 9. Data quality & curation | LET-33 | Pending | — |
-| 10. Search quality | LET-34 | Pending | — |
+| 10. Search quality | LET-34 | Complete | 2026-11-06 |
 | 11. E2E & accessibility | LET-35 | Pending | — |

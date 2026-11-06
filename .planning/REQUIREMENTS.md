@@ -133,8 +133,8 @@
 
 ### Search
 
-- [ ] **SEARCH-01**: Multiple criterion filters combine with AND
-- [ ] **SEARCH-02**: Search filters by category
+- [x] **SEARCH-01**: Multiple criterion filters combine with AND
+- [x] **SEARCH-02**: Search filters by category
 - [ ] **SEARCH-03**: Results are ranked and paginated beyond 100 hits
 
 ### E2E & Accessibility
@@ -153,8 +153,8 @@
 | DATA-02 | Phase 9 | Complete |
 | DATA-03 | Phase 9 | Complete |
 | DATA-04 | Phase 9 | Complete |
-| SEARCH-01 | Phase 10 | Pending |
-| SEARCH-02 | Phase 10 | Pending |
+| SEARCH-01 | Phase 10 | Complete |
+| SEARCH-02 | Phase 10 | Complete |
 | SEARCH-03 | Phase 10 | Pending |
 | E2E-01 | Phase 11 | Pending |
 | A11Y-01 | Phase 11 | Pending |
