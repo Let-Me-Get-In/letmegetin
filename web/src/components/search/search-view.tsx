@@ -29,6 +29,7 @@ export function SearchView() {
   const [loading, setLoading] = useState(true);
   const [more, setMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [announcement, setAnnouncement] = useState("");
   const [error, setError] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [criteria, setCriteria] = useState<CriterionNode[]>([]);
@@ -100,6 +101,13 @@ export function SearchView() {
       .then((next) => {
         setPlaces((current) => [...current, ...next]);
         setMore(next.length === PAGE_SIZE);
+        // Without this the list grows silently: a screen reader stays on the
+        // button and never learns that 100 more places arrived.
+        setAnnouncement(
+          next.length === 0
+            ? "Aucun autre lieu."
+            : `${next.length} lieu${next.length > 1 ? "x" : ""} supplémentaire${next.length > 1 ? "s" : ""}.`,
+        );
       })
       .catch((cause) => {
         setError(cause instanceof ApiError ? cause.message : "Recherche indisponible.");
@@ -179,6 +187,9 @@ export function SearchView() {
           onSelect={setSelected}
         />
         <div>
+          <p role="status" aria-live="polite" className="sr-only">
+            {announcement}
+          </p>
           <h2 className="mb-3 text-lg font-semibold">
             {loading ? "Résultats" : `${places.length} lieu${places.length > 1 ? "x" : ""}`}
           </h2>

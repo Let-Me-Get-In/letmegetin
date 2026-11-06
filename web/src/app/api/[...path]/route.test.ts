@@ -88,6 +88,20 @@ describe("auth BFF", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("relays the pagination header so a client can page", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response("[]", { status: 200, headers: { "x-has-more": "true" } }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await handler(
+      request("/api/v1/places?offset=0", { method: "GET" }),
+      context(["v1", "places"]),
+    );
+
+    expect(response.headers.get("x-has-more")).toBe("true");
+  });
+
   it("forwards the client IP to the API", async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
