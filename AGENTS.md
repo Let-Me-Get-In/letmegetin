@@ -154,6 +154,9 @@ uv run alembic upgrade head
 uv run python -m letmegetin.seed
 uv run python -m letmegetin.admin --help    # operator CLI: the only write path (no auth yet)
 uv run uvicorn letmegetin.main:app --reload
+# Tests run against their own database (see tests/conftest.py). Create it once:
+#   docker exec letmegetin-db psql -U letmegetin -d postgres -c "create database letmegetin_test"
+#   LETMEGETIN_DATABASE_URL=postgresql+asyncpg://letmegetin:letmegetin@localhost:55433/letmegetin_test #     uv run alembic upgrade head && uv run python -m letmegetin.seed
 uv run pytest
 uv run ruff check . && uv run ruff format --check .
 uv run mypy
