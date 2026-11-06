@@ -70,6 +70,9 @@ export async function handler(request: NextRequest, context: Context) {
   }
 
   const text = await upstream.text();
+  // Pagination signal: the API answers with a bare array, so the header is the
+  // only way a client learns there is another page.
+  const hasMore = upstream.headers.get("x-has-more");
 
   if ((isLogin || isRefresh) && upstream.ok) {
     const data = JSON.parse(text) as {
@@ -107,6 +110,7 @@ export async function handler(request: NextRequest, context: Context) {
     status: upstream.status,
     headers: {
       "content-type": upstream.headers.get("content-type") ?? "application/json",
+      ...(hasMore ? { "x-has-more": hasMore } : {}),
     },
   });
 }
