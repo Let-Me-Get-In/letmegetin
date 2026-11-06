@@ -71,6 +71,17 @@ async def _seed() -> None:
             )
         await session.execute(
             text(
+                "INSERT INTO place (source, source_id, name, name_normalized, slug, lat, lng) "
+                "VALUES ('test-search', 'test-search-delta', 'Test Cabinet Delta', "
+                ":normalized, :slug, 45.10, 5.0)"
+            ),
+            {
+                "normalized": normalize_name("Test Cabinet Delta"),
+                "slug": make_slug("Test Cabinet Delta", "test-search", "test-search-delta"),
+            },
+        )
+        await session.execute(
+            text(
                 "INSERT INTO categories (slug, name, label) VALUES "
                 "('test-search-pharmacie', 'Pharmacie', '{}')"
             )
@@ -102,6 +113,17 @@ async def _seed() -> None:
                 "INSERT INTO place_accessibility (place_id, criterion_id, value) "
                 "SELECT p.id, c.id, CAST(:value AS jsonb) FROM place p, criteria c "
                 "WHERE p.source_id = 'test-search-gamma' AND c.slug = 'test-search-loop'"
+            ),
+            {"value": json.dumps({"value": True})},
+        )
+        # Delta holds both criteria, so the AND test has one place that passes it and
+        # beta/gamma each fail exactly one of them.
+        await session.execute(
+            text(
+                "INSERT INTO place_accessibility (place_id, criterion_id, value) "
+                "SELECT p.id, c.id, CAST(:value AS jsonb) FROM place p, criteria c "
+                "WHERE p.source_id = 'test-search-delta' "
+                "AND c.slug IN ('test-search-step', 'test-search-loop')"
             ),
             {"value": json.dumps({"value": True})},
         )
@@ -170,6 +192,33 @@ def test_search_filters_on_criterion_ids(client: TestClient) -> None:
     body = _search(client, radius=5000, filters=str(criterion_id))
 
     assert [item["name"] for item in body] == ["Test Librairie Beta"]
+
+
+def test_search_and_combines_two_criteria(client: TestClient) -> None:
+    step = asyncio.run(_criterion_id("test-search-step"))
+    loop = asyncio.run(_criterion_id("test-search-loop"))
+
+    body = _search(client, radius=20000, filters=f"{step},{loop}")
+
+    # Beta holds step only, gamma loop only, delta both: OR would return all three.
+    assert [item["name"] for item in body] == ["Test Cabinet Delta"]
+
+
+def test_search_single_criterion_is_unchanged(client: TestClient) -> None:
+    step = asyncio.run(_criterion_id("test-search-step"))
+
+    body = _search(client, radius=5000, filters=str(step))
+
+    assert [item["name"] for item in body] == ["Test Librairie Beta"]
+
+
+def test_search_dedupes_repeated_criterion_ids(client: TestClient) -> None:
+    step = asyncio.run(_criterion_id("test-search-step"))
+
+    once = _search(client, radius=5000, filters=str(step))
+    twice = _search(client, radius=5000, filters=f"{step},{step}")
+
+    assert twice == once
 
 
 def test_search_filters_on_handicap_family(client: TestClient) -> None:

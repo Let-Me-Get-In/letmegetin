@@ -69,7 +69,10 @@ async def search(
     lng: Annotated[float, Query(ge=-180, le=180)],
     radius: Annotated[float, Query(gt=0, le=50_000)] = DEFAULT_RADIUS_METRES,
     q: Annotated[str | None, Query(max_length=120)] = None,
-    filters: Annotated[str | None, Query(description="Comma-separated criterion ids")] = None,
+    filters: Annotated[
+        str | None,
+        Query(description="Comma-separated criterion ids; a place must match every id (AND)"),
+    ] = None,
     family: HandicapFamily | None = None,
     category: Annotated[
         str | None, Query(max_length=120, description="Category slug, see /api/v1/categories")

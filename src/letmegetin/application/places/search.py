@@ -23,7 +23,11 @@ async def search_places(
     category_id: int | None = None,
     limit: int = DEFAULT_LIMIT,
 ) -> list[PlaceHit]:
-    """Distance-sorted places within ``radius`` metres, optionally filtered."""
+    """Distance-sorted places within ``radius`` metres, narrowed by the optional filters.
+
+    Multiple criterion ids combine with AND: a place must hold a value for every
+    requested criterion.
+    """
     return await places.list_near(
         lat,
         lng,
