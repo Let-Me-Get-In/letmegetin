@@ -52,3 +52,11 @@ Last activity: 2026-11-05 — Phase 9 plan 09-03 complete (DATA-03 duplicate rev
 Last session: 2026-11-05
 Stopped at: Completed 09-03-PLAN.md (duplicate review queue + coverage export, DATA-03/DATA-04); phase 9 plans done, human checks pending
 Resume file: .planning/phases/09-data-quality/09-03-SUMMARY.md
+
+## Known debt
+
+- **Test isolation**: the integration tests assume the dev `place` table holds
+  only their fixtures. The national AccesLibre load (634 931 places, 6 Nov 2026)
+  now lives in that same database, so five search tests fail locally while CI
+  stays green (empty database). Fix: point the suite at a dedicated
+  `letmegetin_test` database. Decided, not done.
