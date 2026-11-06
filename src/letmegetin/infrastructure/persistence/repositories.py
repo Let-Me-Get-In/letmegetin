@@ -699,6 +699,7 @@ class SqlAlchemyPlaceRepository:
         q: str | None = None,
         criterion_ids: Sequence[int] = (),
         family: HandicapFamily | None = None,
+        category_id: int | None = None,
         limit: int = 50,
     ) -> list[PlaceHit]:
         point = _point(lat, lng)
@@ -742,6 +743,8 @@ class SqlAlchemyPlaceRepository:
                 )
                 .exists()
             )
+        if category_id is not None:
+            statement = statement.where(PlaceModel.category_id == category_id)
         rows = (await self._session.execute(statement)).all()
         hits = []
         for model, category_slug, metres in rows:

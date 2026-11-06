@@ -65,9 +65,13 @@ class PlaceRepository(Protocol):
         q: str | None = None,
         criterion_ids: Sequence[int] = (),
         family: HandicapFamily | None = None,
+        category_id: int | None = None,
         limit: int = 50,
     ) -> list[PlaceHit]:
-        """Distance-sorted places around a point, optionally filtered."""
+        """Distance-sorted places around a point, optionally filtered.
+
+        ``category_id`` narrows to one resolved category; the caller resolves the slug.
+        """
         ...
 
     async def get_candidates(

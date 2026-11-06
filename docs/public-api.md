@@ -38,7 +38,7 @@ worker count) if Redis is unavailable. Behind Caddy the client IP is read from
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/places?lat&lng&radius&q&family&filters&limit` | Distance-sorted search |
+| GET | `/places?lat&lng&radius&q&family&category&filters&limit` | Distance-sorted search |
 | GET | `/places/candidates?lat&lng&name` | Duplicate prevention |
 | GET | `/places/{slug}` | Record, tree, `filled_rate`, reviews summary, photos |
 | GET | `/places/{slug}/reviews?page&size` | Paginated published reviews |
@@ -46,6 +46,9 @@ worker count) if Redis is unavailable. Behind Caddy the client IP is read from
 | GET | `/categories/{slug}/criteria` | Criteria tree (ids included) |
 | GET | `/categories/{slug}/grid` | Precomputed grid, `ETag`, `304` |
 | GET | `/filters`, `/other-information` | Search filters, official labels |
+
+The `category` value of `/places` is a slug from `GET /api/v1/categories`; an unknown slug is
+`422`, like an unknown `family`.
 
 Writes: `POST /auth/register|login|refresh|logout|verify-email|resend-verification`,
 `PUT /places/{slug}/accessibility/{criterion}` and `POST /places/{slug}/reviews` (bearer token,

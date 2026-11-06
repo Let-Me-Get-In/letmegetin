@@ -4,6 +4,7 @@ export type SearchState = {
   radius: number;
   q: string;
   family: string;
+  category: string;
   criteria: number[];
 };
 
@@ -13,6 +14,7 @@ export const DEFAULT_SEARCH: SearchState = {
   radius: 2000,
   q: "",
   family: "",
+  category: "",
   criteria: [],
 };
 
@@ -31,6 +33,7 @@ export function parseSearch(params: URLSearchParams): SearchState {
     radius: numberOr(params.get("radius"), DEFAULT_SEARCH.radius),
     q: params.get("q")?.trim() ?? "",
     family: FAMILIES.has(params.get("family") ?? "") ? (params.get("family") as string) : "",
+    category: params.get("category")?.trim() ?? "",
     criteria: (params.get("filters") ?? "")
       .split(",")
       .map((value) => Number(value))
@@ -45,6 +48,7 @@ export function toSearchParams(state: SearchState): URLSearchParams {
   params.set("radius", String(state.radius));
   if (state.q) params.set("q", state.q);
   if (state.family) params.set("family", state.family);
+  if (state.category) params.set("category", state.category);
   if (state.criteria.length > 0) params.set("filters", state.criteria.join(","));
   return params;
 }
@@ -58,6 +62,7 @@ export function placesPath(state: SearchState): string {
   });
   if (state.q) params.set("q", state.q);
   if (state.family) params.set("family", state.family);
+  if (state.category) params.set("category", state.category);
   if (state.criteria.length > 0) params.set("filters", state.criteria.join(","));
   return `/api/v1/places?${params.toString()}`;
 }

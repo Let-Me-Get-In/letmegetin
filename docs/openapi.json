@@ -1508,6 +1508,25 @@
             }
           },
           {
+            "description": "Category slug, see /api/v1/categories",
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 120,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Category slug, see /api/v1/categories",
+              "title": "Category"
+            }
+          },
+          {
             "in": "query",
             "name": "limit",
             "required": false,
