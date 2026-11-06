@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from letmegetin.api.deps import (
     AdminUser,
     CategoryGridRepo,
+    CategoryRepo,
     CriterionRepo,
     DbSession,
     PlaceRepo,
@@ -63,15 +64,25 @@ def _criterion_ids(raw: str | None) -> list[int]:
 @router.get("/places", response_model=list[PlaceSummaryOut])
 async def search(
     places: PlaceRepo,
+    categories: CategoryRepo,
     lat: Annotated[float, Query(ge=-90, le=90)],
     lng: Annotated[float, Query(ge=-180, le=180)],
     radius: Annotated[float, Query(gt=0, le=50_000)] = DEFAULT_RADIUS_METRES,
     q: Annotated[str | None, Query(max_length=120)] = None,
     filters: Annotated[str | None, Query(description="Comma-separated criterion ids")] = None,
     family: HandicapFamily | None = None,
+    category: Annotated[
+        str | None, Query(max_length=120, description="Category slug, see /api/v1/categories")
+    ] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = DEFAULT_LIMIT,
 ) -> list[PlaceSummaryOut]:
     """Search places by proximity, text and accessibility filters, nearest first."""
+    category_id = None
+    if category:
+        found = await categories.get_by_slug(category)
+        if found is None:
+            raise HTTPException(status_code=422, detail="unknown category")
+        category_id = found.id
     hits = await search_places(
         places,
         lat,
@@ -80,6 +91,7 @@ async def search(
         q=q,
         criterion_ids=_criterion_ids(filters),
         family=family,
+        category_id=category_id,
         limit=limit,
     )
     return [PlaceSummaryOut.from_place(hit.place, hit.distance) for hit in hits]

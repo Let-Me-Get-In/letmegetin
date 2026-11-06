@@ -47,6 +47,7 @@ async def _database_ready() -> bool:
 async def _cleanup() -> None:
     async with _TestSessionLocal() as session:
         await session.execute(text("DELETE FROM place WHERE source = 'test-search'"))
+        await session.execute(text("DELETE FROM categories WHERE slug LIKE 'test-search-%'"))
         await session.execute(text("DELETE FROM criteria WHERE slug LIKE 'test-search-%'"))
         await session.commit()
 
@@ -68,6 +69,18 @@ async def _seed() -> None:
                     "lng": lng,
                 },
             )
+        await session.execute(
+            text(
+                "INSERT INTO categories (slug, name, label) VALUES "
+                "('test-search-pharmacie', 'Pharmacie', '{}')"
+            )
+        )
+        await session.execute(
+            text(
+                "UPDATE place SET category_id = (SELECT id FROM categories "
+                "WHERE slug = 'test-search-pharmacie') WHERE source_id = 'test-search-gamma'"
+            )
+        )
         await session.execute(
             text(
                 "INSERT INTO criteria (slug, parent_id, type, position, need_children, label, "
@@ -163,6 +176,21 @@ def test_search_filters_on_handicap_family(client: TestClient) -> None:
     body = _search(client, radius=5000, family="auditif")
 
     assert [item["name"] for item in body] == ["Test Pharmacie Gamma"]
+
+
+def test_search_filters_on_category(client: TestClient) -> None:
+    body = _search(client, radius=5000, category="test-search-pharmacie")
+
+    assert [item["name"] for item in body] == ["Test Pharmacie Gamma"]
+
+
+def test_search_rejects_unknown_category(client: TestClient) -> None:
+    response = client.get(
+        "/api/v1/places",
+        params={"lat": _ORIGIN[0], "lng": _ORIGIN[1], "category": "does-not-exist"},
+    )
+
+    assert response.status_code == 422
 
 
 def test_search_rejects_unknown_family(client: TestClient) -> None:

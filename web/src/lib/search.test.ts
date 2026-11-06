@@ -14,6 +14,7 @@ describe("search state", () => {
       radius: 5000,
       q: "bibliothèque",
       family: "visuel",
+      category: "pharmacy",
       criteria: [12, 18],
     };
 
@@ -34,12 +35,20 @@ describe("search state", () => {
       ...DEFAULT_SEARCH,
       q: "hôtel",
       family: "moteur",
+      category: "pharmacy",
       criteria: [7],
     });
 
     expect(path).toContain("/api/v1/places?");
     expect(path).toContain("q=h%C3%B4tel");
     expect(path).toContain("family=moteur");
+    expect(path).toContain("category=pharmacy");
     expect(path).toContain("filters=7");
+  });
+
+  it("omits an empty category from the places URL", () => {
+    const path = placesPath({ ...DEFAULT_SEARCH, criteria: [7] });
+
+    expect(path).not.toContain("category=");
   });
 });

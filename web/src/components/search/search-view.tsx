@@ -27,7 +27,6 @@ export function SearchView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
-  const [category, setCategory] = useState("");
   const [criteria, setCriteria] = useState<CriterionNode[]>([]);
   const [locating, setLocating] = useState(false);
   const [geoMessage, setGeoMessage] = useState("");
@@ -66,12 +65,12 @@ export function SearchView() {
   }, []);
 
   useEffect(() => {
-    if (!category) {
+    if (!draft.category) {
       setCriteria([]);
       return;
     }
     let active = true;
-    api<CriterionNode[]>(`/api/v1/categories/${category}/criteria`)
+    api<CriterionNode[]>(`/api/v1/categories/${draft.category}/criteria`)
       .then((data) => {
         if (active) setCriteria(data);
       })
@@ -81,7 +80,7 @@ export function SearchView() {
     return () => {
       active = false;
     };
-  }, [category]);
+  }, [draft.category]);
 
   const submit = useCallback(() => {
     router.push(`/?${toSearchParams(draft).toString()}`);
@@ -130,10 +129,9 @@ export function SearchView() {
         onChange={setDraft}
         onSubmit={submit}
         categories={categories}
-        category={category}
+        category={draft.category}
         onCategory={(slug) => {
-          setCategory(slug);
-          setDraft((current) => ({ ...current, criteria: [] }));
+          setDraft((current) => ({ ...current, category: slug, criteria: [] }));
         }}
         criteria={criteria}
         onCriteria={(ids) => setDraft((current) => ({ ...current, criteria: ids }))}

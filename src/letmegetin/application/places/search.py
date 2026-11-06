@@ -20,6 +20,7 @@ async def search_places(
     q: str | None = None,
     criterion_ids: Sequence[int] = (),
     family: HandicapFamily | None = None,
+    category_id: int | None = None,
     limit: int = DEFAULT_LIMIT,
 ) -> list[PlaceHit]:
     """Distance-sorted places within ``radius`` metres, optionally filtered."""
@@ -30,5 +31,6 @@ async def search_places(
         q=q,
         criterion_ids=criterion_ids,
         family=family,
+        category_id=category_id,
         limit=limit,
     )
