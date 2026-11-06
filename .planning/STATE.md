@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** V1.1 — Phase 10.1 (Search pagination)
+**Current focus:** V1.1 — Phase 11 (E2E & accessibility)
 
 ## Current Position
 
-Ticket: LET-34 (Phase 10 — search quality)
-Phase: 2 / 4 of V1.1 (Phase 10 complete; 10.1 inserted)
-Plan: 10-02 (complete); next: 10.1-01 (pagination, SEARCH-03)
-Status: Phase 10 complete — filters narrow with AND (SEARCH-01) and by category (SEARCH-02)
-Last activity: 2026-11-06 — Phase 10 plan 10-02 complete (AND criterion filters: one indexed EXISTS per id, regression tests, contract migration note).
+Ticket: LET-35 (Phase 11 — next)
+Phase: 3 / 4 of V1.1 (Phase 10 and 10.1 complete)
+Plan: 10.1-01 (complete); next: 11 planning
+Status: Phase 10.1 complete — search is totally ordered and pageable past 100 hits (SEARCH-03)
+Last activity: 2026-11-06 — Phase 10.1 plan 01 complete (distance + place.id total order, `offset` capped at 10 000, `X-Has-More`, web "Voir plus").
 
 ## Performance Metrics
 
 - Requirements: 26 v1
 - Phases: 7
 - Linear tickets: LET-5..LET-12
-- Plans completed: 12
-- Phases complete: V1 7/7; V1.1 2/4
+- Plans completed: 13
+- Phases complete: V1 7/7; V1.1 3/4
 
 ## Accumulated Context
 
@@ -40,6 +40,8 @@ Last activity: 2026-11-06 — Phase 10 plan 10-02 complete (AND criterion filter
 - Coverage (`admin coverage --format csv`) is read-only and counts each real place once (canonical rows excluded), naming unresolved categories instead of dropping them (DATA-04).
 - The `category` filter resolves the slug to an id in the API layer (`CategoryRepo.get_by_slug`, 422 on miss) and filters the indexed `place.category_id`; the domain port never sees a slug (SEARCH-02).
 - Multiple criterion filters combine with AND: one `EXISTS` per distinct id (`dict.fromkeys`) instead of one `criterion_id IN (...)`, so each added id narrows. The change is published in `docs/public-api.md` and the OpenAPI description, because third parties that relied on the old union are affected (SEARCH-01).
+- Search ordering is total: `ORDER BY distance, place.id`. Distance ties are routine (one address, several activities) and Postgres may return tied rows in any order, so `LIMIT/OFFSET` without the primary-key tie-breaker duplicates or drops rows at a page boundary (SEARCH-03).
+- Pagination is `offset` (cap 10 000) plus an `X-Has-More` header, not an envelope or a cursor: the response body stays a bare JSON array for live consumers. `has_more` comes from a `limit + 1` fetch trimmed in the application layer — no COUNT over 634k rows (SEARCH-03).
 
 ### Pending Todos
 
@@ -52,8 +54,8 @@ Last activity: 2026-11-06 — Phase 10 plan 10-02 complete (AND criterion filter
 ## Session Continuity
 
 Last session: 2026-11-06
-Stopped at: Completed 10-02-PLAN.md (SEARCH-01 AND criterion filters); phase 10 complete, next is 10.1-01 (SEARCH-03 pagination)
-Resume file: .planning/phases/10-search-quality/10-02-SUMMARY.md
+Stopped at: Completed 10.1-01-PLAN.md (SEARCH-03 pagination); phase 10.1 complete, next is Phase 11 (E2E & accessibility)
+Resume file: .planning/phases/10.1-search-pagination/10.1-01-SUMMARY.md
 
 ## Known debt
 

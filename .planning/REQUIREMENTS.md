@@ -135,7 +135,7 @@
 
 - [x] **SEARCH-01**: Multiple criterion filters combine with AND
 - [x] **SEARCH-02**: Search filters by category
-- [ ] **SEARCH-03**: Results are ranked and paginated beyond 100 hits
+- [x] **SEARCH-03**: Results are ranked and paginated beyond 100 hits
 
 ### E2E & Accessibility
 
@@ -155,7 +155,7 @@
 | DATA-04 | Phase 9 | Complete |
 | SEARCH-01 | Phase 10 | Complete |
 | SEARCH-02 | Phase 10 | Complete |
-| SEARCH-03 | Phase 10 | Pending |
+| SEARCH-03 | Phase 10.1 | Complete |
 | E2E-01 | Phase 11 | Pending |
 | A11Y-01 | Phase 11 | Pending |
 | A11Y-02 | Phase 11 | Pending |

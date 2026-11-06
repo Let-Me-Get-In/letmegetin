@@ -157,7 +157,7 @@ Plans:
 
 **Plans:** 1 plan
 Plans:
-- [ ] 10.1-01-PLAN.md — Total ordering, `offset` paging with `X-Has-More`, and a stable page contract
+- [x] 10.1-01-PLAN.md — Total ordering, `offset` paging with `X-Has-More`, and a stable page contract
 
 ### Phase 11: E2E & accessibility
 **Goal:** Prove the user journey in a browser and with assistive technology.
