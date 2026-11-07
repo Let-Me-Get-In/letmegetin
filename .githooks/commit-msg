@@ -1,47 +1,33 @@
 #!/usr/bin/env bash
-# Enforce LetMeGetIn commit conventions.
+# Enforce the commit convention: '<type>(<scope>): <summary> (LET-<n>)'.
 #
-# - A Linear ticket is required: read from the branch (LET-12-…), or the message
-#   must already start with one (LET-12 …).
-# - The subject must be Conventional Commits *after* the ticket:
-#     LET-12 feat(api): add health endpoint
-# - Phase-number scopes are rejected (e.g. feat(01-02)).
-#
-# Merge/revert/fixup commits are exempt.
-
+# - The ticket is read from the branch (LET-12-…) and appended to the
+#   subject when the message does not carry it.
+# - Phase-number scopes are rejected: the scope names the feature.
+# - Merge, revert, fixup and squash commits are exempt.
 set -euo pipefail
 
 msg_file="$1"
-branch="$(git rev-parse --abbrev-ref HEAD)"
-ticket="$(printf '%s' "$branch" | grep -oE '^[A-Z]+-[0-9]+' || true)"
+branch="$(git symbolic-ref --short -q HEAD || true)"
 first_line="$(head -n1 "$msg_file")"
 
 case "$first_line" in
   Merge*|Revert*|fixup!*|squash!*) exit 0 ;;
 esac
 
-# Reject phase-number scopes: feat(01-02), fix(02), etc.
 if printf '%s' "$first_line" | grep -qE '\([0-9]{2}(-[0-9]{2})?\)'; then
-  echo "commit-msg: scope must name the feature, not the phase (e.g. feat(api), not feat(01-02))." >&2
+  echo "commit-msg: scope names the feature, not the phase (feat(api), not feat(01-02))." >&2
   exit 1
 fi
 
-# Ensure the ticket prefix.
-if [ -n "$ticket" ]; then
-  if ! printf '%s' "$first_line" | grep -qE "^${ticket}[ :]"; then
-    { printf '%s ' "$ticket"; cat "$msg_file"; } > "$msg_file.tmp"
-    mv "$msg_file.tmp" "$msg_file"
-    first_line="$(head -n1 "$msg_file")"
-  fi
-else
-  if ! printf '%s' "$first_line" | grep -qE '^[A-Z]+-[0-9]+[ :]'; then
-    echo "commit-msg: branch is not tied to a Linear ticket; name it 'LET-12-slug' or start the message with 'LET-12 '." >&2
-    exit 1
-  fi
+ticket="$(printf '%s' "$branch" | grep -oE 'LET-[0-9]+' | head -n1 || true)"
+
+if ! printf '%s' "$first_line" | grep -qE '^(feat|fix|docs|test|chore|refactor|perf|style|ci)(\([a-z0-9-]+\))?!?: .+'; then
+  echo "commit-msg: expected '<type>(<scope>): <summary> (LET-<n>)' — the ticket goes last." >&2
+  exit 1
 fi
 
-# Enforce Conventional Commits after the ticket.
-if ! printf '%s' "$first_line" | grep -qE '^[A-Z]+-[0-9]+ (feat|fix|docs|test|chore|refactor|perf|style)(\([a-z0-9-]+\))?: .+'; then
-  echo "commit-msg: expected 'LET-12 feat(scope): description' (Conventional Commits after the ticket)." >&2
-  exit 1
+if [ -n "$ticket" ] && ! printf '%s' "$first_line" | grep -qE "\($ticket\)$"; then
+  { printf '%s (%s)\n' "$first_line" "$ticket"; tail -n +2 "$msg_file"; } >"$msg_file.tmp"
+  mv "$msg_file.tmp" "$msg_file"
 fi
