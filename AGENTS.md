@@ -61,6 +61,15 @@ Rules:
   linear issue update LET-7 --state "In Progress"
   linear issue list --team LET
   ```
+- **No ticket without a project.** A ticket always belongs to one; pick, in order:
+  1. the project of the milestone it serves (`V1.1 — Production & Quality`);
+  2. a standing project for its kind — `Conventions & Tooling` for how we work, a
+     tech-debt project for debt, the business tracks for funding/monetization;
+  3. if none fits, **create the project first**, then the ticket.
+
+  `linear issue create` without `--project` is a mistake, not a shortcut: an
+  orphan ticket disappears from every project view, which is where the work is
+  actually read.
 - The roadmap ↔ tickets mapping lives in `.planning/LINEAR.md`.
 
 ## Branching model — GitHub Flow
