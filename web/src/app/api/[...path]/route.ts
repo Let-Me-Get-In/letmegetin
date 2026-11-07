@@ -16,13 +16,22 @@ function cookieOptions(maxAge: number) {
   };
 }
 
+/** Compare hosts only: behind Caddy the request arrives over http, so the scheme differs. */
+function isCrossOrigin(request: NextRequest, origin: string): boolean {
+  try {
+    return new URL(origin).host !== request.nextUrl.host;
+  } catch {
+    return true;
+  }
+}
+
 export async function handler(request: NextRequest, context: Context) {
   const origin = request.headers.get("origin");
   if (
     request.method !== "GET" &&
     request.method !== "HEAD" &&
     origin !== null &&
-    origin !== request.nextUrl.origin
+    isCrossOrigin(request, origin)
   ) {
     return NextResponse.json({ detail: "Cross-origin request rejected" }, { status: 403 });
   }

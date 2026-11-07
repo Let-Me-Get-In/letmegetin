@@ -71,6 +71,29 @@ describe("auth BFF", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("accepts a same-host state change over a different scheme", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ access_token: "a", refresh_token: "r" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    // A browser behind TLS sends `https://…`; Next sees the request over http.
+    const response = await handler(
+      request("/api/v1/auth/login", {
+        method: "POST",
+        body: "{}",
+        headers: { "content-type": "application/json", origin: "https://localhost:3000" },
+      }),
+      context(["v1", "auth", "login"]),
+    );
+
+    expect(response.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalled();
+  });
+
   it("rejects a cross-origin state change", async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
