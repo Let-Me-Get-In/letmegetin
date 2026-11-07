@@ -51,6 +51,9 @@ commit and PR title are in `docs/rules/delivery.md`.
 
 ## Code conventions
 
+General Python, lint/format/types, dependency and CI/CD rules live in
+`docs/rules/engineering.md`; this section only records what is specific here.
+
 ### Python
 - `from __future__ import annotations` in every module.
 - Type hints on all signatures; `str | None`, `list[...]`, `dict[...]`.
@@ -66,6 +69,8 @@ commit and PR title are in `docs/rules/delivery.md`.
 - Accessibility is a first-class requirement (this product is about it).
 
 ## Testing
+
+Kinds, naming and the CI gates are in `docs/rules/testing.md`. Local specifics:
 
 - **Framework**: pytest (+ `pytest-asyncio`), `httpx`/`TestClient`.
 - Layout: `tests/unit` and `tests/integration` (real PostGIS); the e2e suite

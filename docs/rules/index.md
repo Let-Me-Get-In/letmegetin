@@ -7,6 +7,8 @@ touches; read [`delivery.md`](delivery.md) before your first branch or commit.
 |---|---|
 | [`delivery.md`](delivery.md) | Tickets, branches, commits, pull requests, stacks |
 | [`repos.md`](repos.md) | Several repos: one ticket across repos, contract changes, never copy |
+| [`engineering.md`](engineering.md) | Code, Python, lint/format/types, dependencies, CI/CD |
+| [`deploy.md`](deploy.md) | Config + e2e products: OpenTofu, Ansible, exposure, smoke, rollback |
 | [`gsd.md`](gsd.md) | GSD delivery: `.planning/`, phases, workstreams, commit granularity |
 | [`testing.md`](testing.md) | Unit / integration / functional, CI gates, naming |
 | [`language.md`](language.md) | English everywhere, the product-copy exception |
