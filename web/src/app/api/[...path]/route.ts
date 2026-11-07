@@ -16,10 +16,15 @@ function cookieOptions(maxAge: number) {
   };
 }
 
+/** The host the browser addressed: Caddy forwards it untouched, while `nextUrl` is built from the container's bind address. */
+function requestHost(request: NextRequest): string {
+  return request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? request.nextUrl.host;
+}
+
 /** Compare hosts only: behind Caddy the request arrives over http, so the scheme differs. */
 function isCrossOrigin(request: NextRequest, origin: string): boolean {
   try {
-    return new URL(origin).host !== request.nextUrl.host;
+    return new URL(origin).host !== requestHost(request);
   } catch {
     return true;
   }

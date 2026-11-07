@@ -80,12 +80,17 @@ describe("auth BFF", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    // A browser behind TLS sends `https://…`; Next sees the request over http.
+    // Behind Caddy: the browser sends `https://app.example.org`, Next is bound to
+    // 0.0.0.0 over http, and only the Host header still names the real hostname.
     const response = await handler(
       request("/api/v1/auth/login", {
         method: "POST",
         body: "{}",
-        headers: { "content-type": "application/json", origin: "https://localhost:3000" },
+        headers: {
+          "content-type": "application/json",
+          origin: "https://app.example.org",
+          host: "app.example.org",
+        },
       }),
       context(["v1", "auth", "login"]),
     );
