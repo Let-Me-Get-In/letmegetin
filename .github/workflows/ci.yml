@@ -99,6 +99,8 @@ jobs:
       - run: uv sync --frozen
       - name: Apply migrations (postgres service)
         run: uv run alembic upgrade head
+      - name: Seed the referential
+        run: uv run python -m letmegetin.seed
       - run: >
           uv run pytest -q
           --cov=letmegetin --cov-branch
