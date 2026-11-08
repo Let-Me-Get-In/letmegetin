@@ -6,6 +6,7 @@ Usage: ``uv run python -m letmegetin.admin --help`` or ``uv run letmegetin-admin
 from __future__ import annotations
 
 import asyncio
+import os
 import sys
 from collections.abc import Awaitable, Callable, Iterable, Iterator
 from pathlib import Path
@@ -19,6 +20,7 @@ from letmegetin.application.accounts.api_keys import (
     list_api_keys,
     revoke_api_key,
 )
+from letmegetin.application.accounts.users import ensure_user
 from letmegetin.application.places.category_resolution import load_category_aliases
 from letmegetin.application.places.coverage import (
     COVERAGE_HEADER,
@@ -79,6 +81,7 @@ from letmegetin.infrastructure.persistence.repositories import (
     SqlAlchemyPlaceAliasRepository,
     SqlAlchemyPlaceRepository,
     SqlAlchemyRetentionRepository,
+    SqlAlchemyUserRepository,
     SqlAlchemyVocabularyRepository,
 )
 
@@ -91,6 +94,7 @@ families_app = typer.Typer(help="Fill and audit handicap families (moteur, audit
 import_app = typer.Typer(help="Import open place datasets (Acceslibre first).")
 duplicates_app = typer.Typer(help="Review, merge or reject duplicate candidates from the import.")
 api_key_app = typer.Typer(help="Create, list and revoke partner API keys.")
+user_app = typer.Typer(help="Create and verify operator/E2E accounts.")
 app.add_typer(category_app, name="category")
 app.add_typer(criterion_app, name="criterion")
 app.add_typer(vocabulary_app, name="vocabulary")
@@ -99,6 +103,7 @@ app.add_typer(families_app, name="families")
 app.add_typer(import_app, name="import")
 app.add_typer(duplicates_app, name="duplicates")
 app.add_typer(api_key_app, name="api-key")
+app.add_typer(user_app, name="user")
 
 AdminCallback = Callable[[AsyncSession], Awaitable[str]]
 LabelPairs = Annotated[
@@ -751,6 +756,63 @@ def api_key_revoke(key_id: Annotated[int, typer.Argument(help="Key id")]) -> Non
         return f"revoked api key #{key.id} ({key.label})"
 
     _run_api_key_admin(callback)
+
+
+def _run_user_admin(
+    callback: Callable[[SqlAlchemyUserRepository], Awaitable[str]],
+) -> None:
+    """Commit-only runner: accounts do not touch the referential, so no grid rebuild."""
+
+    async def run() -> str:
+        async with SessionLocal() as session:
+            message = await callback(SqlAlchemyUserRepository(session))
+            await session.commit()
+            return message
+
+    try:
+        message = asyncio.run(run())
+    except DomainError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(message)
+
+
+def _read_user_password() -> str:
+    """Read the password from the environment or a masked prompt, never from argv."""
+
+    password = os.environ.get("LETMEGETIN_USER_PASSWORD") or ""
+    if not password:
+        password = typer.prompt("Password", hide_input=True, default="")
+    if not password:
+        typer.echo(
+            "error: set LETMEGETIN_USER_PASSWORD or type the password at the prompt", err=True
+        )
+        raise typer.Exit(code=1)
+    return password
+
+
+@user_app.command("ensure")
+def user_ensure(
+    email: Annotated[str, typer.Argument(help="Account email")],
+    display_name: Annotated[
+        str | None, typer.Option("--display-name", help="Public display name")
+    ] = None,
+    verified: Annotated[
+        bool, typer.Option("--verified/--no-verified", help="Mark the email verified now")
+    ] = False,
+) -> None:
+    """Create an account if missing, or check the existing one, and report the outcome.
+
+    The password is never an option: it comes from LETMEGETIN_USER_PASSWORD or a
+    hidden prompt, so it stays out of `ps` output and shell history.
+    """
+    password = _read_user_password()
+
+    async def callback(users: SqlAlchemyUserRepository) -> str:
+        outcome = await ensure_user(users, email, password, display_name, verified)
+        return f"user {email}: {outcome}"
+
+    _run_user_admin(callback)
 
 
 @app.command("retention")
