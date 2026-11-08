@@ -49,6 +49,14 @@ question you can answer defensibly.
 - **Never add AI attribution** — no co-author trailer naming a model or tool, no
   session or chat link in a commit, a PR or a ticket.
 
+## Tool-side files
+
+`.claude/` and friends (generated graph skills, sub-agent instructions) are
+**versioned with the repo**: they are part of how the project is worked on, not
+a local setting, and losing them loses the tooling on every fresh clone. They
+never own a rule: `AGENTS.md` stays authoritative and links the tool file, and
+the tool file points back — a rule copied into both drifts.
+
 ## Keeping AGENTS.md useful
 
 `AGENTS.md` is read on every task: keep it short and stable. Product rules,

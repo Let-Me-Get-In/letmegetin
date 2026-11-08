@@ -8,6 +8,9 @@ sections below say when they apply.
 
 ## One ticket, several PRs
 
+With no tracker, read "ticket" as "the tracked outcome" — the change you can
+name in one sentence. The PR links are the same.
+
 - **One ticket can span repos, and one repo can take several PRs for the same
   ticket.** Split when each PR is reviewable on its own — a stack layer each —
   and keep one ticket: every PR links the others in its body.
