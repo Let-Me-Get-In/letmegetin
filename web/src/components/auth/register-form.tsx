@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ApiError } from "@/lib/api";
+import { t, type Locale } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 
-export function RegisterForm() {
+export function RegisterForm({ locale }: { locale: Locale }) {
   const { register } = useSession();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ export function RegisterForm() {
       await register(email, password, displayName);
       router.push("/account");
     } catch (cause) {
-      setError(cause instanceof ApiError ? cause.message : "Inscription impossible.");
+      setError(cause instanceof ApiError ? cause.message : t(locale, "registerFailed"));
     } finally {
       setPending(false);
     }
@@ -34,7 +35,7 @@ export function RegisterForm() {
     <form onSubmit={submit} className="space-y-4">
       <div>
         <label htmlFor="email" className="block text-sm font-medium">
-          Email
+          {t(locale, "email")}
         </label>
         <input
           id="email"
@@ -48,7 +49,7 @@ export function RegisterForm() {
       </div>
       <div>
         <label htmlFor="display_name" className="block text-sm font-medium">
-          Nom affiché (optionnel)
+          {t(locale, "displayName")}
         </label>
         <input
           id="display_name"
@@ -57,12 +58,12 @@ export function RegisterForm() {
           value={displayName}
           onChange={(event) => setDisplayName(event.target.value)}
           className="mt-1 w-full rounded-md border border-line bg-paper px-3 py-2"
-          placeholder="Apparaît sur vos avis"
+          placeholder={t(locale, "displayNamePlaceholder")}
         />
       </div>
       <div>
         <label htmlFor="password" className="block text-sm font-medium">
-          Mot de passe
+          {t(locale, "password")}
         </label>
         <input
           id="password"
@@ -74,14 +75,14 @@ export function RegisterForm() {
           onChange={(event) => setPassword(event.target.value)}
           className="mt-1 w-full rounded-md border border-line bg-paper px-3 py-2"
         />
-        <p className="mt-1 text-xs text-muted">8 caractères minimum.</p>
+        <p className="mt-1 text-xs text-muted">{t(locale, "passwordMinLength")}</p>
       </div>
       <button
         type="submit"
         disabled={pending}
         className="w-full rounded-md bg-accent px-4 py-2 font-medium text-paper disabled:opacity-50"
       >
-        {pending ? "Création…" : "Créer mon compte"}
+        {pending ? t(locale, "registering") : t(locale, "createMyAccount")}
       </button>
       {error ? (
         <p role="alert" className="text-sm text-warn">
@@ -89,9 +90,9 @@ export function RegisterForm() {
         </p>
       ) : null}
       <p className="text-sm text-muted">
-        Déjà inscrit ?{" "}
+        {t(locale, "alreadyRegistered")}{" "}
         <Link className="underline" href="/login">
-          Se connecter
+          {t(locale, "signInSubmit")}
         </Link>
       </p>
     </form>
