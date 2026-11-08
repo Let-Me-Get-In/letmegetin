@@ -9,7 +9,7 @@ import { ReviewForm } from "@/components/record/review-form";
 import { ReviewList } from "@/components/record/review-list";
 import { ApiError } from "@/lib/api";
 import { serverApi } from "@/lib/server-api";
-import { FAMILY_LABELS } from "@/lib/search";
+import { familyLabel } from "@/lib/search";
 import type { PlaceDetail, ReviewPage } from "@/lib/types";
 
 type Props = {
@@ -89,7 +89,7 @@ export default async function PlacePage({ params, searchParams }: Props) {
         <dl className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {Object.entries(place.accessibility_by_family).map(([family, score]) => (
             <div key={family} className="rounded-card border border-line px-3 py-2">
-              <dt className="text-sm text-muted">{FAMILY_LABELS[family] ?? family}</dt>
+              <dt className="text-sm text-muted">{familyLabel(family)}</dt>
               <dd className="text-lg font-medium">{Math.round(score * 100)}%</dd>
             </div>
           ))}

@@ -4,6 +4,10 @@
 // the API and are translated in the data (`label` holds fr/en/…); when a locale
 // is missing for a datum the helper falls back, so a partly translated referential
 // never renders empty.
+//
+// This file is the single owner of every message the interface renders. The `fr`
+// column is the reference: it must stay byte-identical to the literals the interface
+// used before they moved here, because the e2e suite text-selects the French values.
 export type Locale = "fr" | "en";
 
 export const LOCALE_COOKIE = "locale";
@@ -32,12 +36,128 @@ const MESSAGES = {
     around: "Autour de moi",
     reset: "Réinitialiser les filtres",
     results: "Résultats",
-    places: "lieux",
+    places: { one: "lieu", many: "lieux" },
     more: "Voir plus",
     loading: "Chargement…",
     searching: "Recherche en cours…",
     footer: "LetMeGetIn — référentiel ouvert d'accessibilité.",
     sources: "Données : Acceslibre (Etalab 2.0), OpenStreetMap (ODbL), Overture.",
+
+    // Search
+    searchLoading: "Chargement de la recherche…",
+    searchUnavailable: "Recherche indisponible.",
+    noMorePlaces: "Aucun autre lieu.",
+    placesAdded: { one: "lieu supplémentaire", many: "lieux supplémentaires" },
+    geoUnavailable: "La géolocalisation n'est pas disponible dans ce navigateur.",
+    geoDenied: "Localisation refusée : la recherche reste centrée sur Paris.",
+    searchPlaceholder: "Nom, catégorie, adresse…",
+    criteriaLegend: "Critères d'accessibilité",
+    noPlaces:
+      "Aucun lieu trouvé. Essayez d'élargir le rayon ou de retirer un filtre.",
+    unknownCategory: "Catégorie inconnue",
+    possibleDuplicate: "Doublon possible",
+    mapAriaLabel:
+      "Carte des lieux accessibles. La liste à côté donne les mêmes résultats au clavier.",
+    notProvided: "Non renseigné",
+    yes: "Oui",
+    no: "Non",
+    familyMoteur: "Motricité",
+    familyAuditif: "Audition",
+    familyVisuel: "Vision",
+    familyMental: "Cognitif / psychique",
+    locating: "Localisation…",
+
+    // Record
+    criterion: "Critère",
+    valueLabel: "Valeur",
+    choose: "— Choisir —",
+    exampleNumber: "Ex. 90",
+    saving: "Enregistrement…",
+    save: "Enregistrer",
+    publishing: "Publication…",
+    publishReview: "Publier l'avis",
+    signInPrompt: "Connectez-vous",
+    toCompleteThisRecord: "pour compléter cette fiche.",
+    verifyToComplete: "Vérifiez votre adresse email pour compléter cette fiche.",
+    toLeaveAReview: "pour laisser un avis.",
+    verifyToReview: "Vérifiez votre adresse email pour laisser un avis.",
+    noCriteria: "Aucun critère disponible pour ce lieu.",
+    noTree: "Aucune grille d'accessibilité n'est encore disponible pour ce lieu.",
+    chooseValue: "Choisissez ou saisissez une valeur.",
+    contributionSaved: "Contribution enregistrée. Merci !",
+    contributionFailed: "Contribution impossible.",
+    reviewPublished: "Avis publié. Merci !",
+    reviewFailed: "Publication impossible.",
+    rating: "Note",
+    yourReview: "Votre avis",
+    reviewPlaceholder: "Accueil, cheminement, sanitaires…",
+    verifyDisabled:
+      "Votre adresse email n'est pas encore vérifiée : la contribution et les avis sont désactivés.",
+    resendLink: "Renvoyer le lien",
+    sending: "Envoi…",
+    verificationSent: "Lien de vérification renvoyé.",
+    sendFailed: "Envoi impossible.",
+    noReviews: "Aucun avis pour ce lieu. Sois la première personne à en écrire un.",
+    anonymous: "Anonyme",
+    reviewPagination: "Pagination des avis",
+    previous: "Précédent",
+    nextPage: "Suivant",
+    backToSearch: "← Retour à la recherche",
+    backToSearchPlain: "Retour à la recherche",
+    notYetRated: "Pas encore noté",
+    unspecifiedSource: "Source non précisée",
+    completion: "Complétude de la fiche",
+    criteriaHaveValue: "{percent}% des critères ont une valeur.",
+    reviewCountLine: "{count} avis · {percent}% de la fiche renseignée",
+    photos: "Photos",
+    accessibilitySection: "Accessibilité",
+    completeThisRecord: "Compléter cette fiche",
+    contributionHelp:
+      "Une valeur manque ou a changé ? Ajoutez-la ; chaque contribution est journalisée.",
+    reviewsHeading: { one: "Avis ({count})", many: "Avis ({count})" },
+    leaveAReview: "Laisser un avis",
+    reviewHelp: "Note de 1 à 5 et commentaire libre.",
+    pageOf: "Page {page} / {count}",
+    placeNotFoundTitle: "Lieu introuvable",
+    placeNotFoundBody:
+      "Cette fiche n'existe pas ou a été déplacée. Essayez une nouvelle recherche.",
+
+    // Auth and account
+    loginFolderIntro: "Connectez-vous pour contribuer à une fiche ou laisser un avis.",
+    email: "Email",
+    password: "Mot de passe",
+    signInSubmit: "Se connecter",
+    signingIn: "Connexion…",
+    loginFailed: "Connexion impossible.",
+    noAccountYet: "Pas encore de compte ?",
+    createAccountLink: "Créer un compte",
+    registerFolderIntro:
+      "Un compte permet de compléter les fiches et de publier des avis. La contribution reste ouverte à tous et la donnée reste libre.",
+    displayName: "Nom affiché (optionnel)",
+    displayNamePlaceholder: "Apparaît sur vos avis",
+    passwordMinLength: "8 caractères minimum.",
+    registering: "Création…",
+    createMyAccount: "Créer mon compte",
+    alreadyRegistered: "Déjà inscrit ?",
+    registerFailed: "Inscription impossible.",
+    verifyHeading: "Vérification de l'email",
+    verifyFolderIntro: "Cette page confirme l'adresse associée à votre compte.",
+    verifying: "Vérification…",
+    verificationInProgress: "Vérification en cours…",
+    incompleteVerificationLink: "Lien de vérification incomplet.",
+    emailVerified: "Adresse email vérifiée. Merci !",
+    verificationFailed: "Vérification impossible ou lien expiré.",
+    goToAccount: "Aller à mon compte",
+    accountFolderIntro:
+      "Vos contributions et avis sont publiés sous votre nom affiché.",
+    emailLabel: "Email",
+    displayNameLabel: "Nom affiché",
+    emailVerifiedLabel: "Email vérifié",
+    roleLabel: "Rôle",
+    searchLink: "Rechercher un lieu",
+    signOut: "Se déconnecter",
+    loadingAccount: "Chargement du compte…",
+    redirectingToLogin: "Redirection vers la connexion…",
   },
   en: {
     skip: "Skip to content",
@@ -57,17 +177,155 @@ const MESSAGES = {
     around: "Near me",
     reset: "Reset filters",
     results: "Results",
-    places: "places",
+    places: { one: "place", many: "places" },
     more: "Load more",
     loading: "Loading…",
     searching: "Searching…",
     footer: "LetMeGetIn — an open accessibility referential.",
     sources: "Data: Acceslibre (Etalab 2.0), OpenStreetMap (ODbL), Overture.",
+
+    // Search
+    searchLoading: "Loading the search…",
+    searchUnavailable: "Search is unavailable.",
+    noMorePlaces: "No more places.",
+    placesAdded: { one: "place added", many: "places added" },
+    geoUnavailable: "Geolocation is not available in this browser.",
+    geoDenied: "Location denied: search stays centred on Paris.",
+    searchPlaceholder: "Name, category, address…",
+    criteriaLegend: "Accessibility criteria",
+    noPlaces: "No places found. Try widening the radius or removing a filter.",
+    unknownCategory: "Unknown category",
+    possibleDuplicate: "Possible duplicate",
+    mapAriaLabel:
+      "Map of accessible places. The list beside it gives the same results by keyboard.",
+    notProvided: "Not provided",
+    yes: "Yes",
+    no: "No",
+    familyMoteur: "Mobility",
+    familyAuditif: "Hearing",
+    familyVisuel: "Vision",
+    familyMental: "Cognitive / psychosocial",
+    locating: "Locating…",
+
+    // Record
+    criterion: "Criterion",
+    valueLabel: "Value",
+    choose: "— Choose —",
+    exampleNumber: "E.g. 90",
+    saving: "Saving…",
+    save: "Save",
+    publishing: "Publishing…",
+    publishReview: "Publish review",
+    signInPrompt: "Sign in",
+    toCompleteThisRecord: "to complete this record.",
+    verifyToComplete: "Verify your email address to complete this record.",
+    toLeaveAReview: "to leave a review.",
+    verifyToReview: "Verify your email address to leave a review.",
+    noCriteria: "No criteria available for this place.",
+    noTree: "No accessibility grid is available for this place yet.",
+    chooseValue: "Choose or enter a value.",
+    contributionSaved: "Contribution saved. Thank you!",
+    contributionFailed: "Contribution failed.",
+    reviewPublished: "Review published. Thank you!",
+    reviewFailed: "Review couldn't be published.",
+    rating: "Rating",
+    yourReview: "Your review",
+    reviewPlaceholder: "Reception, access route, toilets…",
+    verifyDisabled:
+      "Your email address is not verified yet: contribution and reviews are disabled.",
+    resendLink: "Resend the link",
+    sending: "Sending…",
+    verificationSent: "Verification link resent.",
+    sendFailed: "Could not send.",
+    noReviews: "No reviews for this place yet. Be the first to write one.",
+    anonymous: "Anonymous",
+    reviewPagination: "Review pagination",
+    previous: "Previous",
+    nextPage: "Next",
+    backToSearch: "← Back to search",
+    backToSearchPlain: "Back to search",
+    notYetRated: "Not rated yet",
+    unspecifiedSource: "Source not specified",
+    completion: "Record completion",
+    criteriaHaveValue: "{percent}% of criteria have a value.",
+    reviewCountLine: "{count} reviews · {percent}% of the record filled",
+    photos: "Photos",
+    accessibilitySection: "Accessibility",
+    completeThisRecord: "Complete this record",
+    contributionHelp:
+      "A value is missing or changed? Add it; every contribution is logged.",
+    reviewsHeading: { one: "Review ({count})", many: "Reviews ({count})" },
+    leaveAReview: "Leave a review",
+    reviewHelp: "Rating from 1 to 5 and a free comment.",
+    pageOf: "Page {page} / {count}",
+    placeNotFoundTitle: "Place not found",
+    placeNotFoundBody:
+      "This record does not exist or has moved. Try a new search.",
+
+    // Auth and account
+    loginFolderIntro: "Sign in to contribute to a record or leave a review.",
+    email: "Email",
+    password: "Password",
+    signInSubmit: "Sign in",
+    signingIn: "Signing in…",
+    loginFailed: "Could not sign in.",
+    noAccountYet: "No account yet?",
+    createAccountLink: "Create an account",
+    registerFolderIntro:
+      "An account lets you complete records and publish reviews. Contribution stays open to everyone and the data stays free.",
+    displayName: "Display name (optional)",
+    displayNamePlaceholder: "Appears on your reviews",
+    passwordMinLength: "At least 8 characters.",
+    registering: "Creating…",
+    createMyAccount: "Create my account",
+    alreadyRegistered: "Already registered?",
+    registerFailed: "Could not register.",
+    verifyHeading: "Email verification",
+    verifyFolderIntro: "This page confirms the address linked to your account.",
+    verifying: "Verifying…",
+    verificationInProgress: "Verification in progress…",
+    incompleteVerificationLink: "Incomplete verification link.",
+    emailVerified: "Email address verified. Thank you!",
+    verificationFailed: "Verification failed or the link expired.",
+    goToAccount: "Go to my account",
+    accountFolderIntro:
+      "Your contributions and reviews are published under your display name.",
+    emailLabel: "Email",
+    displayNameLabel: "Display name",
+    emailVerifiedLabel: "Email verified",
+    roleLabel: "Role",
+    searchLink: "Search for a place",
+    signOut: "Sign out",
+    loadingAccount: "Loading account…",
+    redirectingToLogin: "Redirecting to sign in…",
   },
 } as const;
 
-export type MessageKey = keyof (typeof MESSAGES)["fr"];
+type Messages = (typeof MESSAGES)["fr"];
 
-export function t(locale: Locale, key: MessageKey): string {
+// `t` only accepts keys that are plain strings; a plural key is an object and is
+// therefore unreachable through `t`, so a plural word can only come from `tPlural`.
+export type StringMessageKey = {
+  [K in keyof Messages]: Messages[K] extends string ? K : never;
+}[keyof Messages];
+
+export type PluralKey = {
+  [K in keyof Messages]: Messages[K] extends { one: string; many: string } ? K : never;
+}[keyof Messages];
+
+export function t(locale: Locale, key: StringMessageKey): string {
   return MESSAGES[locale][key] ?? MESSAGES[DEFAULT_LOCALE][key];
+}
+
+// French counts 0 as singular ("0 lieu"), English does not ("0 places").
+export function tPlural(locale: Locale, key: PluralKey, count: number): string {
+  const message = MESSAGES[locale][key] ?? MESSAGES[DEFAULT_LOCALE][key];
+  const singular = count === 1 || (locale === "fr" && count === 0);
+  return singular ? message.one : message.many;
+}
+
+export function format(message: string, vars: Record<string, string | number>): string {
+  return message.replace(/\{(\w+)\}/g, (placeholder, name: string) =>
+    name in vars ? String(vars[name]) : placeholder,
+  );
 }

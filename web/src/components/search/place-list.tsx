@@ -1,20 +1,22 @@
 import Link from "next/link";
 
+import { t, type Locale } from "@/lib/i18n";
 import { formatDistance } from "@/lib/labels";
 import type { PlaceSummary } from "@/lib/types";
 
 type Props = {
+  locale: Locale;
   places: PlaceSummary[];
   selected: string | null;
   onSelect: (slug: string) => void;
   loading: boolean;
 };
 
-export function PlaceList({ places, selected, onSelect, loading }: Props) {
+export function PlaceList({ locale, places, selected, onSelect, loading }: Props) {
   if (loading) {
     return (
       <p role="status" className="text-sm text-muted">
-        Recherche en cours…
+        {t(locale, "searching")}
       </p>
     );
   }
@@ -22,7 +24,7 @@ export function PlaceList({ places, selected, onSelect, loading }: Props) {
   if (places.length === 0) {
     return (
       <p className="rounded-card border border-line bg-accent-soft/40 p-4 text-sm text-muted">
-        Aucun lieu trouvé. Essayez d'élargir le rayon ou de retirer un filtre.
+        {t(locale, "noPlaces")}
       </p>
     );
   }
@@ -46,13 +48,13 @@ export function PlaceList({ places, selected, onSelect, loading }: Props) {
               <span className="text-xs text-muted">{formatDistance(place.distance)}</span>
             </span>
             <span className="mt-1 block text-sm text-muted">
-              {place.category ?? "Catégorie inconnue"}
+              {place.category ?? t(locale, "unknownCategory")}
               {place.address ? ` · ${place.address}` : ""}
             </span>
             {place.operating_status !== "open" ? (
               <span className="mt-2 inline-block rounded-full bg-warn/10 px-2 py-0.5 text-xs text-warn">
                 {place.operating_status === "duplicate_review"
-                  ? "Doublon possible"
+                  ? t(locale, "possibleDuplicate")
                   : place.operating_status}
               </span>
             ) : null}

@@ -9,6 +9,7 @@ import {
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef } from "react";
 
+import { t, type Locale } from "@/lib/i18n";
 import type { PlaceSummary } from "@/lib/types";
 
 const TILE_URL =
@@ -30,13 +31,14 @@ const STYLE: StyleSpecification = {
 };
 
 type Props = {
+  locale: Locale;
   places: PlaceSummary[];
   center: { lat: number; lng: number };
   selected: string | null;
   onSelect: (slug: string) => void;
 };
 
-export function MapView({ places, center, selected, onSelect }: Props) {
+export function MapView({ locale, places, center, selected, onSelect }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapLibreMap | null>(null);
   const markers = useRef<Marker[]>([]);
@@ -91,7 +93,7 @@ export function MapView({ places, center, selected, onSelect }: Props) {
       ref={container}
       className="h-[420px] w-full rounded-card border border-line"
       role="application"
-      aria-label="Carte des lieux accessibles. La liste à côté donne les mêmes résultats au clavier."
+      aria-label={t(locale, "mapAriaLabel")}
     />
   );
 }
