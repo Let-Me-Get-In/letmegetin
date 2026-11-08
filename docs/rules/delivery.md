@@ -67,9 +67,17 @@ chore/provider-retry
   tool.** Linear and friends use whichever branch is checked out and can target
   `main` with a whole stack; that produced duplicate PRs more than once.
   The link between a PR and its ticket is the id in the title, nothing else.
-- `git config core.hooksPath .githooks` once per clone when the repo installs
-  the hook: it reads the ticket from the branch, closes the subject with it and
-  refuses a phase-number scope.
+- **Install the commit hook once per clone.** A repo that runs pre-commit declares
+  it in `.pre-commit-config.yaml` (`entry: bash .githooks/commit-msg`,
+  `stages: [commit-msg]`) and installs it with `pre-commit install --hook-type
+  pre-commit --hook-type commit-msg` from the setup target — the config is then
+  versioned and the hook survives a reinstall on every clone. Otherwise
+  `git config core.hooksPath .githooks`. Either way the hook reads the ticket
+  from the branch, closes the subject with it and refuses a phase-number scope.
+- **`core.hooksPath` replaces `.git/hooks`, where pre-commit installs.** A repo
+  that sets it *and* runs pre-commit silently stops running pre-commit. Use the
+  pre-commit route above, or ship a `.githooks/pre-commit` bridge that calls
+  `pre-commit run --hook-stage pre-commit` (as `letmegetin` does).
 
 ## Commits
 
