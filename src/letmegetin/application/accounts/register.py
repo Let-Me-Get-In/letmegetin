@@ -13,6 +13,11 @@ _EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 MIN_PASSWORD_LENGTH = 8
 
 
+def is_valid_email(email: str) -> bool:
+    """The single email rule shared by registration and the operator CLI."""
+    return bool(_EMAIL.match(email))
+
+
 async def register(
     users: UserRepository,
     email: str,
@@ -21,7 +26,7 @@ async def register(
 ) -> User:
     """Register a new account, or raise on invalid input or a duplicate email."""
     normalized = email.strip().lower()
-    if not _EMAIL.match(normalized):
+    if not is_valid_email(normalized):
         raise DomainError("invalid email address")
     if len(password) < MIN_PASSWORD_LENGTH:
         raise DomainError(f"password must be at least {MIN_PASSWORD_LENGTH} characters")
