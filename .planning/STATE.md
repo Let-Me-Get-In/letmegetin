@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-10-26)
 
 ## Current Position
 
-Ticket: LET-35 (Phase 11 — next)
-Phase: 3 / 4 of V1.1 (Phase 10 and 10.1 complete)
-Plan: 10.1-01 (complete); next: 11 planning
-Status: Phase 10.1 complete — search is totally ordered and pageable past 100 hits (SEARCH-03)
-Last activity: 2026-11-06 — Phase 10.1 plan 01 complete (distance + place.id total order, `offset` capped at 10 000, `X-Has-More`, web "Voir plus").
+Ticket: LET-35 (Phase 11 — in progress)
+Phase: 4 / 4 of V1.1 (Phase 11 of 11 is executing)
+Plan: 7 / 7 (11-01 … 11-07 complete); phase ready to close
+Status: Phase 11 complete on the machine-checkable side. The e2e repo runs 16 specs (search, filters, pagination, record, contribution, review, auth gate, axe) against dev, and the axe gate is now **strict** in the development job (`AXE_STRICT=1`, `seriousCriticalCount: 0`). A11Y-01's human VoiceOver/NVDA pass is the one remaining item and is deliberately not claimed.
+Last activity: 2026-11-09 — 11-07 fixed the single serious axe finding (`link-in-text-block` on MapLibre's attribution link) with one CSS rule in `web/src/app/globals.css`, redeployed dev from the branch, and flipped the e2e development job to strict. Also closed two rate-limiting defects found by the e2e work: LET-47 (per-class buckets, PR #35) and LET-48 (`/me` and `/refresh` were spending the 10/min login budget — every page load, so a browsing user could no longer sign in; PR #36).
 
 ## Performance Metrics
 
 - Requirements: 26 v1
 - Phases: 7
 - Linear tickets: LET-5..LET-12
-- Plans completed: 13
-- Phases complete: V1 7/7; V1.1 3/4
+- Plans completed: 18
+- Phases complete: V1 7/7; V1.1 3/4 (Phase 11: 6/7 plans)
 
 ## Accumulated Context
 
@@ -42,6 +42,27 @@ Last activity: 2026-11-06 — Phase 10.1 plan 01 complete (distance + place.id t
 - Multiple criterion filters combine with AND: one `EXISTS` per distinct id (`dict.fromkeys`) instead of one `criterion_id IN (...)`, so each added id narrows. The change is published in `docs/public-api.md` and the OpenAPI description, because third parties that relied on the old union are affected (SEARCH-01).
 - Search ordering is total: `ORDER BY distance, place.id`. Distance ties are routine (one address, several activities) and Postgres may return tied rows in any order, so `LIMIT/OFFSET` without the primary-key tie-breaker duplicates or drops rows at a page boundary (SEARCH-03).
 - Pagination is `offset` (cap 10 000) plus an `X-Has-More` header, not an envelope or a cursor: the response body stays a bare JSON array for live consumers. `has_more` comes from a `limit + 1` fetch trimmed in the application layer — no COUNT over 634k rows (SEARCH-03).
+- Interface text lives in one dictionary (`web/src/lib/i18n.ts`, `fr` column is the reference and stays byte-identical to the literals it replaced — the e2e suite text-selects them). Record and auth/account keys are declared there once, by 11-01; plans 11-05/11-06 consume keys and never declare any (A11Y-02).
+- A plural key is a `{one, many}` object in every locale; `t` is typed to string-valued keys only, so a plural word can only come from `tPlural`. French counts 0 as singular (`0 lieu`), English does not (`0 places`) — the rule lives in `tPlural`, never at a call site (A11Y-02).
+- The `locale` cookie is read once per server render (`layout.tsx` for `<html lang>`, `page.tsx` for the page tree) and passed down as a prop; client components never read the cookie, so there is one source of truth and no hydration mismatch (A11Y-02).
+- Handicap families render from the ordered `FAMILY_KEYS` list plus `familyLabel(family, locale)`, not from `Object.entries` over a label record: the filter order is declared, not dictionary-order (A11Y-02).
+- The e2e account is seeded by `admin user ensure`, not by the register endpoint: registration sends a verification email a headless suite cannot confirm. The password is never a CLI option — it comes from `LETMEGETIN_USER_PASSWORD` or a hidden prompt, because an option value lands in argv, `ps` and shell history (E2E-01).
+- An idempotent account seed verifies, never overwrites: an existing account is checked against the supplied password and a mismatch is a `DomainError` (exit 1). A silent skip would leave the e2e suite holding a credential the operator believes they just set (E2E-01).
+- Account commands use a commit-only runner (`_run_user_admin`, like `_run_api_key_admin`), not `_run_admin`: the latter bumps the referential version and rebuilds the category grids, which accounts do not touch (E2E-01).
+- The record path reads the locale the same way the search path does: the server page reads the cookie once and passes `locale` as a required prop; the route-level `not-found.tsx` is async and reads it too. `VerifyBanner` requires `locale`, and the still-client account page passes `DEFAULT_LOCALE` until 11-06 gives it a server-resolved one (A11Y-02).
+- A `<select>` whose value is persisted submits data, never display text: option criteria submit the option **slug** (booleans `oui`/`non`), because `contribute` stores the value verbatim and a label would freeze the interface language into the record (A11Y-02).
+- Strings that are not display copy stay literals and are documented for the 11-06 guard: the `#avis` anchor fragment in pagination hrefs, the `/5` rating numerals, and the `oui`/`non` protocol values (A11Y-02).
+- `check:i18n` is an AST guard, not a text grep: it flags French literals in **any** position (JSX text, JSX-expression literals, call arguments) because the real French in this codebase lives in expressions. Its exclusions are the rule, not a concession: non-display attributes (`href`, `className`, `id`, `key`, `value`, `type`, `role`, `name`, `htmlFor`, `aria-labelledby`, `data-*`), `*.test.*`, the `metadata` export, and the key argument of `t()`/`tPlural()`. `aria-label` is scanned because it is copy (A11Y-02).
+- The guard is chained into `npm run lint` (`eslint . && node scripts/check-i18n.mjs`) instead of getting its own CI step, because the `web` job already runs lint: the guard costs no workflow change and cannot drift out of CI (A11Y-02).
+- A page that needs the locale is an async server component reading the cookie, rendering a client view with `locale` as a required prop (`account/page.tsx` → `account-view.tsx`). No client component reads the cookie, so both `VerifyBanner` render sites get a real locale (A11Y-02).
+- A write spec guards one helper call (`skipWithoutCredentials`) before its first navigation: production (`E2E_READ_ONLY`) skips it, a missing credential on push-to-main/dispatch (`E2E_REQUIRE_AUTH`) **throws** instead of skipping, and a credless fork PR skips — so `auth-gate.spec.ts` turns a lost secret into a red run (E2E-01).
+- Write specs are chromium-only (the `mobile` project's `testIgnore`) and set `retries: 0`: one desktop click-path and at most one contribution and one review per run, because a retry would post twice (E2E-01).
+- A spec that needs a populated form walks the search results in order and fails with a named fixture message ("seed a place with a grid or widen the search") rather than taking the first row and blundering past an absent `#criterion` (E2E-01).
+- The authenticated e2e credentials are GitHub Actions secrets **in the e2e repo** (`E2E_USER_EMAIL`/`E2E_USER_PASSWORD`), consumed only by the development job; `LETMEGETIN_USER_PASSWORD` stays an operator shell variable. Nothing reaches the app runtime or the config repo (E2E-01).
+- The e2e axe gate is **report-only** (`AXE_STRICT` unset) because every serious/critical finding lives in the app repo, which one e2e-repo commit cannot touch: the scan writes `test-results/axe-violations.json` (`{ scanned, seriousCriticalCount, violations }`, each violation tagged with its page) as the stated input of the follow-up app-repo fix, which then flips `AXE_STRICT=1` (A11Y-01).
+- The one serious axe finding is `link-in-text-block` on the search page: the MapLibre **attribution link** (2.02:1 contrast, no underline). It is the map library's control, so the fix is a CSS override in `web/`, not a component rewrite (A11Y-01).
+- The map assertion matches `/list/i`, not `/liste/i`: the label is localized, and a case-insensitive `list` is a substring of both `liste` and `list`, so one assertion covers both locales — while `tabindex="0"` stays refused, because localizing the label did not make the map a keyboard destination (A11Y-03).
+- An axe scan waits for the last client-only thing to hydrate (the map) before running: a half-rendered page reports zero violations, and an artifact with a quiet zero would send the fix plan after nothing.
 
 ### Pending Todos
 
@@ -50,12 +71,22 @@ Last activity: 2026-11-06 — Phase 10.1 plan 01 complete (distance + place.id t
 ### Blockers/Concerns
 
 - The exact per-category grid is not recoverable; base + extension + admin.
+- **The authenticated e2e journeys are written but unproven**: `contribution.spec.ts` and
+  `review.spec.ts` need app PR #33 deployed to development and the verified account seeded on the
+  host, then mirrored as the e2e repo secrets. Until then they report skipped locally and would fail
+  on `main` under `E2E_REQUIRE_AUTH=true` (by design).
+- **The human VoiceOver/NVDA pass is outstanding**, so A11Y-01 is not complete: the protocol and the
+  blank sheet exist in the e2e repo (`docs/screen-reader-audit*.md`), the pass does not.
+- **A full e2e run can trip the app's own public rate limit** (60 rpm per IP on `/api/v1/places`): a
+  back-to-back run intermittently renders "Rate limit exceeded" and fails unrelated read-only specs.
+  Run the gate as a first run after a ~70 s cooldown; options and evidence in
+  `.planning/phases/11-e2e-accessibility/deferred-items.md`.
 
 ## Session Continuity
 
-Last session: 2026-11-06
-Stopped at: Completed 10.1-01-PLAN.md (SEARCH-03 pagination); phase 10.1 complete, next is Phase 11 (E2E & accessibility)
-Resume file: .planning/phases/10.1-search-pagination/10.1-01-SUMMARY.md
+Last session: 2026-11-08
+Stopped at: Completed 11-04-PLAN.md (report-only axe scan, screen-reader audit protocol + template, localized map contract in the e2e repo, branch `LET-35-e2e-journeys` at `580b133`); next is 11-07 — fix the one serious axe finding and flip `AXE_STRICT=1`
+Resume file: .planning/phases/11-e2e-accessibility/11-04-SUMMARY.md
 
 ## Known debt
 
@@ -84,5 +115,7 @@ Three defects found, none fixed yet:
 3. **`/api/v1/auth/refresh` logs a 403 on every anonymous page load.** The session bootstrap
    calls refresh unconditionally; the browser records a failed request for every visitor.
 
-Also confirmed absent: **no language switcher** — `layout.tsx` hardcodes `lang="fr"`, which
-makes A11Y-02 (fr/en persisted) unimplemented, not merely untested.
+Also confirmed absent at that date: **no language switcher** — `layout.tsx` hardcoded `lang="fr"`, which
+made A11Y-02 (fr/en persisted) unimplemented. Superseded on this branch by `4657b6f`
+(`LocaleSwitch` + cookie + `lang` from the cookie) and by 11-01 (the search path renders from the
+dictionary); A11Y-02 now needs the record path (11-05) and the auth/account pages (11-06) — both landed, and `check:i18n` guards the result.

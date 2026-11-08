@@ -170,6 +170,16 @@ Plans:
 3. The UI ships fr/en strings with a persisted language.
 4. The map has a usable non-visual path (list + keyboard) validated by the audit.
 
+**Plans:** 7 plans
+Plans:
+- [x] 11-01-PLAN.md — Localize the search path and the locale helpers (A11Y-02, A11Y-03)
+- [x] 11-02-PLAN.md — Add `admin user ensure --verified` so e2e can log in as a real user (E2E-01)
+- [x] 11-05-PLAN.md — Localize the record path (A11Y-02)
+- [x] 11-06-PLAN.md — Localize the auth and account pages and add the check:i18n guard (A11Y-02)
+- [x] 11-03-PLAN.md — Playwright specs for contribution, review and record against the deployed app (E2E-01)
+- [x] 11-04-PLAN.md — Report-only axe scan, the screen-reader audit protocol and the localized map assertion (A11Y-01, A11Y-03)
+- [x] 11-07-PLAN.md — Fix the serious/critical axe violations and flip the e2e CI axe gate to strict (A11Y-01)
+
 ## V1.1 Progress
 
 | Phase | Ticket | Status | Completed |
@@ -177,4 +187,4 @@ Plans:
 | 8. Production deployment & operations | LET-23 | Complete | 2026-11-01 |
 | 9. Data quality & curation | LET-33 | Pending | — |
 | 10. Search quality | LET-34 | Complete | 2026-11-06 |
-| 11. E2E & accessibility | LET-35 | Pending | — |
+| 11. E2E & accessibility | LET-35 | Complete (screen-reader pass outstanding) | 2026-11-09 |
