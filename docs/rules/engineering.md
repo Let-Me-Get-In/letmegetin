@@ -65,8 +65,13 @@ gitleaks detect --source . --config .gitleaks.toml
   is passed on the command line.
 - **Documentation is never linted or formatted by a code tool.** Ruff 0.17+
   formats Markdown by default — `include = ["*.py"]`,
-  `extend-exclude = ["*.md"]`, `force-exclude = true`. The same for prettier,
-  which needs an ignore file rather than a scope in the command.
+  `extend-exclude = ["*.md"]`, `force-exclude = true`. Measured on this toolkit's
+  own corpus (302 Markdown files): `ruff check` ignores `.md` outright, while
+  `ruff format` rewrites 15 of them — re-wrapping snippets inside *archived*
+  planning documents, which are a record, not source. It also silently corrects
+  a deliberately unformatted "don't do this" example, so the doc stops telling
+  the truth. The same for prettier, which needs an ignore file rather than a
+  scope in the command.
 - **A new directory joins the ignore lists in the same PR that creates it.**
   Installed `docs/rules/` is generated: a formatter rewriting it produces a diff
   nobody can review, and the next install overwrites it anyway.
