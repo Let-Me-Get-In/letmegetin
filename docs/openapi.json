@@ -958,11 +958,6 @@
             "description": "Validation Error"
           }
         },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ],
         "summary": "Logout",
         "tags": [
           "auth"
@@ -1013,11 +1008,6 @@
             "description": "Validation Error"
           }
         },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ],
         "summary": "Me",
         "tags": [
           "auth"
@@ -1060,11 +1050,6 @@
             "description": "Validation Error"
           }
         },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ],
         "summary": "Refresh",
         "tags": [
           "auth"
