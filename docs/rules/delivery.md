@@ -1,14 +1,23 @@
 # Delivery — ticket, branch, commit, PR
 
-Project settings: ticket prefix **`LET`**, integration branch
-**`main`**. The tracker is Linear; the roadmap ↔ ticket map is
-`.planning/LINEAR.md`.
+Project settings: tracker **`linear`**, ticket prefix **`LET`**, integration
+branch **`main`**.
 
-## Tickets
+When the tracker is **`none`**, every ticket rule below drops: branch on the slug
+alone (`fix/provider-retry`), commit without an id, and let the PR body say what it
+delivers. The rest — branches, commits, pull requests, stacks — is unchanged.
 
-- **One ticket = one shippable outcome.** If the work spans slices, split the
-  ticket *before* you start. A merged PR closes the ticket only because the PR
-  finishes it.
+## Tracking
+
+- **When work is tracked, one ticket = one shippable outcome.** If the work spans
+  slices, split the ticket *before* you start. A merged PR closes the ticket only
+  because the PR finishes it.
+- **If a merge closes a ticket with work left**, reopen it and file the remainder
+  the same day. That is the most common drift.
+- **Everything written in the tracker is in English.**
+
+### With Linear
+
 - **Every ticket belongs to a project.** A projectless ticket falls out of every
   view. When no milestone project fits, use the standing catch-all
   `Tech debt and conventions` — never leave it projectless, never open a project
@@ -29,40 +38,44 @@ Project settings: ticket prefix **`LET`**, integration branch
   ticket: `[Backend / API] …`, `[Frontend] …`, `[Delivery] …`. One area per
   ticket — the widest honest one, never a list joined by `+`. The area prefix
   never appears in a branch, a commit or a PR title.
-- **Everything written in Linear is in English**: project name, overview, issue
-  titles, descriptions, comments.
 - **Linear is link-only.** It may link an existing branch or PR; it must never
   create one — the hook, the stack and the no-auto-merge rule only apply to
   branches you opened. Disable the integration's automations.
-- **If a merge closes a ticket with work left**, reopen it and file the remainder
-  the same day. That is the most common drift in a phase-per-milestone setup.
+
+### With Outline
+
+Documents replace tickets: the page states the outcome and its acceptance, and
+the PR body links it. No id in the branch or the subject — the link is the join.
 
 ## Branches
 
 ```
-<type>/LET-<n>-<short-slug>
+<type>/LET-<n>-<short-slug>      # with a tracker
+<type>/<short-slug>                  # with tracker: none
 fix/INT-42-provider-retry
-chore/EXS-17-pr-guard
+chore/provider-retry
 ```
 
 - `<type>` is the commit type of the main change (`feat`, `fix`, `chore`,
   `docs`, `test`, `refactor`, `perf`, `ci`).
 - **One objective per branch.** A review fix is another commit on the open
   branch, not a new one.
-- **Stacked layers keep the same ticket id** on every layer.
+- **Stacked layers keep the same ticket id** on every layer (with a tracker).
 - **Never commit or push directly to `main`.** Branch, pull request,
   wait for CI, stop.
 - **Open branches and PRs with `gh` or `gh stack` only — never from a linked
   tool.** Linear and friends use whichever branch is checked out and can target
   `main` with a whole stack; that produced duplicate PRs more than once.
   The link between a PR and its ticket is the id in the title, nothing else.
-- `git config core.hooksPath .githooks` once per clone: the `commit-msg` hook
-  reads the ticket from the branch and refuses a phase-number scope.
+- `git config core.hooksPath .githooks` once per clone when the repo installs
+  the hook: it reads the ticket from the branch, closes the subject with it and
+  refuses a phase-number scope.
 
 ## Commits
 
 ```
-<type>(<scope>): <summary> (LET-<n>)
+<type>(<scope>): <summary> (LET-<n>)     # with a tracker
+<type>(<scope>): <summary>                   # with tracker: none
 fix(deploy): probe /v1/health in the container healthcheck (EXS-7)
 feat(runs): stop leaving a finished run on "Read the offer" (INT-42)
 ```
@@ -73,12 +86,12 @@ feat(runs): stop leaving a finished run on "Read the offer" (INT-42)
 - **The scope names the feature or module, never the phase number.** `fix(runs)`,
   never `fix(03)` or `feat(02-01)`. Someone reading `git log` without
   `.planning/` open must understand the change.
-- **The ticket id closes the subject**, in parentheses. A commit that has no
-  ticket says so in its body — never invent an id. This holds in every repo: the
-  id never opens the subject.
-- **GSD ids never enter the git or Linear record**: no phase number, no plan id
+- **The ticket id closes the subject**, in parentheses, when the project has a
+  tracker. A commit that has no ticket says so in its body — never invent an id.
+  The id never opens the subject.
+- **GSD ids never enter the git or tracker record**: no phase number, no plan id
   (`02-01`), no workstream name in a commit subject or body, a branch, a PR
-  title or body, a ticket title or description. They are internal to
+  title or body, a ticket or document title or description. They are internal to
   `.planning/`; the map is `.planning/LINEAR.md`. Pointing at the GSD *files*
   that explain a decision is welcome in a PR or ticket description —
   `.planning/phases/03-billing/PLAN.md` — as a reference, never as a label.
@@ -92,12 +105,12 @@ feat(runs): stop leaving a finished run on "Read the offer" (INT-42)
 
 ## Pull requests
 
-- **Title**: the top commit subject, ticket id included —
-  `<type>(<scope>): <summary> (LET-<n>)`.
+- **Title**: the top commit subject, ticket id included when there is one.
 - **Body**, written by hand and passed with `--body-file`:
-  `What this changes` / `Why` (`Closes LET-<n>`) / `How it works` /
-  `Tests`, plus `Notes` when it applies (screenshot, breaking change, stack
-  layer, follow-up). Never paste the commit list.
+  `What this changes` / `Why` (`Closes LET-<n>`, or the link to the
+  document) / `How it works` / `Tests`, plus `Notes` when it applies
+  (screenshot, breaking change, stack layer, follow-up). Never paste the commit
+  list.
 - **Never merge.** An open, verified PR means the work is done: CI green, stop.
   Do not run `gh pr merge`, do not click Merge. Merging is a human decision.
 - **Related, dependent changes are stacked** (`gh stack init` / `add` /
