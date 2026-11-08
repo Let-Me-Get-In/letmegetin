@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { AccessibilityTree } from "@/components/record/accessibility-tree";
 import type { TreeNode } from "@/lib/types";
 
+// French fixtures: `check:i18n` excludes `*.test.*`, so these literals are not scanned.
 const tree: TreeNode[] = [
   {
     slug: "entree",
@@ -38,7 +39,7 @@ const tree: TreeNode[] = [
 
 describe("AccessibilityTree", () => {
   it("renders the group and each criterion value", () => {
-    render(<AccessibilityTree tree={tree} />);
+    render(<AccessibilityTree tree={tree} locale="fr" />);
 
     expect(screen.getByRole("heading", { name: "Entrée" })).toBeInTheDocument();
     expect(screen.getByText("De plain-pied")).toBeInTheDocument();
@@ -47,13 +48,19 @@ describe("AccessibilityTree", () => {
   });
 
   it("explains an empty grid", () => {
-    render(<AccessibilityTree tree={[]} />);
+    render(<AccessibilityTree tree={[]} locale="fr" />);
 
     expect(screen.getByText(/Aucune grille/)).toBeInTheDocument();
   });
 
+  it("renders the empty state in English", () => {
+    render(<AccessibilityTree tree={[]} locale="en" />);
+
+    expect(screen.getByText(/No accessibility grid/)).toBeInTheDocument();
+  });
+
   it("has no WCAG A/AA violations", async () => {
-    const { container } = render(<AccessibilityTree tree={tree} />);
+    const { container } = render(<AccessibilityTree tree={tree} locale="fr" />);
 
     const results = await axe.run(container, {
       runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] },

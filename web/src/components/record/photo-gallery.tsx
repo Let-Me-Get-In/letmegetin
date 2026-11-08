@@ -1,6 +1,7 @@
+import { t, type Locale } from "@/lib/i18n";
 import type { Photo } from "@/lib/types";
 
-export function PhotoGallery({ photos }: { photos: Photo[] }) {
+export function PhotoGallery({ photos, locale }: { photos: Photo[]; locale: Locale }) {
   if (photos.length === 0) return null;
 
   return (
@@ -15,7 +16,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
             className="h-48 w-full object-cover"
           />
           <figcaption className="px-3 py-2 text-xs text-muted">
-            {photo.credit ?? "Source non précisée"}
+            {photo.credit ?? t(locale, "unspecifiedSource")}
             {photo.license ? ` · ${photo.license}` : ""}
           </figcaption>
         </figure>
