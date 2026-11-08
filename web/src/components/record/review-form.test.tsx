@@ -24,16 +24,29 @@ describe("ReviewForm", () => {
       authedFetch: vi.fn(),
     });
 
-    render(<ReviewForm slug="demo" />);
+    render(<ReviewForm slug="demo" locale="fr" />);
 
     expect(screen.getByText(/Vérifiez votre adresse email/)).toBeInTheDocument();
+  });
+
+  it("renders the English copy for the same state", () => {
+    session.useSession.mockReturnValue({
+      user: { ...verified.user, email_verified: false },
+      authedFetch: vi.fn(),
+    });
+
+    render(<ReviewForm slug="demo" locale="en" />);
+
+    expect(
+      screen.getByText("Verify your email address to leave a review."),
+    ).toBeInTheDocument();
   });
 
   it("posts the rating and the body", async () => {
     verified.authedFetch.mockResolvedValue({});
     session.useSession.mockReturnValue(verified);
 
-    render(<ReviewForm slug="demo" />);
+    render(<ReviewForm slug="demo" locale="fr" />);
     fireEvent.change(screen.getByLabelText("Note"), { target: { value: "4" } });
     fireEvent.change(screen.getByLabelText("Votre avis"), {
       target: { value: "Accueil très bien" },
