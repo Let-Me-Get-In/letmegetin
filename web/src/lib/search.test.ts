@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_SEARCH, parseSearch, placesPath, toSearchParams } from "@/lib/search";
+import { DEFAULT_SEARCH, FAMILY_KEYS, familyLabel, parseSearch, placesPath, toSearchParams } from "@/lib/search";
 
 describe("search state", () => {
   it("falls back to the default search", () => {
@@ -55,5 +55,21 @@ describe("search state", () => {
   it("sends offset only past the first page", () => {
     expect(placesPath(DEFAULT_SEARCH)).not.toContain("offset=");
     expect(placesPath(DEFAULT_SEARCH, 100)).toContain("offset=100");
+  });
+});
+
+describe("handicap families", () => {
+  it("keeps the declared filter order", () => {
+    expect([...FAMILY_KEYS]).toEqual(["moteur", "auditif", "visuel", "mental"]);
+  });
+
+  it("labels a family in the requested language", () => {
+    expect(familyLabel("moteur", "fr")).toBe("Motricité");
+    expect(familyLabel("moteur", "en")).toBe("Mobility");
+    expect(familyLabel("mental", "en")).toBe("Cognitive / psychosocial");
+  });
+
+  it("falls back to the raw slug for an unknown family", () => {
+    expect(familyLabel("inconnu", "en")).toBe("inconnu");
   });
 });

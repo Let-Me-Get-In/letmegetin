@@ -1,10 +1,12 @@
 "use client";
 
+import { t, type Locale } from "@/lib/i18n";
 import { label } from "@/lib/labels";
-import { FAMILY_LABELS, type SearchState } from "@/lib/search";
+import { FAMILY_KEYS, familyLabel, type SearchState } from "@/lib/search";
 import type { Category, CriterionNode } from "@/lib/types";
 
 export type FiltersProps = {
+  locale: Locale;
   value: SearchState;
   onChange: (next: SearchState) => void;
   onSubmit: () => void;
@@ -31,6 +33,7 @@ export function flattenCriteria(nodes: CriterionNode[]): CriterionNode[] {
 }
 
 export function Filters({
+  locale,
   value,
   onChange,
   onSubmit,
@@ -62,21 +65,21 @@ export function Filters({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="sm:col-span-2">
           <label htmlFor="q" className="block text-sm font-medium">
-            Rechercher
+            {t(locale, "search")}
           </label>
           <input
             id="q"
             type="search"
             value={value.q}
             onChange={(event) => onChange({ ...value, q: event.target.value })}
-            placeholder="Nom, catégorie, adresse…"
+            placeholder={t(locale, "searchPlaceholder")}
             className="mt-1 w-full rounded-md border border-line bg-paper px-3 py-2"
           />
         </div>
 
         <div>
           <label htmlFor="radius" className="block text-sm font-medium">
-            Rayon
+            {t(locale, "radius")}
           </label>
           <select
             id="radius"
@@ -94,7 +97,7 @@ export function Filters({
 
         <div>
           <label htmlFor="family" className="block text-sm font-medium">
-            Handicap
+            {t(locale, "handicap")}
           </label>
           <select
             id="family"
@@ -102,10 +105,10 @@ export function Filters({
             onChange={(event) => onChange({ ...value, family: event.target.value })}
             className="mt-1 w-full rounded-md border border-line bg-paper px-3 py-2"
           >
-            <option value="">Tous</option>
-            {Object.entries(FAMILY_LABELS).map(([key, text]) => (
+            <option value="">{t(locale, "all")}</option>
+            {FAMILY_KEYS.map((key) => (
               <option key={key} value={key}>
-                {text}
+                {familyLabel(key, locale)}
               </option>
             ))}
           </select>
@@ -115,7 +118,7 @@ export function Filters({
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <label htmlFor="category" className="block text-sm font-medium">
-            Catégorie (pour les critères)
+            {t(locale, "categories")}
           </label>
           <select
             id="category"
@@ -123,10 +126,10 @@ export function Filters({
             onChange={(event) => onCategory(event.target.value)}
             className="mt-1 w-full rounded-md border border-line bg-paper px-3 py-2"
           >
-            <option value="">Toutes</option>
+            <option value="">{t(locale, "allCategories")}</option>
             {categories.map((item) => (
               <option key={item.slug} value={item.slug}>
-                {label(item.label) || item.name}
+                {label(item.label, locale) || item.name}
               </option>
             ))}
           </select>
@@ -138,14 +141,14 @@ export function Filters({
             disabled={locating}
             className="w-full rounded-md border border-line px-3 py-2 text-sm hover:border-accent hover:text-accent disabled:opacity-50"
           >
-            {locating ? "Localisation…" : "Autour de moi"}
+            {locating ? t(locale, "locating") : t(locale, "around")}
           </button>
         </div>
       </div>
 
       {selectable.length > 0 ? (
         <fieldset>
-          <legend className="text-sm font-medium">Critères d'accessibilité</legend>
+          <legend className="text-sm font-medium">{t(locale, "criteriaLegend")}</legend>
           <div className="mt-2 grid max-h-44 gap-2 overflow-auto pr-1 sm:grid-cols-2">
             {selectable.map((criterion) => (
               <label key={criterion.slug} className="flex items-start gap-2 text-sm">
@@ -155,7 +158,7 @@ export function Filters({
                   checked={value.criteria.includes(criterion.id as number)}
                   onChange={(event) => toggleCriterion(criterion.id as number, event.target.checked)}
                 />
-                <span>{label(criterion.label)}</span>
+                <span>{label(criterion.label, locale)}</span>
               </label>
             ))}
           </div>
@@ -167,7 +170,7 @@ export function Filters({
           type="submit"
           className="rounded-md bg-accent px-4 py-2 font-medium text-paper hover:opacity-90"
         >
-          Rechercher
+          {t(locale, "search")}
         </button>
         <button
           type="button"
@@ -177,7 +180,7 @@ export function Filters({
             onCategory("");
           }}
         >
-          Réinitialiser les filtres
+          {t(locale, "reset")}
         </button>
       </div>
     </form>

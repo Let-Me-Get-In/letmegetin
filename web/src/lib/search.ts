@@ -1,3 +1,5 @@
+import { t, type Locale } from "./i18n";
+
 export type SearchState = {
   lat: number;
   lng: number;
@@ -69,9 +71,17 @@ export function placesPath(state: SearchState, offset = 0): string {
   return `/api/v1/places?${params.toString()}`;
 }
 
-export const FAMILY_LABELS: Record<string, string> = {
-  moteur: "Motricité",
-  auditif: "Audition",
-  visuel: "Vision",
-  mental: "Cognitif / psychique",
-};
+// The order the handicap filter renders in, independent of dictionary ordering.
+export const FAMILY_KEYS = ["moteur", "auditif", "visuel", "mental"] as const;
+
+const FAMILY_MESSAGE_KEYS = {
+  moteur: "familyMoteur",
+  auditif: "familyAuditif",
+  visuel: "familyVisuel",
+  mental: "familyMental",
+} as const;
+
+export function familyLabel(family: string, locale: Locale = "fr"): string {
+  const key = FAMILY_MESSAGE_KEYS[family as keyof typeof FAMILY_MESSAGE_KEYS];
+  return key ? t(locale, key) : family;
+}

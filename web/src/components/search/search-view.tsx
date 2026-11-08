@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Filters } from "@/components/search/filters";
 import { PlaceList } from "@/components/search/place-list";
 import { ApiError, api } from "@/lib/api";
+import { t, tPlural, type Locale } from "@/lib/i18n";
 import { placesPath, parseSearch, toSearchParams, type SearchState } from "@/lib/search";
 import type { Category, CriterionNode, PlaceSummary } from "@/lib/types";
 
@@ -17,7 +18,7 @@ const MapView = dynamic(() => import("./map-view").then((mod) => mod.MapView), {
 
 const PAGE_SIZE = 100;
 
-export function SearchView() {
+export function SearchView({ locale }: { locale: Locale }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.toString();
@@ -55,7 +56,7 @@ export function SearchView() {
         if (!active) return;
         setPlaces([]);
         setMore(false);
-        setError(cause instanceof ApiError ? cause.message : "Recherche indisponible.");
+        setError(cause instanceof ApiError ? cause.message : t(locale, "searchUnavailable"));
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -63,7 +64,7 @@ export function SearchView() {
     return () => {
       active = false;
     };
-  }, [state]);
+  }, [state, locale]);
 
   useEffect(() => {
     api<Category[]>("/api/v1/categories")
@@ -105,19 +106,19 @@ export function SearchView() {
         // button and never learns that 100 more places arrived.
         setAnnouncement(
           next.length === 0
-            ? "Aucun autre lieu."
-            : `${next.length} lieu${next.length > 1 ? "x" : ""} supplémentaire${next.length > 1 ? "s" : ""}.`,
+            ? t(locale, "noMorePlaces")
+            : `${next.length} ${tPlural(locale, "placesAdded", next.length)}.`,
         );
       })
       .catch((cause) => {
-        setError(cause instanceof ApiError ? cause.message : "Recherche indisponible.");
+        setError(cause instanceof ApiError ? cause.message : t(locale, "searchUnavailable"));
       })
       .finally(() => setLoadingMore(false));
-  }, [state, places.length, loadingMore]);
+  }, [state, places.length, loadingMore, locale]);
 
   const locate = useCallback(() => {
     if (!navigator.geolocation) {
-      setGeoMessage("La géolocalisation n'est pas disponible dans ce navigateur.");
+      setGeoMessage(t(locale, "geoUnavailable"));
       return;
     }
     setLocating(true);
@@ -136,24 +137,21 @@ export function SearchView() {
       },
       () => {
         setLocating(false);
-        setGeoMessage("Localisation refusée : la recherche reste centrée sur Paris.");
+        setGeoMessage(t(locale, "geoDenied"));
       },
       { timeout: 8000 },
     );
-  }, [draft, router]);
+  }, [draft, router, locale]);
 
   return (
     <section>
       <div className="mb-6">
-        <h1 className="text-3xl font-semibold sm:text-4xl">Trouver un lieu vraiment accessible.</h1>
-        <p className="mt-2 max-w-2xl text-muted">
-          Cherchez autour de vous, filtrez par handicap et ouvrez la fiche détaillée : entrée,
-          sanitaires, signalétique, calme. Les données viennent de sources ouvertes et des
-          contributions.
-        </p>
+        <h1 className="text-3xl font-semibold sm:text-4xl">{t(locale, "title")}</h1>
+        <p className="mt-2 max-w-2xl text-muted">{t(locale, "intro")}</p>
       </div>
 
       <Filters
+        locale={locale}
         value={draft}
         onChange={setDraft}
         onSubmit={submit}
@@ -181,6 +179,7 @@ export function SearchView() {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <MapView
+          locale={locale}
           places={places}
           center={{ lat: state.lat, lng: state.lng }}
           selected={selected}
@@ -191,9 +190,12 @@ export function SearchView() {
             {announcement}
           </p>
           <h2 className="mb-3 text-lg font-semibold">
-            {loading ? "Résultats" : `${places.length} lieu${places.length > 1 ? "x" : ""}`}
+            {loading
+              ? t(locale, "results")
+              : `${places.length} ${tPlural(locale, "places", places.length)}`}
           </h2>
           <PlaceList
+            locale={locale}
             places={places}
             selected={selected}
             onSelect={setSelected}
@@ -206,7 +208,7 @@ export function SearchView() {
               disabled={loadingMore}
               className="mt-3 w-full rounded-md border border-line px-3 py-2 text-sm hover:border-accent hover:text-accent disabled:opacity-50"
             >
-              {loadingMore ? "Chargement…" : "Voir plus"}
+              {loadingMore ? t(locale, "loading") : t(locale, "more")}
             </button>
           ) : null}
         </div>
