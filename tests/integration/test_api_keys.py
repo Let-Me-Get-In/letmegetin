@@ -152,3 +152,26 @@ def test_public_traffic_does_not_spend_the_auth_budget(
 
     assert [response.status_code for response in browsing] == [200, 200, 200]
     assert login.status_code != 429
+
+
+def test_me_does_not_spend_the_auth_budget(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from letmegetin.config import settings
+
+    monkeypatch.setattr(settings, "rate_limit_auth_rpm", 1)
+    monkeypatch.setattr(settings, "rate_limit_default_rpm", 50)
+    headers = {"X-Forwarded-For": "203.0.113.48"}
+
+    # `me` runs on every page load: only the 401 may come back, never a 429.
+    me = [client.get("/api/v1/auth/me", headers=headers) for _ in range(3)]
+    assert [response.status_code for response in me] == [401, 401, 401]
+
+    # The credential endpoint keeps the tight window.
+    credentials = {"email": "nobody@example.org", "password": "wrong-one"}
+    login = {"X-Forwarded-For": "203.0.113.49"}
+    first = client.post("/api/v1/auth/login", json=credentials, headers=login)
+    second = client.post("/api/v1/auth/login", json=credentials, headers=login)
+
+    assert first.status_code == 401
+    assert second.status_code == 429

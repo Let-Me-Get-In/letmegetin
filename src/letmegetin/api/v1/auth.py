@@ -33,7 +33,11 @@ from letmegetin.domain.accounts.entities import User
 from letmegetin.domain.accounts.repositories import RefreshTokenRepository
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/v1/auth", tags=["auth"], dependencies=[Depends(auth_rate_limit)])
+router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+
+# The tight budget guards credential endpoints only: `me` runs on every page load and
+# `refresh` once a session, so capping them at the login limit logs out a browsing user.
+_credentials = [Depends(auth_rate_limit)]
 
 
 async def _issue_tokens(user: User, refresh_tokens: RefreshTokenRepository) -> TokenPairOut:
@@ -55,7 +59,7 @@ async def _send_verification(user: User) -> None:
         logger.exception("could not send the verification email to %s", user.email)
 
 
-@router.post("/register", response_model=UserOut, status_code=201)
+@router.post("/register", response_model=UserOut, status_code=201, dependencies=_credentials)
 async def register_account(payload: RegisterIn, users: UserRepo, session: DbSession) -> UserOut:
     """Create an account, then send an email-confirmation link."""
     try:
@@ -69,7 +73,7 @@ async def register_account(payload: RegisterIn, users: UserRepo, session: DbSess
     return UserOut.from_user(user)
 
 
-@router.post("/login", response_model=TokenPairOut)
+@router.post("/login", response_model=TokenPairOut, dependencies=_credentials)
 async def login(
     payload: LoginIn, users: UserRepo, refresh_tokens: RefreshRepo, session: DbSession
 ) -> TokenPairOut:
@@ -115,7 +119,7 @@ async def logout(payload: LogoutIn, refresh_tokens: RefreshRepo, session: DbSess
     await session.commit()
 
 
-@router.post("/verify-email", response_model=UserOut)
+@router.post("/verify-email", response_model=UserOut, dependencies=_credentials)
 async def verify_email(payload: VerifyEmailIn, users: UserRepo, session: DbSession) -> UserOut:
     """Confirm an address from the token sent at registration or on resend."""
     try:
@@ -129,7 +133,12 @@ async def verify_email(payload: VerifyEmailIn, users: UserRepo, session: DbSessi
     return UserOut.from_user(user)
 
 
-@router.post("/resend-verification", response_model=StatusOut, status_code=202)
+@router.post(
+    "/resend-verification",
+    response_model=StatusOut,
+    status_code=202,
+    dependencies=_credentials,
+)
 async def resend_verification(user: CurrentUser) -> StatusOut:
     """Send a fresh confirmation link to an authenticated, unverified account."""
     if user.email_verified:
