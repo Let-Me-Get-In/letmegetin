@@ -135,3 +135,20 @@ def test_anonymous_limit_uses_the_forwarded_client_ip(
     assert first.status_code == 200
     assert blocked.status_code == 429
     assert other.status_code == 200
+
+
+def test_public_traffic_does_not_spend_the_auth_budget(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from letmegetin.config import settings
+
+    monkeypatch.setattr(settings, "rate_limit_auth_rpm", 1)
+    monkeypatch.setattr(settings, "rate_limit_default_rpm", 50)
+
+    browsing = [client.get("/api/v1/categories") for _ in range(3)]
+    login = client.post(
+        "/api/v1/auth/login", json={"email": "nobody@example.org", "password": "wrong-one"}
+    )
+
+    assert [response.status_code for response in browsing] == [200, 200, 200]
+    assert login.status_code != 429
