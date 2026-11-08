@@ -5,9 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { ApiError } from "@/lib/api";
+import { t, type Locale } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 
-export function LoginForm() {
+export function LoginForm({ locale }: { locale: Locale }) {
   const { login } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -26,7 +27,7 @@ export function LoginForm() {
       await login(email, password);
       router.push(next.startsWith("/") ? next : "/account");
     } catch (cause) {
-      setError(cause instanceof ApiError ? cause.message : "Connexion impossible.");
+      setError(cause instanceof ApiError ? cause.message : t(locale, "loginFailed"));
     } finally {
       setPending(false);
     }
@@ -36,7 +37,7 @@ export function LoginForm() {
     <form onSubmit={submit} className="space-y-4">
       <div>
         <label htmlFor="email" className="block text-sm font-medium">
-          Email
+          {t(locale, "email")}
         </label>
         <input
           id="email"
@@ -50,7 +51,7 @@ export function LoginForm() {
       </div>
       <div>
         <label htmlFor="password" className="block text-sm font-medium">
-          Mot de passe
+          {t(locale, "password")}
         </label>
         <input
           id="password"
@@ -67,7 +68,7 @@ export function LoginForm() {
         disabled={pending}
         className="w-full rounded-md bg-accent px-4 py-2 font-medium text-paper disabled:opacity-50"
       >
-        {pending ? "Connexion…" : "Se connecter"}
+        {pending ? t(locale, "signingIn") : t(locale, "signInSubmit")}
       </button>
       {error ? (
         <p role="alert" className="text-sm text-warn">
@@ -75,9 +76,9 @@ export function LoginForm() {
         </p>
       ) : null}
       <p className="text-sm text-muted">
-        Pas encore de compte ?{" "}
+        {t(locale, "noAccountYet")}{" "}
         <Link className="underline" href="/register">
-          Créer un compte
+          {t(locale, "createAccountLink")}
         </Link>
       </p>
     </form>
