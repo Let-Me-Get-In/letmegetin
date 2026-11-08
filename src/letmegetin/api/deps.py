@@ -154,6 +154,9 @@ def _rate_limit_dependency(default_setting: str):
                 )
         limit = key_row.rpm if key_row is not None else int(getattr(settings, default_setting))
         bucket = f"key:{key_row.id}" if key_row is not None else f"ip:{_client_ip(request)}"
+        # Each endpoint class gets its own window: a browsing session must not spend the
+        # tighter auth budget, and vice versa.
+        bucket = f"{default_setting}:{bucket}"
         result = await check_rate_limit(bucket, limit)
         reset_at = str(int(time.time()) + result.retry_after)
         response.headers["X-RateLimit-Limit"] = str(result.limit)
