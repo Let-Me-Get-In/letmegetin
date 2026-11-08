@@ -6,13 +6,22 @@ import { useState } from "react";
 
 import { ApiError } from "@/lib/api";
 import { flattenCriteria } from "@/lib/criteria";
+import { t, type Locale } from "@/lib/i18n";
 import { label } from "@/lib/labels";
 import { useSession } from "@/lib/session";
 import type { TreeNode } from "@/lib/types";
 
 type Status = { kind: "idle" | "ok" | "error"; message: string };
 
-export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[] }) {
+export function ContributionForm({
+  slug,
+  tree,
+  locale,
+}: {
+  slug: string;
+  tree: TreeNode[];
+  locale: Locale;
+}) {
   const { user, authedFetch } = useSession();
   const router = useRouter();
   const criteria = flattenCriteria(tree);
@@ -29,23 +38,19 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
     return (
       <p className="text-sm text-muted">
         <Link className="underline" href={`/login?next=${encodeURIComponent(`/places/${slug}`)}`}>
-          Connectez-vous
+          {t(locale, "signInPrompt")}
         </Link>{" "}
-        pour compléter cette fiche.
+        {t(locale, "toCompleteThisRecord")}
       </p>
     );
   }
 
   if (!user.email_verified) {
-    return (
-      <p className="text-sm text-muted">
-        Vérifiez votre adresse email pour compléter cette fiche.
-      </p>
-    );
+    return <p className="text-sm text-muted">{t(locale, "verifyToComplete")}</p>;
   }
 
   if (criteria.length === 0) {
-    return <p className="text-sm text-muted">Aucun critère disponible pour ce lieu.</p>;
+    return <p className="text-sm text-muted">{t(locale, "noCriteria")}</p>;
   }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -58,7 +63,7 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
     else value = text.trim();
 
     if (value === "" || value === undefined || value === null) {
-      setStatus({ kind: "error", message: "Choisissez ou saisissez une valeur." });
+      setStatus({ kind: "error", message: t(locale, "chooseValue") });
       return;
     }
 
@@ -69,14 +74,14 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
         method: "PUT",
         body: JSON.stringify({ value }),
       });
-      setStatus({ kind: "ok", message: "Contribution enregistrée. Merci !" });
+      setStatus({ kind: "ok", message: t(locale, "contributionSaved") });
       setChoice("");
       setText("");
       router.refresh();
     } catch (error) {
       setStatus({
         kind: "error",
-        message: error instanceof ApiError ? error.message : "Contribution impossible.",
+        message: error instanceof ApiError ? error.message : t(locale, "contributionFailed"),
       });
     } finally {
       setPending(false);
@@ -87,7 +92,7 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
     <form onSubmit={submit} className="space-y-4">
       <div>
         <label htmlFor="criterion" className="block text-sm font-medium">
-          Critère
+          {t(locale, "criterion")}
         </label>
         <select
           id="criterion"
@@ -102,7 +107,7 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
         >
           {criteria.map((item) => (
             <option key={item.slug} value={item.slug}>
-              {label(item.label)}
+              {label(item.label, locale)}
             </option>
           ))}
         </select>
@@ -111,7 +116,7 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
       {criterion && criterion.options.length > 0 ? (
         <div>
           <label htmlFor="value" className="block text-sm font-medium">
-            Valeur
+            {t(locale, "valueLabel")}
           </label>
           <select
             id="value"
@@ -119,10 +124,12 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
             value={choice}
             onChange={(event) => setChoice(event.target.value)}
           >
-            <option value="">— Choisir —</option>
+            <option value="">{t(locale, "choose")}</option>
+            {/* The submitted value is the slug, never the display label: the stored
+                accessibility value must not depend on the interface language. */}
             {criterion.options.map((option) => (
-              <option key={option.slug} value={label(option.label)}>
-                {label(option.label)}
+              <option key={option.slug} value={option.slug}>
+                {label(option.label, locale)}
               </option>
             ))}
           </select>
@@ -132,7 +139,7 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
       {criterion && criterion.options.length === 0 && criterion.type === "boolean" ? (
         <div>
           <label htmlFor="value" className="block text-sm font-medium">
-            Valeur
+            {t(locale, "valueLabel")}
           </label>
           <select
             id="value"
@@ -140,9 +147,9 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
             value={choice}
             onChange={(event) => setChoice(event.target.value)}
           >
-            <option value="">— Choisir —</option>
-            <option value="oui">Oui</option>
-            <option value="non">Non</option>
+            <option value="">{t(locale, "choose")}</option>
+            <option value="oui">{t(locale, "yes")}</option>
+            <option value="non">{t(locale, "no")}</option>
           </select>
         </div>
       ) : null}
@@ -150,14 +157,14 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
       {criterion && criterion.options.length === 0 && criterion.type !== "boolean" ? (
         <div>
           <label htmlFor="value" className="block text-sm font-medium">
-            Valeur
+            {t(locale, "valueLabel")}
           </label>
           <input
             id="value"
             className="mt-1 w-full rounded-md border border-line bg-paper px-3 py-2"
             value={text}
             onChange={(event) => setText(event.target.value)}
-            placeholder="Ex. 90"
+            placeholder={t(locale, "exampleNumber")}
           />
         </div>
       ) : null}
@@ -167,7 +174,7 @@ export function ContributionForm({ slug, tree }: { slug: string; tree: TreeNode[
         disabled={pending}
         className="rounded-md bg-accent px-4 py-2 font-medium text-paper disabled:opacity-50"
       >
-        {pending ? "Enregistrement…" : "Enregistrer"}
+        {pending ? t(locale, "saving") : t(locale, "save")}
       </button>
 
       {status.message ? (

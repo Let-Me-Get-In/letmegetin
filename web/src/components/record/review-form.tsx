@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ApiError } from "@/lib/api";
+import { t, type Locale } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 
 type Status = { kind: "idle" | "ok" | "error"; message: string };
 
-export function ReviewForm({ slug }: { slug: string }) {
+export function ReviewForm({ slug, locale }: { slug: string; locale: Locale }) {
   const { user, authedFetch } = useSession();
   const router = useRouter();
   const [rating, setRating] = useState("5");
@@ -21,15 +22,15 @@ export function ReviewForm({ slug }: { slug: string }) {
     return (
       <p className="text-sm text-muted">
         <Link className="underline" href={`/login?next=${encodeURIComponent(`/places/${slug}`)}`}>
-          Connectez-vous
+          {t(locale, "signInPrompt")}
         </Link>{" "}
-        pour laisser un avis.
+        {t(locale, "toLeaveAReview")}
       </p>
     );
   }
 
   if (!user.email_verified) {
-    return <p className="text-sm text-muted">Vérifiez votre adresse email pour laisser un avis.</p>;
+    return <p className="text-sm text-muted">{t(locale, "verifyToReview")}</p>;
   }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -42,12 +43,12 @@ export function ReviewForm({ slug }: { slug: string }) {
         body: JSON.stringify({ rating: Number(rating), body }),
       });
       setBody("");
-      setStatus({ kind: "ok", message: "Avis publié. Merci !" });
+      setStatus({ kind: "ok", message: t(locale, "reviewPublished") });
       router.refresh();
     } catch (error) {
       setStatus({
         kind: "error",
-        message: error instanceof ApiError ? error.message : "Publication impossible.",
+        message: error instanceof ApiError ? error.message : t(locale, "reviewFailed"),
       });
     } finally {
       setPending(false);
@@ -58,7 +59,7 @@ export function ReviewForm({ slug }: { slug: string }) {
     <form onSubmit={submit} className="space-y-3">
       <div>
         <label htmlFor="rating" className="block text-sm font-medium">
-          Note
+          {t(locale, "rating")}
         </label>
         <select
           id="rating"
@@ -75,7 +76,7 @@ export function ReviewForm({ slug }: { slug: string }) {
       </div>
       <div>
         <label htmlFor="body" className="block text-sm font-medium">
-          Votre avis
+          {t(locale, "yourReview")}
         </label>
         <textarea
           id="body"
@@ -83,7 +84,7 @@ export function ReviewForm({ slug }: { slug: string }) {
           value={body}
           maxLength={5000}
           onChange={(event) => setBody(event.target.value)}
-          placeholder="Accueil, cheminement, sanitaires…"
+          placeholder={t(locale, "reviewPlaceholder")}
         />
       </div>
       <button
@@ -91,7 +92,7 @@ export function ReviewForm({ slug }: { slug: string }) {
         disabled={pending}
         className="rounded-md bg-accent px-4 py-2 font-medium text-paper disabled:opacity-50"
       >
-        {pending ? "Publication…" : "Publier l'avis"}
+        {pending ? t(locale, "publishing") : t(locale, "publishReview")}
       </button>
       {status.message ? (
         <p

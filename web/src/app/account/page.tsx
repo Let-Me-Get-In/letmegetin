@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { RequireAuth } from "@/components/auth/require-auth";
 import { VerifyBanner } from "@/components/auth/verify-banner";
+import { DEFAULT_LOCALE } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 
 export default function AccountPage() {
@@ -19,7 +20,9 @@ export default function AccountPage() {
           </p>
         </div>
 
-        <VerifyBanner />
+        {/* This page is still client-rendered and cannot read the cookie; plan 11-06
+            turns it into a server component that passes the resolved locale here. */}
+        <VerifyBanner locale={DEFAULT_LOCALE} />
 
         <dl className="divide-y divide-line rounded-card border border-line bg-white/60 dark:bg-white/5">
           <div className="flex flex-wrap justify-between gap-2 px-4 py-3">
