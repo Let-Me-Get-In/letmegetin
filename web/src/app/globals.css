@@ -57,3 +57,11 @@ h3 {
     scroll-behavior: auto !important;
   }
 }
+
+/* MapLibre's attribution link is distinguished from its neighbours by colour alone,
+   which fails WCAG 1.4.1 on its 2:1 contrast. Underline it instead; the pseudo-classes
+   outrank the vendor rule that sets `text-decoration: none` without needing !important. */
+.maplibregl-ctrl-attrib a:link,
+.maplibregl-ctrl-attrib a:visited {
+  text-decoration: underline;
+}
