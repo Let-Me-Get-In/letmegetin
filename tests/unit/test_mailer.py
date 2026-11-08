@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from email.message import EmailMessage
 
 import pytest
 
@@ -20,6 +21,22 @@ def test_verification_link_points_at_the_verify_page(
 
     assert "https://app.example.org/verify?token=tok123" in caplog.text
     assert "/verify-email?" not in caplog.text
+
+
+def test_message_is_multipart_with_the_link_in_both_parts() -> None:
+    message = mailer._build_message(
+        "user@example.org", "Sujet", "https://app.example.org/verify?token=tok123"
+    )
+
+    assert isinstance(message, EmailMessage)
+    assert message["From"] == "LetMeGetIn <no-reply@letmegetin.org>"
+    assert message.get_content_type() == "multipart/alternative"
+
+    text, html = message.get_payload()
+    assert text.get_content_type() == "text/plain"
+    assert html.get_content_type() == "text/html"
+    assert "https://app.example.org/verify?token=tok123" in text.get_content()
+    assert 'href="https://app.example.org/verify?token=tok123"' in html.get_content()
 
 
 def test_parts_share_the_link_and_the_html_is_escaped() -> None:

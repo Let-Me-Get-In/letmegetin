@@ -81,16 +81,21 @@ def _html(link: str) -> str:
 </table></body></html>"""
 
 
-def _deliver(to: str, subject: str, link: str) -> None:
-    if not settings.smtp_host:
-        logger.info("mail to %s: %s", to, _text(link))
-        return
+def _build_message(to: str, subject: str, link: str) -> EmailMessage:
     message = EmailMessage()
     message["From"] = f"{_FROM_NAME} <{settings.smtp_from}>"
     message["To"] = to
     message["Subject"] = subject
     message.set_content(_text(link))
     message.add_alternative(_html(link), subtype="html")
+    return message
+
+
+def _deliver(to: str, subject: str, link: str) -> None:
+    if not settings.smtp_host:
+        logger.info("mail to %s: %s", to, _text(link))
+        return
+    message = _build_message(to, subject, link)
     with smtplib.SMTP(
         settings.smtp_host, settings.smtp_port, timeout=_SMTP_TIMEOUT_SECONDS
     ) as smtp:
