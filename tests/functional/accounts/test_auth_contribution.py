@@ -7,23 +7,16 @@ from __future__ import annotations
 
 import asyncio
 import json
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import Iterator
 from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
 
-from letmegetin.config import settings
-from letmegetin.core.db import get_session
 from letmegetin.core.security import create_token
 from letmegetin.domain.places.dedup import normalize_name
-from letmegetin.main import app
-
-_engine = create_async_engine(settings.database_url, poolclass=NullPool)
-_TestSessionLocal = async_sessionmaker(_engine, expire_on_commit=False)
+from tests.db import SessionLocal, execute, require_database, scalar
 
 _SLUG = "test-p5-place-00000000"
 _EMAIL = "test-p5-user@example.test"
@@ -41,17 +34,8 @@ _TREE = [
 ]
 
 
-async def _database_ready() -> bool:
-    try:
-        async with _TestSessionLocal() as session:
-            await session.execute(text("SELECT 1"))
-            return await session.scalar(text("SELECT to_regclass('users')")) is not None
-    except Exception:  # noqa: BLE001 - any connection failure means "skip"
-        return False
-
-
 async def _cleanup() -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         await session.execute(text("DELETE FROM place WHERE source = 'test-p5'"))
         await session.execute(text("DELETE FROM criteria WHERE slug LIKE 'test-p5-%'"))
         await session.execute(
@@ -66,7 +50,7 @@ async def _cleanup() -> None:
 
 
 async def _seed() -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         category_id = await session.scalar(
             text(
                 "INSERT INTO categories (slug, name, label) "
@@ -102,20 +86,12 @@ async def _seed() -> None:
         await session.commit()
 
 
-async def _override() -> AsyncIterator[AsyncSession]:
-    async with _TestSessionLocal() as session:
-        yield session
-
-
 @pytest.fixture
-def client() -> Iterator[TestClient]:
-    if not asyncio.run(_database_ready()):
-        pytest.skip("database or users table unavailable")
+def db(test_sessions: None) -> Iterator[None]:
+    require_database("users")
     asyncio.run(_cleanup())
     asyncio.run(_seed())
-    app.dependency_overrides[get_session] = _override
-    yield TestClient(app)
-    app.dependency_overrides.clear()
+    yield
     asyncio.run(_cleanup())
 
 
@@ -142,25 +118,6 @@ def _verify(client: TestClient, user: dict[str, Any]) -> None:
     token = create_token(user["id"], user["role"], "verify", 60)
     response = client.post("/api/v1/auth/verify-email", json={"token": token})
     assert response.status_code == 200, response.text
-
-
-def _scalar(statement: str, params: dict[str, Any] | None = None) -> Any:
-    async def run() -> Any:
-        async with _TestSessionLocal() as session:
-            value = await session.scalar(text(statement), params or {})
-            await session.commit()
-            return value
-
-    return asyncio.run(run())
-
-
-def _execute(statement: str, params: dict[str, Any] | None = None) -> None:
-    async def run() -> None:
-        async with _TestSessionLocal() as session:
-            await session.execute(text(statement), params or {})
-            await session.commit()
-
-    asyncio.run(run())
 
 
 def test_register_login_me_and_refresh(client: TestClient) -> None:
@@ -232,11 +189,11 @@ def test_contribution_updates_the_value_logs_it_and_recomputes_the_rate(
     assert second.status_code == 200
     assert second.json()["filled_rate"] == 0.5
 
-    log = _scalar(
+    log = scalar(
         "SELECT count(*) FROM contribution WHERE place_id = "
         "(SELECT id FROM place WHERE source = 'test-p5')"
     )
-    stored = _scalar(
+    stored = scalar(
         "SELECT pa.value->>'value' FROM place_accessibility pa "
         "JOIN criteria c ON c.id = pa.criterion_id "
         "JOIN place p ON p.id = pa.place_id "
@@ -275,7 +232,7 @@ def test_review_creation_and_admin_moderation(client: TestClient) -> None:
     )
     assert forbidden.status_code == 403
 
-    _execute("UPDATE users SET role = 'admin' WHERE email = :email", {"email": _EMAIL})
+    execute("UPDATE users SET role = 'admin' WHERE email = :email", {"email": _EMAIL})
     hidden = client.patch(
         f"/api/v1/reviews/{review['id']}", json={"status": "hidden"}, headers=_auth(tokens)
     )
@@ -319,7 +276,7 @@ def test_contribution_is_idempotent_with_a_key(client: TestClient) -> None:
 
     assert (first.status_code, second.status_code) == (200, 200)
     assert first.json() == second.json()
-    log = _scalar(
+    log = scalar(
         "SELECT count(*) FROM contribution WHERE place_id = "
         "(SELECT id FROM place WHERE source = 'test-p5')"
     )
@@ -350,7 +307,7 @@ def test_contribution_value_repeat_does_not_duplicate_the_log(client: TestClient
     )
 
     assert (first.status_code, second.status_code) == (200, 200)
-    log = _scalar(
+    log = scalar(
         "SELECT count(*) FROM contribution WHERE place_id = "
         "(SELECT id FROM place WHERE source = 'test-p5')"
     )
