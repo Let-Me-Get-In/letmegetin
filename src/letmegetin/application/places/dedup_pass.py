@@ -15,7 +15,7 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 
-from letmegetin.domain.places.dedup import classify_match, similar_score
+from letmegetin.domain.places.dedup import REVIEW_MATCH_THRESHOLD, classify_match, similar_score
 from letmegetin.domain.places.repositories import PlaceRepository
 
 # Metres per degree of latitude, reduced for the longitude shrink at French
@@ -36,7 +36,7 @@ async def recompute_duplicates(
     places: PlaceRepository,
     *,
     radius_m: float = 50.0,
-    low: float = 0.60,
+    low: float = REVIEW_MATCH_THRESHOLD,
     dry_run: bool = False,
 ) -> DedupReport:
     """Flag every place whose best neighbour scores in the review band."""

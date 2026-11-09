@@ -12,6 +12,7 @@ from letmegetin.application.places.duplicates import (
     reject_duplicate,
 )
 from letmegetin.core.exceptions import DomainError
+from letmegetin.domain.places.dedup import AUTO_MATCH_THRESHOLD, REVIEW_MATCH_THRESHOLD
 from letmegetin.domain.places.entities import Place, ReviewDecision
 
 
@@ -147,7 +148,7 @@ async def test_reject_writes_one_decision_and_no_merge_log() -> None:
 
 
 def test_in_review_band_covers_exactly_the_review_bucket() -> None:
-    assert in_review_band(0.60)
+    assert in_review_band(REVIEW_MATCH_THRESHOLD)
     assert in_review_band(0.899)
-    assert not in_review_band(0.599)
-    assert not in_review_band(0.90)
+    assert not in_review_band(REVIEW_MATCH_THRESHOLD - 0.001)
+    assert not in_review_band(AUTO_MATCH_THRESHOLD)

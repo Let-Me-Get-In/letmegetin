@@ -19,7 +19,7 @@ from letmegetin.domain.places.repositories import (
 
 
 def in_review_band(score: float) -> bool:
-    """Whether a stored score still belongs to the review bucket (0.60 ≤ s < 0.90)."""
+    """Whether a stored score still belongs to the review bucket (0.75 ≤ s < 0.90)."""
     return REVIEW_MATCH_THRESHOLD <= score < AUTO_MATCH_THRESHOLD
 
 

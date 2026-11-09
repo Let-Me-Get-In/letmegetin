@@ -33,7 +33,7 @@ class PlaceRepository(Protocol):
         """Places with a location and no canonical parent, for the duplicate pass."""
 
     async def set_duplicate_candidate(self, place_id: int, candidate_id: int, score: float) -> None:
-        """Record a 0.60-0.90 candidate so the operator can review it."""
+        """Record a 0.75-0.90 candidate so the operator can review it."""
 
     async def list_pending_reviews(self, limit: int = 50) -> list[PendingDuplicate]:
         """Places the importer flagged for review, scored candidate first."""
