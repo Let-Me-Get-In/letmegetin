@@ -7,25 +7,17 @@ from __future__ import annotations
 
 import asyncio
 import json
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import Iterator
 from itertools import groupby
 from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
 
-from letmegetin.config import settings
-from letmegetin.core.db import get_session
 from letmegetin.domain.places.dedup import normalize_name
 from letmegetin.domain.places.entities import make_slug
-from letmegetin.main import app
-
-# NullPool: the TestClient event loop differs from the test module's asyncio.run calls.
-_engine = create_async_engine(settings.database_url, poolclass=NullPool)
-_TestSessionLocal = async_sessionmaker(_engine, expire_on_commit=False)
+from tests.db import SessionLocal, require_database
 
 _ORIGIN = (45.0, 5.0)
 # Far from _ORIGIN and from any real AccesLibre row, so the bulk page tests see
@@ -39,18 +31,8 @@ _PLACES = [
 ]
 
 
-async def _database_ready() -> bool:
-    try:
-        async with _TestSessionLocal() as session:
-            await session.execute(text("SELECT 1"))
-            table = await session.scalar(text("SELECT to_regclass('place')"))
-            return table is not None
-    except Exception:  # noqa: BLE001 - any connection failure means "skip"
-        return False
-
-
 async def _cleanup() -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         await session.execute(text("DELETE FROM place WHERE source = 'test-search'"))
         await session.execute(text("DELETE FROM categories WHERE slug LIKE 'test-search-%'"))
         await session.execute(text("DELETE FROM criteria WHERE slug LIKE 'test-search-%'"))
@@ -58,7 +40,7 @@ async def _cleanup() -> None:
 
 
 async def _seed() -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         for source_id, name, lat, lng in _PLACES:
             await session.execute(
                 text(
@@ -148,14 +130,14 @@ async def _seed() -> None:
 
 
 async def _criterion_id(slug: str) -> int:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         return int(
             await session.scalar(text("SELECT id FROM criteria WHERE slug = :slug"), {"slug": slug})
         )
 
 
 async def _bulk_ids() -> dict[str, int]:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         rows = await session.execute(
             text(
                 "SELECT slug, id FROM place "
@@ -165,20 +147,12 @@ async def _bulk_ids() -> dict[str, int]:
         return {str(slug): int(place_id) for slug, place_id in rows}
 
 
-async def _override() -> AsyncIterator[AsyncSession]:
-    async with _TestSessionLocal() as session:
-        yield session
-
-
 @pytest.fixture
-def client() -> Iterator[TestClient]:
-    if not asyncio.run(_database_ready()):
-        pytest.skip("PostGIS database or place table unavailable")
+def db(test_sessions: None) -> Iterator[None]:
+    require_database("place")
     asyncio.run(_cleanup())
     asyncio.run(_seed())
-    app.dependency_overrides[get_session] = _override
-    yield TestClient(app)
-    app.dependency_overrides.clear()
+    yield
     asyncio.run(_cleanup())
 
 

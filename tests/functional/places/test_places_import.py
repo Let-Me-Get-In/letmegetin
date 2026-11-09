@@ -12,17 +12,11 @@ from pathlib import Path
 
 import pytest
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
 from typer.testing import CliRunner
 
 from letmegetin import admin
 from letmegetin.application.places.import_acceslibre import iter_acceslibre_rows
-from letmegetin.config import settings
-
-# NullPool: each CLI invocation runs its own event loop via asyncio.run.
-_engine = create_async_engine(settings.database_url, poolclass=NullPool)
-_TestSessionLocal = async_sessionmaker(_engine, expire_on_commit=False)
+from tests.db import SessionLocal, execute, require_database
 
 _FIXTURE = (
     "id;nom;adresse;commune;code_postal;latitude;longitude;categorie;site_internet;"
@@ -45,36 +39,19 @@ _CATEGORY_FIXTURE = (
 )
 
 
-async def _database_ready() -> bool:
-    try:
-        async with _TestSessionLocal() as session:
-            await session.execute(text("SELECT 1"))
-            table = await session.scalar(text("SELECT to_regclass('place')"))
-            return table is not None
-    except Exception:  # noqa: BLE001 - any connection failure means "skip"
-        return False
-
-
-async def _cleanup() -> None:
-    async with _TestSessionLocal() as session:
-        await session.execute(
-            text("DELETE FROM place WHERE source = 'acceslibre' AND source_id LIKE 'test-%'")
-        )
-        await session.commit()
+_CLEANUP = "DELETE FROM place WHERE source = 'acceslibre' AND source_id LIKE 'test-%'"
 
 
 @pytest.fixture
-def db(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    if not asyncio.run(_database_ready()):
-        pytest.skip("PostGIS database or place table unavailable")
-    asyncio.run(_cleanup())
-    monkeypatch.setattr(admin, "SessionLocal", _TestSessionLocal)
+def db(test_sessions: None) -> Iterator[None]:
+    require_database("place")
+    execute(_CLEANUP)
     yield
-    asyncio.run(_cleanup())
+    execute(_CLEANUP)
 
 
 async def _query(statement: str) -> list[tuple]:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         return list((await session.execute(text(statement))).all())
 
 
@@ -241,7 +218,7 @@ def test_import_report_fails_while_a_category_is_unresolved(db: None, tmp_path: 
 
 
 async def _delete_unresolved() -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         await session.execute(
             text("DELETE FROM place WHERE source_id LIKE 'test-cat-%' AND category_id IS NULL")
         )

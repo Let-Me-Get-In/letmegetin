@@ -13,18 +13,13 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
+from sqlalchemy.ext.asyncio import AsyncSession
 from typer.testing import CliRunner
 
 from letmegetin import admin
-from letmegetin.config import settings
 from letmegetin.core.db import get_session
 from letmegetin.main import app
-
-# NullPool: each CLI invocation runs its own event loop via asyncio.run.
-_engine = create_async_engine(settings.database_url, poolclass=NullPool)
-_TestSessionLocal = async_sessionmaker(_engine, expire_on_commit=False)
+from tests.db import SessionLocal, execute, require_database
 
 # Yields one auto-link (test-2, score 1.0) and one review candidate (test-3, ~0.85).
 _FIXTURE = (
@@ -54,39 +49,22 @@ _COVERAGE_FIXTURE = (
 )
 
 
-async def _database_ready() -> bool:
-    try:
-        async with _TestSessionLocal() as session:
-            await session.execute(text("SELECT 1"))
-            table = await session.scalar(text("SELECT to_regclass('place')"))
-            return table is not None
-    except Exception:  # noqa: BLE001 - any connection failure means "skip"
-        return False
-
-
-async def _cleanup() -> None:
-    async with _TestSessionLocal() as session:
-        await session.execute(
-            text(
-                "DELETE FROM place WHERE source = 'acceslibre' "
-                "AND (source_id LIKE 'test-%' OR source_id LIKE 'cli-test-%')"
-            )
-        )
-        await session.commit()
+_CLEANUP = (
+    "DELETE FROM place WHERE source = 'acceslibre' "
+    "AND (source_id LIKE 'test-%' OR source_id LIKE 'cli-test-%')"
+)
 
 
 @pytest.fixture
-def db(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    if not asyncio.run(_database_ready()):
-        pytest.skip("PostGIS database or place table unavailable")
-    asyncio.run(_cleanup())
-    monkeypatch.setattr(admin, "SessionLocal", _TestSessionLocal)
+def db(test_sessions: None) -> Iterator[None]:
+    require_database("place")
+    execute(_CLEANUP)
     yield
-    asyncio.run(_cleanup())
+    execute(_CLEANUP)
 
 
 async def _query(statement: str) -> list[tuple]:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         return list((await session.execute(text(statement))).all())
 
 
@@ -109,7 +87,7 @@ def _import(path: Path) -> None:
 
 def _search() -> list[str]:
     async def _override() -> AsyncIterator[AsyncSession]:
-        async with _TestSessionLocal() as session:
+        async with SessionLocal() as session:
             yield session
 
     app.dependency_overrides[get_session] = _override
@@ -150,7 +128,7 @@ def test_duplicates_list_flags_a_score_outside_the_review_band(db: None) -> None
 
 
 async def _seed_out_of_band() -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         await session.execute(
             text(
                 "INSERT INTO place (source, source_id, name, name_normalized, slug) VALUES "
@@ -252,7 +230,7 @@ def test_duplicates_actions_refuse_a_place_without_a_candidate(db: None, tmp_pat
 
 
 async def _prepare_coverage() -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         # One place abroad, and one merged duplicate counted on its canonical row only.
         await session.execute(
             text("UPDATE place SET country_code = 'BE' WHERE source_id = 'cli-test-cov-2'")
@@ -293,7 +271,7 @@ def test_coverage_csv_counts_places_by_category_and_country(db: None, tmp_path: 
 
 
 def test_commands_are_noops_on_an_empty_place_table(db: None) -> None:
-    asyncio.run(_cleanup())
+    execute(_CLEANUP)
 
     listed = _cli("duplicates", "list")
     assert listed.exit_code == 0

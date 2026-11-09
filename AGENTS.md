@@ -73,8 +73,10 @@ General Python, lint/format/types, dependency and CI/CD rules live in
 Kinds, naming and the CI gates are in `docs/rules/testing.md`. Local specifics:
 
 - **Framework**: pytest (+ `pytest-asyncio`), `httpx`/`TestClient`.
-- Layout: `tests/unit` and `tests/integration` (real PostGIS); the e2e suite
-  lives in `letmegetin-e2e`.
+- Layout: `tests/unit` (pure), `tests/integration` (wiring, boundaries mocked),
+  `tests/functional` (real API/CLI against PostGIS); each mirrors the
+  `src/letmegetin` layering and is tagged for `-m unit|integration|functional`.
+  The e2e suite lives in `letmegetin-e2e`.
 - Tests run against their own database (see `tests/conftest.py`).
 - Coverage floor enforced in CI at **85 %** (line + branch).
 
@@ -139,8 +141,9 @@ letmegetin/
 │       ├── schemas/
 │       └── v1/
 ├── tests/
-│   ├── unit/
-│   └── integration/        # later (real PostGIS)
+│   ├── unit/               # pure, mirrors domain/application/core
+│   ├── integration/        # wiring, boundaries mocked
+│   └── functional/         # real API/CLI + PostGIS
 └── web/                    # Next.js (à venir)
 ```
 

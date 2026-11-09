@@ -108,7 +108,7 @@ def test_empty_category_rows_are_known_gaps_not_errors(tmp_path: Path) -> None:
 
 
 def test_committed_alias_file_maps_the_measured_vocabulary() -> None:
-    path = Path(__file__).parents[2] / "data" / "referential" / "acceslibre_categories.csv"
+    path = Path(__file__).parents[4] / "data" / "referential" / "acceslibre_categories.csv"
 
     aliases = load_category_aliases(path)
 

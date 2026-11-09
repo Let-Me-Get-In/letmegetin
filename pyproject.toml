@@ -59,6 +59,12 @@ extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path", "f
 testpaths = ["tests"]
 pythonpath = ["."]
 asyncio_mode = "auto"
+addopts = "--import-mode=importlib"
+markers = [
+    "unit: one function or module, no external boundary",
+    "integration: component wiring, external boundaries mocked",
+    "functional: the product through a real entry point (API or CLI)",
+]
 
 [tool.mypy]
 python_version = "3.12"
