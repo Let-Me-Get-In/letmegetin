@@ -50,7 +50,7 @@ class Place:
     website: str | None = None
     phone: str | None = None
     canonical_id: int | None = None
-    # Review-queue candidate: what makes the 0.60-0.90 bucket a query, not a recomputation.
+    # Review-queue candidate: what makes the 0.75-0.90 bucket a query, not a recomputation.
     duplicate_of_id: int | None = None
     # Read-only projection: filled by the repository when it joins the category.
     category_slug: str | None = None

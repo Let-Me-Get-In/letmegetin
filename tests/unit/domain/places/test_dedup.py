@@ -31,9 +31,35 @@ def test_normalize_name(raw: str, expected: str) -> None:
     assert normalize_name(raw) == expected
 
 
-@pytest.mark.parametrize(("left", "right"), [("Musée du Louvre", "Musee du Louvre")])
+@pytest.mark.parametrize(
+    ("left", "right"),
+    [
+        ("Musée du Louvre", "Musee du Louvre"),
+        ("CocciMarket", "Cocci Market"),
+        ("CocciMarket", "COCCIMARKET"),
+        ("LAPOSTROPHE", "L'Apostrophe"),
+        ("Vert Baudet", "Vertbaudet"),
+        ("Truffes Folies", "Truffesfolies"),
+    ],
+    ids=["accent", "space", "case-and-space", "apostrophe", "company-space", "plural-space"],
+)
 def test_similar_score_is_one_for_normalized_equality(left: str, right: str) -> None:
     assert similar_score(left, right) == 1.0
+
+
+@pytest.mark.parametrize(
+    ("left", "right"),
+    [
+        ("ZOZAN KEBAB", "Antalya Kebab"),
+        ("ZONE KEBAB", "Sultan Kebab"),
+        ("Zoe coiffure", "Stephane coiffure"),
+    ],
+    ids=["different-name", "different-name-2", "shared-trade-word"],
+)
+def test_a_shared_trade_word_does_not_reach_the_review_band(left: str, right: str) -> None:
+    # Measured on the national queue: 18 987 pairs sat in 0.60-0.70 and were mostly
+    # two different shops whose names share a trade word.
+    assert similar_score(left, right) < REVIEW_MATCH_THRESHOLD
 
 
 @pytest.mark.parametrize(
@@ -64,11 +90,21 @@ def test_similar_score_is_symmetric() -> None:
         (AUTO_MATCH_THRESHOLD, "auto"),
         (0.95, "auto"),
         (0.89, "review"),
+        (0.74, "new"),
         (REVIEW_MATCH_THRESHOLD, "review"),
         (0.59, "new"),
         (0.0, "new"),
     ],
-    ids=["exact", "auto-threshold", "high", "just-below-auto", "review-threshold", "low", "zero"],
+    ids=[
+        "exact",
+        "auto-threshold",
+        "high",
+        "just-below-auto",
+        "review-threshold",
+        "just-below-review",
+        "low",
+        "zero",
+    ],
 )
 def test_classify_match(score: float, kind: str) -> None:
     assert classify_match(score) == kind
