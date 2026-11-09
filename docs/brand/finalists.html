@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr"><meta charset="utf-8">
+<title>A vs C</title>
+<style>
+  :root{--paper:#f7f4ec;--ink:#18211c;--accent:#1f6f4a;--line:#d8ddd4;--muted:#5d6a61;--serif:ui-serif,Georgia,"Times New Roman",serif;--sans:ui-sans-serif,system-ui,sans-serif}
+  body{margin:0;padding:48px 40px 64px;background:var(--paper);color:var(--ink);font-family:var(--sans)}
+  .wrap{max-width:1000px;margin:0 auto}
+  h1{font-family:var(--serif);font-weight:500;font-size:32px;letter-spacing:-.02em;margin:0 0 6px}
+  .sub{color:var(--muted);margin:0 0 40px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .col{border:1px solid var(--line);border-radius:18px;padding:28px;background:#fffdf7}
+  .col h2{font-family:var(--serif);font-weight:500;font-size:22px;margin:0 0 2px}
+  .col .why{font-size:13.5px;color:var(--muted);line-height:1.5;margin:0 0 22px;min-height:62px}
+  .big{display:grid;place-items:center;padding:22px 0 26px}
+  .big svg{width:150px;height:150px;display:block}
+  .row{display:flex;align-items:center;gap:16px;padding-top:18px;border-top:1px solid var(--line)}
+  .row .mini svg{width:46px;height:46px;display:block}
+  .word{font-family:var(--serif);font-size:27px;letter-spacing:-.025em;line-height:1}
+  .word em{font-style:normal;color:var(--accent)}
+  .sizes{display:flex;gap:18px;align-items:flex-end;margin-top:18px;color:var(--muted);font-size:11px}
+  .sizes div{display:grid;gap:6px;justify-items:center}
+  .s16 svg{width:16px;height:16px}.s24 svg{width:24px;height:24px}.s38 svg{width:38px;height:38px}
+  .sizes svg{display:block;color:var(--ink)}
+  .dark{background:#101613;border-color:#2a352e;color:#eef2eb}
+  .dark .why{color:#a3b0a6}.dark .sizes{color:#a3b0a6}.dark .sizes svg{color:#7fd1a6}
+  .dark .row{border-color:#2a352e}.dark .word{color:#eef2eb}.dark .word em{color:#7fd1a6}
+  .verdict{margin-top:32px;border-left:3px solid var(--accent);padding-left:16px;line-height:1.55;max-width:70ch}
+</style>
+<div class="wrap">
+  <h1>Les deux finalistes, grandeur réelle</h1>
+  <p class="sub">Même grille, mêmes couleurs, même mot-marque. Seul le signe change.</p>
+
+  <div class="grid">
+
+    <div class="col">
+      <h2>A — le seuil</h2>
+      <p class="why">La porte est toute la forme. C’est la seule chose sur l’écran qui ne soit pas une épingle.</p>
+      <div class="big"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg></div>
+      <div class="sizes">
+        <div class="s16"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg><span>16</span></div>
+        <div class="s24"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg><span>24</span></div>
+        <div class="s38"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg><span>38</span></div>
+      </div>
+      <div class="row"><div class="mini"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg></div><div class="word">letme<em>get</em>in</div></div>
+    </div>
+
+    <div class="col">
+      <h2>C — l’épingle</h2>
+      <p class="why">Le pin de la carte. Immédiatement « un lieu », mais c’est aussi la forme que dessine déjà chaque marqueur.</p>
+      <div class="big"><svg viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 44C24 44 40 30 40 20A16 16 0 1 0 8 20C8 30 24 44 24 44ZM18 38V22a6 6 0 0 1 12 0v16Z"/></svg></div>
+      <div class="sizes">
+        <div class="s16"><svg viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 44C24 44 40 30 40 20A16 16 0 1 0 8 20C8 30 24 44 24 44ZM18 38V22a6 6 0 0 1 12 0v16Z"/></svg><span>16</span></div>
+        <div class="s24"><svg viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 44C24 44 40 30 40 20A16 16 0 1 0 8 20C8 30 24 44 24 44ZM18 38V22a6 6 0 0 1 12 0v16Z"/></svg><span>24</span></div>
+        <div class="s38"><svg viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 44C24 44 40 30 40 20A16 16 0 1 0 8 20C8 30 24 44 24 44ZM18 38V22a6 6 0 0 1 12 0v16Z"/></svg><span>38</span></div>
+      </div>
+      <div class="row"><div class="mini"><svg viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 44C24 44 40 30 40 20A16 16 0 1 0 8 20C8 30 24 44 24 44ZM18 38V22a6 6 0 0 1 12 0v16Z"/></svg></div><div class="word">letme<em>get</em>in</div></div>
+    </div>
+
+    <div class="col dark">
+      <h2>A — sur nuit</h2>
+      <p class="why">La contre-forme tient sans filet.</p>
+      <div class="big"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg></div>
+      <div class="row"><div class="mini"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg></div><div class="word">letme<em>get</em>in</div></div>
+    </div>
+
+    <div class="col dark">
+      <h2>C — sur nuit</h2>
+      <p class="why">Idem, mais la porte se réduit à une fente.</p>
+      <div class="big"><svg viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 44C24 44 40 30 40 20A16 16 0 1 0 8 20C8 30 24 44 24 44ZM18 38V22a6 6 0 0 1 12 0v16Z"/></svg></div>
+      <div class="row"><div class="mini"><svg viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 44C24 44 40 30 40 20A16 16 0 1 0 8 20C8 30 24 44 24 44ZM18 38V22a6 6 0 0 1 12 0v16Z"/></svg></div><div class="word">letme<em>get</em>in</div></div>
+    </div>
+
+  </div>
+
+  <p class="verdict">Le test décisif, c’est la colonne 16 px : à gauche on lit encore une entrée ; à droite on lit une puce.</p>
+</div>

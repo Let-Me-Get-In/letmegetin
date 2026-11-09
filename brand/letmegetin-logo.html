@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><style>
+  :root{--paper:#f7f4ec;--ink:#18211c;--accent:#1f6f4a;--line:#d8ddd4;--muted:#5d6a61}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+  .w{max-width:940px;margin:0 auto;padding:52px 32px 64px}
+  h1{font-family:Georgia,serif;font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 36px;max-width:68ch;line-height:1.6}
+  .band{display:flex;align-items:center;justify-content:space-between;gap:32px;background:#fffdf7;border:1px solid var(--line);border-radius:16px;padding:28px 32px}
+  .scales{display:flex;align-items:flex-end;gap:24px;color:var(--muted);font-size:10px}
+  .scales>div{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .accent{color:var(--accent)}
+  .lockup{display:flex;align-items:center;gap:12px;font-family:Georgia,serif;font-size:34px;font-weight:600;letter-spacing:-.015em}
+  .lockup svg{width:40px;height:40px;flex:none}
+  .lockup .me{color:var(--accent)}
+  .lockup.sm{font-size:21px;gap:8px}
+  .lockup.sm svg{width:26px;height:26px}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+  .cell{border-radius:16px;border:1px solid var(--line);background:#fffdf7;min-height:150px;display:flex;align-items:center;justify-content:center}
+  .cell.green{background:var(--accent);border-color:var(--accent)}
+  .cell.dark{background:#101613;border-color:#2a352e}
+  .cell svg{color:var(--accent)}
+  .cell.green svg{color:var(--paper)}
+  .cell.dark svg{color:#7fd1a6}
+  .cell.app svg{width:104px;height:104px}
+  .cap{margin-top:24px;font-size:12px;color:var(--muted);line-height:1.6;max-width:68ch}
+</style></head><body><div class="w">
+  <h1>Le repère qui s’ouvre</h1>
+  <p class="sub">Un lieu sur la carte — le repère — dont le contre-forme est une porte dont le seuil touche le bord. Elle est ouverte, pas fermée : on ne demande pas la clé, on demande le passage.</p>
+
+  <div class="band">
+    <div class="scales">
+      <div><svg class="accent" width="16" height="16" viewBox="0 0 64 64" fill="currentColor"><path fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></svg>16</div>
+      <div><svg class="accent" width="24" height="24" viewBox="0 0 64 64" fill="currentColor"><path fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></svg>24</div>
+      <div><svg class="accent" width="32" height="32" viewBox="0 0 64 64" fill="currentColor"><path fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></svg>32</div>
+      <div><svg class="accent" width="64" height="64" viewBox="0 0 64 64" fill="currentColor"><path fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></svg>64</div>
+      <div><svg class="accent" width="128" height="128" viewBox="0 0 64 64" fill="currentColor"><path fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></svg>128</div>
+    </div>
+    <div>
+      <div class="lockup"><svg class="accent" viewBox="0 0 64 64" fill="currentColor"><path fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></svg><span>Let<span class="me">Me</span>GetIn</span></div>
+      <div class="lockup sm" style="margin-top:18px;color:var(--muted)"><svg class="accent" viewBox="0 0 64 64" fill="currentColor"><path fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></svg><span>Let<span class="me">Me</span>GetIn</span></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="cell"><svg width="76" height="76" viewBox="0 0 64 64" fill="currentColor"><path fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></svg></div>
+    <div class="cell green"><svg width="76" height="76" viewBox="0 0 64 64" fill="currentColor"><path fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></svg></div>
+    <div class="cell dark"><svg width="76" height="76" viewBox="0 0 64 64" fill="currentColor"><path fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></svg></div>
+  </div>
+
+  <div class="row">
+    <div class="cell app"><svg viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#1f6f4a"/><g transform="translate(56 56) scale(6.25)"><path fill="#f7f4ec" fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></g></svg></div>
+    <div class="cell app" style="background:#101613;border-color:#2a352e"><svg viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#17261d"/><g transform="translate(56 56) scale(6.25)"><path fill="#7fd1a6" fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/></g></svg></div>
+    <div class="cell"><svg width="76" height="76" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"><path d="M12 56V30a20 20 0 0 1 40 0v26"/></svg></div>
+  </div>
+
+  <p class="cap">Bas droite : la variante sobre, l’ouverture seule sans repère, pour un registre plus institutionnel. Les cellules du milieu testent les trois fonds (papier, vert plein, nuit).</p>
+</div></body></html>

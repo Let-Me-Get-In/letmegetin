@@ -96,7 +96,7 @@ uv run python -m letmegetin.admin import acceslibre --file /path/to/acceslibre.c
 uv run python -m letmegetin.admin import acceslibre --file /path/to/acceslibre.csv
 uv run python -m letmegetin.admin import report
 
-# Duplicate review queue (0.60-0.90 name matches) and its audit trail
+# Duplicate review queue (0.75-0.90 name matches) and its audit trail
 uv run python -m letmegetin.admin duplicates list
 uv run python -m letmegetin.admin duplicates merge 42 --note "same library"
 uv run python -m letmegetin.admin duplicates reject 43 --note "annexe is separate"
@@ -153,7 +153,7 @@ is never used (its ToS forbids storing the data).
 Deduplication is **soft, never destructive**: on import each row is blocked
 within 100 m and its name scored (`difflib` on normalized names). A score ≥ 0.90
 links the row to the canonical place via `canonical_id` and logs the merge in
-`place_merge_log`; 0.60–0.90 sets `operating_status = duplicate_review`; below
+`place_merge_log`; 0.75–0.90 sets `operating_status = duplicate_review`; below
 that it is a distinct place. Re-importing the same file changes nothing, thanks
 to the unique `(source, source_id)` index.
 

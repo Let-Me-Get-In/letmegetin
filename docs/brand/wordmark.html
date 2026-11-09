@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr"><meta charset="utf-8">
+<title>LetMeGetIn — mot-marque</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Literata:opsz,wght@7..72,400..700&family=Newsreader:opsz,wght@6..72,400..700&family=Source+Serif+4:opsz,wght@8..60,400..700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f4ec;--ink:#18211c;--accent:#1f6f4a;--line:#d8ddd4;--muted:#5d6a61;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    --literata:'Literata',Georgia,serif;
+    --newsreader:'Newsreader',Georgia,serif;
+    --source:'Source Serif 4',Georgia,serif;
+    --instrument:'Instrument Serif',Georgia,serif;
+    --georgia:Georgia,'Times New Roman',serif;
+  }
+  body{margin:0;padding:48px 32px 72px;background:var(--paper);color:var(--ink);font-family:var(--sans)}
+  .wrap{max-width:1000px;margin:0 auto}
+  h1{font-family:var(--literata);font-weight:500;font-size:34px;letter-spacing:-.02em;margin:0 0 6px}
+  .lede{color:var(--muted);line-height:1.55;max-width:64ch;margin:0 0 40px}
+  section{margin-top:44px}
+  .kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+  h2{font-family:var(--literata);font-weight:500;font-size:21px;margin:0 0 14px}
+  .hdr{border:1px solid var(--line);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;background:#fffdf7}
+  .hdr .nav{display:flex;gap:14px;font-size:13px;color:var(--muted);align-items:center}
+  .hdr .btn{background:var(--accent);color:var(--paper);padding:5px 10px;border-radius:6px}
+  .logo{font-size:20px;letter-spacing:-.02em;line-height:1}
+  .note{font-size:12.5px;color:var(--muted);margin:2px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .cell{border:1px solid var(--line);border-radius:12px;padding:20px;background:#fffdf7}
+  .cell .big{font-size:44px;letter-spacing:-.025em;line-height:1.1;margin-bottom:8px}
+  .cell .small{font-size:20px;letter-spacing:-.02em}
+  .cell .label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:14px}
+  .acc{color:var(--accent)}
+  .muted{color:var(--muted)}
+  .split{display:grid;grid-template-columns:60px 1fr;gap:18px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+  .split:last-child{border-bottom:0}
+  .split .who{font-size:11.5px;color:var(--muted);line-height:1.35}
+  .split .sample{font-size:24px;letter-spacing:-.02em}
+  .split .sample .sm{font-size:14px;color:var(--muted);margin-left:18px}
+  .verdict{border-left:3px solid var(--accent);padding-left:16px;max-width:66ch;line-height:1.6}
+  .verdict strong{font-weight:600}
+</style>
+<div class="wrap">
+
+  <h1>Le mot-marque</h1>
+  <p class="lede">
+    Le signe est réglé. Le mot, non : aujourd’hui c’est <em>Let&lt;span accent&gt;Me&lt;/span&gt;GetIn</em> en Georgia système,
+    graisse 600. Trois choses à trancher — où va la couleur, majuscules ou non, et quelle serif.
+  </p>
+
+  <section>
+    <p class="kicker">1 — En situation</p>
+    <h2>Le header, taille réelle (20 px)</h2>
+
+    <div class="hdr"><span class="logo" style="font-family:var(--georgia);font-weight:600">Let<span class="acc">Me</span>GetIn</span><span class="nav">Rechercher <span>Compte</span><span class="btn">Connexion</span></span></div>
+    <p class="note">Aujourd’hui — Georgia 600, le vert coupe le mot en deux.</p>
+
+    <div class="hdr" style="margin-top:14px"><span class="logo" style="font-family:var(--literata);font-weight:600">LetMeGetIn</span><span class="nav">Rechercher <span>Compte</span><span class="btn">Connexion</span></span></div>
+    <p class="note">A — camel, une couleur. Posé, mais muet.</p>
+
+    <div class="hdr" style="margin-top:14px"><span class="logo" style="font-family:var(--literata);font-weight:600">LetMeGet<span class="acc">In</span></span><span class="nav">Rechercher <span>Compte</span><span class="btn">Connexion</span></span></div>
+    <p class="note">B — l’accent tombe sur le dernier mot : la chute de la phrase (« let me get <em>in</em> »), pas un fragment au milieu.</p>
+
+    <div class="hdr" style="margin-top:14px"><span class="logo" style="font-family:var(--literata);font-weight:500;letter-spacing:-.035em">letmegetin</span><span class="nav">Rechercher <span>Compte</span><span class="btn">Connexion</span></span></div>
+    <p class="note">C — minuscules serrées, une couleur. Lit comme un domaine.</p>
+
+    <div class="hdr" style="margin-top:14px"><span class="logo" style="font-family:var(--literata);font-weight:500">Let me get <span class="acc">in</span></span><span class="nav">Rechercher <span>Compte</span><span class="btn">Connexion</span></span></div>
+    <p class="note">D — la phrase respire. Très clair, mais long : 13 caractères contre 10.</p>
+  </section>
+
+  <section>
+    <p class="kicker">2 — La couleur</p>
+    <h2>Où tombe le vert</h2>
+    <div class="grid2">
+      <div class="cell"><div class="big" style="font-family:var(--literata);font-weight:600">Let<span class="acc">Me</span>GetIn</div><div class="small" style="font-family:var(--literata);font-weight:600">Let<span class="acc">Me</span>GetIn</div><div class="label">aujourd’hui / milieu</div></div>
+      <div class="cell"><div class="big" style="font-family:var(--literata);font-weight:600">LetMeGet<span class="acc">In</span></div><div class="small" style="font-family:var(--literata);font-weight:600">LetMeGet<span class="acc">In</span></div><div class="label">chute de phrase / fin</div></div>
+      <div class="cell"><div class="big" style="font-family:var(--literata);font-weight:600">LetMeGetIn</div><div class="small" style="font-family:var(--literata);font-weight:600">LetMeGetIn</div><div class="label">monochrome / le signe porte la couleur</div></div>
+      <div class="cell"><div class="big" style="font-family:var(--literata);font-weight:600;color:var(--muted)">LetMeGet<span style="color:var(--ink)">In</span></div><div class="small" style="font-family:var(--literata);font-weight:600;color:var(--muted)">LetMeGet<span style="color:var(--ink)">In</span></div><div class="label">inversé / tout gris, seul « In » en encre</div></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">3 — La serif</p>
+    <h2>La même ligne, cinq fontes</h2>
+
+    <div class="split"><div class="who">Georgia<br>système</div><div class="sample" style="font-family:var(--georgia);font-weight:600">LetMeGet<span class="acc">In</span><span class="sm" style="font-family:var(--georgia);font-weight:400">14 px — lorem accessibilité</span></div></div>
+
+    <div class="split"><div class="who">Literata<br>SIL, variable</div><div class="sample" style="font-family:var(--literata);font-weight:600">LetMeGet<span class="acc">In</span><span class="sm" style="font-family:var(--literata);font-weight:400">14 px — lorem accessibilité</span></div></div>
+
+    <div class="split"><div class="who">Newsreader<br>SIL, variable</div><div class="sample" style="font-family:var(--newsreader);font-weight:600">LetMeGet<span class="acc">In</span><span class="sm" style="font-family:var(--newsreader);font-weight:400">14 px — lorem accessibilité</span></div></div>
+
+    <div class="split"><div class="who">Source Serif 4<br>SIL, variable</div><div class="sample" style="font-family:var(--source);font-weight:600">LetMeGet<span class="acc">In</span><span class="sm" style="font-family:var(--source);font-weight:400">14 px — lorem accessibilité</span></div></div>
+
+    <div class="split"><div class="who">Instrument Serif<br>SIL, display</div><div class="sample" style="font-family:var(--instrument);font-weight:400">LetMeGet<span class="acc">In</span><span class="sm" style="font-family:var(--instrument);font-weight:400">14 px — lorem accessibilité</span></div></div>
+  </section>
+
+  <section>
+    <p class="kicker">4 — Verdict</p>
+    <p class="verdict">
+      <strong>B, en Literata 600.</strong> Le vert sur « In » suit la phrase au lieu de la couper, et c’est le seul
+      endroit où l’accent fait sens : « get <em>in</em> », c’est le produit. Literata parce qu’elle a été dessinée
+      pour la lecture longue — x-hauteur généreuse, chiffres lisibles, SIL donc auto-hébergeable via next/font —
+      et parce qu’elle ne ressemble à aucune autre serif d’écran. Instrument Serif est écartée : à 20 px,
+      ses déliés disparaissent.
+    </p>
+    <p class="note" style="margin-top:14px">Contraste vérifié : #1f6f4a sur #f7f4ec = 5,57:1 (AA texte normal) ; #7fd1a6 sur #101613 = 10,1:1.</p>
+  </section>
+
+</div>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr"><meta charset="utf-8">
+<title>LetMeGetIn — lockup final</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400..700&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#f7f4ec;--ink:#18211c;--accent:#1f6f4a;--line:#d8ddd4;--muted:#5d6a61;
+    --sans:ui-sans-serif,system-ui,sans-serif;--lit:'Literata',Georgia,serif}
+  body{margin:0;padding:44px 32px 64px;background:var(--paper);color:var(--ink);font-family:var(--sans)}
+  .wrap{max-width:1000px;margin:0 auto}
+  h1{font-family:var(--lit);font-weight:500;font-size:30px;letter-spacing:-.02em;margin:0 0 4px}
+  .lede{color:var(--muted);margin:0 0 34px}
+  h2{font-family:var(--lit);font-weight:500;font-size:19px;margin:0 0 12px}
+  section{margin-top:38px}
+  .hdr{border:1px solid var(--line);border-radius:12px;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;background:#fffdf7;margin-bottom:8px}
+  .nav{display:flex;gap:14px;font-size:13px;color:var(--muted);align-items:center}
+  .btn{background:var(--accent);color:var(--paper);padding:5px 10px;border-radius:6px}
+  .lk{display:flex;align-items:center;gap:9px;color:var(--ink)}
+  .lk svg{display:block;width:26px;height:26px;color:var(--accent)}
+  .lk .w{font-family:var(--lit);font-weight:600;font-size:19px;letter-spacing:-.02em;line-height:1}
+  .note{font-size:12.5px;color:var(--muted);margin:0 0 18px}
+  .cell{border:1px solid var(--line);border-radius:14px;padding:34px;background:#fffdf7;display:grid;place-items:center;gap:6px}
+  .cell.dark{background:#101613;border-color:#2a352e;color:#eef2eb}
+  .cell.dark .lk{color:#eef2eb}.cell.dark .lk svg{color:#7fd1a6}
+  .big .lk{gap:20px}.big .lk svg{width:62px;height:62px}.big .lk .w{font-size:38px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .tag{font-size:11.5px;color:var(--muted);margin-top:6px}
+  code{background:#e9e5da;padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+<div class="wrap">
+  <h1>Le lockup retenu</h1>
+  <p class="lede">Signe en vert, mot en encre. Une seule couleur sur les dix lettres — le fragment vert au milieu du mot disparaît.</p>
+
+  <section>
+    <h2>Header — 20 px</h2>
+    <div class="hdr"><span class="lk"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg><span class="w">LetMeGetIn</span></span><span class="nav">Rechercher <span>Compte</span><span class="btn">Connexion</span></span></div>
+    <p class="note">Signe 26 px, mot 19 px (Literata 600, −0,02 em). Hauteur du signe ≈ 1,15 × la capitale du mot.</p>
+
+    <div class="hdr"><span class="lk"><svg style="width:20px;height:20px" viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg><span class="w" style="font-size:20px">LetMeGetIn</span></span><span class="nav">Rechercher <span>Compte</span><span class="btn">Connexion</span></span></div>
+    <p class="note">Variante compacte : signe à la hauteur du mot, écart 0,35 × la hauteur du signe. C’est celle qui gêne le moins la nav.</p>
+  </section>
+
+  <section>
+    <h2>Grand format</h2>
+    <div class="grid2">
+      <div class="cell big"><span class="lk"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg><span class="w">LetMeGetIn</span></span></div>
+      <div class="cell dark big"><span class="lk"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg><span class="w">LetMeGetIn</span></span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Petit — 15 px (pied de page)</h2>
+    <div class="cell"><span class="lk"><svg style="width:19px;height:19px" viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg><span class="w" style="font-size:15px">LetMeGetIn</span></span></div>
+  </section>
+
+  <section>
+    <p class="note">Si tu tiens au fragment coloré, il va sur « In », jamais sur « Me » : <span style="font-family:var(--lit);font-weight:600;font-size:20px">LetMeGet<span style="color:var(--accent)">In</span></span> — mais dans ce cas le signe reste en encre, pour qu’il n’y ait qu’un seul vert.</p>
+  </section>
+</div>

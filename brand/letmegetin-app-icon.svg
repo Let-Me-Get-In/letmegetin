@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="LetMeGetIn">
+  <title>LetMeGetIn</title>
+  <rect width="512" height="512" rx="112" fill="#1f6f4a"/>
+  <g transform="translate(56 56) scale(6.25)">
+    <path fill="#f7f4ec" fill-rule="evenodd" d="M21 4h22a10 10 0 0 1 10 10v32L32 62 11 46V14A10 10 0 0 1 21 4Zm2 42V28a9 9 0 0 1 18 0v18H23Z"/>
+  </g>
+</svg>

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LetMeGetIn — pistes de logo</title>
+    <style>
+      :root {
+        --paper: #f7f4ec;
+        --ink: #18211c;
+        --accent: #1f6f4a;
+        --line: #d8ddd4;
+        --muted: #5d6a61;
+        --serif: ui-serif, Georgia, "Times New Roman", serif;
+        --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 56px 32px 96px;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--sans);
+      }
+      header, section { max-width: 1040px; margin: 0 auto; }
+      h1 { font-family: var(--serif); font-weight: 500; font-size: 40px; letter-spacing: -0.02em; margin: 0 0 8px; }
+      .lede { color: var(--muted); max-width: 60ch; line-height: 1.55; margin: 0 0 48px; }
+      section { margin-top: 56px; }
+      .kicker { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
+      h2 { font-family: var(--serif); font-weight: 500; font-size: 26px; margin: 0 0 6px; }
+      .why { color: var(--muted); line-height: 1.55; max-width: 62ch; margin: 0 0 20px; font-size: 15px; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .card { border: 1px solid var(--line); border-radius: 16px; padding: 32px; display: grid; place-items: center; gap: 20px; }
+      .card.dark { background: #101613; color: #eef2eb; border-color: #2a352e; }
+      .mark { width: 88px; height: 88px; display: block; }
+      .lock { display: flex; align-items: center; gap: 18px; }
+      .lock .mark { width: 56px; height: 56px; }
+      .word { font-family: var(--serif); font-size: 34px; letter-spacing: -0.025em; line-height: 1; }
+      .tag { font-size: 12.5px; color: var(--muted); margin-top: 6px; letter-spacing: 0.01em; }
+      .sizes { display: flex; align-items: flex-end; gap: 22px; color: var(--ink); }
+      .sizes svg { display: block; }
+      .sizes .s16 svg { width: 16px; height: 16px; }
+      .sizes .s24 svg { width: 24px; height: 24px; }
+      .sizes .s32 svg { width: 32px; height: 32px; }
+      .sizes .s48 svg { width: 48px; height: 48px; }
+      .reco { border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; color: var(--ink); }
+      code { font-size: 13px; background: #e9e5da; padding: 1px 6px; border-radius: 5px; }
+      @media (max-width: 760px) { .row { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Trois pistes de logo</h1>
+      <p class="lede">
+        LetMeGetIn est un référentiel d’accessibilité vérifiée. Le logo doit tenir en une couleur, en 16&nbsp;px,
+        et dire «&nbsp;entrer&nbsp;» sans dessiner un fauteuil roulant. Trois métaphores, du plus littéral au plus abstrait.
+      </p>
+    </header>
+
+    <!-- 1 -->
+    <section>
+      <p class="kicker">Piste 1 — recommandée</p>
+      <h2>Le seuil</h2>
+      <p class="why">
+        Un lieu (le bloc) dont l’entrée est ouverte. L’arche est percée jusqu’au sol : on peut passer, c’est le sujet du produit.
+        Lisible à 16&nbsp;px, une seule couleur, aucune icône de handicap.
+      </p>
+      <div class="row">
+        <div class="card">
+          <div class="lock">
+            <svg class="mark" viewBox="0 0 96 96" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg>
+            <div>
+              <div class="word">letmegetin</div>
+              <div class="tag">L’accessibilité des lieux, pour de vrai</div>
+            </div>
+          </div>
+        </div>
+        <div class="card dark">
+          <div class="lock">
+            <svg class="mark" viewBox="0 0 96 96" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg>
+            <div>
+              <div class="word">letmegetin</div>
+              <div class="tag" style="color:#a3b0a6">L’accessibilité des lieux, pour de vrai</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section>
+      <p class="kicker">Piste 2</p>
+      <h2>La rampe</h2>
+      <p class="why">
+        Une coupe de rampe : le sol, la pente, le mur. C’est l’argument du produit en un seul aplat,
+        sans aucune icône de handicap. Plus abstrait, moins «&nbsp;lieu&nbsp;», mais très reconnaissable.
+      </p>
+      <div class="row">
+        <div class="card">
+          <div class="lock">
+            <svg class="mark" viewBox="0 0 96 96" aria-hidden="true"><path fill="currentColor" d="M20 80H80V40A6 6 0 0 0 74 34L20 80Z"/></svg>
+            <div>
+              <div class="word">letmegetin</div>
+              <div class="tag">L’accessibilité des lieux, pour de vrai</div>
+            </div>
+          </div>
+        </div>
+        <div class="card dark">
+          <div class="lock">
+            <svg class="mark" viewBox="0 0 96 96" aria-hidden="true"><path fill="currentColor" d="M20 80H80V40A6 6 0 0 0 74 34L20 80Z"/></svg>
+            <div>
+              <div class="word">letmegetin</div>
+              <div class="tag" style="color:#a3b0a6">L’accessibilité des lieux, pour de vrai</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section>
+      <p class="kicker">Piste 3 — variante légère</p>
+      <h2>Le plan</h2>
+      <p class="why">
+        Le même seuil, vu du dessus : un cadre, une ouverture. C’est la version la plus discrète et la seule
+        qui tienne vraiment en 16&nbsp;px — favicon, en-tête, marqueur de carte. En contrepartie, elle frôle
+        l’icône d’application générique.
+      </p>
+      <div class="row">
+        <div class="card">
+          <div class="lock">
+            <svg class="mark" viewBox="0 0 96 96" aria-hidden="true"><path d="M46 74H36A14 14 0 0 1 22 60V36A14 14 0 0 1 36 22H60A14 14 0 0 1 74 36V60A14 14 0 0 1 60 74H62" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/></svg>
+            <div>
+              <div class="word">letmegetin</div>
+              <div class="tag">L’accessibilité des lieux, pour de vrai</div>
+            </div>
+          </div>
+        </div>
+        <div class="card dark">
+          <div class="lock">
+            <svg class="mark" viewBox="0 0 96 96" aria-hidden="true"><path d="M46 74H36A14 14 0 0 1 22 60V36A14 14 0 0 1 36 22H60A14 14 0 0 1 74 36V60A14 14 0 0 1 60 74H62" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/></svg>
+            <div>
+              <div class="word">letmegetin</div>
+              <div class="tag" style="color:#a3b0a6">L’accessibilité des lieux, pour de vrai</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- sizes -->
+    <section>
+      <p class="kicker">Tenue à petite taille</p>
+      <h2>16 · 24 · 32 · 48 px</h2>
+      <p class="why">Une seule couleur (<code>currentColor</code>), donc imprimable, favicon, brodé, gravé.</p>
+      <div class="card" style="place-items:start">
+        <div class="sizes">
+          <div class="s16"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg></div>
+          <div class="s24"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg></div>
+          <div class="s32"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg></div>
+          <div class="s48"><svg viewBox="0 0 96 96"><path fill="currentColor" fill-rule="evenodd" d="M34 16h28a14 14 0 0 1 14 14v50H20V30a14 14 0 0 1 14-14Zm2 64V52a12 12 0 0 1 24 0v28H36Z"/></svg></div>
+          <span style="color:var(--line)">|</span>
+          <div class="s16"><svg viewBox="0 0 96 96"><path fill="currentColor" d="M20 80H80V40A6 6 0 0 0 74 34L20 80Z"/></svg></div>
+          <div class="s24"><svg viewBox="0 0 96 96"><path fill="currentColor" d="M20 80H80V40A6 6 0 0 0 74 34L20 80Z"/></svg></div>
+          <div class="s32"><svg viewBox="0 0 96 96"><path fill="currentColor" d="M20 80H80V40A6 6 0 0 0 74 34L20 80Z"/></svg></div>
+          <div class="s48"><svg viewBox="0 0 96 96"><path fill="currentColor" d="M20 80H80V40A6 6 0 0 0 74 34L20 80Z"/></svg></div>
+          <span style="color:var(--line)">|</span>
+          <div class="s16"><svg viewBox="0 0 96 96"><path d="M46 74H36A14 14 0 0 1 22 60V36A14 14 0 0 1 36 22H60A14 14 0 0 1 74 36V60A14 14 0 0 1 60 74H62" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/></svg></div>
+          <div class="s24"><svg viewBox="0 0 96 96"><path d="M46 74H36A14 14 0 0 1 22 60V36A14 14 0 0 1 36 22H60A14 14 0 0 1 74 36V60A14 14 0 0 1 60 74H62" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/></svg></div>
+          <div class="s32"><svg viewBox="0 0 96 96"><path d="M46 74H36A14 14 0 0 1 22 60V36A14 14 0 0 1 36 22H60A14 14 0 0 1 74 36V60A14 14 0 0 1 60 74H62" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/></svg></div>
+          <div class="s48"><svg viewBox="0 0 96 96"><path d="M46 74H36A14 14 0 0 1 22 60V36A14 14 0 0 1 36 22H60A14 14 0 0 1 74 36V60A14 14 0 0 1 60 74H62" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/></svg></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="kicker">Choix</p>
+      <h2 class="reco">Piste 1 pour la marque, piste 2 comme signature secondaire</h2>
+      <p class="why">
+        La piste 1 raconte le lieu et l’entrée, la 2 raconte l’absence de marche. Elles coexistent bien :
+        seuil en icône d’app et favicon, rampe en filet graphique sur les pages de fiche.
+      </p>
+    </section>
+  </body>
+</html>

@@ -169,7 +169,7 @@ mutates data.
   imported from a local export; Overture/OSM stay additive via `place.source` and
   `category_mapping`. Never Google Places (its ToS forbids storing the data).
 - **Dedup is soft**: `place.canonical_id` + `place_alias` + `place_merge_log`
-  (auto-link ≥ 0.90, review 0.60–0.90, nothing is ever deleted). Name scoring is
+  (auto-link ≥ 0.90, review 0.75–0.90, nothing is ever deleted). Name scoring is
   stdlib `difflib` on normalized names — no extra dependency.
 - **4 handicap families** (`moteur`, `auditif`, `visuel`, `mental`) are data on
   criteria, not hard-coded in the API; `?family=` filters search.
