@@ -29,15 +29,13 @@ def test_token_roundtrip() -> None:
     assert (payload.user_id, payload.role) == (42, "user")
 
 
-def test_token_rejects_wrong_kind() -> None:
-    token = security.create_token(42, "user", "refresh", 60)
-
-    with pytest.raises(InvalidToken):
-        security.decode_token(token, "access")
-
-
-def test_token_rejects_expired() -> None:
-    token = security.create_token(42, "user", "access", -10)
+@pytest.mark.parametrize(
+    ("kind", "ttl"),
+    [("refresh", 60), ("access", -10)],
+    ids=["wrong-kind", "expired"],
+)
+def test_token_rejects_wrong_kind_or_expiry(kind: str, ttl: int) -> None:
+    token = security.create_token(42, "user", kind, ttl)
 
     with pytest.raises(InvalidToken):
         security.decode_token(token, "access")
