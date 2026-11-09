@@ -13,43 +13,24 @@ from pathlib import Path
 
 import pytest
 from sqlalchemy import func, select, text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
 from typer.testing import CliRunner
 
 from letmegetin import admin
-from letmegetin.config import settings
 from letmegetin.infrastructure.persistence.models import CriterionModel, CriterionVocabularyModel
-
-# NullPool: each CLI invocation runs its own event loop via asyncio.run, and a pooled
-# asyncpg connection cannot be reused from another loop.
-_engine = create_async_engine(settings.database_url, poolclass=NullPool)
-_TestSessionLocal = async_sessionmaker(_engine, expire_on_commit=False)
+from tests.db import SessionLocal, require_database
 
 _SLUGS = ["cli-test-access", "cli-test-ramp", "cli-test-lift"]
 
 
-async def _database_ready() -> bool:
-    try:
-        async with _TestSessionLocal() as session:
-            await session.execute(text("SELECT 1"))
-            table = await session.scalar(text("SELECT to_regclass('criterion_vocabulary')"))
-            return table is not None
-    except Exception:  # noqa: BLE001 - any connection failure means "skip"
-        return False
-
-
 @pytest.fixture
-def db(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    if not asyncio.run(_database_ready()):
-        pytest.skip("PostGIS database or criterion_vocabulary table unavailable")
-    monkeypatch.setattr(admin, "SessionLocal", _TestSessionLocal)
+def db(test_sessions: None) -> Iterator[None]:
+    require_database("criterion_vocabulary")
     yield
     asyncio.run(_cleanup())
 
 
 async def _cleanup() -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         await session.execute(text("DELETE FROM categories WHERE slug LIKE 'cli-test-%'"))
         await session.execute(text("DELETE FROM criteria WHERE slug LIKE 'cli-test-%'"))
         await session.execute(text("DELETE FROM criterion_vocabulary WHERE slug LIKE 'cli-test-%'"))
@@ -57,7 +38,7 @@ async def _cleanup() -> None:
 
 
 async def _count_slugs(slugs: list[str]) -> int:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         return int(
             await session.scalar(
                 select(func.count())
@@ -220,7 +201,7 @@ def test_admin_cli_curates_categories_criteria_and_mapping(db: None) -> None:
 
 
 async def _insert_vocabulary(slug: str, label: dict[str, str], description: dict[str, str]) -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         await session.execute(
             text(
                 "INSERT INTO criterion_vocabulary (slug, label, description) "
@@ -280,7 +261,7 @@ def test_admin_cli_promotes_vocabulary(db: None) -> None:
 
 
 async def _blank_families(slug: str) -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         await session.execute(
             text("UPDATE criteria SET handicap_families = '{}' WHERE slug = :slug"),
             {"slug": slug},
@@ -289,7 +270,7 @@ async def _blank_families(slug: str) -> None:
 
 
 async def _criterion_families(slug: str) -> list[str]:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         return list(
             await session.scalar(
                 select(CriterionModel.handicap_families).where(CriterionModel.slug == slug)

@@ -7,35 +7,16 @@ from collections.abc import Iterator
 
 import pytest
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
 from typer.testing import CliRunner
 
 from letmegetin import admin
-from letmegetin.config import settings
+from tests.db import SessionLocal, execute, require_database
 
-_engine = create_async_engine(settings.database_url, poolclass=NullPool)
-_Session = async_sessionmaker(_engine, expire_on_commit=False)
 _EMAIL = "test-retention@example.test"
 
 
-async def _database_ready() -> bool:
-    try:
-        async with _Session() as session:
-            await session.execute(text("SELECT 1"))
-            return await session.scalar(text("SELECT to_regclass('idempotency_key')")) is not None
-    except Exception:  # noqa: BLE001 - any connection failure means "skip"
-        return False
-
-
-async def _cleanup() -> None:
-    async with _Session() as session:
-        await session.execute(text("DELETE FROM users WHERE email = :email"), {"email": _EMAIL})
-        await session.commit()
-
-
 async def _seed() -> None:
-    async with _Session() as session:
+    async with SessionLocal() as session:
         user_id = await session.scalar(
             text("INSERT INTO users (email, password_hash) VALUES (:email, 'x') RETURNING id"),
             {"email": _EMAIL},
@@ -63,7 +44,7 @@ async def _seed() -> None:
 
 
 async def _counts() -> tuple[int, int]:
-    async with _Session() as session:
+    async with SessionLocal() as session:
         idempotency = await session.scalar(
             text(
                 "SELECT count(*) FROM idempotency_key k JOIN users u ON u.id = k.user_id "
@@ -82,14 +63,12 @@ async def _counts() -> tuple[int, int]:
 
 
 @pytest.fixture
-def db(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    if not asyncio.run(_database_ready()):
-        pytest.skip("database or idempotency table unavailable")
-    asyncio.run(_cleanup())
+def db(test_sessions: None) -> Iterator[None]:
+    require_database("idempotency_key")
+    execute("DELETE FROM users WHERE email = :email", {"email": _EMAIL})
     asyncio.run(_seed())
-    monkeypatch.setattr(admin, "SessionLocal", _Session)
     yield
-    asyncio.run(_cleanup())
+    execute("DELETE FROM users WHERE email = :email", {"email": _EMAIL})
 
 
 def _run(*args: str) -> str:

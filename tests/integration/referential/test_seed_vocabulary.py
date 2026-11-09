@@ -9,15 +9,10 @@ from pathlib import Path
 
 import pytest
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
 
 from letmegetin import seed as seed_module
 from letmegetin.config import settings
-
-# NullPool: each seed() call runs its own event loop via asyncio.run.
-_engine = create_async_engine(settings.database_url, poolclass=NullPool)
-_TestSessionLocal = async_sessionmaker(_engine, expire_on_commit=False)
+from tests.db import SessionLocal, require_database
 
 _DATA: Path = settings.data_dir
 _EXPECTED_VOCABULARY = len(json.loads((_DATA / "criteria.json").read_text(encoding="utf-8")))
@@ -40,26 +35,15 @@ _COUNTS = (
 )
 
 
-async def _database_ready() -> bool:
-    try:
-        async with _TestSessionLocal() as session:
-            await session.execute(text("SELECT 1"))
-            table = await session.scalar(text("SELECT to_regclass('criterion_vocabulary')"))
-            return table is not None
-    except Exception:  # noqa: BLE001 - any connection failure means "skip"
-        return False
-
-
 async def _count(statement: str) -> int:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         return int(await session.scalar(text(statement)) or 0)
 
 
 @pytest.fixture
 def db(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    if not asyncio.run(_database_ready()):
-        pytest.skip("PostGIS database or criterion_vocabulary table unavailable")
-    monkeypatch.setattr(seed_module, "SessionLocal", _TestSessionLocal)
+    require_database("criterion_vocabulary")
+    monkeypatch.setattr(seed_module, "SessionLocal", SessionLocal)
     yield
 
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 # Must run before anything imports `letmegetin.core.db`: the engine is built from
 # `settings.database_url` at import time. Without this the suite shares the
@@ -17,6 +18,17 @@ import pytest  # noqa: E402
 
 from letmegetin.config import settings
 from letmegetin.core.rate_limit import reset_memory_limits
+
+_KINDS = {"unit", "integration", "functional"}
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """Tag each test with its folder kind so `-m unit` works."""
+    root = Path(__file__).parent
+    for item in items:
+        kind = item.path.relative_to(root).parts[0]
+        if kind in _KINDS:
+            item.add_marker(getattr(pytest.mark, kind))
 
 
 @pytest.fixture(autouse=True)

@@ -7,21 +7,14 @@ from __future__ import annotations
 
 import asyncio
 import json
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import Iterator
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
 
-from letmegetin.config import settings
-from letmegetin.core.db import get_session
 from letmegetin.domain.places.dedup import normalize_name
-from letmegetin.main import app
-
-_engine = create_async_engine(settings.database_url, poolclass=NullPool)
-_TestSessionLocal = async_sessionmaker(_engine, expire_on_commit=False)
+from tests.db import SessionLocal, require_database
 
 _SLUG = "test-p4-place-00000000"
 _TREE = [
@@ -37,17 +30,8 @@ _TREE = [
 ]
 
 
-async def _database_ready() -> bool:
-    try:
-        async with _TestSessionLocal() as session:
-            await session.execute(text("SELECT 1"))
-            return await session.scalar(text("SELECT to_regclass('review')")) is not None
-    except Exception:  # noqa: BLE001 - any connection failure means "skip"
-        return False
-
-
 async def _cleanup() -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         await session.execute(
             text(
                 "DELETE FROM review WHERE place_id IN "
@@ -79,7 +63,7 @@ async def _cleanup() -> None:
 
 
 async def _seed() -> None:
-    async with _TestSessionLocal() as session:
+    async with SessionLocal() as session:
         category_id = await session.scalar(
             text(
                 "INSERT INTO categories (slug, name, label) "
@@ -138,20 +122,12 @@ async def _seed() -> None:
         await session.commit()
 
 
-async def _override() -> AsyncIterator[AsyncSession]:
-    async with _TestSessionLocal() as session:
-        yield session
-
-
 @pytest.fixture
-def client() -> Iterator[TestClient]:
-    if not asyncio.run(_database_ready()):
-        pytest.skip("database or review table unavailable")
+def db(test_sessions: None) -> Iterator[None]:
+    require_database("review")
     asyncio.run(_cleanup())
     asyncio.run(_seed())
-    app.dependency_overrides[get_session] = _override
-    yield TestClient(app)
-    app.dependency_overrides.clear()
+    yield
     asyncio.run(_cleanup())
 
 

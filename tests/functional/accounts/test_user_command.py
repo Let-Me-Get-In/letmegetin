@@ -7,50 +7,28 @@ from collections.abc import Iterator
 
 import pytest
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
 from typer.testing import CliRunner, Result
 
 from letmegetin import admin
-from letmegetin.config import settings
 from letmegetin.core.security import verify_password
-
-# NullPool: every CLI invocation runs its own event loop via asyncio.run.
-_engine = create_async_engine(settings.database_url, poolclass=NullPool)
-_TestSessionLocal = async_sessionmaker(_engine, expire_on_commit=False)
+from tests.db import SessionLocal, execute, require_database
 
 _EMAIL = "cli-test-e2e@example.test"
 _PASSWORD = "e2e-secret-1"
-
-
-async def _database_ready() -> bool:
-    try:
-        async with _TestSessionLocal() as session:
-            await session.execute(text("SELECT 1"))
-            return await session.scalar(text("SELECT to_regclass('users')")) is not None
-    except Exception:  # noqa: BLE001 - any connection failure means "skip"
-        return False
-
-
-async def _cleanup() -> None:
-    async with _TestSessionLocal() as session:
-        await session.execute(text("DELETE FROM users WHERE email LIKE 'cli-test-%'"))
-        await session.commit()
+_CLEANUP = "DELETE FROM users WHERE email LIKE 'cli-test-%'"
 
 
 @pytest.fixture
-def db(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    if not asyncio.run(_database_ready()):
-        pytest.skip("database or users table unavailable")
-    monkeypatch.setattr(admin, "SessionLocal", _TestSessionLocal)
-    asyncio.run(_cleanup())
+def db(test_sessions: None) -> Iterator[None]:
+    require_database("users")
+    execute(_CLEANUP)
     yield
-    asyncio.run(_cleanup())
+    execute(_CLEANUP)
 
 
 def _rows(email: str) -> list[tuple[bool, str]]:
     async def run() -> list[tuple[bool, str]]:
-        async with _TestSessionLocal() as session:
+        async with SessionLocal() as session:
             result = await session.execute(
                 text("SELECT email_verified, password_hash FROM users WHERE email = :email"),
                 {"email": email},
