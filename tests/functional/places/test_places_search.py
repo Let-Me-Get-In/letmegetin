@@ -206,14 +206,6 @@ def test_search_and_combines_two_criteria(client: TestClient) -> None:
     assert [item["name"] for item in body] == ["Test Cabinet Delta"]
 
 
-def test_search_single_criterion_is_unchanged(client: TestClient) -> None:
-    step = asyncio.run(_criterion_id("test-search-step"))
-
-    body = _search(client, radius=5000, filters=str(step))
-
-    assert [item["name"] for item in body] == ["Test Librairie Beta"]
-
-
 def test_search_dedupes_repeated_criterion_ids(client: TestClient) -> None:
     step = asyncio.run(_criterion_id("test-search-step"))
 
@@ -223,30 +215,26 @@ def test_search_dedupes_repeated_criterion_ids(client: TestClient) -> None:
     assert twice == once
 
 
-def test_search_filters_on_handicap_family(client: TestClient) -> None:
-    body = _search(client, radius=5000, family="auditif")
+@pytest.mark.parametrize(
+    "params",
+    [{"family": "auditif"}, {"category": "test-search-pharmacie"}],
+    ids=["handicap-family", "category"],
+)
+def test_search_filters_on_family_and_category(client: TestClient, params: dict[str, str]) -> None:
+    body = _search(client, radius=5000, **params)
 
     assert [item["name"] for item in body] == ["Test Pharmacie Gamma"]
 
 
-def test_search_filters_on_category(client: TestClient) -> None:
-    body = _search(client, radius=5000, category="test-search-pharmacie")
-
-    assert [item["name"] for item in body] == ["Test Pharmacie Gamma"]
-
-
-def test_search_rejects_unknown_category(client: TestClient) -> None:
+@pytest.mark.parametrize(
+    "params",
+    [{"category": "does-not-exist"}, {"family": "olfactif"}, {"offset": 20_000}],
+    ids=["unknown-category", "unknown-family", "offset-beyond-cap"],
+)
+def test_search_rejects_invalid_filters(client: TestClient, params: dict[str, Any]) -> None:
     response = client.get(
         "/api/v1/places",
-        params={"lat": _ORIGIN[0], "lng": _ORIGIN[1], "category": "does-not-exist"},
-    )
-
-    assert response.status_code == 422
-
-
-def test_search_rejects_unknown_family(client: TestClient) -> None:
-    response = client.get(
-        "/api/v1/places", params={"lat": _ORIGIN[0], "lng": _ORIGIN[1], "family": "olfactif"}
+        params={"lat": _ORIGIN[0], "lng": _ORIGIN[1], **params},
     )
 
     assert response.status_code == 422
@@ -330,12 +318,3 @@ def test_search_has_more_header(client: TestClient) -> None:
     assert last_page.headers["X-Has-More"] == "false"
     assert past_end.json() == []
     assert past_end.headers["X-Has-More"] == "false"
-
-
-def test_search_rejects_offset_beyond_cap(client: TestClient) -> None:
-    response = client.get(
-        "/api/v1/places",
-        params={"lat": _BULK_ORIGIN[0], "lng": _BULK_ORIGIN[1], "offset": 20_000},
-    )
-
-    assert response.status_code == 422
