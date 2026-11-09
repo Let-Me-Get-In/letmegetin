@@ -29,6 +29,7 @@ class DedupReport:
     places: int = 0
     pairs: int = 0
     flagged: int = 0
+    cleared: int = 0
     dry_run: bool = False
 
 
@@ -76,6 +77,9 @@ async def recompute_duplicates(
     report.flagged = len(best)
     if dry_run:
         return report
+    # A recompute is authoritative: without this, raising the floor leaves the rows
+    # the previous pass flagged in the queue and the new threshold changes nothing.
+    report.cleared = await places.clear_duplicate_candidates()
     for place_id, (candidate_id, score) in best.items():
         # Every band lands in the queue, including exact-name matches: a name score
         # alone cannot tell two neighbouring shops apart, so `auto` flags for a

@@ -618,6 +618,16 @@ class SqlAlchemyPlaceRepository:
             .values(duplicate_of_id=candidate_id, confidence=round(score, 3))
         )
 
+    async def clear_duplicate_candidates(self) -> int:
+        # Only undecided rows: a merge set canonical_id and a reject already cleared
+        # duplicate_of_id, so neither can be resurrected by a later recompute.
+        result = await self._session.execute(
+            update(PlaceModel)
+            .where(PlaceModel.canonical_id.is_(None), PlaceModel.duplicate_of_id.is_not(None))
+            .values(duplicate_of_id=None, confidence=None)
+        )
+        return int(getattr(result, "rowcount", 0) or 0)
+
     async def list_pending_reviews(self, limit: int = 50) -> list[PendingDuplicate]:
         candidate = aliased(PlaceModel)
         rows = (

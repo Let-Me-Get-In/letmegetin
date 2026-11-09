@@ -668,7 +668,7 @@ def duplicates_recompute(
         )
         return (
             f"duplicates recompute: places={report.places} pairs={report.pairs} "
-            f"flagged={report.flagged} dry_run={report.dry_run}"
+            f"cleared={report.cleared} flagged={report.flagged} dry_run={report.dry_run}"
         )
 
     _run_admin(callback, bump=False, commit=not dry_run)
