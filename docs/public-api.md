@@ -21,13 +21,15 @@ The raw key is printed once; only its SHA-256 hash is stored.
 
 ## Rate limits
 
-Success responses carry:
+Success responses and error responses carry:
 
 ```
 X-RateLimit-Limit: 60
 X-RateLimit-Remaining: 59
 X-RateLimit-Reset: 1793400123
 ```
+
+so a client that hits a `401` or a `422` still learns how much budget it has left.
 
 Over the limit: `429` with `Retry-After` (seconds). Limits are **sliding windows**; Redis is
 shared across API workers, with an in-memory fallback (the budget is divided by the configured
