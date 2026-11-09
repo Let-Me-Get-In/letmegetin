@@ -185,6 +185,6 @@ Plans:
 | Phase | Ticket | Status | Completed |
 |-------|--------|--------|-----------|
 | 8. Production deployment & operations | LET-23 | Complete | 2026-11-01 |
-| 9. Data quality & curation | LET-33 | Pending | — |
+| 9. Data quality & curation | LET-33 | Complete (prod recompute outstanding) | 2026-11-09 |
 | 10. Search quality | LET-34 | Complete | 2026-11-06 |
 | 11. E2E & accessibility | LET-35 | Complete (screen-reader pass outstanding) | 2026-11-09 |

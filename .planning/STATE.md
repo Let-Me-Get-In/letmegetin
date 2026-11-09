@@ -13,7 +13,8 @@ Ticket: LET-35 (Phase 11 — in progress)
 Phase: 4 / 4 of V1.1 (Phase 11 of 11 is executing)
 Plan: 7 / 7 (11-01 … 11-07 complete); phase ready to close
 Status: Phase 11 complete on the machine-checkable side. The e2e repo runs 16 specs (search, filters, pagination, record, contribution, review, auth gate, axe) against dev, and the axe gate is now **strict** in the development job (`AXE_STRICT=1`, `seriousCriticalCount: 0`). A11Y-01's human VoiceOver/NVDA pass is the one remaining item and is deliberately not claimed.
-Last activity: 2026-11-09 — 11-07 fixed the single serious axe finding (`link-in-text-block` on MapLibre's attribution link) with one CSS rule in `web/src/app/globals.css`, redeployed dev from the branch, and flipped the e2e development job to strict. Also closed two rate-limiting defects found by the e2e work: LET-47 (per-class buckets, PR #35) and LET-48 (`/me` and `/refresh` were spending the 10/min login budget — every page load, so a browsing user could no longer sign in; PR #36).
+Last activity: 2026-11-09 — Phase 9 verified against the national dataset (families audit passes on prod, 630 997/634 962 categories resolved, coverage 0.913, 30 845 reviewable duplicate pairs on dev) and Phase 11 closed; production deployed at 30f3e67.
+Previously: 11-07 fixed the single serious axe finding (`link-in-text-block` on MapLibre's attribution link) with one CSS rule in `web/src/app/globals.css`, redeployed dev from the branch, and flipped the e2e development job to strict. Also closed two rate-limiting defects found by the e2e work: LET-47 (per-class buckets, PR #35) and LET-48 (`/me` and `/refresh` were spending the 10/min login budget — every page load, so a browsing user could no longer sign in; PR #36).
 
 ## Performance Metrics
 
@@ -21,7 +22,7 @@ Last activity: 2026-11-09 — 11-07 fixed the single serious axe finding (`link-
 - Phases: 7
 - Linear tickets: LET-5..LET-12
 - Plans completed: 18
-- Phases complete: V1 7/7; V1.1 3/4 (Phase 11: 6/7 plans)
+- Phases complete: V1 7/7; V1.1 4/4 (Phase 9 verified on 2026-11-09; Phase 11 closed)
 
 ## Accumulated Context
 
