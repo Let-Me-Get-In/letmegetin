@@ -115,4 +115,6 @@ def test_committed_alias_file_maps_the_measured_vocabulary() -> None:
     assert aliases["bibliotheque-mediatheque"] == "library"
     assert aliases["musee"] == "museum"
     assert aliases["mairie"] == "city_hall"
-    assert len(aliases) == 260
+    # Every one of the 391 measured labels is mapped as of 2026-11-09; the file is the
+    # single place that knowledge lives, so a shrinking count means a regression.
+    assert len(aliases) == 391

@@ -40,6 +40,7 @@ from letmegetin.application.places.import_acceslibre import (
     import_acceslibre,
     iter_acceslibre_rows,
 )
+from letmegetin.application.places.reclassify import reclassify_places
 from letmegetin.application.referential.admin import (
     add_category,
     add_criterion,
@@ -572,6 +573,41 @@ def import_acceslibre_command(
         ]
         ranked = sorted(report.unresolved.items(), key=lambda item: (-item[1], item[0]))
         lines.extend(f"  unresolved: {value}={count}" for value, count in ranked[:20])
+        return "\n".join(lines)
+
+    _run_admin(callback, bump=False, commit=not dry_run)
+
+
+@import_app.command("reclassify")
+def import_reclassify(
+    aliases: Annotated[
+        Path | None,
+        typer.Option("--aliases", help="Activity → category CSV (default: data/referential)"),
+    ] = None,
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", help="Report resolution and write nothing")
+    ] = False,
+) -> None:
+    """Re-apply the alias file to places an earlier import left without a category."""
+    alias_path = aliases or settings.data_dir / "acceslibre_categories.csv"
+    alias_map = load_category_aliases(alias_path)
+
+    async def callback(session: AsyncSession) -> str:
+        report = await reclassify_places(
+            SqlAlchemyPlaceRepository(session),
+            SqlAlchemyCategoryRepository(session),
+            SqlAlchemyCategoryMappingRepository(session),
+            alias_map,
+            dry_run=dry_run,
+        )
+        lines = [
+            f"reclassify: values={len(report.resolved)} "
+            f"places={sum(report.resolved.values())} "
+            f"unresolved={len(report.unresolved)} dry_run={dry_run}"
+        ]
+        lines.extend(
+            f"  still unresolved: {value}={count}" for value, count in report.unresolved[:20]
+        )
         return "\n".join(lines)
 
     _run_admin(callback, bump=False, commit=not dry_run)

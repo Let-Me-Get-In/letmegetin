@@ -256,137 +256,137 @@ Centre d'information sur les droits des femmes et des familles;social_services_o
 Transport;transit_station;75
 Discothèque;night_club;74
 Cardiologie;doctor;74
-Revêtements murs et sols;;71
-Auditorium et salle de conférence;;71
-Musique;;69
-Autres établissements pour adultes et familles en difficulté;;69
-Orthopédie;;67
-Plateaux et terrains de jeux extérieurs;;67
-Tennis;;67
-Chirurgie;;66
-Dermatologie vénéréologie;;64
-Chambre metier;;64
-Espace numérique;;63
-Jardin botanique et/ou zoologique;;62
-Salle de combat;;61
-Personnes âgées : foyer restaurant;;59
-Vente de matériel pour piscine;;58
+Revêtements murs et sols;home_improvement_store;71
+Auditorium et salle de conférence;function_room_facility;71
+Musique;music_store;69
+Autres établissements pour adultes et familles en difficulté;social_services_organization;69
+Orthopédie;doctor;67
+Plateaux et terrains de jeux extérieurs;park;67
+Tennis;sports_complex;67
+Chirurgie;doctor;66
+Dermatologie vénéréologie;doctor;64
+Chambre metier;corporate_office;64
+Espace numérique;internet_cafe;63
+Jardin botanique et/ou zoologique;zoo;62
+Salle de combat;gym;61
+Personnes âgées : foyer restaurant;restaurant;59
+Vente de matériel pour piscine;home_goods_store;58
 Parc;park;58
-Vente de matériel et équipement industriels;;57
-Port;;57
-Location de matériels;;56
+Vente de matériel et équipement industriels;hardware_store;57
+Port;transit_station;57
+Location de matériels;hardware_store;56
 Casino;casino;56
-Fédération départementale pour la pêche et la protection du milieu aquatique;;56
-Chambre agriculture;;54
-Coaching;;53
-Autres activités des médecins spécialistes;;53
-Boulodrome;;52
-Evénement culturel;;51
-Château;;50
-Électricien;;48
-Établissement militaire;;48
-Agence départementale d'information sur le logement;;48
-Maison de services au public;;48
-Jeux vidéo;;47
-Parc d’attraction;;47
-Aide sociale à l'enfance;;46
-Ambulances;;46
-Services techniques;;45
-Arts de la table, vaisselle;;44
-Bailleur social;;43
-Service médico-social;;42
-Rhumatologie;;42
-Blanchisserie teinturerie;;41
-Soin, médecine douce;;41
-Neurologie;;40
-Mission d'accueil et d'information des associations;;40
-Rempailleur tapissier chaises fauteuils;;39
-Biscuiterie;;39
-Disquaire;;38
-Luminaire;;37
-Maison départementale des personnes handicapées;;37
-Ecole de danse;;36
-Mission locale pour l'insertion professionnelle et sociale des jeunes;;36
-Viticulteur;;35
-Accrobranche;;34
-Boutique de mariage;;34
-Centre d'examen;;33
-Circuit sportif deux roues / voiture;;33
-Espace collaboratif;;33
-Pneumologie;;33
-Endocrinologue;;33
-Station lavage auto;;33
-Enseignement culturel;;33
-Cyclisme;;33
-Pépinière;;32
-Cantine;;31
-Orthodontie;;31
-Syndic, gérance immo;;30
-Etablissement de prévention;;30
-Garderie;;28
-Psychomotricien;;28
-Textile hors habillement;;27
-Astrologie, voyance, spiritisme;;27
-Géomètre;;25
-Taxi;;25
-Magasin de bois de chauffage;;25
-Médecin orl;;25
-Gastro-entérologie hépatologie;;25
-Encadreur enlumineur;;24
-Chapeaux et couvre-chefs;;24
-Aéroport, aérodrome;;23
-Déchetterie;;23
-Acupuncture;;23
-Parc des expositions;;23
-Bureau de change;;22
-Patinoire;;22
-Ressourcerie;;21
-Profession libérale;;20
-Gare tgv;;20
-Opéra;;19
-Ergothérapeute;;19
-Skatepark;;19
-Sex shop;;18
-Produits d'occasion;;18
-Gare routière;;18
-Matériel de pêche;;17
-Médecine du travail;;15
+Fédération départementale pour la pêche et la protection du milieu aquatique;association_or_organization;56
+Chambre agriculture;corporate_office;54
+Coaching;training_center;53
+Autres activités des médecins spécialistes;doctor;53
+Boulodrome;sports_complex;52
+Evénement culturel;cultural_center;51
+Château;monument;50
+Électricien;electrician;48
+Établissement militaire;government_office;48
+Agence départementale d'information sur le logement;government_office;48
+Maison de services au public;government_office;48
+Jeux vidéo;electronics_store;47
+Parc d’attraction;amusement_park;47
+Aide sociale à l'enfance;social_services_organization;46
+Ambulances;social_services_organization;46
+Services techniques;government_office;45
+Arts de la table, vaisselle;home_goods_store;44
+Bailleur social;real_estate_agency;43
+Service médico-social;social_services_organization;42
+Rhumatologie;doctor;42
+Blanchisserie teinturerie;laundry;41
+Soin, médecine douce;physiotherapy_center;41
+Neurologie;doctor;40
+Mission d'accueil et d'information des associations;association_or_organization;40
+Rempailleur tapissier chaises fauteuils;home_goods_store;39
+Biscuiterie;bakery;39
+Disquaire;music_store;38
+Luminaire;home_goods_store;37
+Maison départementale des personnes handicapées;social_services_organization;37
+Ecole de danse;training_center;36
+Mission locale pour l'insertion professionnelle et sociale des jeunes;unemployment_office;36
+Viticulteur;liquor_store;35
+Accrobranche;amusement_park;34
+Boutique de mariage;clothing_store;34
+Centre d'examen;government_office;33
+Circuit sportif deux roues / voiture;sports_complex;33
+Espace collaboratif;corporate_office;33
+Pneumologie;doctor;33
+Endocrinologue;doctor;33
+Station lavage auto;car_wash;33
+Enseignement culturel;training_center;33
+Cyclisme;sports_complex;33
+Pépinière;florist;32
+Cantine;restaurant;31
+Orthodontie;dentist;31
+Syndic, gérance immo;real_estate_agency;30
+Etablissement de prévention;social_services_organization;30
+Garderie;child_care_agency;28
+Psychomotricien;physiotherapist;28
+Textile hors habillement;home_goods_store;27
+Astrologie, voyance, spiritisme;establishment;27
+Géomètre;corporate_office;25
+Taxi;taxi_service;25
+Magasin de bois de chauffage;home_improvement_store;25
+Médecin orl;doctor;25
+Gastro-entérologie hépatologie;doctor;25
+Encadreur enlumineur;art_gallery;24
+Chapeaux et couvre-chefs;clothing_store;24
+Aéroport, aérodrome;airport;23
+Déchetterie;government_office;23
+Acupuncture;physiotherapy_center;23
+Parc des expositions;function_room_facility;23
+Bureau de change;bank;22
+Patinoire;sports_complex;22
+Ressourcerie;antique_furniture_store;21
+Profession libérale;corporate_office;20
+Gare tgv;train_station;20
+Opéra;opera_house;19
+Ergothérapeute;orthesist;19
+Skatepark;sports_complex;19
+Sex shop;store;18
+Produits d'occasion;antique_furniture_store;18
+Gare routière;bus_station;18
+Matériel de pêche;sporting_goods_store;17
+Médecine du travail;doctor;15
 Aquarium;aquarium;15
-Athlétisme;;15
-Anesthésie;;15
-Kinésiologue;;15
-Aire d'accueil de gens du voyage;;14
-Urologie;;14
-Apiculteur;;14
-Randonnées pédestres ou vélos;;14
-Établissement thermal;;14
-Déménageur;;13
-Oto-rhino-laryngologie;;11
-Agence matrimoniale;;9
-Désinfection, lutte contre les nuisibles;;9
-Arène;;9
-Vitrerie, miroiterie;;9
-Thalassothérapie;;8
-Magasin de déguisements;;7
-Traduction et interprétation;;7
-Archives;;7
-Ecole de ski et snowboard;;7
-Néphrologue;;7
-Karaoké;;6
-Stockage;;6
-Coopérative agricole;;6
-Métallerie, chaudronnerie;;6
-Garde meuble;;5
-Entretien de piscine;;5
-Centre de gestion de la fonction publique territoriale;;5
-Refuge animalier;;4
-Articles de fête, carnaval ou divertissement;;4
-Dressage, éducation canine;;4
-Observatoire, astronomie;;4
-Centre national de la fonction publique territoriale;;2
-Stomatologie;;2
-Hématologie;;2
-Médiation;;2
-Taxidermie;;1
-Direction départementale de la protection des populations;;1
-Direction départementale de l'emploi, du travail, des solidarités et de la protection des populations;;1
+Athlétisme;sports_complex;15
+Anesthésie;doctor;15
+Kinésiologue;physiotherapist;15
+Aire d'accueil de gens du voyage;campground;14
+Urologie;doctor;14
+Apiculteur;green_grocers;14
+Randonnées pédestres ou vélos;national_park;14
+Établissement thermal;spa;14
+Déménageur;storage;13
+Oto-rhino-laryngologie;doctor;11
+Agence matrimoniale;establishment;9
+Désinfection, lutte contre les nuisibles;corporate_office;9
+Arène;stadium;9
+Vitrerie, miroiterie;hardware_store;9
+Thalassothérapie;spa;8
+Magasin de déguisements;clothing_store;7
+Traduction et interprétation;corporate_office;7
+Archives;library;7
+Ecole de ski et snowboard;training_center;7
+Néphrologue;doctor;7
+Karaoké;night_club;6
+Stockage;storage;6
+Coopérative agricole;corporate_office;6
+Métallerie, chaudronnerie;hardware_store;6
+Garde meuble;storage;5
+Entretien de piscine;home_improvement_store;5
+Centre de gestion de la fonction publique territoriale;government_office;5
+Refuge animalier;veterinary_care;4
+Articles de fête, carnaval ou divertissement;store;4
+Dressage, éducation canine;veterinary_care;4
+Observatoire, astronomie;museum;4
+Centre national de la fonction publique territoriale;government_office;2
+Stomatologie;dentist;2
+Hématologie;doctor;2
+Médiation;social_services_organization;2
+Taxidermie;establishment;1
+Direction départementale de la protection des populations;government_office;1
+Direction départementale de l'emploi, du travail, des solidarités et de la protection des populations;government_office;1

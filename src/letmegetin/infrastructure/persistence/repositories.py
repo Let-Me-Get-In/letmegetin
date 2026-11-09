@@ -585,6 +585,18 @@ class SqlAlchemyPlaceRepository:
         rows = (await self._session.execute(statement)).all()
         return [(str(value), int(count)) for value, count in rows]
 
+    async def reassign_category(self, source_category: str, category_id: int) -> int:
+        """Re-resolve one imported label without re-reading the national export."""
+        result = await self._session.execute(
+            update(PlaceModel)
+            .where(
+                PlaceModel.source_category == source_category,
+                PlaceModel.category_id.is_(None),
+            )
+            .values(category_id=category_id)
+        )
+        return int(getattr(result, "rowcount", 0) or 0)
+
     async def list_for_dedup(self, limit: int | None = None) -> list[DedupRow]:
         query = (
             select(PlaceModel.id, PlaceModel.name_normalized, PlaceModel.lat, PlaceModel.lng)
