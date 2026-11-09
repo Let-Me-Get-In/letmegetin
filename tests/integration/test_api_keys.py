@@ -175,3 +175,25 @@ def test_me_does_not_spend_the_auth_budget(
 
     assert first.status_code == 401
     assert second.status_code == 429
+
+
+def test_error_responses_carry_the_rate_limit_headers(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from letmegetin.config import settings
+
+    monkeypatch.setattr(settings, "rate_limit_default_rpm", 50)
+    monkeypatch.setattr(settings, "rate_limit_auth_rpm", 10)
+    headers = {"X-Forwarded-For": "203.0.113.61"}
+
+    ok = client.get("/api/v1/categories", headers=headers)
+    unauthorised = client.post(
+        "/api/v1/auth/login",
+        json={"email": "nobody@example.org", "password": "wrong-one"},
+        headers={"X-Forwarded-For": "203.0.113.62"},
+    )
+
+    assert ok.headers["x-ratelimit-remaining"] == "49"
+    assert unauthorised.status_code == 401
+    assert unauthorised.headers["x-ratelimit-limit"] == "10"
+    assert unauthorised.headers["x-ratelimit-remaining"] == "9"

@@ -159,9 +159,16 @@ def _rate_limit_dependency(default_setting: str):
         bucket = f"{default_setting}:{bucket}"
         result = await check_rate_limit(bucket, limit)
         reset_at = str(int(time.time()) + result.retry_after)
-        response.headers["X-RateLimit-Limit"] = str(result.limit)
-        response.headers["X-RateLimit-Remaining"] = str(result.remaining)
-        response.headers["X-RateLimit-Reset"] = reset_at
+        # Stashed on the request, not only written to `response`: FastAPI discards
+        # that object as soon as a later dependency raises, which dropped these
+        # headers from every 401/422. The middleware copies them onto the real one.
+        limited = {
+            "X-RateLimit-Limit": str(result.limit),
+            "X-RateLimit-Remaining": str(result.remaining),
+            "X-RateLimit-Reset": reset_at,
+        }
+        request.state.rate_limit_headers = limited
+        response.headers.update(limited)
         if not result.allowed:
             RATE_LIMITED.inc()
             raise HTTPException(
