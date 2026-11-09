@@ -36,6 +36,29 @@ not functional. Put each in its own folder (`tests/unit`, `tests/integration`,
 - Fixtures are shared from one place; a test owns its data and leaves nothing
   behind.
 
+## The folders mirror the code
+
+Inside each kind, keep the same tree as the production code: one folder per
+bounded context or package (`tests/unit/application/referential/`,
+`tests/functional/places/`). A test lives next to the unit it names, not in a
+flat pile. A file that outgrows one screen is split by **concern**, not by size:
+auth, listing, actions, failures. Shared fakes, stubs and builders move to a kit
+file (`tests/unit/application/referential/fakes.py`, `tests/db.py`) that the
+split files import — never copy a helper into each file.
+
+The e2e suite is not here: it lives in `letmegetin-e2e` and mirrors
+the product's journeys (`search/`, `account/`, `accessibility/`), because
+"unit/integration/functional" describe code in this repository, not a deployed
+system.
+
+## Frontend
+
+Component and hook tests sit next to the module they cover (`web/src/lib/i18n.test.ts`).
+Split a large one by concern, with a shared kit holding the render helper and
+fixtures. Use `it.each` for tables of inputs; do not repeat the same `expect`
+five times. No real network: stub `fetch` and the browser APIs at the boundary.
+Test what the user sees (roles, labels, text), not internal state.
+
 ## What a test is not
 
 - Not a substitute for the verification gate, and a green verification is not a

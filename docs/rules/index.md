@@ -10,7 +10,7 @@ touches; read [`delivery.md`](delivery.md) before your first branch or commit.
 | [`engineering.md`](engineering.md) | Code, Python, lint/format/types, dependencies, CI/CD |
 | [`deploy.md`](deploy.md) | Config + e2e products: OpenTofu, Ansible, exposure, smoke, rollback |
 | [`gsd.md`](gsd.md) | GSD delivery: `.planning/`, phases, workstreams, commit granularity |
-| [`testing.md`](testing.md) | Unit / integration / functional, CI gates, naming |
+| [`testing.md`](testing.md) | Unit / integration / functional / e2e, folder layout, frontend, CI gates |
 | [`language.md`](language.md) | English everywhere, the product-copy exception |
 | [`security.md`](security.md) | Secrets, personal data, logs |
 | [`agents.md`](agents.md) | How an agent works: sources of truth, ambiguity, what to report |
