@@ -13,9 +13,13 @@ what lands the work. These rules only cover what GSD adds.
   you revert. One docs commit per phase at the end (`PROJECT.md`,
   `REQUIREMENTS.md`, `ROADMAP.md`, `STATE.md` and that phase's `CONTEXT.md`,
   `RESEARCH.md`, `PLAN.md`s, `VERIFICATION.md`) — not one per workflow step.
-- **GSD ids stay in `.planning/`.** A phase number, a plan id or a workstream
-  name never appears in a branch, a commit, a PR or a ticket. A description that
-  needs the reasoning links the file (`.planning/phases/03-billing/PLAN.md`).
+- **GSD vocabulary stays in `.planning/`.** A phase number, a plan id, a wave, a
+  workstream name or a requirement key (`CORP-02`) never appears in a branch, a
+  commit, a PR, a ticket or a doc outside `.planning/`. Those keys tie plans to
+  requirements; to anyone else they are noise. Name the work by what it does —
+  "reading the reference corpus", not "CORP-02"; "the suite that runs when a
+  label is added", not "phase 5". A description that needs the reasoning links
+  the file (`.planning/phases/03-billing/PLAN.md`).
 - **A literal commit message inside a GSD workflow is a template**, not a
   command: translate `docs(${phase}): …` into the real subject. The hook rejects
   the rest.
