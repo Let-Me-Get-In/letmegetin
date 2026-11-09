@@ -88,6 +88,11 @@ gitleaks detect --source . --config .gitleaks.toml
   full suite, then images. A two-minute lint should not wait behind a
   ten-minute build.
 - **Cache on the lockfile hash**, never on a branch name.
+- **Skip jobs whose paths did not change.** A `changes` job (pinned
+  `dorny/paths-filter`) feeding `if:` on every downstream job turns a docs-only
+  PR from thirteen billed minutes into two. Keep the secret scan unconditional,
+  and remember a skipped job counts as a pass in branch protection: keep each
+  filter in the same PR as the code it guards.
 - **Images build on every pull request; they are pushed only from the
   integration branch, tagged by commit SHA.** A mutable `latest` tag is not a
   deployable artefact.
