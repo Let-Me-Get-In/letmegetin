@@ -14,11 +14,13 @@ describe("i18n", () => {
     expect(t("en", "search")).toBe("Search");
   });
 
-  it("pluralises in the reader's language", () => {
-    expect(tPlural("fr", "places", 1)).toBe("lieu");
-    expect(tPlural("fr", "places", 4)).toBe("lieux");
-    expect(tPlural("en", "places", 1)).toBe("place");
-    expect(tPlural("en", "places", 4)).toBe("places");
+  it.each([
+    ["fr", 1, "lieu"],
+    ["fr", 4, "lieux"],
+    ["en", 1, "place"],
+    ["en", 4, "places"],
+  ] as const)("pluralises places(%i) in %s", (locale, count, expected) => {
+    expect(tPlural(locale, "places", count)).toBe(expected);
   });
 
   it("treats zero as singular in French only", () => {

@@ -10,20 +10,24 @@ describe("labels", () => {
     expect(label(undefined)).toBe("");
   });
 
-  it("formats values for the record", () => {
-    expect(formatValue(true)).toBe("Oui");
-    expect(formatValue(false)).toBe("Non");
-    expect(formatValue(null)).toBe("Non renseigné");
-    expect(formatValue({ value: "De plain-pied" })).toBe("De plain-pied");
-    expect(formatValue(["a", "b"])).toBe("a, b");
+  it.each([
+    [true, "Oui"],
+    [false, "Non"],
+    [null, "Non renseigné"],
+    [{ value: "De plain-pied" }, "De plain-pied"],
+    [["a", "b"], "a, b"],
+  ] as const)("formats %j for the record", (value, expected) => {
+    expect(formatValue(value)).toBe(expected);
   });
 
-  it("formats values in the requested language", () => {
-    expect(formatValue(null, "en")).toBe("Not provided");
-    expect(formatValue(true, "en")).toBe("Yes");
+  it.each([
     // The locale must survive the array branch, not be replaced by the index.
-    expect(formatValue(["a", null], "en")).toBe("a, Not provided");
-    expect(formatValue({ value: null }, "en")).toBe("Not provided");
+    [null, "Not provided"],
+    [true, "Yes"],
+    [["a", null], "a, Not provided"],
+    [{ value: null }, "Not provided"],
+  ] as const)("formats %j in English", (value, expected) => {
+    expect(formatValue(value, "en")).toBe(expected);
   });
 
   it("formats distances", () => {
