@@ -15,7 +15,12 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 
-from letmegetin.domain.places.dedup import REVIEW_MATCH_THRESHOLD, classify_match, similar_score
+from letmegetin.domain.places.dedup import (
+    REVIEW_MATCH_THRESHOLD,
+    classify_match,
+    normalize_name,
+    similar_score,
+)
 from letmegetin.domain.places.repositories import PlaceRepository
 
 # Metres per degree of latitude, reduced for the longitude shrink at French
@@ -51,19 +56,27 @@ async def recompute_duplicates(
     grid: dict[tuple[int, int], list[int]] = defaultdict(list)
     for row in rows:
         grid[(int(row.lat // cell), int(row.lng // cell))].append(row.id)
-    by_id = {row.id: row.name_normalized for row in rows}
+    by_name = {row.id: row.name_normalized for row in rows}
+    # Normalized once: the pass scores 6.6 M pairs and re-normalizing the town in
+    # every comparison would dominate the run.
+    by_locality = {row.id: normalize_name(row.city) if row.city else "" for row in rows}
 
     best: dict[int, tuple[int, float]] = {}
     for (gy, gx), bucket in grid.items():
         for dy in (-1, 0, 1):
             for dx in (-1, 0, 1):
                 for place_id in bucket:
-                    name = by_id[place_id]
+                    name = by_name[place_id]
                     for other_id in grid.get((gy + dy, gx + dx), ()):
                         if other_id == place_id:
                             continue
                         report.pairs += 1
-                        score = similar_score(name, by_id[other_id])
+                        score = similar_score(
+                            name,
+                            by_name[other_id],
+                            left_locality=by_locality[place_id],
+                            right_locality=by_locality[other_id],
+                        )
                         if score < low:
                             continue
                         # One direction only: A->B and B->A are the same finding,
