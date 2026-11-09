@@ -108,3 +108,46 @@ def test_similar_score_is_symmetric() -> None:
 )
 def test_classify_match(score: float, kind: str) -> None:
     assert classify_match(score) == kind
+
+
+def test_a_shared_town_does_not_lift_unrelated_shops() -> None:
+    # Measured on the national queue: two brands in the same town scored 0.769 on the
+    # town name alone, which put 3 387 unrelated pairs in the 0.75-0.80 band.
+    assert similar_score("FNAC Bordeaux", "ALDI Bordeaux") >= REVIEW_MATCH_THRESHOLD
+    assert (
+        similar_score(
+            "FNAC Bordeaux",
+            "ALDI Bordeaux",
+            left_locality="bordeaux",
+            right_locality="bordeaux",
+        )
+        < REVIEW_MATCH_THRESHOLD
+    )
+
+
+@pytest.mark.parametrize(
+    ("left", "right", "locality"),
+    [
+        ("Aux Dés Calés 17 - Legendre", "Aux Dés Calés 17", "bordeaux"),
+        ("Hotel Campanile", "Campanile", "lyon"),
+    ],
+)
+def test_stripping_the_town_keeps_genuine_neighbours(left: str, right: str, locality: str) -> None:
+    assert (
+        similar_score(left, right, left_locality=locality, right_locality=locality)
+        >= REVIEW_MATCH_THRESHOLD
+    )
+
+
+def test_a_name_that_is_only_its_town_is_left_alone() -> None:
+    # Stripping would leave nothing to compare, so the town is kept.
+    assert (
+        similar_score("Bordeaux", "Bordeaux", left_locality="bordeaux", right_locality="bordeaux")
+        == 1.0
+    )
+
+
+def test_only_a_trailing_town_is_removed() -> None:
+    assert (
+        similar_score("Bordeaux Pharmacie", "Bordeaux Pharmacie", left_locality="bordeaux") == 1.0
+    )

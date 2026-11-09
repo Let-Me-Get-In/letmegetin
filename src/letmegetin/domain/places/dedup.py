@@ -4,6 +4,11 @@ Stdlib only (``difflib``): sufficient at import scale and needs no new dependenc
 Thresholds are product decisions: auto ≥ 0.90, review ≥ 0.75. The review floor was
 raised from 0.60 after measuring the national queue: 18 987 of 35 901 pairs sat in
 0.60–0.70 and were mostly shared trade words ("ZOZAN KEBAB" vs "Antalya Kebab").
+
+Names frequently end with their own town, and two neighbours 50 m apart always share
+one, so the town alone lifted unrelated shops over the floor ("FNAC Bordeaux" vs
+"ALDI Bordeaux" scored 0.769). Callers that know the town pass it as a normalized
+``locality`` and it is stripped from the name before comparison.
 """
 
 from __future__ import annotations
@@ -42,10 +47,38 @@ def _compact(normalized: str) -> str:
     return normalized.replace(" ", "")
 
 
-def similar_score(left: str, right: str) -> float:
-    """Similarity in ``[0, 1]`` between two place names, both normalized first."""
+def without_locality(normalized: str, locality: str) -> str:
+    """Drop a trailing town name, so two neighbours are not matched on it alone.
+
+    Only the trailing occurrence is removed: a shop that merely starts with its town
+    keeps it, and a name that *is* the town is left alone.
+    """
+    if not locality or normalized == locality:
+        return normalized
+    if normalized.endswith(" " + locality):
+        stripped = normalized[: -len(locality) - 1]
+        return stripped or normalized
+    return normalized
+
+
+def similar_score(
+    left: str,
+    right: str,
+    *,
+    left_locality: str | None = None,
+    right_locality: str | None = None,
+) -> float:
+    """Similarity in ``[0, 1]`` between two place names, both normalized first.
+
+    ``left_locality`` and ``right_locality`` are already-normalized town names; the
+    caller strips them because only it knows which place each name belongs to.
+    """
     normalized_left = normalize_name(left)
     normalized_right = normalize_name(right)
+    if left_locality:
+        normalized_left = without_locality(normalized_left, left_locality)
+    if right_locality:
+        normalized_right = without_locality(normalized_right, right_locality)
     if not normalized_left or not normalized_right:
         return 0.0
     # "CocciMarket" vs "Cocci Market" and "LAPOSTROPHE" vs "L'Apostrophe" are the same
