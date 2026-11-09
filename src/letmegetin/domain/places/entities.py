@@ -104,6 +104,7 @@ class DedupRow:
     name_normalized: str
     lat: float
     lng: float
+    city: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

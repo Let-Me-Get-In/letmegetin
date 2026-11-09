@@ -599,7 +599,13 @@ class SqlAlchemyPlaceRepository:
 
     async def list_for_dedup(self, limit: int | None = None) -> list[DedupRow]:
         query = (
-            select(PlaceModel.id, PlaceModel.name_normalized, PlaceModel.lat, PlaceModel.lng)
+            select(
+                PlaceModel.id,
+                PlaceModel.name_normalized,
+                PlaceModel.lat,
+                PlaceModel.lng,
+                PlaceModel.city,
+            )
             .where(PlaceModel.canonical_id.is_(None), PlaceModel.lat.is_not(None))
             .order_by(PlaceModel.id)
         )
@@ -607,7 +613,13 @@ class SqlAlchemyPlaceRepository:
             query = query.limit(limit)
         rows = (await self._session.execute(query)).all()
         return [
-            DedupRow(id=row.id, name_normalized=row.name_normalized, lat=row.lat, lng=row.lng)
+            DedupRow(
+                id=row.id,
+                name_normalized=row.name_normalized,
+                lat=row.lat,
+                lng=row.lng,
+                city=row.city,
+            )
             for row in rows
         ]
 
