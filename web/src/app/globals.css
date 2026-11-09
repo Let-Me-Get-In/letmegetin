@@ -10,7 +10,7 @@
   --color-warn: #a3521f;
   --radius-card: 1rem;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: ui-serif, Georgia, "Times New Roman", serif;
+  --font-display: var(--font-literata), ui-serif, Georgia, "Times New Roman", serif;
 }
 
 @media (prefers-color-scheme: dark) {
