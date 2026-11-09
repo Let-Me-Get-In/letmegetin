@@ -51,6 +51,16 @@ app.include_router(router)
 
 
 @app.middleware("http")
+async def rate_limit_headers_middleware(request: Request, call_next):
+    response = await call_next(request)
+    # The limiter runs as a dependency, so its headers vanish with the `Response`
+    # FastAPI throws away on an HTTPException. Re-apply them on whatever came back.
+    for name, value in getattr(request.state, "rate_limit_headers", {}).items():
+        response.headers[name] = value
+    return response
+
+
+@app.middleware("http")
 async def metrics_middleware(request: Request, call_next):
     started = time.perf_counter()
     response = await call_next(request)
