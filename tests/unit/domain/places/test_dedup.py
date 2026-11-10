@@ -151,3 +151,24 @@ def test_only_a_trailing_town_is_removed() -> None:
     assert (
         similar_score("Bordeaux Pharmacie", "Bordeaux Pharmacie", left_locality="bordeaux") == 1.0
     )
+
+
+def test_two_town_halls_of_different_towns_are_not_the_same_place() -> None:
+    # Measured on the national queue: 228 such pairs scored 1.0 after both towns were
+    # stripped, and "mairie" was all that remained.
+    score = similar_score(
+        "Mairie - Séneujols",
+        "Mairie - Cayres",
+        left_locality="seneujols",
+        right_locality="cayres",
+    )
+
+    assert score < REVIEW_MATCH_THRESHOLD
+
+
+def test_an_explicit_town_still_matches_its_own_bare_town_hall() -> None:
+    score = similar_score(
+        "Mairie - Séneujols", "Mairie", left_locality="seneujols", right_locality="seneujols"
+    )
+
+    assert score == 1.0

@@ -79,12 +79,21 @@ def similar_score(
     """
     normalized_left = normalize_name(left)
     normalized_right = normalize_name(right)
+    left_stripped = right_stripped = False
     if left_locality:
-        normalized_left = without_locality(normalized_left, left_locality)
+        stripped = without_locality(normalized_left, left_locality)
+        left_stripped, normalized_left = stripped != normalized_left, stripped
     if right_locality:
-        normalized_right = without_locality(normalized_right, right_locality)
+        stripped = without_locality(normalized_right, right_locality)
+        right_stripped, normalized_right = stripped != normalized_right, stripped
     if not normalized_left or not normalized_right:
         return 0.0
+    # "Mairie - Séneujols" and "Mairie - Cayres" each name their town; stripping both
+    # leaves the generic word "mairie" and would score 1.0 on two different town halls.
+    # When both names carried a locality and the localities differ, compare them whole.
+    if left_stripped and right_stripped and left_locality != right_locality:
+        normalized_left = normalize_name(left)
+        normalized_right = normalize_name(right)
     # "CocciMarket" vs "Cocci Market" and "LAPOSTROPHE" vs "L'Apostrophe" are the same
     # name; 162 national pairs differed by a separator alone and scored below 1.0.
     if _compact(normalized_left) == _compact(normalized_right):
