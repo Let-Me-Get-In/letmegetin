@@ -8,6 +8,8 @@ covers merges only.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from letmegetin.core.exceptions import DomainError
 from letmegetin.domain.places.dedup import (
     AUTO_MATCH_THRESHOLD,
@@ -38,6 +40,47 @@ async def list_pending(
     by default buries the work that can actually be decided. Pass ``None`` to see everything.
     """
     return await places.list_pending_reviews(limit, min_confidence)
+
+
+@dataclass(frozen=True)
+class BatchMergeReport:
+    """What one merge pass did, so a dry run can be compared with the real one."""
+
+    candidates: int
+    merged: int
+    skipped: int
+    dry_run: bool
+
+
+async def merge_batch(
+    places: PlaceRepository,
+    aliases: PlaceAliasRepository,
+    merges: MergeLogRepository,
+    *,
+    min_score: float,
+    note: str | None = None,
+    actor: str = "operator",
+    dry_run: bool = False,
+    limit: int = 100_000,
+) -> BatchMergeReport:
+    """Merge every pending pair at or above ``min_score``, best score first.
+
+    A place merged once in this run is skipped, so a chain ("A ~ B ~ C") collapses one
+    link at a time rather than in a single pass. Merging stays soft: rows, aliases and
+    the merge log survive, and clearing ``canonical_id`` undoes a mistake.
+    """
+    pending = await places.list_pending_reviews(limit, min_score)
+    taken: set[int] = set()
+    merged = skipped = 0
+    for row in pending:
+        if row.place_id in taken or row.candidate_id in taken:
+            skipped += 1
+            continue
+        if not dry_run:
+            await merge_duplicate(places, aliases, merges, row.place_id, note=note, actor=actor)
+        taken.update({row.place_id, row.candidate_id})
+        merged += 1
+    return BatchMergeReport(len(pending), merged, skipped, dry_run)
 
 
 async def _pending(places: PlaceRepository, place_id: int) -> tuple[Place, int]:

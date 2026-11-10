@@ -148,6 +148,60 @@ async def _seed_weak_pair() -> None:
         await session.commit()
 
 
+async def _seed_exact_pair() -> None:
+    async with SessionLocal() as session:
+        await session.execute(
+            text(
+                "INSERT INTO place (source, source_id, name, name_normalized, slug) VALUES "
+                "('acceslibre', 'cli-test-exact-1', 'Boulangerie Test Exacte', "
+                "'boulangerie test exacte', 'cli-test-exact-1-slug'), "
+                "('acceslibre', 'cli-test-exact-2', 'Boulangerie  Test Exacte', "
+                "'boulangerie test exacte', 'cli-test-exact-2-slug')"
+            )
+        )
+        await session.execute(
+            text(
+                "UPDATE place SET confidence = 1.0, duplicate_of_id = "
+                "(SELECT id FROM place WHERE source_id = 'cli-test-exact-1') "
+                "WHERE source_id = 'cli-test-exact-2'"
+            )
+        )
+        await session.commit()
+
+
+def test_duplicates_merge_batch_dry_run_then_merges_the_band(db: None) -> None:
+    asyncio.run(_seed_exact_pair())
+    keep_id = _place_id("cli-test-exact-1")
+    merged_id = _place_id("cli-test-exact-2")
+
+    dry = _cli("duplicates", "merge-batch", "--dry-run")
+
+    assert dry.exit_code == 0, dry.output
+    assert "candidates=1 merged=1 skipped=0 dry_run=True" in dry.output
+    assert _places(f"SELECT canonical_id FROM place WHERE id = {merged_id}") == [(None,)]
+
+    real = _cli("duplicates", "merge-batch")
+
+    assert real.exit_code == 0, real.output
+    assert "candidates=1 merged=1 skipped=0 dry_run=False" in real.output
+    assert _places(f"SELECT canonical_id FROM place WHERE id = {merged_id}") == [(keep_id,)]
+    assert _places(
+        f"SELECT kept_id, merged_id FROM place_merge_log WHERE merged_id = {merged_id}"
+    ) == [(keep_id, merged_id)]
+
+
+def test_duplicates_merge_batch_leaves_lower_scores_alone(db: None) -> None:
+    asyncio.run(_seed_weak_pair())
+
+    result = _cli("duplicates", "merge-batch", "--min-score", "1.0")
+
+    assert result.exit_code == 0, result.output
+    assert "candidates=0 merged=0" in result.output
+    assert _places("SELECT canonical_id FROM place WHERE source_id = 'cli-test-weak-2'") == [
+        (None,)
+    ]
+
+
 def test_duplicates_list_hides_the_ambiguous_band_by_default(db: None) -> None:
     asyncio.run(_seed_weak_pair())
 
