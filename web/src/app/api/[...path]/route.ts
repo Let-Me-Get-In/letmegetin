@@ -65,7 +65,9 @@ export async function handler(request: NextRequest, context: Context) {
     const refresh = request.cookies.get(REFRESH_COOKIE)?.value;
     if (!refresh) {
       if (isLogout) return new NextResponse(null, { status: 204 });
-      return NextResponse.json({ detail: "Not authenticated" }, { status: 401 });
+      // The client calls refresh on every mount; 204 keeps an anonymous visit
+      // out of the browser console while still meaning "no session".
+      return new NextResponse(null, { status: 204 });
     }
     if (!headers.has("content-type")) headers.set("content-type", "application/json");
     body = JSON.stringify({ refresh_token: refresh });

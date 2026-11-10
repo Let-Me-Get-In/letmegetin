@@ -50,9 +50,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const data = await api<{ access_token: string }>("/api/v1/auth/refresh", {
+      const data = await api<{ access_token: string } | undefined>("/api/v1/auth/refresh", {
         method: "POST",
       });
+      // Anonymous visitors have no refresh cookie; the BFF answers 204 so this
+      // stays a quiet "no session" instead of a failed request in the console.
+      if (!data?.access_token) {
+        setToken(null);
+        setUser(null);
+        return false;
+      }
       await loadUser(data.access_token);
       return true;
     } catch {
