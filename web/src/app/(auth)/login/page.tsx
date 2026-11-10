@@ -5,7 +5,10 @@ import { Suspense } from "react";
 import { LoginForm } from "@/components/auth/login-form";
 import { LOCALE_COOKIE, parseLocale, t } from "@/lib/i18n";
 
-export const metadata: Metadata = { title: "Connexion — LetMeGetIn" };
+export const metadata: Metadata = {
+  title: "Connexion",
+  robots: { index: false, follow: false },
+};
 
 export default async function LoginPage() {
   // Same source of truth as the layout: the cookie decides the interface language,

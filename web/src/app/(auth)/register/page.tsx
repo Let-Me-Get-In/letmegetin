@@ -4,7 +4,10 @@ import { cookies } from "next/headers";
 import { RegisterForm } from "@/components/auth/register-form";
 import { LOCALE_COOKIE, parseLocale, t } from "@/lib/i18n";
 
-export const metadata: Metadata = { title: "Créer un compte — LetMeGetIn" };
+export const metadata: Metadata = {
+  title: "Créer un compte",
+  robots: { index: false, follow: false },
+};
 
 export default async function RegisterPage() {
   const locale = parseLocale((await cookies()).get(LOCALE_COOKIE)?.value);

@@ -1,3 +1,4 @@
+import type { Metadata, ResolvingMetadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -18,6 +19,32 @@ type Props = {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ page?: string }>;
 };
+
+export async function generateMetadata(
+  { params }: Pick<Props, "params">,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const place = await serverApi<PlaceDetail>(`/api/v1/places/${slug}`);
+    const where = [place.category, place.address].filter(Boolean).join(" · ");
+    const description = `${place.name}${where ? ` — ${where}` : ""}. Accessibilité détaillée : motricité, audition, vision, cognition.`;
+    return {
+      title: place.name,
+      description,
+      alternates: { canonical: `/places/${slug}` },
+      openGraph: {
+        ...(await parent).openGraph,
+        type: "article",
+        title: place.name,
+        description,
+        url: `/places/${slug}`,
+      },
+    };
+  } catch {
+    return { title: "Lieu introuvable", robots: { index: false, follow: false } };
+  }
+}
 
 export default async function PlacePage({ params, searchParams }: Props) {
   // Same source of truth as the layout and the search page: the cookie decides the

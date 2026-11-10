@@ -5,7 +5,10 @@ import { Suspense } from "react";
 import { VerifyEmail } from "@/components/auth/verify-email";
 import { LOCALE_COOKIE, parseLocale, t } from "@/lib/i18n";
 
-export const metadata: Metadata = { title: "Vérification de l'email — LetMeGetIn" };
+export const metadata: Metadata = {
+  title: "Vérification de l'email",
+  robots: { index: false, follow: false },
+};
 
 export default async function VerifyPage() {
   const locale = parseLocale((await cookies()).get(LOCALE_COOKIE)?.value);

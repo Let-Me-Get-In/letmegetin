@@ -47,6 +47,9 @@
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"
 		Referrer-Policy "strict-origin-when-cross-origin"
+		# Belt and braces: the app also emits noindex, but a header covers every
+		# response including the ones Next serves before metadata is resolved.
+		X-Robots-Tag "noindex, nofollow"
 		-Server
 	}
 	reverse_proxy lmgi-dev-web:3000
@@ -58,6 +61,7 @@
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Robots-Tag "noindex, nofollow"
 		-Server
 	}
 	@metrics path /metrics
