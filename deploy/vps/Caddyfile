@@ -15,6 +15,25 @@
 # aliases are set in docker-compose.prod.yml from EDGE_API_ALIAS/EDGE_WEB_ALIAS,
 # which the config repo renders from the values file's `project`.
 
+# Public landing on the apex. The web container serves both hosts; `proxy.ts`
+# rewrites `/` to the marketing page and sends every app route to `APP_DOMAIN`.
+{$ROOT_DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	reverse_proxy lmgi-prod-web:3000
+}
+
+# One canonical host for search engines.
+www.{$ROOT_DOMAIN} {
+	redir https://{$ROOT_DOMAIN}{uri} permanent
+}
+
 {$APP_DOMAIN} {
 	encode zstd gzip
 	header {
