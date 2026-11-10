@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { Literata } from "next/font/google";
 import type { ReactNode } from "react";
 
+import { MarketingFooter } from "@/components/landing/marketing-footer";
+import { MarketingHeader } from "@/components/landing/marketing-header";
 import { SiteHeader } from "@/components/site-header";
 import { LOCALE_COOKIE, parseLocale, t } from "@/lib/i18n";
 import { SessionProvider } from "@/lib/session";
@@ -54,6 +56,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // The cookie decides both the interface language and the `lang` attribute, so a
   // screen reader announces what is actually on screen.
   const locale = parseLocale((await cookies()).get(LOCALE_COOKIE)?.value);
+  // `proxy.ts` marks the marketing surface; the app keeps its max-width shell.
+  const isMarketing = (await headers()).get("x-lmgi-surface") === "marketing";
+  const { url, indexable } = await requestSite();
+  const appUrl = indexable ? "https://app.letmegetin.org" : url;
+
   return (
     <html lang={locale} className={literata.variable}>
       <body className="min-h-screen bg-paper text-ink antialiased">
@@ -64,16 +71,27 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           >
             {t(locale, "skip")}
           </a>
-          <SiteHeader locale={locale} />
-          <main id="contenu" className="mx-auto w-full max-w-6xl px-4 py-8">
+          {isMarketing ? (
+            <MarketingHeader locale={locale} appUrl={appUrl} />
+          ) : (
+            <SiteHeader locale={locale} />
+          )}
+          <main
+            id="contenu"
+            className={isMarketing ? "" : "mx-auto w-full max-w-6xl px-4 py-8"}
+          >
             {children}
           </main>
-          <footer className="mt-16 border-t border-line">
-            <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-              <p>{t(locale, "footer")}</p>
-              <p>{t(locale, "sources")}</p>
-            </div>
-          </footer>
+          {isMarketing ? (
+            <MarketingFooter locale={locale} appUrl={appUrl} />
+          ) : (
+            <footer className="mt-16 border-t border-line">
+              <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+                <p>{t(locale, "footer")}</p>
+                <p>{t(locale, "sources")}</p>
+              </div>
+            </footer>
+          )}
         </SessionProvider>
       </body>
     </html>
