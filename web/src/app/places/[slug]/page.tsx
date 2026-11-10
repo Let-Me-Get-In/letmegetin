@@ -39,6 +39,14 @@ export async function generateMetadata(
         title: place.name,
         description,
         url: `/places/${slug}`,
+        images: [
+          {
+            url: "/opengraph-image",
+            width: 1200,
+            height: 630,
+            alt: "LetMeGetIn — savoir si on peut entrer avant de partir",
+          },
+        ],
       },
     };
   } catch {

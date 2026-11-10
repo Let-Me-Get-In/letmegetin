@@ -13,6 +13,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const isApex = host === "letmegetin.org" || host === "www.letmegetin.org";
   const description = t(locale, "landingHeroIntro");
   const canonical = isApex ? "/" : indexable ? "https://letmegetin.org/" : "/landing";
+  const image = {
+    url: "/opengraph-image",
+    width: 1200,
+    height: 630,
+    alt: "LetMeGetIn — savoir si on peut entrer avant de partir",
+  };
 
   return {
     title: { absolute: title },
@@ -25,8 +31,9 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       siteName: "LetMeGetIn",
       locale: locale === "en" ? "en_GB" : "fr_FR",
+      images: [image],
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: { card: "summary_large_image", title, description, images: [image] },
     // The landing is canonical on the apex only. Served on the app host for
     // previews, it must not compete with the apex page in search results.
     robots: { index: indexable && isApex, follow: true },
