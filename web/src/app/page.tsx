@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
 import { SearchView } from "@/components/search/search-view";
 import { LOCALE_COOKIE, parseLocale, t } from "@/lib/i18n";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default async function HomePage() {
   // Same source of truth as the layout: the cookie decides the interface language,
