@@ -9,7 +9,11 @@ covers merges only.
 from __future__ import annotations
 
 from letmegetin.core.exceptions import DomainError
-from letmegetin.domain.places.dedup import AUTO_MATCH_THRESHOLD, REVIEW_MATCH_THRESHOLD
+from letmegetin.domain.places.dedup import (
+    AUTO_MATCH_THRESHOLD,
+    RELIABLE_MATCH_THRESHOLD,
+    REVIEW_MATCH_THRESHOLD,
+)
 from letmegetin.domain.places.entities import PendingDuplicate, Place, ReviewDecision
 from letmegetin.domain.places.repositories import (
     MergeLogRepository,
@@ -23,9 +27,17 @@ def in_review_band(score: float) -> bool:
     return REVIEW_MATCH_THRESHOLD <= score < AUTO_MATCH_THRESHOLD
 
 
-async def list_pending(places: PlaceRepository, limit: int = 50) -> list[PendingDuplicate]:
-    """The review queue, best score first; out-of-band rows are listed, never hidden."""
-    return await places.list_pending_reviews(limit)
+async def list_pending(
+    places: PlaceRepository,
+    limit: int = 50,
+    min_confidence: float | None = RELIABLE_MATCH_THRESHOLD,
+) -> list[PendingDuplicate]:
+    """The review queue, best score first, limited to the band an operator can trust.
+
+    Below ``RELIABLE_MATCH_THRESHOLD`` the pairs are genuinely ambiguous, so listing them
+    by default buries the work that can actually be decided. Pass ``None`` to see everything.
+    """
+    return await places.list_pending_reviews(limit, min_confidence)
 
 
 async def _pending(places: PlaceRepository, place_id: int) -> tuple[Place, int]:

@@ -20,6 +20,10 @@ import unicodedata
 from letmegetin.domain.places.entities import MatchKind
 
 AUTO_MATCH_THRESHOLD = 0.90
+# Measured on the national queue: above this the pairs are overwhelmingly genuine;
+# below it neighbouring shops share both their trade vocabulary and their district
+# name, and no lexical signal separates them (see REVIEW_MATCH_THRESHOLD).
+RELIABLE_MATCH_THRESHOLD = 0.85
 REVIEW_MATCH_THRESHOLD = 0.75
 
 # French address abbreviations that appear in raw imports ("av. de la République").

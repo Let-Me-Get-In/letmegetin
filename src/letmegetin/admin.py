@@ -67,6 +67,7 @@ from letmegetin.application.retention import run_retention
 from letmegetin.config import settings
 from letmegetin.core.db import SessionLocal
 from letmegetin.core.exceptions import CategoryNotFound, DomainError
+from letmegetin.domain.places.dedup import RELIABLE_MATCH_THRESHOLD
 from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
 from letmegetin.domain.referential.labels import parse_label_pairs
 from letmegetin.infrastructure.persistence.repositories import (
@@ -640,17 +641,30 @@ def import_report(
 @duplicates_app.command("list")
 def duplicates_list(
     limit: Annotated[int, typer.Option("--limit", help="Max rows shown")] = 50,
+    show_all: Annotated[
+        bool, typer.Option("--all", help="Also show pairs below the reliable score")
+    ] = False,
 ) -> None:
     """List the duplicate candidates waiting for an operator decision (DATA-03)."""
 
     async def callback(session: AsyncSession) -> str:
-        rows = await list_pending(SqlAlchemyPlaceRepository(session), limit)
-        return "\n".join(
+        repo = SqlAlchemyPlaceRepository(session)
+        rows = await list_pending(repo, limit, None if show_all else RELIABLE_MATCH_THRESHOLD)
+        # Probe the unfiltered queue so a blank listing never looks like an empty one.
+        hidden = [] if show_all else await list_pending(repo, 1, None)
+        if not rows and not hidden:
+            return ""
+        lines = [
             f"{row.place_id}\t{row.score:.3f}\t{row.place_name} -> {row.candidate_name}"
             f"\t{row.place_city or ''}"
             f"{'' if in_review_band(row.score) else '  [out of band]'}"
             for row in rows
-        )
+        ]
+        if hidden:
+            lines.append(
+                f"(scores below {RELIABLE_MATCH_THRESHOLD:.2f} hidden; use --all to see them)"
+            )
+        return "\n".join(lines)
 
     _run_admin(callback, bump=False)
 

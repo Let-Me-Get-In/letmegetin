@@ -38,7 +38,9 @@ class PlaceRepository(Protocol):
     async def clear_duplicate_candidates(self) -> int:
         """Drop every pending candidate, so a recompute shows only what it still finds."""
 
-    async def list_pending_reviews(self, limit: int = 50) -> list[PendingDuplicate]:
+    async def list_pending_reviews(
+        self, limit: int = 50, min_confidence: float | None = None
+    ) -> list[PendingDuplicate]:
         """Places the importer flagged for review, scored candidate first."""
         ...
 
