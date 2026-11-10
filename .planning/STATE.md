@@ -13,7 +13,13 @@ Ticket: LET-35 (Phase 11 — in progress)
 Phase: 4 / 4 of V1.1 (Phase 11 of 11 is executing)
 Plan: 7 / 7 (11-01 … 11-07 complete); phase ready to close
 Status: Phase 11 complete on the machine-checkable side. The e2e repo runs 16 specs (search, filters, pagination, record, contribution, review, auth gate, axe) against dev, and the axe gate is now **strict** in the development job (`AXE_STRICT=1`, `seriousCriticalCount: 0`). A11Y-01's human VoiceOver/NVDA pass is the one remaining item and is deliberately not claimed.
-Last activity: 2026-11-10 — production and development both run `31129a0` with the reworked duplicate matcher. The review floor moved 0.60 → 0.75, names that differ only by a separator now score 1.0, a shared town no longer lifts unrelated shops, and `duplicates recompute` clears the previous queue instead of leaving stale flags. Measured: the prod queue fell from 35 901 pairs to 12 573 with zero rows below the floor; the one real merge is preserved.
+Last activity: 2026-11-10 — LET-64 landing page built on `feat/LET-64-landing-page`: the apex now serves a record-first public landing from the same Next.js app, with host routing, production-only indexing, apex canonical and OG metadata. Verified at 1440/390 in light and dark; lint, typecheck, 56 tests and build pass. Pre-existing duplicate-matcher changes remain uncommitted and untouched.
+
+## Quick Tasks Completed
+
+| ID | Date | Task | Status |
+| --- | --- | --- | --- |
+| 261110-cff | 2026-11-10 | LET-64 — public landing on letmegetin.org | complete |
 
 ## Performance Metrics
 

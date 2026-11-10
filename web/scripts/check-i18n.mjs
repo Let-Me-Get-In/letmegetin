@@ -38,6 +38,8 @@ const SCAN_ROOTS = [
   "src/app/places/[slug]/not-found.tsx",
   "src/components/site-header.tsx",
   "src/components/locale-switch.tsx",
+  "src/components/landing",
+  "src/app/landing",
 ];
 
 const EXCLUDED_ATTRS = new Set([

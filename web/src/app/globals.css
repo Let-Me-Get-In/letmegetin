@@ -47,6 +47,33 @@ h3 {
   border-radius: 4px;
 }
 
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-rise {
+  animation: landing-rise 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.landing-rise-1 {
+  animation-delay: 90ms;
+}
+
+.landing-rise-2 {
+  animation-delay: 170ms;
+}
+
+.landing-rise-3 {
+  animation-delay: 250ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
