@@ -127,6 +127,43 @@ def test_duplicates_list_flags_a_score_outside_the_review_band(db: None) -> None
     assert line[0].endswith("[out of band]")
 
 
+async def _seed_weak_pair() -> None:
+    async with SessionLocal() as session:
+        await session.execute(
+            text(
+                "INSERT INTO place (source, source_id, name, name_normalized, slug) VALUES "
+                "('acceslibre', 'cli-test-weak-1', 'Lieu Faible Un', 'lieu faible un', "
+                "'cli-test-weak-1-slug'), "
+                "('acceslibre', 'cli-test-weak-2', 'Lieu Faible Deux', 'lieu faible deux', "
+                "'cli-test-weak-2-slug')"
+            )
+        )
+        await session.execute(
+            text(
+                "UPDATE place SET confidence = 0.75, duplicate_of_id = "
+                "(SELECT id FROM place WHERE source_id = 'cli-test-weak-1') "
+                "WHERE source_id = 'cli-test-weak-2'"
+            )
+        )
+        await session.commit()
+
+
+def test_duplicates_list_hides_the_ambiguous_band_by_default(db: None) -> None:
+    asyncio.run(_seed_weak_pair())
+
+    default = _cli("duplicates", "list")
+
+    assert default.exit_code == 0, default.output
+    assert "Lieu Faible Deux" not in default.output
+    assert "use --all to see them" in default.output
+
+    everything = _cli("duplicates", "list", "--all")
+
+    assert everything.exit_code == 0, everything.output
+    assert "Lieu Faible Deux" in everything.output
+    assert "use --all to see them" not in everything.output
+
+
 async def _seed_out_of_band() -> None:
     async with SessionLocal() as session:
         await session.execute(

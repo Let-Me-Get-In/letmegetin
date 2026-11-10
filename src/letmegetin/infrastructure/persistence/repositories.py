@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from datetime import datetime
 
 from geoalchemy2 import Geography
-from sqlalchemy import and_, delete, func, or_, select, update
+from sqlalchemy import ColumnElement, and_, delete, func, or_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
@@ -640,13 +640,18 @@ class SqlAlchemyPlaceRepository:
         )
         return int(getattr(result, "rowcount", 0) or 0)
 
-    async def list_pending_reviews(self, limit: int = 50) -> list[PendingDuplicate]:
+    async def list_pending_reviews(
+        self, limit: int = 50, min_confidence: float | None = None
+    ) -> list[PendingDuplicate]:
         candidate = aliased(PlaceModel)
+        where: list[ColumnElement[bool]] = [PlaceModel.canonical_id.is_(None)]
+        if min_confidence is not None:
+            where.append(PlaceModel.confidence >= min_confidence)
         rows = (
             await self._session.execute(
                 select(PlaceModel, candidate)
                 .join(candidate, candidate.id == PlaceModel.duplicate_of_id)
-                .where(PlaceModel.canonical_id.is_(None))
+                .where(*where)
                 .order_by(
                     PlaceModel.confidence.desc().nulls_last(),
                     PlaceModel.id,
