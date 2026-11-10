@@ -40,6 +40,7 @@ is how phases 9-11 ended up as LET-33/34/35 instead of LET-24/25/26).
 | LET-34 | Phase 10 (V1.1) | Backend - Search quality |
 | LET-35 | Phase 11 (V1.1) | Tooling - E2E & accessibility |
 | LET-64 | — (V1.1) | Front - Landing page publique sur letmegetin.org |
+| LET-65 | — (V1.1) | Front - Page partenaires avec le ledger ouvert |
 | LET-27 | — | Tooling - GitNexus code intelligence |
 
 ## CLI
