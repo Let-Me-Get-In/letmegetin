@@ -32,6 +32,7 @@ from letmegetin.application.places.dedup_pass import recompute_duplicates
 from letmegetin.application.places.duplicates import (
     in_review_band,
     list_pending,
+    merge_batch,
     merge_duplicate,
     reject_duplicate,
 )
@@ -683,6 +684,33 @@ def duplicates_recompute(
         return (
             f"duplicates recompute: places={report.places} pairs={report.pairs} "
             f"cleared={report.cleared} flagged={report.flagged} dry_run={report.dry_run}"
+        )
+
+    _run_admin(callback, bump=False, commit=not dry_run)
+
+
+@duplicates_app.command("merge-batch")
+def duplicates_merge_batch(
+    min_score: Annotated[
+        float, typer.Option("--min-score", help="Merge every pair at or above this score")
+    ] = 1.0,
+    dry_run: Annotated[bool, typer.Option("--dry-run", help="Count without writing")] = False,
+    note: Annotated[str | None, typer.Option("--note", help="Note on every decision")] = None,
+) -> None:
+    """Merge a whole score band in one pass. Always start with --dry-run."""
+
+    async def callback(session: AsyncSession) -> str:
+        report = await merge_batch(
+            SqlAlchemyPlaceRepository(session),
+            SqlAlchemyPlaceAliasRepository(session),
+            SqlAlchemyMergeLogRepository(session),
+            min_score=min_score,
+            note=note,
+            dry_run=dry_run,
+        )
+        return (
+            f"duplicates merge-batch: candidates={report.candidates} merged={report.merged} "
+            f"skipped={report.skipped} dry_run={report.dry_run}"
         )
 
     _run_admin(callback, bump=False, commit=not dry_run)
