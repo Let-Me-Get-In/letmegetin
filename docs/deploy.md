@@ -25,7 +25,7 @@ any other project id, so a stray bootstrap file cannot read the wrong secrets.
 
 4. Put the application secrets in the project's **prod** environment, path `/`:
 
-   `APP_DOMAIN`, `API_DOMAIN`, `ACME_EMAIL`,
+   `ROOT_DOMAIN`, `APP_DOMAIN`, `API_DOMAIN`, `ACME_EMAIL`,
    `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `LETMEGETIN_JWT_SECRET`,
    `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `R2_BUCKET`, `R2_PREFIX`,
    `R2_JURISDICTION` (optional), `LETMEGETIN_SMTP_*`, `LETMEGETIN_SENTRY_DSN`,
@@ -55,6 +55,7 @@ export INFISICAL_DOMAIN=https://eu.infisical.com   # EU Cloud; omit for US Cloud
   -f docker-compose.prod.yml exec api python -m letmegetin.seed
 ```
 
+- Landing: `https://$ROOT_DOMAIN` (public marketing page)
 - Web: `https://$APP_DOMAIN`
 - API: `https://$API_DOMAIN` (`/health`, `/docs`, `/openapi.json`)
 - `/metrics` is **not** routed publicly; Prometheus scrapes `api:8000` internally.
@@ -66,7 +67,9 @@ export INFISICAL_DOMAIN=https://eu.infisical.com   # EU Cloud; omit for US Cloud
 Only one container can publish 80/443, so the edge is its own compose project
 (`lmgi-edge`, `deploy/vps/docker-compose.edge.yml`) and every stack joins the
 `lmgi-edge` network. Its `Caddyfile` serves one block per hostname: the apex pair
-reaches `lmgi-prod-api` / `lmgi-prod-web`, the `dev.` pair reaches `lmgi-dev-*`.
+(`ROOT_DOMAIN` / `www.ROOT_DOMAIN`) serves the public landing, the `APP_DOMAIN` /
+`API_DOMAIN` pair reaches `lmgi-prod-api` / `lmgi-prod-web`, and the `dev.` pair
+reaches `lmgi-dev-*`.
 
 The network must exist first, or a stack whose `networks.edge` is `external`
 refuses to start:
@@ -100,7 +103,7 @@ Prometheus scrapes `api:8000/metrics`; alerts cover API down, 5xx rate, 429 rate
 
 | Variable | Purpose |
 |---|---|
-| `APP_DOMAIN`, `API_DOMAIN`, `ACME_EMAIL` | Caddy TLS |
+| `ROOT_DOMAIN`, `APP_DOMAIN`, `API_DOMAIN`, `ACME_EMAIL` | Caddy TLS |
 | `POSTGRES_PASSWORD`, `REDIS_PASSWORD` | internal services |
 | `LETMEGETIN_JWT_SECRET` | **required**, long random string |
 | `LETMEGETIN_ENVIRONMENT` | `production` |
