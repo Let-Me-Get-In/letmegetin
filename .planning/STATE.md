@@ -13,13 +13,14 @@ Ticket: LET-35 (Phase 11 — in progress)
 Phase: 4 / 4 of V1.1 (Phase 11 of 11 is executing)
 Plan: 7 / 7 (11-01 … 11-07 complete); phase ready to close
 Status: Phase 11 complete on the machine-checkable side. The e2e repo runs 16 specs (search, filters, pagination, record, contribution, review, auth gate, axe) against dev, and the axe gate is now **strict** in the development job (`AXE_STRICT=1`, `seriousCriticalCount: 0`). A11Y-01's human VoiceOver/NVDA pass is the one remaining item and is deliberately not claimed.
-Last activity: 2026-11-10 — LET-64 landing page built on `feat/LET-64-landing-page`: the apex now serves a record-first public landing from the same Next.js app, with host routing, production-only indexing, apex canonical and OG metadata. Verified at 1440/390 in light and dark; lint, typecheck, 56 tests and build pass. Pre-existing duplicate-matcher changes remain uncommitted and untouched.
+Last activity: 2026-11-10 — LET-69 removes the anonymous refresh 401: the BFF answers 204 when no refresh cookie exists and the client treats the missing token as no session. Verified on `/` and `/landing` (refresh 204, no 401). LET-64 landing is live on the apex; production runs app `0af5198`.
 
 ## Quick Tasks Completed
 
 | ID | Date | Task | Status |
 | --- | --- | --- | --- |
 | 261110-cff | 2026-11-10 | LET-64 — public landing on letmegetin.org | complete |
+| 261110-401 | 2026-11-10 | LET-69 — anonymous refresh 401 | complete |
 
 ## Performance Metrics
 

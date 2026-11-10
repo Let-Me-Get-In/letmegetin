@@ -58,7 +58,7 @@ describe("auth BFF", () => {
     expect(cookie).toContain("SameSite=lax");
   });
 
-  it("rejects a refresh without the cookie", async () => {
+  it("returns 204 for a refresh without the cookie", async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
 
@@ -67,7 +67,7 @@ describe("auth BFF", () => {
       context(["v1", "auth", "refresh"]),
     );
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(204);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
