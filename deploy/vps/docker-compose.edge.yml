@@ -21,6 +21,7 @@ services:
       - "443:443"
     environment:
       ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL}
+      ROOT_DOMAIN: ${ROOT_DOMAIN:?set ROOT_DOMAIN}
       APP_DOMAIN: ${APP_DOMAIN:?set APP_DOMAIN}
       API_DOMAIN: ${API_DOMAIN:?set API_DOMAIN}
       DEV_APP_DOMAIN: ${DEV_APP_DOMAIN:?set DEV_APP_DOMAIN}
