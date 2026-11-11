@@ -185,6 +185,15 @@ motor-only; this fixes the hearing, visual and cognitive gap.
 
 Create a partner key with `uv run python -m letmegetin.admin api-key create --label "Partner"`.
 
+## Licence
+
+- **Code**: [GNU Affero General Public License v3.0](LICENSE.md) (`AGPL-3.0-only`). Running a
+  modified version as a network service means offering its source to that service's users.
+- **Data**: the data (referential, places, accessibility answers) is published under the **ODbL**,
+  with cumulative attribution — AccesLibre (Licence Ouverte 2.0, with the source name and the date
+  of last update), OpenStreetMap (ODbL) and Overture (CDLA-Permissive-2.0). The API and the map are
+  Produced Works: attribution only, no share-alike.
+
 ## Quality
 
 ```bash
