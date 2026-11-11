@@ -2,6 +2,7 @@
 name = "letmegetin"
 version = "0.1.0"
 description = "Jaccede v5 — référentiel d'accessibilité et API publique"
+license = "AGPL-3.0-only"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.0",
