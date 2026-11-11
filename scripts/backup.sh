@@ -26,13 +26,21 @@ tar -czf "$DEST/$TS.tar.gz" -C "$DEST" "$TS"
 echo "backup: $DEST/$TS.tar.gz"
 
 # Offsite copy to Cloudflare R2 through Wrangler (no AWS tooling).
-R2_BUCKET=${R2_BUCKET:-}
+# Backups authenticate with their own R2 token: a token that can rewrite DNS has
+# no business sitting in a nightly cron, so cf_* wins over any CLOUDFLARE_*
+# already present in the environment.
+CLOUDFLARE_API_TOKEN=${cf_backup_token:-${CLOUDFLARE_API_TOKEN:-}}
+CLOUDFLARE_ACCOUNT_ID=${cf_account_id:-${CLOUDFLARE_ACCOUNT_ID:-}}
+# Re-exported on purpose: `docker run -e NAME` only forwards an exported variable,
+# and the reassignment above dropped that.
+export CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
+R2_BUCKET=${R2_BUCKET:-${cf_backup_bucket:-}}
 R2_PREFIX=${R2_PREFIX:-letmegetin}
 R2_JURISDICTION=${R2_JURISDICTION:-}
 
 if [ -n "$R2_BUCKET" ]; then
-  : "${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN is required for R2_BUCKET}"
-  : "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID is required for R2_BUCKET}"
+  : "${CLOUDFLARE_API_TOKEN:?cf_backup_token is required for R2_BUCKET}"
+  : "${CLOUDFLARE_ACCOUNT_ID:?cf_account_id is required for R2_BUCKET}"
   KEY="$R2_PREFIX/$(basename "$DEST/$TS.tar.gz")"
 
   if command -v sha256sum >/dev/null 2>&1; then
@@ -59,7 +67,7 @@ if [ -n "$R2_BUCKET" ]; then
     --file=/backup.tar.gz.sha256 --remote ${JURISDICTION_ARGS[@]+"${JURISDICTION_ARGS[@]}"}
   echo "offsite: r2://$R2_BUCKET/$KEY"
 else
-  echo "WARNING: R2_BUCKET is unset; the backup is local only" >&2
+  echo "WARNING: no R2 bucket configured (cf_backup_bucket / R2_BUCKET); the backup is local only" >&2
 fi
 
 # Keep the most recent N local archives; remote retention is an object-store lifecycle rule.
