@@ -6,6 +6,9 @@
 __pycache__
 *.pyc
 .env
+deploy/.env.prod
+deploy/infisical.env
+data/referential/raw
 web/node_modules
 web/.next
 web/coverage
