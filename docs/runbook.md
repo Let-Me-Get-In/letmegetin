@@ -29,17 +29,19 @@ Operational procedures for the LetMeGetIn production stack (Caddy, web, API, Pos
 
 - Writes `backups/<UTC timestamp>.tar.gz` (Postgres custom dump + Redis RDB) and a `.sha256`.
 - Keeps the last 7 local archives.
-- **Offsite (Cloudflare R2)**: set `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `R2_BUCKET`,
-  `R2_PREFIX` (default `letmegetin`) and optionally `R2_JURISDICTION=eu`. The script uploads the
-  archive and its checksum with **Wrangler** (`wrangler r2 object put`), not AWS. Without
-  `R2_BUCKET` it warns and stays local.
+- **Offsite (Cloudflare R2)**: the script reads `cf_backup_token`, `cf_account_id` and
+  `cf_backup_bucket` first, then falls back to `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` and
+  `R2_BUCKET`; `R2_PREFIX` defaults to `letmegetin` and `R2_JURISDICTION=eu` is optional. The upload
+  goes through **Wrangler** (`wrangler r2 object put`), not AWS. Without a bucket it warns and stays
+  local. Backups use their **own** R2 token on purpose: the deployment token can rewrite DNS and has
+  no place in a nightly cron.
 
 ### Cloudflare R2 setup
 
-1. Create the bucket `letmegetin-backups` (EU jurisdiction if required).
-2. **My Profile → API Tokens → Create token** with **Workers R2 Storage: Edit**; note the account ID
-   from the dashboard.
-3. Put `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `R2_BUCKET` in `deploy/.env.prod`.
+1. Create the bucket (in production: `lmgi-backups`).
+2. **R2 → Manage R2 API Tokens → Create API token**, permission **Object Read & Write**, scoped to
+   that bucket. Note the account ID from the dashboard.
+3. Store `cf_backup_token`, `cf_account_id` and `cf_backup_bucket` in Infisical (`prod`, path `/`).
 4. **Lifecycle**: bucket → Settings → Object lifecycle → delete after 30 days (or transition to
    Infrequent Access after 7 days, delete after 90). The script does not delete remote objects.
 5. EU jurisdiction: set `R2_JURISDICTION=eu` (adds `--jurisdiction eu`).
@@ -57,9 +59,9 @@ Download from R2 first (the wrapper injects the R2/Cloudflare secrets):
 
 ```bash
 ./scripts/with-secrets.sh bash -c 'docker run --rm -v "$PWD/backups:/out" \
-  -e CLOUDFLARE_ACCOUNT_ID -e CLOUDFLARE_API_TOKEN \
+  -e CLOUDFLARE_ACCOUNT_ID="$cf_account_id" -e CLOUDFLARE_API_TOKEN="$cf_backup_token" \
   node:22-alpine npx --yes wrangler@4 r2 object get \
-  "$R2_BUCKET/$R2_PREFIX/<timestamp>.tar.gz" \
+  "$cf_backup_bucket/letmegetin/<timestamp>.tar.gz" \
   --file=/out/<timestamp>.tar.gz --remote'
 sha256sum -c backups/<timestamp>.tar.gz.sha256
 ```
