@@ -97,10 +97,13 @@ Never promote during the drill.
 
 ## Monitoring and errors
 
-- Prometheus (profile `observability`) scrapes `api:8000/metrics`.
-- Alerts: API down, 5xx rate, 429 rate, Redis down → Alertmanager → `ALERT_WEBHOOK`.
-  **Set `ALERT_WEBHOOK` before starting the observability profile**; Alertmanager will not load with
-  an empty URL.
+- Prometheus and Alertmanager run as their own Compose project, `lmgi-monitoring`, brought up by the
+  config repo's deploy — they are not services of `docker-compose.prod.yml` and have no profile.
+- Prometheus scrapes `lmgi-prod-api:8000/metrics` over the shared `lmgi-edge` network. The public
+  `/metrics` path stays a 404.
+- Alerts: API down, 5xx rate, 429 rate, Redis down → Alertmanager → Discord, the channel the rest of
+  the stack reports to. The webhook comes from Infisical (`ALERT_WEBHOOK`); the config repo renders
+  it to a 0600 file and fails the deploy when it is missing.
 - Sentry captures API and web exceptions (no request bodies, no PII; emails redacted). Without a
   DSN it is disabled; the API logs a production warning when `LETMEGETIN_SENTRY_DSN` is missing.
 - Useful signals: `letmegetin_http_requests_total`, `letmegetin_rate_limited_total`,
