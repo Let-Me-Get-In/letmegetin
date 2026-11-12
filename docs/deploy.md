@@ -58,7 +58,7 @@ export INFISICAL_DOMAIN=https://eu.infisical.com   # EU Cloud; omit for US Cloud
 - Landing: `https://$ROOT_DOMAIN` (public marketing page)
 - Web: `https://$APP_DOMAIN`
 - API: `https://$API_DOMAIN` (`/health`, `/docs`, `/openapi.json`)
-- `/metrics` is **not** routed publicly; Prometheus scrapes `api:8000` internally.
+- `/metrics` is **not** routed publicly; Prometheus scrapes `lmgi-prod-api:8000` internally.
 - Migrations run on API start (entrypoint).
 - The compose project is `letmegetin-prod`; it never shares volumes with the dev PostGIS.
 
@@ -98,7 +98,7 @@ them, and there is no `observability` profile to enable.
 
 Prometheus scrapes `lmgi-prod-api:8000/metrics` over the shared `lmgi-edge` network; alerts cover
 API down, 5xx rate, 429 rate and Redis down, and Alertmanager posts them to Discord through the
-webhook in `ALERT_WEBHOOK`.
+webhook the config repo renders from `ALERT_WEBHOOK`.
 
 ## Required secret names (Infisical, env `prod`)
 
@@ -111,7 +111,7 @@ webhook in `ALERT_WEBHOOK`.
 | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `R2_BUCKET`, `R2_PREFIX` | offsite R2 backups |
 | `LETMEGETIN_SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN` | optional error tracking |
 | `LETMEGETIN_SMTP_*` | verification emails (otherwise logged) |
-| `ALERT_WEBHOOK` | Discord webhook Alertmanager posts to |
+| `ALERT_WEBHOOK` | Discord webhook — rendered to a 0600 file at deploy time, never a Compose variable |
 | `API_KEY` | leave empty for the public web; partner keys are server-side |
 
 ## Operations
