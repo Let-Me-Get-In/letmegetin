@@ -25,46 +25,44 @@ compose cp redis:/data/dump.rdb "$WORK/redis.rdb"
 tar -czf "$DEST/$TS.tar.gz" -C "$DEST" "$TS"
 echo "backup: $DEST/$TS.tar.gz"
 
-# Offsite copy to Cloudflare R2 through Wrangler (no AWS tooling).
-# Backups authenticate with their own R2 token: a token that can rewrite DNS has
-# no business sitting in a nightly cron, so cf_* wins over any CLOUDFLARE_*
-# already present in the environment.
-CLOUDFLARE_API_TOKEN=${cf_backup_token:-${CLOUDFLARE_API_TOKEN:-}}
-CLOUDFLARE_ACCOUNT_ID=${cf_account_id:-${CLOUDFLARE_ACCOUNT_ID:-}}
-# Re-exported on purpose: `docker run -e NAME` only forwards an exported variable,
-# and the reassignment above dropped that.
-export CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
+# Offsite copy to Cloudflare R2 over its S3 API, with curl's own SigV4 signer.
+# Backups authenticate with a bucket-scoped R2 key pair, not an account-wide API
+# token: an account token that can rewrite every bucket has no business sitting
+# in a nightly cron. curl is the only dependency -- no AWS CLI, no Wrangler.
+R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID:-${cf_backup_access_key_id:-}}
+R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY:-${cf_backup_secret_access_key:-}}
+R2_ACCOUNT_ID=${cf_account_id:-}
 R2_BUCKET=${R2_BUCKET:-${cf_backup_bucket:-}}
 R2_PREFIX=${R2_PREFIX:-letmegetin}
 R2_JURISDICTION=${R2_JURISDICTION:-}
+R2_ENDPOINT=${R2_ENDPOINT:-}
+
+if [ -z "$R2_ENDPOINT" ] && [ -n "$R2_ACCOUNT_ID" ]; then
+  R2_ENDPOINT="https://$R2_ACCOUNT_ID${R2_JURISDICTION:+.$R2_JURISDICTION}.r2.cloudflarestorage.com"
+fi
 
 if [ -n "$R2_BUCKET" ]; then
-  : "${CLOUDFLARE_API_TOKEN:?cf_backup_token is required for R2_BUCKET}"
-  : "${CLOUDFLARE_ACCOUNT_ID:?cf_account_id is required for R2_BUCKET}"
+  : "${R2_ACCESS_KEY_ID:?cf_backup_access_key_id is required for R2_BUCKET}"
+  : "${R2_SECRET_ACCESS_KEY:?cf_backup_secret_access_key is required for R2_BUCKET}"
+  : "${R2_ENDPOINT:?cf_account_id (or R2_ENDPOINT) is required for R2_BUCKET}"
   KEY="$R2_PREFIX/$(basename "$DEST/$TS.tar.gz")"
 
+  # The checksum names the archive by basename, so `sha256sum -c` works on a
+  # download without rewriting the path field first.
   if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum "$DEST/$TS.tar.gz" > "$DEST/$TS.tar.gz.sha256"
+    (cd "$DEST" && sha256sum "$TS.tar.gz") > "$DEST/$TS.tar.gz.sha256"
   else
-    shasum -a 256 "$DEST/$TS.tar.gz" > "$DEST/$TS.tar.gz.sha256"
+    (cd "$DEST" && shasum -a 256 "$TS.tar.gz") > "$DEST/$TS.tar.gz.sha256"
   fi
 
-  JURISDICTION_ARGS=()
-  if [ -n "$R2_JURISDICTION" ]; then
-    JURISDICTION_ARGS=(--jurisdiction "$R2_JURISDICTION")
-  fi
-
-  NODE_IMAGE="node:22-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914"
-  docker run --rm \
-    -v "$DEST/$TS.tar.gz:/backup.tar.gz:ro" \
-    -e CLOUDFLARE_API_TOKEN -e CLOUDFLARE_ACCOUNT_ID \
-    "$NODE_IMAGE" npx --yes wrangler@4 r2 object put "$R2_BUCKET/$KEY" \
-    --file=/backup.tar.gz --remote ${JURISDICTION_ARGS[@]+"${JURISDICTION_ARGS[@]}"}
-  docker run --rm \
-    -v "$DEST/$TS.tar.gz.sha256:/backup.tar.gz.sha256:ro" \
-    -e CLOUDFLARE_API_TOKEN -e CLOUDFLARE_ACCOUNT_ID \
-    "$NODE_IMAGE" npx --yes wrangler@4 r2 object put "$R2_BUCKET/$KEY.sha256" \
-    --file=/backup.tar.gz.sha256 --remote ${JURISDICTION_ARGS[@]+"${JURISDICTION_ARGS[@]}"}
+  put() {
+    curl -fsS -X PUT \
+      --aws-sigv4 "aws:amz:auto:s3" --user "$R2_ACCESS_KEY_ID:$R2_SECRET_ACCESS_KEY" \
+      -H 'x-amz-content-sha256: UNSIGNED-PAYLOAD' -H "Content-Type: $3" \
+      -T "$1" "$R2_ENDPOINT/$R2_BUCKET/$2" >/dev/null
+  }
+  put "$DEST/$TS.tar.gz" "$KEY" application/gzip
+  put "$DEST/$TS.tar.gz.sha256" "$KEY.sha256" text/plain
   echo "offsite: r2://$R2_BUCKET/$KEY"
 else
   echo "WARNING: no R2 bucket configured (cf_backup_bucket / R2_BUCKET); the backup is local only" >&2
