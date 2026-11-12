@@ -29,3 +29,14 @@ complete.
 **The axe gate is report-only.** `AXE_STRICT` is unset in `.github/workflows/e2e.yaml`; plan 11-07
 fixes the one serious finding (`link-in-text-block`, the MapLibre attribution link on the search page)
 and flips the env line.
+
+## Resolved before closure (2026-11-12)
+
+**The human screen-reader pass is done.** VoiceOver / macOS 26.6.2 / Safari 26.6.2,
+S1–S6 and R1–R6 in French and English: 12/12 pass, no finding
+(`letmegetin-e2e/docs/screen-reader-audit-2026-11-11.md`). **NVDA stays unrun** —
+no Windows host — recorded as `not run` in that sheet and tracked on LET-82.
+A11Y-01 is satisfied on the documented VoiceOver audit.
+
+**The axe gate is strict, not report-only.** Plan 11-07 set `AXE_STRICT: "1"` in
+the development job; the paragraph above is historical.

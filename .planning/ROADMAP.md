@@ -170,7 +170,7 @@ Plans:
 3. The UI ships fr/en strings with a persisted language.
 4. The map has a usable non-visual path (list + keyboard) validated by the audit.
 
-**Plans:** 7 plans
+**Plans:** 7/7 plans complete
 Plans:
 - [x] 11-01-PLAN.md — Localize the search path and the locale helpers (A11Y-02, A11Y-03)
 - [x] 11-02-PLAN.md — Add `admin user ensure --verified` so e2e can log in as a real user (E2E-01)
@@ -187,4 +187,4 @@ Plans:
 | 8. Production deployment & operations | LET-23 | Complete | 2026-11-01 |
 | 9. Data quality & curation | LET-33 | Complete (prod recompute outstanding) | 2026-11-09 |
 | 10. Search quality | LET-34 | Complete | 2026-11-06 |
-| 11. E2E & accessibility | LET-35 | Complete (screen-reader pass outstanding) | 2026-11-09 |
+| 11. E2E & accessibility | LET-35 | Complete | 2026-11-12 |

@@ -139,10 +139,10 @@
 
 ### E2E & Accessibility
 
-- [ ] **E2E-01**: A browser e2e suite in a separate repo covers search, record, contribution and review
-- [ ] **A11Y-01**: A screen-reader audit of search and record is documented with fixes
-- [ ] **A11Y-02**: The UI ships fr/en strings with a persisted language
-- [ ] **A11Y-03**: The map has a usable non-visual path (list + keyboard)
+- [x] **E2E-01**: A browser e2e suite in a separate repo covers search, record, contribution and review
+- [x] **A11Y-01**: A screen-reader audit of search and record is documented with fixes
+- [x] **A11Y-02**: The UI ships fr/en strings with a persisted language
+- [x] **A11Y-03**: The map has a usable non-visual path (list + keyboard)
 
 | Requirement | Phase | Status |
 |---|---|---|
@@ -156,7 +156,7 @@
 | SEARCH-01 | Phase 10 | Complete |
 | SEARCH-02 | Phase 10 | Complete |
 | SEARCH-03 | Phase 10.1 | Complete |
-| E2E-01 | Phase 11 | Pending |
-| A11Y-01 | Phase 11 | Pending |
-| A11Y-02 | Phase 11 | Pending |
-| A11Y-03 | Phase 11 | Pending |
+| E2E-01 | Phase 11 | Complete |
+| A11Y-01 | Phase 11 | Complete |
+| A11Y-02 | Phase 11 | Complete |
+| A11Y-03 | Phase 11 | Complete |

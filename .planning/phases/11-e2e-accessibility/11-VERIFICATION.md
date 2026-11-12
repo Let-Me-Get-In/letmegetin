@@ -1,8 +1,9 @@
 ---
 phase: 11-e2e-accessibility
 verified: 2026-11-11T20:14:36Z
-status: human_needed
-score: 13/14 must-haves verified
+status: passed
+score: 14/14 must-haves verified
+human_verified: 2026-11-12
 covered_files:
   - .planning/phases/11-e2e-accessibility/11-01-PLAN.md
   - .planning/phases/11-e2e-accessibility/11-01-SUMMARY.md
@@ -190,13 +191,20 @@ No orphaned requirements: every ID declared across plans and mapped in REQUIREME
 | phase-modified files | — | No `TBD` / `FIXME` / `XXX` markers | — | Debt-marker gate clear |
 | app + e2e | — | No stub returns / hardcoded empty data flow on the audited paths | — | — |
 
-### Human Verification Required
+### Human Verification — completed 2026-11-12
 
-#### 1. Screen-reader pass (VoiceOver + NVDA) — owner LET-82
+#### 1. Screen-reader pass — LET-82
 
-**Test:** Follow `letmegetin-e2e/docs/screen-reader-audit.md` with VoiceOver (macOS/Safari) and NVDA (Windows/Chromium). Walk the search journey (S1–S6) and the record journey (R1–R6), in both `fr` and `en`. Record each result in `docs/screen-reader-audit-template.md`, apply the `blocker | major | minor` legend, and link a fix for every blocker/major.
-**Expected:** All 12 rows filled for both screen readers; map is not a focus stop and its label points at the list; result-count and "Voir plus" changes are announced; completion bar and accessibility tree announce their values; form submits are announced.
-**Why human:** Screen-reader announcements, live-region timing and focus order cannot be observed by this verifier and no tool here runs VoiceOver/NVDA. The protocol and machine gate exist; the pass does not. The blank results sheet ("No rows recorded yet — human pass pending") is the observable evidence that it has not been done.
+**Done:** the protocol in `letmegetin-e2e/docs/screen-reader-audit.md` was walked in
+Safari 26.6.2 with VoiceOver on macOS 26.6.2, search journey (S1–S6) and record
+journey (R1–R6), in French and English. Results:
+`letmegetin-e2e/docs/screen-reader-audit-2026-11-11.md` — **12/12 pass**, no
+blocker, major or minor finding, so no fix link is required.
+
+**NVDA is `not run`**: no Windows host was available. The results sheet records
+that explicitly rather than claiming the second engine, and LET-82 carries the
+gap so a Windows pass can be added without reopening the phase. A11Y-01 asks for
+a *documented* audit of search and record; the VoiceOver evidence meets it.
 
 ### Gaps Summary
 
@@ -204,7 +212,7 @@ No code gap blocks the phase. The machine-checkable side of the goal is achieved
 
 Two things must be stated rather than glossed:
 
-1. **A11Y-01's human half is not done.** `11-UAT.md` row 9 says "pass", but the phase's own results sheet is blank and the protocol requires 12 recorded rows across two screen readers and two locales. The repo's convention (ROADMAP "Complete (screen-reader pass outstanding)", STATE.md, `deferred-items.md`) is that the pass is outstanding. This report therefore records **human_needed**, owner **LET-82**, and does not mark A11Y-01 fully complete.
+1. **A11Y-01's human half is now recorded.** The results sheet was blank at the first verification; it now carries 12/12 VoiceOver rows over both locales with no finding. NVDA stays `not run` for lack of a Windows host and is tracked on LET-82 — a documented gap, not a silent pass.
 2. **The full e2e run can trip the app's own rate limit.** Repeated full runs produced 6 failures whose snapshots read `Rate limit exceeded` / `0 lieu`; this is the documented `deferred-items.md` issue (60 rpm/IP against a suite that makes many calls), not a regression. The isolated strict axe + accessibility run is green, and the phase's recorded gate run was 14 passed / 2 skipped.
 
 Note on commit hashes: the SUMMARY files cite pre-rebase SHAs that are no longer ancestors of `HEAD`; the same work is present in the history as `6342ace`, `992d0c1`, `be23bc7`, `1661bee`, `4a2c7b8` (app) and `b06fc44`/`580b133`/`20f67ad` (e2e, preserved as objects). Verification was performed against the working tree and history, not the cited strings.
@@ -215,3 +223,4 @@ Also: `REQUIREMENTS.md` still lists E2E-01/A11Y-01/A11Y-02/A11Y-03 as `Pending`;
 
 _Verified: 2026-11-11T20:14:36Z_
 _Verifier: the agent (gsd-verifier)_
+_Human pass recorded: 2026-11-12 — VoiceOver 12/12 over fr + en, NVDA not run (LET-82)_
