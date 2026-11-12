@@ -123,7 +123,7 @@ Prometheus scrapes `api:8000/metrics`; alerts cover API down, 5xx rate, 429 rate
   data.gouv.fr (Etalab 2.0), `… exec api letmegetin-admin import acceslibre --file
   /tmp/acceslibre.csv --dry-run`, complete `data/referential/acceslibre_categories.csv`
   until `unresolved=0`, import for real, then `… import report` (exit `0`).
-- Backups/restore: `./scripts/with-secrets.sh ./scripts/backup.sh` (R2 via Wrangler),
+- Backups/restore: `./scripts/with-secrets.sh ./scripts/backup.sh` (R2 via signed S3 `curl`),
   `./scripts/with-secrets.sh ./scripts/restore.sh <archive>`.
 - Retention: `./scripts/with-secrets.sh docker compose … exec api letmegetin-admin retention`.
 - Systemd timers read `/etc/letmegetin/infisical.env`; see `deploy/systemd/`.
