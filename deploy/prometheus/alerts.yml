@@ -34,3 +34,26 @@ groups:
           severity: critical
         annotations:
           summary: "Redis is unreachable (limits fall back per worker)"
+
+      # Host layer (D-04): the two silent failures that cost data rather than
+      # downtime. `absent()` is deliberate — a marker that was never written is
+      # the worst case, not a non-event.
+      - alert: BackupStale
+        expr: >
+          (time() - lmgi_backup_last_success_timestamp_seconds > 129600)
+          or absent(lmgi_backup_last_success_timestamp_seconds)
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Offsite backup is older than 36h, or the marker was never written"
+
+      - alert: DiskFillingUp
+        expr: >
+          node_filesystem_avail_bytes{mountpoint="/", fstype!~"tmpfs|overlay|squashfs"}
+          / node_filesystem_size_bytes{mountpoint="/", fstype!~"tmpfs|overlay|squashfs"} < 0.1
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Root filesystem is below 10% free"
