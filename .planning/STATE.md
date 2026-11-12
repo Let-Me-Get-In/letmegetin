@@ -1,3 +1,22 @@
+---
+gsd_state_version: "1.0"
+milestone: V1.1
+milestone_name: Production & Quality
+current_phase: 11
+current_phase_name: Phase 11 of 11 is executing
+status: completed
+stopped_at: Phase 11 complete — all phases complete
+last_updated: "2026-11-12T14:04:42.245Z"
+last_activity: 2026-11-12
+last_activity_desc: Phase 11 complete
+state_head: 147fce4ef61dd1398af231ae54a07f76713f19ff
+progress:
+  total_phases: 12
+  completed_phases: 12
+  total_plans: 21
+  completed_plans: 18
+---
+
 # State: LetMeGetIn
 
 ## Project Reference
@@ -5,15 +24,15 @@
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** V1.1 — Phase 11 (E2E & accessibility)
+**Current focus:** V1.1 complete — next milestone V2 (Federated Data & Partners)
 
 ## Current Position
 
-Ticket: LET-35 (Phase 11 — in progress)
-Phase: 4 / 4 of V1.1 (Phase 11 of 11 is executing)
-Plan: 7 / 7 (11-01 … 11-07 complete); phase ready to close
-Status: Phase 11 complete on the machine-checkable side. The e2e repo runs 16 specs (search, filters, pagination, record, contribution, review, auth gate, axe) against dev, and the axe gate is now **strict** in the development job (`AXE_STRICT=1`, `seriousCriticalCount: 0`). A11Y-01's human VoiceOver/NVDA pass is the one remaining item and is deliberately not claimed.
-Last activity: 2026-11-10 — LET-69 removes the anonymous refresh 401: the BFF answers 204 when no refresh cookie exists and the client treats the missing token as no session. Verified on `/` and `/landing` (refresh 204, no 401). LET-64 landing is live on the apex; production runs app `0af5198`.
+Ticket: LET-35 (Phase 11 — complete)
+Phase: 11 of 11 (complete)
+Plan: 7 / 7 (11-01 … 11-07 complete)
+Status: Phase 11 complete (2026-11-12) — V1.1 done. VoiceOver pass recorded 12/12 over fr + en; NVDA not run (LET-82).
+Last activity: 2026-11-12 — Phase 11 complete
 
 ## Quick Tasks Completed
 
@@ -92,7 +111,7 @@ Last activity: 2026-11-10 — LET-69 removes the anonymous refresh 401: the BFF 
 ## Session Continuity
 
 Last session: 2026-11-08
-Stopped at: Completed 11-04-PLAN.md (report-only axe scan, screen-reader audit protocol + template, localized map contract in the e2e repo, branch `LET-35-e2e-journeys` at `580b133`); next is 11-07 — fix the one serious axe finding and flip `AXE_STRICT=1`
+Stopped at: Phase 11 complete — all phases complete
 Resume file: .planning/phases/11-e2e-accessibility/11-04-SUMMARY.md
 
 ## Known debt
