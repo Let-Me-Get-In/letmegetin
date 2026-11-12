@@ -109,6 +109,26 @@ Never promote during the drill.
 - Useful signals: `letmegetin_http_requests_total`, `letmegetin_rate_limited_total`,
   `letmegetin_redis_up`, `/health`, Caddy logs.
 
+### Prove an alert end to end
+
+`ApiDown` fires on `up{job="letmegetin-api"} == 0` after `for: 2m`, and Alertmanager waits
+`group_wait: 30s`, so the Discord message lands about three minutes after the API stops. Do it at a
+low-traffic moment, restart the API as soon as the alert is observed, and budget four minutes:
+
+```bash
+# on the host, as root; the runner is the only way to reach this Compose project
+/usr/local/bin/letmegetin-compose /opt/letmegetin-env/production.env lmgi-prod stop api
+sleep 180
+curl -fsS 'http://127.0.0.1:9093/api/v2/alerts?active=true'   # holds alertname="ApiDown"
+/usr/local/bin/letmegetin-compose /opt/letmegetin-env/production.env lmgi-prod start api
+```
+
+The receiver's own record is the message in the Discord channel the webhook points at: a webhook
+cannot read the channel back, so confirm it there rather than in Alertmanager's UI. From the host,
+`curl -fsS http://127.0.0.1:9093/metrics | grep 'notifications_total{integration="discord"}'` counts
+the dispatches and `…_failed_total` must stay `0`. `Notify success` is logged at debug level only, so
+an INFO-level log says nothing either way.
+
 ## Retention
 
 ```bash
