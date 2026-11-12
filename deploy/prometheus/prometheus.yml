@@ -19,3 +19,10 @@ scrape_configs:
       # project that owns it. The alias is the one the edge's Caddyfile proxies
       # to, which is what makes it the only name both projects can agree on.
       - targets: ["lmgi-prod-api:8000"]
+
+  - job_name: lmgi-node
+    static_configs:
+      # The host collector, on the monitoring project's private `default`
+      # network: both containers live in `lmgi-monitoring`, so the bare service
+      # name resolves and no other project can reach it.
+      - targets: ["node-exporter:9100"]
