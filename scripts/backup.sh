@@ -64,6 +64,27 @@ if [ -n "$R2_BUCKET" ]; then
   put "$DEST/$TS.tar.gz" "$KEY" application/gzip
   put "$DEST/$TS.tar.gz.sha256" "$KEY.sha256" text/plain
   echo "offsite: r2://$R2_BUCKET/$KEY"
+
+  # The backup-age marker Prometheus reads through node_exporter's textfile
+  # collector. Only a successful offsite upload refreshes it: a local-only or
+  # failed upload must let BackupStale fire.
+  #
+  # Best-effort: a failed write must not fail the backup after the offsite
+  # upload. The temp file + rename is atomic, so the collector never reads a
+  # partial file; `[ -s ]` asserts the rename left a non-empty file.
+  if [ -n "${NODE_TEXTFILE_DIR:-}" ] && [ -d "$NODE_TEXTFILE_DIR" ]; then
+    tmp="$NODE_TEXTFILE_DIR/backup.prom.$$"
+    if printf 'lmgi_backup_last_success_timestamp_seconds %s\n' "$(date +%s)" > "$tmp" 2>/dev/null \
+        && mv -f "$tmp" "$NODE_TEXTFILE_DIR/backup.prom" 2>/dev/null \
+        && [ -s "$NODE_TEXTFILE_DIR/backup.prom" ]; then
+      :
+    else
+      rm -f "$tmp"
+      echo "WARNING: backup-age marker not written to $NODE_TEXTFILE_DIR (BackupStale will fire)" >&2
+    fi
+  else
+    echo "WARNING: NODE_TEXTFILE_DIR unset or missing; backup-age signal not emitted" >&2
+  fi
 else
   echo "WARNING: no R2 bucket configured (cf_backup_bucket / R2_BUCKET); the backup is local only" >&2
 fi
