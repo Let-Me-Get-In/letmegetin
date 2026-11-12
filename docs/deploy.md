@@ -89,15 +89,16 @@ The local TLS smoke test is gone with the extraction — a throwaway stack now
 needs the edge project too, and the config repo's `deploy` playbook is the
 supported path.
 
-## Observability profile
+## Monitoring
 
-```bash
-./scripts/with-secrets.sh docker compose -p letmegetin-prod \
-  -f docker-compose.prod.yml --profile observability up -d prometheus alertmanager
-```
+Prometheus and Alertmanager are their own Compose project, `lmgi-monitoring`, deployed by the config
+repo — this repository only carries their configuration (`deploy/prometheus/`,
+`deploy/alertmanager/`), which the config repo mounts from the shipped checkout. Nothing here starts
+them, and there is no `observability` profile to enable.
 
-Prometheus scrapes `api:8000/metrics`; alerts cover API down, 5xx rate, 429 rate and Redis down.
-`ALERT_WEBHOOK` must be set before starting Alertmanager.
+Prometheus scrapes `lmgi-prod-api:8000/metrics` over the shared `lmgi-edge` network; alerts cover
+API down, 5xx rate, 429 rate and Redis down, and Alertmanager posts them to Discord through the
+webhook in `ALERT_WEBHOOK`.
 
 ## Required secret names (Infisical, env `prod`)
 
@@ -110,7 +111,7 @@ Prometheus scrapes `api:8000/metrics`; alerts cover API down, 5xx rate, 429 rate
 | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `R2_BUCKET`, `R2_PREFIX` | offsite R2 backups |
 | `LETMEGETIN_SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN` | optional error tracking |
 | `LETMEGETIN_SMTP_*` | verification emails (otherwise logged) |
-| `ALERT_WEBHOOK` | Alertmanager receiver (observability profile) |
+| `ALERT_WEBHOOK` | Discord webhook Alertmanager posts to |
 | `API_KEY` | leave empty for the public web; partner keys are server-side |
 
 ## Operations
