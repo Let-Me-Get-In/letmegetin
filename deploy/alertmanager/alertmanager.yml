@@ -1,10 +1,19 @@
+# Alerts go to the one Discord channel the rest of the stack reports to.
+#
+# The webhook is read from a file, never from this file and never from the
+# environment: the config repo renders /etc/alertmanager-webhook/webhook.url from
+# Infisical at deploy time, mode 0600, and fails the deploy when the secret is
+# missing. That is why there is no `--config.expand-env` and no `${…}` below — an
+# absent secret used to expand to an empty URL, which Alertmanager rejects, and
+# the resulting crash-loop looked exactly like a misconfiguration.
+
 route:
-  receiver: webhook
+  receiver: discord
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 4h
 
 receivers:
-  - name: webhook
-    webhook_configs:
-      - url: ${ALERT_WEBHOOK}
+  - name: discord
+    discord_configs:
+      - webhook_url_file: /etc/alertmanager-webhook/webhook.url

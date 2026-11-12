@@ -13,4 +13,9 @@ scrape_configs:
   - job_name: letmegetin-api
     metrics_path: /metrics
     static_configs:
-      - targets: ["api:8000"]
+      # The API under its qualified alias on the shared `lmgi-edge` network.
+      # `api:8000` does not resolve here: Prometheus runs in its own Compose
+      # project (`lmgi-monitoring`), and a bare service name is private to the
+      # project that owns it. The alias is the one the edge's Caddyfile proxies
+      # to, which is what makes it the only name both projects can agree on.
+      - targets: ["lmgi-prod-api:8000"]
