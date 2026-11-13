@@ -220,5 +220,23 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| LIC-01 | Phase 12 | Pending |
+| LIC-02 | Phase 12 | Pending |
+| LIC-03 | Phase 12 | Pending |
+| LIC-04 | Phase 12 | Pending |
+| LIC-05 | Phase 12 | Pending |
+| PROD-01 | Phase 13 | Pending |
+| EXP-01 | Phase 14 | Pending |
+| EXP-02 | Phase 14 | Pending |
+| PART-01 | Phase 15 | Pending |
+| PART-02 | Phase 15 | Pending |
+| OSM-01 | Phase 16 | Pending |
+| OSM-02 | Phase 16 | Pending |
+| OVT-01 | Phase 17 | Pending |
+| OVT-02 | Phase 17 | Pending |
+| OVT-03 | Phase 17 | Pending |
 
-**Coverage:** filled by the roadmap.
+**Coverage:**
+- v2.0 requirements: 15 total
+- Mapped to phases: 15
+- Unmapped: 0 ✓

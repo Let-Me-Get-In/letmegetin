@@ -6,7 +6,7 @@ status: planning
 last_updated: "2026-11-13T07:45:24.126Z"
 last_activity: 2026-11-13
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 12 — Licence provenance
 Plan: —
-Status: Defining requirements
-Last activity: 2026-11-13 — Milestone v2.0 started
+Status: Roadmap defined; plans not written
+Last activity: 2026-11-13 — Roadmap v2.0 defined (6 phases, 15 requirements)
 
 
 ## Quick Tasks Completed
