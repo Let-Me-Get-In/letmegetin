@@ -82,6 +82,12 @@ rank or filter search by documentation, does not touch licence provenance
   "Parfaitement documenté") so a fully documented place whose every answer is
   "no" is not labelled as the best state in the product.*
 
+- **D-12 (revised 2026-11-13):** *Measured defect:* `filled_rate` excluded `option`
+  criteria, leaving 2 leaves, so it could only be 0 / 0.5 / 1 and three ladder
+  bands never appeared on the live data. The denominator becomes the grid's
+  answerable criteria (no `array` groups, no option children); family rates share
+  it, filtered by family, and a family with no leaf is **absent** rather than
+  0 %.
 </decisions>
 
 <agent_discretion>
