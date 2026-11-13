@@ -13,8 +13,9 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import text
+from sqlalchemy import event, text
 
+from letmegetin.core.db import engine
 from letmegetin.domain.places.dedup import normalize_name
 from letmegetin.domain.places.entities import make_slug
 from tests.db import SessionLocal, require_database
@@ -271,6 +272,56 @@ def test_search_rejects_invalid_filters(client: TestClient, params: dict[str, An
     assert response.status_code == 422
 
 
+def test_search_omits_documentation_unless_asked(client: TestClient) -> None:
+    body = _search(client, radius=5000)
+
+    assert body
+    # D-07: an existing consumer pays nothing until it passes the flag.
+    assert all("documentation" not in item for item in body)
+
+
+def test_search_returns_documentation_when_asked(client: TestClient) -> None:
+    body = _search(client, radius=5000, with_documentation="true")
+
+    by_name = {item["name"]: item["documentation"] for item in body}
+    # Beta's category grid has one leaf and Beta answers it; gamma's category has no grid at all.
+    assert by_name["Test Librairie Beta"] == {"rate": 1.0, "percent": 100, "level": "complete"}
+    assert by_name["Test Pharmacie Gamma"] == {"rate": 0.0, "percent": 0, "level": "none"}
+    assert all(0.0 <= item["rate"] <= 1.0 for item in by_name.values())
+    assert {item["level"] for item in by_name.values()} <= {
+        "none",
+        "sketch",
+        "partial",
+        "good",
+        "very_good",
+        "complete",
+    }
+
+
+def test_search_keeps_an_undocumented_place(client: TestClient) -> None:
+    without = _search(client, radius=5000)
+    with_flag = _search(client, radius=5000, with_documentation="true")
+
+    # D-06: rate 0.0 is a level, not an exclusion — same hits, same order.
+    assert [item["slug"] for item in with_flag] == [item["slug"] for item in without]
+    assert {item["documentation"]["level"] for item in with_flag} >= {"none", "complete"}
+
+
+def test_search_with_documentation_stays_a_bare_array(client: TestClient) -> None:
+    response = client.get(
+        "/api/v1/places",
+        params={
+            "lat": _ORIGIN[0],
+            "lng": _ORIGIN[1],
+            "radius": 5000,
+            "with_documentation": "true",
+        },
+    )
+
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+
 def test_candidates_return_near_duplicates(client: TestClient) -> None:
     response = client.get(
         "/api/v1/places/candidates",
@@ -351,3 +402,43 @@ def test_search_has_more_header(client: TestClient) -> None:
     assert last_page.headers["X-Has-More"] == "false"
     assert past_end.json() == []
     assert past_end.headers["X-Has-More"] == "false"
+
+
+def _count_selects(client: TestClient, **params: Any) -> int:
+    """SELECT statements the app's engine emits while serving one search request."""
+    seen: list[str] = []
+
+    def record(  # noqa: ANN001 - the SQLAlchemy listener signature is positional
+        conn: Any, cursor: Any, statement: str, parameters: Any, context: Any, executemany: bool
+    ) -> None:
+        if statement.lstrip().upper().startswith("SELECT"):
+            seen.append(statement)
+
+    event.listen(engine.sync_engine, "before_cursor_execute", record)
+    try:
+        _search(client, **params)
+    finally:
+        event.remove(engine.sync_engine, "before_cursor_execute", record)
+    return len(seen)
+
+
+def test_search_documentation_reads_do_not_scale_with_hits(client: TestClient) -> None:
+    one_hit = {"radius": 500, "q": "alpha"}
+    many_hits = {"lat": _BULK_ORIGIN[0], "lng": _BULK_ORIGIN[1], "radius": 5000, "limit": 100}
+    assert len(_search(client, **one_hit)) == 1
+    assert len(_search(client, **many_hits)) == 100
+
+    one_without = _count_selects(client, **one_hit)
+    one_with = _count_selects(client, **one_hit, with_documentation="true")
+    many_without = _count_selects(client, **many_hits)
+    many_with = _count_selects(client, **many_hits, with_documentation="true")
+
+    # The extra work is exactly the two batched reads, and it is the same two for 1 or
+    # 100 hits: the documentation query never runs per hit (T-13-03).
+    assert one_with - one_without == 2
+    assert many_with - many_without == 2
+
+    # The flag changes the payload, not just the read count.
+    assert "documentation" in _search(client, **one_hit, with_documentation="true")[0]
+    # The search response is not cached today. If a shared cache or CDN is introduced,
+    # `with_documentation` must enter the ETag/Vary key (UI-SPEC, Data Contract: Caching).
