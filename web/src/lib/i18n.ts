@@ -116,12 +116,12 @@ const MESSAGES = {
     docGood: "Fiche bien documentée",
     docVeryGood: "Fiche très documentée",
     docComplete: "Fiche complète",
-    docValueText: "{level}, {percent} %",
+    docValueText: "{level}, {percent} %",
     docLegendHeading: "Niveaux de documentation",
     docLegendIntro:
       "La complétude mesure la part des critères renseignés. Elle ne dit pas si le lieu est accessible.",
-    docBoundsRange: "{min}–{max} %",
-    docBoundsExact: "{percent} %",
+    docBoundsRange: "{min}–{max} %",
+    docBoundsExact: "{percent} %",
     docUndocumentedTitle: "Cette fiche n'est pas encore documentée",
     docUndocumentedBody:
       "Personne n'a encore renseigné cette fiche. Si vous connaissez le lieu, une seule réponse suffit à la rendre utile.",
