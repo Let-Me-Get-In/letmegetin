@@ -318,11 +318,13 @@ export function format(message: string, vars: Record<string, string | number>): 
 }
 ```
 
-New flat keys (D-11 copy in UI-SPEC lines 344–370): `docNone` … `docComplete`,
-`docMeaningNone` … `docMeaningComplete`, `docLegendHeading`, `docLegendIntro`, `docValueText`
-(`"{level}, {percent} %"` fr / `"{level}, {percent}%"` en), `docUndocumentedTitle`,
-`docUndocumentedBody`. The `completeThisRecord` key already exists (line 114/317) for the banner
-link. Existing `fr` strings are **not** edited (e2e text-selects them; UI-SPEC lines 363–366).
+New flat keys (UI-SPEC "Copywriting Contract"): `docNone` … `docComplete`, `docLegendHeading`,
+`docLegendIntro`, `docValueText` (`"{level}, {percent} %"` fr / `"{level}, {percent}%"` en),
+`docUndocumentedTitle`, `docUndocumentedBody`, `docBannerCta`. There are **no** `docMeaning*` keys:
+the revised contract dropped the per-level meaning sentences. `completeThisRecord` is the h2 of the
+contribution section and must not be reused for the banner link. Two existing keys **are** edited
+with their e2e selectors in the same change: `criteriaHaveValue` (no-break space before `%`) and
+`reviewCountLine` (percent clause removed).
 
 ---
 
@@ -349,8 +351,10 @@ Adds `--color-doc-*` ramp tokens, light and dark (UI-SPEC lines 55–73).
 }
 ```
 
-Add `--color-doc-none` … `--color-doc-complete` in `@theme` (light hexes) and override in the
-dark `:root` block (dark hexes), exactly matching the existing token pattern. Values from the
+Add exactly FOUR tokens — `--color-doc-sketch`, `--color-doc-partial`, `--color-doc-good`,
+`--color-doc-very-good` — in `@theme` (light hexes) and override in the dark `:root` block (dark
+hexes), matching the existing token pattern. Do not declare `doc-none` or `doc-complete`: `none`
+uses `line`/`muted` and `complete` uses `accent`, so they would be dead tokens. Values from the
 UI-SPEC "Documentation Ladder — Visual Tokens" table (chip background column).
 
 ---
@@ -396,7 +400,7 @@ percentage; add the legend `<dl>`; add the `doc-undocumented` banner (rendered w
 
 ### 13. `web/src/components/search/place-list.tsx` (client component, transform) — MODIFY
 
-Adds the level chip and border tint to each card.
+Adds the level chip to each card (no border tint: the revised contract removed it).
 
 **Analog:** itself — the card `Link` (lines 36–61), including the existing border-precedence
 logic and the operating-status pill:
@@ -421,9 +425,8 @@ logic and the operating-status pill:
 </Link>
 ```
 
-Per UI-SPEC (lines 271–300): the default border becomes the level's `border-doc-*` tint (with
-`none` keeping `border-line`), while hover (`hover:border-accent`) and selected
-(`border-accent bg-accent-soft/50`) still win. A new meta row (level chip + existing status pill)
+Per UI-SPEC ("Search Result Card"): the card's border, hover and selected styles are untouched.
+A new meta row (level chip + existing status pill)
 uses `flex flex-wrap items-center gap-2 mt-2`; the chip is `inline-flex items-center rounded-full
 px-3 py-1 text-sm font-semibold` with the `levelChipClass(slug)` text, rendered only when
 `place.documentation` is present.

@@ -398,15 +398,29 @@ The UI renders what the server provides. It never derives a level from a rate (D
 
 | Consumer | Needs | Status today |
 |----------|-------|--------------|
-| Search results (`GET /api/v1/places?with_documentation=true`) | `documentation: { rate, level }` per result; absent by default (D-07) | Not built |
-| Record detail (`GET /api/v1/places/{slug}`) | overall `documentation: { rate, level }` | Not built; `filled_rate` exists |
-| Record detail | a level for each of the four families, keyed by family | Not built; `accessibility_by_family` carries rates only |
+| Search results (`GET /api/v1/places?with_documentation=true`) | `documentation: { rate, percent, level }` per result; absent by default (D-07) | Not built |
+| Record detail (`GET /api/v1/places/{slug}`) | overall `documentation: { rate, percent, level }` | Not built; `filled_rate` exists |
+| Record detail | a level for each of the four families, keyed by family, on the same denominator as the overall rate | Not built; `accessibility_by_family` carries rates only |
 | Legend bounds | the six slug → bounds table | Served by the server ladder (Open Questions, item 2) |
 | Search request (web) | `placesPath` adds `with_documentation=true` | Web change; update `placesPath` and its test |
 
-**Rounding rule.** The server computes `percent = round(rate * 100)` and derives `level` from that
-integer against the published bounds, in one place. The web prints the rate the server sent and
-never re-rounds. This is what prevents "100 %" beside a `very_good` level.
+**Rounding rule.** The server computes `percent = floor(rate * 100 + 0.5)` and derives `level` from
+that integer against the published bounds, in one place, and **sends `percent` in the payload**. The
+web prints `documentation.percent` verbatim and never re-rounds (`page.tsx` stops calling
+`Math.round(filled_rate * 100)`). Without `percent` in the payload the guarantee is unenforceable.
+
+**Denominator (measured defect, fixed in this phase).** `filled_rate` currently divides by the grid
+nodes that are not `array` and not `option`, which drops all 55 option criteria and leaves **2**
+leaves: the rate can only be 0, 0.5 or 1, and `sketch`, `good` and `very_good` can never occur.
+The denominator becomes the grid's **answerable** criteria — everything except `array` groups and
+except option nodes whose parent is also an option. On category 1 that is 19 criteria, so the 8
+fields AccesLibre populates score 8/19 = 42 %. Expect most imported places to sit in the lower
+bands: that is the honest reading of the data, not a regression.
+The same denominator, filtered by handicap family, is used for the family rates; a family with no
+grid leaf is **absent** from `accessibility_by_family` (today it is reported as 0.0, which reads as
+"not documented" for every place outside the family). All 8 populated AccesLibre criteria are
+`moteur`, so `visuel`, `auditif` and `mental` will legitimately be absent until contributions
+exist — the "Non renseigné" branch is the correct display, not a bug.
 
 **Unknown slug.** If a level slug is not in the web's map, the chip and the level heading are
 omitted and the percent sentence remains: an unknown enum must not break the page, and must not be
