@@ -40,9 +40,9 @@ worker count) if Redis is unavailable. Behind Caddy the client IP is read from
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/places?lat&lng&radius&q&family&category&filters&limit&offset` | Distance-sorted search, pageable |
+| GET | `/places?lat&lng&radius&q&family&category&filters&limit&offset&with_documentation` | Distance-sorted search, pageable; `with_documentation=true` adds each result's documentation |
 | GET | `/places/candidates?lat&lng&name` | Duplicate prevention |
-| GET | `/places/{slug}` | Record, tree, `filled_rate`, reviews summary, photos, provenance |
+| GET | `/places/{slug}` | Record, tree, `filled_rate`, documentation ladder, reviews summary, photos, provenance |
 | GET | `/places/{slug}/reviews?page&size` | Paginated published reviews |
 | GET | `/categories` | Categories |
 | GET | `/categories/{slug}/criteria` | Criteria tree (ids included) |
@@ -71,6 +71,44 @@ additive, optional fields — on the place itself and on every entry of `accessi
 **null** when the source makes no claim, and consumers must not read it as "last changed". The
 ingestion timestamp (`retrieved_at`) stays internal and is not exposed. The search list
 (`GET /places`) keeps its existing shape — no provenance per result.
+
+### Documentation
+
+`GET /places/{slug}` also says **how well documented a record is**, on a fixed six-rung ladder.
+The level is a **stable enum**, not display text: a client maps the slug to its own localized copy,
+prints `percent` verbatim, and never re-derives a level or restates the bounds.
+
+| Level | Min % | Max % |
+|---|---|---|
+| none | 0 | 0 |
+| sketch | 1 | 25 |
+| partial | 26 | 50 |
+| good | 51 | 75 |
+| very_good | 76 | 99 |
+| complete | 100 | 100 |
+
+The same ladder is served, so it never has to be copied: `documentation_ladder` lists the six
+rungs as `{slug, min, max}`, ascending.
+
+| Field | Where | Shape |
+|---|---|---|
+| `documentation` | `GET /places/{slug}`; `GET /places` only with `with_documentation=true` | `{rate, percent, level}` for the whole record |
+| `accessibility_by_family` | `GET /places/{slug}` | `{rate, percent, level}` per handicap family, same ladder and same grid-leaf denominator as the overall level |
+| `documentation_ladder` | `GET /places/{slug}` | `[{slug, min, max}]`, the six rungs |
+
+`rate` is the share of the category grid's answerable criteria that carry a recorded value, in
+`[0, 1]`. `percent` is the integer the server used to pick `level`
+(`floor(rate * 100 + 0.5)`, clamped to `[0, 100]`): print it as-is, because rounding it again can
+make the printed percentage and the level disagree at a bound. A family with no criterion in the
+place's category grid is **absent** from `accessibility_by_family`; that is "nothing to answer",
+never `0 %`.
+
+`GET /places` carries `documentation` only under `with_documentation=true`. Without the flag the key
+is **absent** from each result — not `null` — so an existing consumer pays nothing, and the body
+stays a bare JSON array either way.
+
+**Breaking change.** `accessibility_by_family` used to map each family to a bare float rate; it now
+maps to `{rate, percent, level}`. A consumer that read the float reads `.rate` of the new object.
 
 ### Pagination
 
