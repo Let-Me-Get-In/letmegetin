@@ -34,6 +34,13 @@ export type Photo = {
   license: string | null;
 };
 
+// The server owns the ladder; `level` is a stable slug, never display text (D-02).
+export type Documentation = {
+  rate: number;
+  percent: number;
+  level: string;
+};
+
 export type Review = {
   id: number;
   rating: number;
@@ -55,6 +62,7 @@ export type PlaceDetail = PlaceSummary & {
   accessibility_by_family: Record<string, number>;
   tree: TreeNode[];
   filled_rate: number;
+  documentation: Documentation;
   photos: Photo[];
   rating: number | null;
   review_count: number;
