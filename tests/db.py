@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import csv
 from collections.abc import Coroutine
+from datetime import date
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -12,6 +15,8 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
 from letmegetin.config import settings
+
+_ROOT = Path(__file__).resolve().parents[1]
 
 # NullPool: every CLI call runs its own event loop via asyncio.run, and the
 # TestClient drives another one; a pooled asyncpg connection cannot cross loops.
@@ -67,6 +72,33 @@ def row(statement: str, params: dict[str, Any] | None = None) -> Any:
             return value
 
     return run(_row())
+
+
+def seed_source_licences() -> None:
+    """Load the reviewed source → licence rows every write resolves against (LIC-05).
+
+    The licence catalogue itself is seeded by ``admin licences sync`` in production; tests only
+    need the FK target, so the slug stands in for the reviewed name.
+    """
+    with (_ROOT / "data/referential/source_licences.csv").open(
+        encoding="utf-8", newline=""
+    ) as handle:
+        reviewed = list(csv.DictReader(handle, delimiter=";"))
+    for entry in reviewed:
+        execute(
+            "INSERT INTO licence (slug, name, obligations) VALUES (:slug, :slug, '[]'::jsonb) "
+            "ON CONFLICT (slug) DO NOTHING",
+            {"slug": entry["licence_slug"].strip()},
+        )
+        execute(
+            "INSERT INTO source_licence (source, licence_slug, effective_from) "
+            "VALUES (:source, :licence_slug, :effective_from) ON CONFLICT (source) DO NOTHING",
+            {
+                "source": entry["source"].strip(),
+                "licence_slug": entry["licence_slug"].strip(),
+                "effective_from": date.fromisoformat(entry["effective_from"].strip()),
+            },
+        )
 
 
 def rows(statement: str, params: dict[str, Any] | None = None) -> list[Any]:

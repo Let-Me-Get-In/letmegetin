@@ -12,7 +12,14 @@ from letmegetin import admin
 from letmegetin import seed as seed_module
 from letmegetin.core.db import get_session
 from letmegetin.main import app
-from tests.db import SessionLocal, require_database
+from tests.db import SessionLocal, require_database, seed_source_licences
+
+
+@pytest.fixture(autouse=True)
+def reviewed_source_licences() -> None:
+    """Every write resolves its licence from reviewed data; the test DB must hold it (LIC-05)."""
+    require_database("source_licence")
+    seed_source_licences()
 
 
 @pytest.fixture
