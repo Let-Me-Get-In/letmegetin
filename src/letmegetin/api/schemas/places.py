@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 from letmegetin.application.places.get_place import PlaceDetail
 from letmegetin.application.places.list_reviews import ReviewPage
-from letmegetin.domain.places.documentation import Documentation
+from letmegetin.domain.places.documentation import DOCUMENTATION_LADDER, Documentation
 from letmegetin.domain.places.entities import Place, PlaceHit, Review
 
 
@@ -30,15 +30,36 @@ class DocumentationOut(BaseModel):
     )
 
 
-def documentation_out(documentation: Documentation | None) -> DocumentationOut | None:
-    """The wire shape of a derived documentation, or None when the caller has none."""
-    if documentation is None:
-        return None
+class DocumentationLevelOut(BaseModel):
+    """One rung of the D-01 ladder: its slug and the integer percent bounds it covers."""
+
+    slug: str = Field(description="Level slug, a stable enum member")
+    min: int = Field(description="Lowest whole percent in this level, inclusive")
+    max: int = Field(description="Highest whole percent in this level, inclusive")
+
+
+# The one server-side statement of the bounds, rendered from DOCUMENTATION_LADDER so the
+# published contract and the derivation cannot drift apart (D-09, Open Question 2).
+_LADDER_BOUNDS = ", ".join(f"{slug} ({low},{high})" for slug, low, high in DOCUMENTATION_LADDER)
+_LADDER_SHAPE = (
+    "The six level slugs with their integer display bounds — "
+    f"{_LADDER_BOUNDS}; the level is a stable enum, not display text (D-09)"
+)
+
+
+def _documentation_out(documentation: Documentation) -> DocumentationOut:
     return DocumentationOut(
         rate=documentation.rate,
         percent=documentation.percent,
         level=documentation.level,
     )
+
+
+def documentation_out(documentation: Documentation | None) -> DocumentationOut | None:
+    """The wire shape of a derived documentation, or None when the caller has none."""
+    if documentation is None:
+        return None
+    return _documentation_out(documentation)
 
 
 class PlaceSummaryOut(BaseModel):
@@ -184,9 +205,19 @@ class PlaceDetailOut(PlaceSummaryOut):
     license: str | None = None
     observed_at: datetime | None = None
     accessibility: list[AccessibilityValueOut] = []
-    accessibility_by_family: dict[str, float] = {}
+    accessibility_by_family: dict[str, DocumentationOut] = Field(
+        default_factory=dict,
+        description="Documentation {rate, percent, level} per handicap family, same ladder "
+        "and the same grid-leaf denominator as the overall level (D-04); "
+        f"{_LADDER_SHAPE}",
+    )
     tree: list[dict[str, Any]] = []
     filled_rate: float = 0.0
+    documentation_ladder: list[DocumentationLevelOut] = Field(
+        default_factory=list,
+        description=f"{_LADDER_SHAPE}. This is the single server source for the legend; "
+        "clients never restate the bounds (D-02)",
+    )
     photos: list[PhotoOut] = []
     rating: float | None = None
     review_count: int = 0
@@ -213,9 +244,16 @@ class PlaceDetailOut(PlaceSummaryOut):
                 )
                 for value in detail.accessibility
             ],
-            accessibility_by_family=detail.accessibility_by_family,
+            accessibility_by_family={
+                family: _documentation_out(documentation)
+                for family, documentation in detail.accessibility_by_family.items()
+            },
             tree=detail.tree,
             filled_rate=detail.filled_rate,
+            documentation_ladder=[
+                DocumentationLevelOut(slug=slug, min=low, max=high)
+                for slug, low, high in DOCUMENTATION_LADDER
+            ],
             photos=[
                 PhotoOut(url=photo.url, credit=photo.credit, license=photo.license)
                 for photo in detail.photos
