@@ -52,6 +52,11 @@ class Place:
     canonical_id: int | None = None
     # Review-queue candidate: what makes the 0.75-0.90 bucket a query, not a recomputation.
     duplicate_of_id: int | None = None
+    source_license: str | None = None
+    source_url: str | None = None
+    retrieved_at: datetime | None = None
+    # What the source claims about the data itself (Acceslibre ``date_maj``).
+    observed_at: datetime | None = None
     # Read-only projection: filled by the repository when it joins the category.
     category_slug: str | None = None
 
@@ -64,6 +69,12 @@ class PlaceAccessibility:
     label: dict[str, str] = field(default_factory=dict)
     handicap_families: list[str] = field(default_factory=list)
     value: dict[str, object] = field(default_factory=dict)
+    source: str | None = None
+    source_license: str | None = None
+    # Two dates with two meanings: what the source claims, and when we wrote it (D-02).
+    observed_at: datetime | None = None
+    recorded_at: datetime | None = None
+    actor: str | None = None
 
 
 @dataclass

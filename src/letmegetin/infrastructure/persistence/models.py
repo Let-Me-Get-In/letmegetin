@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 
 import geoalchemy2
@@ -10,6 +10,7 @@ from sqlalchemy import (
     Boolean,
     CheckConstraint,
     Computed,
+    Date,
     Double,
     ForeignKey,
     Index,
@@ -251,6 +252,11 @@ class PlaceModel(Base, TimestampMixin):
     duplicate_of_id: Mapped[int | None] = mapped_column(
         ForeignKey("place.id", ondelete="SET NULL"), index=True
     )
+    source_license: Mapped[str | None] = mapped_column(String(64))
+    source_url: Mapped[str | None] = mapped_column(String(1000))
+    retrieved_at: Mapped[datetime | None] = mapped_column()
+    # The source's own claim about the data (Acceslibre ``date_maj``), not ingestion time.
+    observed_at: Mapped[datetime | None] = mapped_column()
 
 
 class PlaceReviewDecisionModel(Base):
@@ -306,6 +312,79 @@ class PlaceAccessibilityModel(Base):
         ForeignKey("criteria.id", ondelete="CASCADE"), primary_key=True
     )
     value: Mapped[dict] = mapped_column(JSONB, default=dict)
+    source: Mapped[str] = mapped_column(String(32))
+    source_license: Mapped[str | None] = mapped_column(String(64))
+    # What the source claims (nullable); freshness compares this, never ``recorded_at``.
+    observed_at: Mapped[datetime | None] = mapped_column()
+    recorded_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    actor: Mapped[str] = mapped_column(String(64))
+
+
+class PlaceAccessibilityWriteModel(Base):
+    """Append-only journal of every attempted answer write (D-12)."""
+
+    __tablename__ = "place_accessibility_write"
+    __table_args__ = (
+        CheckConstraint(
+            "decision IN ('accepted','rejected')", name="place_accessibility_write_decision_ck"
+        ),
+        CheckConstraint(
+            "reason IS NULL OR reason IN ('stale','other_source','not_redistributable')",
+            name="place_accessibility_write_reason_ck",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("place.id", ondelete="CASCADE"), index=True)
+    criterion_id: Mapped[int] = mapped_column(ForeignKey("criteria.id", ondelete="CASCADE"))
+    value: Mapped[dict] = mapped_column(JSONB, default=dict)
+    source: Mapped[str] = mapped_column(String(32))
+    source_license: Mapped[str | None] = mapped_column(String(64))
+    decision: Mapped[str] = mapped_column(String(16))
+    # NULL for an accepted write; a rejected one names why.
+    reason: Mapped[str | None] = mapped_column(String(32))
+    actor: Mapped[str] = mapped_column(String(64))
+    created: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class LicenceModel(Base):
+    """Reviewed licence catalogue (``data/referential/licences.csv``, D-05)."""
+
+    __tablename__ = "licence"
+
+    slug: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(String(255))
+    url: Mapped[str | None] = mapped_column(String(500))
+    obligations: Mapped[list] = mapped_column(JSONB, default=list)
+
+
+class LicenceDestinationModel(Base):
+    """Whether a licence may leave towards a destination (D-06, one row per pair)."""
+
+    __tablename__ = "licence_destination"
+    __table_args__ = (
+        CheckConstraint(
+            "destination IN ('open_export','osm','lov2_partner')",
+            name="licence_destination_destination_ck",
+        ),
+    )
+
+    licence_slug: Mapped[str] = mapped_column(
+        ForeignKey("licence.slug", ondelete="CASCADE"), primary_key=True
+    )
+    destination: Mapped[str] = mapped_column(String(32), primary_key=True)
+    allowed: Mapped[bool] = mapped_column(Boolean)
+    note: Mapped[str | None] = mapped_column(String(500))
+
+
+class SourceLicenceModel(Base):
+    """The reviewed source → licence correspondence, with its effective date (D-07)."""
+
+    __tablename__ = "source_licence"
+
+    source: Mapped[str] = mapped_column(String(32), primary_key=True)
+    licence_slug: Mapped[str] = mapped_column(ForeignKey("licence.slug", ondelete="RESTRICT"))
+    effective_from: Mapped[date] = mapped_column(Date)
 
 
 class ReviewModel(Base, TimestampMixin):

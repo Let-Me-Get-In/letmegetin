@@ -87,6 +87,10 @@ def place_from_model(model: PlaceModel) -> Place:
         phone=model.phone,
         canonical_id=model.canonical_id,
         duplicate_of_id=model.duplicate_of_id,
+        source_license=model.source_license,
+        source_url=model.source_url,
+        retrieved_at=model.retrieved_at,
+        observed_at=model.observed_at,
     )
 
 
@@ -98,6 +102,11 @@ def place_accessibility_from_models(
         label=criterion.label,
         handicap_families=list(criterion.handicap_families or []),
         value=value.value,
+        source=value.source,
+        source_license=value.source_license,
+        observed_at=value.observed_at,
+        recorded_at=value.recorded_at,
+        actor=value.actor,
     )
 
 
