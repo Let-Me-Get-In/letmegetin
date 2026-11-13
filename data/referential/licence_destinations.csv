@@ -1,0 +1,10 @@
+licence_slug;destination;allowed;note
+lov2;open_export;true;Permissive, attribution only
+lov2;osm;true;Permissive, attribution only
+lov2;lov2_partner;true;Our own lov2 data to a lov2 destination
+odbl;open_export;true;The project's own output licence
+odbl;osm;true;Same licence as OSM
+odbl;lov2_partner;false;OSM-derived never to a lov2 destination (LIC-03)
+cdla;open_export;true;Permissive, no obligation
+cdla;osm;true;Permissive, no obligation
+cdla;lov2_partner;false;Not our data, no partner grant
