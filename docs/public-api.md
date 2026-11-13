@@ -42,7 +42,7 @@ worker count) if Redis is unavailable. Behind Caddy the client IP is read from
 |---|---|---|
 | GET | `/places?lat&lng&radius&q&family&category&filters&limit&offset` | Distance-sorted search, pageable |
 | GET | `/places/candidates?lat&lng&name` | Duplicate prevention |
-| GET | `/places/{slug}` | Record, tree, `filled_rate`, reviews summary, photos |
+| GET | `/places/{slug}` | Record, tree, `filled_rate`, reviews summary, photos, provenance |
 | GET | `/places/{slug}/reviews?page&size` | Paginated published reviews |
 | GET | `/categories` | Categories |
 | GET | `/categories/{slug}/criteria` | Criteria tree (ids included) |
@@ -55,6 +55,22 @@ The `category` value of `/places` is a slug from `GET /api/v1/categories`; an un
 Results are ordered by **distance ascending**, and ties are broken by **place id ascending**.
 The order is therefore *total* and stable: two identical requests return the same places in the
 same order, and a place never appears on two pages of the same paged search.
+
+### Provenance
+
+`GET /places/{slug}` is the only read endpoint that exposes provenance. It carries three
+additive, optional fields — on the place itself and on every entry of `accessibility`:
+
+| Field | Meaning |
+|---|---|
+| `source` | Where the copy came from (`acceslibre`, `user`, …) |
+| `license` | The licence the row was written under (`lov2`, `odbl`, …), snapshotted at write time |
+| `observed_at` | The source's own last-update claim, ISO 8601, nullable |
+
+`observed_at` is what the source claims (Acceslibre `date_maj`), never our ingestion time: it is
+**null** when the source makes no claim, and consumers must not read it as "last changed". The
+ingestion timestamp (`retrieved_at`) stays internal and is not exposed. The search list
+(`GET /places`) keeps its existing shape — no provenance per result.
 
 ### Pagination
 
