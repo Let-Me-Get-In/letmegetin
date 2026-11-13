@@ -10,7 +10,10 @@ from letmegetin.domain.referential.entities import (
     CategoryGrid,
     CategoryMapping,
     Criterion,
+    Licence,
+    LicenceDestination,
     OtherInformation,
+    SourceLicence,
     VocabularyEntry,
 )
 
@@ -98,3 +101,27 @@ class MappingAdminRepository(Protocol):
     """Write access to the category-to-source vocabulary mapping."""
 
     async def upsert(self, mapping: CategoryMapping) -> None: ...
+
+
+class LicenceRepository(Protocol):
+    """Read/write access to the reviewed licence catalogue, its matrix and the source mapping."""
+
+    async def get_by_slug(self, slug: str) -> Licence | None: ...
+
+    async def list_licences(self) -> list[Licence]: ...
+
+    async def list_destinations(self, licence_slug: str | None = None) -> list[LicenceDestination]:
+        """Every matrix row, or the rows of one licence when a slug is given."""
+        ...
+
+    async def list_source_licences(self) -> list[SourceLicence]: ...
+
+    async def allowed(self, licence_slug: str, destination: str) -> bool:
+        """Fail closed: an absent pair, or an unknown licence, is refused (D-15)."""
+        ...
+
+    async def upsert_licence(self, licence: Licence) -> None: ...
+
+    async def upsert_destination(self, row: LicenceDestination) -> None: ...
+
+    async def upsert_source_licence(self, row: SourceLicence) -> None: ...

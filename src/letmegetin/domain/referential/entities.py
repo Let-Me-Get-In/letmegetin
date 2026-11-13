@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Literal
 
 Label = dict[str, str]
@@ -92,3 +93,32 @@ class CategoryMapping:
     osm_tag: str | None = None
     acceslibre_family: str | None = None
     notes: str | None = None
+
+
+@dataclass
+class Licence:
+    """A licence a row may be distributed under (``data/referential/licences.csv``, D-05)."""
+
+    slug: str
+    name: str
+    url: str | None = None
+    obligations: list[str] = field(default_factory=list)
+
+
+@dataclass
+class LicenceDestination:
+    """Whether a licence may leave towards a destination (D-06: one reviewed row per pair)."""
+
+    licence_slug: str
+    destination: str
+    allowed: bool
+    note: str | None = None
+
+
+@dataclass
+class SourceLicence:
+    """The reviewed source → licence correspondence new writes resolve against (D-07)."""
+
+    source: str
+    licence_slug: str
+    effective_from: date
