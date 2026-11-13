@@ -197,7 +197,7 @@
 
 ### Product
 
-- [ ] **PROD-01**: A place shows how well documented it is, on a stated threshold ladder with an accessible legend, and an undocumented place still appears in search and can be completed in place
+- [x] **PROD-01**: A place shows how well documented it is, on a stated threshold ladder with an accessible legend, and an undocumented place still appears in search and can be completed in place
 
 ## Future Requirements (after v2.0)
 
@@ -225,7 +225,7 @@
 | LIC-03 | Phase 12 | Complete |
 | LIC-04 | Phase 12 | Complete |
 | LIC-05 | Phase 12 | Complete |
-| PROD-01 | Phase 13 | Pending |
+| PROD-01 | Phase 13 | Complete |
 | EXP-01 | Phase 14 | Pending |
 | EXP-02 | Phase 14 | Pending |
 | PART-01 | Phase 15 | Pending |

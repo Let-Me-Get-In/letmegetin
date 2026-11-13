@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v2.0
-current_phase: 13
-current_phase_name: Documented-place visualisation
+current_phase: 14
+current_phase_name: Open ODbL export
 status: planning
-stopped_at: Phase 13 planned — 3 plans, UI-SPEC approved, 0 blockers
-last_updated: "2026-11-13T20:22:33.335Z"
-last_activity: 2026-11-13
-last_activity_desc: Phase 12 complete, transitioned to Phase 13
-state_head: 8263d963889a875630223813034f1112812d3dac
+stopped_at: Phase 13 complete, ready to plan Phase 14
+last_updated: "2026-11-13T23:08:07.882Z"
+last_activity: 2026-11-14
+last_activity_desc: Phase 13 complete, transitioned to Phase 14
+state_head: f40abb8074c7553cfa9fb81cb25d6ca92e8d6705
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 8
-  completed_plans: 5
+  completed_plans: 8
+  percent: 33
 milestone_name: Federated Data & Partners
 ---
 
@@ -28,10 +29,10 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 
 ## Current Position
 
-Phase: 13 — Documented-place visualisation
+Phase: 14 — Open ODbL export
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-13 — Phase 12 complete, transitioned to Phase 13
+Last activity: 2026-11-14 — Phase 13 complete, transitioned to Phase 14
 
 
 ## Quick Tasks Completed
@@ -111,7 +112,7 @@ Last activity: 2026-11-13 — Phase 12 complete, transitioned to Phase 13
 ## Session Continuity
 
 Last session: 2026-11-13T20:22:33.116Z
-Stopped at: Phase 13 planned — 3 plans, UI-SPEC approved, 0 blockers
+Stopped at: Phase 13 complete, ready to plan Phase 14
 Resume file: .planning/phases/13-documented-place-visualisation/13-01-PLAN.md
 
 ## Known debt
