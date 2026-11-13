@@ -119,6 +119,12 @@ class PlaceRepository(Protocol):
     ) -> None:
         """Write values keyed by criterion slug; unknown slugs are ignored.
 
+        The single shared write path (D-09…D-12): a contribution (``source='user'``) takes
+        ownership of the row; an import may only replace a row of its own source and only with
+        an ``observed_at`` at least as fresh (NULL counts as the oldest claim). A criterion the
+        place does not hold yet is always inserted. Every attempt is appended to the write
+        journal, so a rejected value stays visible to an operator.
+
         The licence is resolved from the reviewed ``source_licence`` table at write time, never
         passed in (LIC-05); an unmapped source raises ``DomainError`` (D-15).
         """

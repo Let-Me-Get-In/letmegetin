@@ -63,6 +63,7 @@ from letmegetin.infrastructure.persistence.models import (
     IdempotencyKeyModel,
     OtherInformationModel,
     PlaceAccessibilityModel,
+    PlaceAccessibilityWriteModel,
     PlaceAliasModel,
     PlaceMergeLogModel,
     PlaceModel,
@@ -325,6 +326,31 @@ class SqlAlchemyOtherInformationRepository:
 def _point(lat: float, lng: float) -> object:
     """A geography point built from bound parameters (never from interpolated SQL)."""
     return func.ST_SetSRID(func.ST_MakePoint(lng, lat), 4326).cast(Geography)
+
+
+_USER_SOURCE = "user"
+
+
+def _rejection(
+    source: str,
+    observed_at: datetime | None,
+    current_source: str | None,
+    current_observed_at: datetime | None,
+) -> str | None:
+    """Why a write may not replace the current row, or ``None`` when it may (D-09/D-10).
+
+    A contribution takes ownership of the row; an import may only replace a row of its own
+    source, and only with a claim at least as fresh — NULL counts as the oldest claim.
+    """
+    if current_source is None or source == _USER_SOURCE:
+        return None
+    if current_source != source:
+        return "other_source"
+    if current_observed_at is not None and (
+        observed_at is None or observed_at < current_observed_at
+    ):
+        return "stale"
+    return None
 
 
 class SqlAlchemyUserRepository:
@@ -903,29 +929,72 @@ class SqlAlchemyPlaceRepository:
     ) -> None:
         if not values:
             return
-        slugs = list(values)
         rows = (
             await self._session.execute(
-                select(CriterionModel.id, CriterionModel.slug).where(CriterionModel.slug.in_(slugs))
+                select(CriterionModel.id, CriterionModel.slug).where(
+                    CriterionModel.slug.in_(list(values))
+                )
             )
         ).all()
         if not rows:
             return
         source_license = await self._source_licence(source)
-        statement = insert(PlaceAccessibilityModel).values(
-            [
+        current = {
+            row.criterion_id: row
+            for row in (
+                await self._session.execute(
+                    select(
+                        PlaceAccessibilityModel.criterion_id,
+                        PlaceAccessibilityModel.source,
+                        PlaceAccessibilityModel.observed_at,
+                    ).where(
+                        PlaceAccessibilityModel.place_id == place_id,
+                        PlaceAccessibilityModel.criterion_id.in_(
+                            [criterion_id for criterion_id, _ in rows]
+                        ),
+                    )
+                )
+            ).all()
+        }
+        accepted: list[dict[str, object]] = []
+        journal: list[dict[str, object]] = []
+        for criterion_id, slug in rows:
+            existing = current.get(criterion_id)
+            reason = _rejection(
+                source,
+                observed_at,
+                existing.source if existing is not None else None,
+                existing.observed_at if existing is not None else None,
+            )
+            journal.append(
                 {
                     "place_id": place_id,
                     "criterion_id": criterion_id,
                     "value": values[slug],
                     "source": source,
                     "source_license": source_license,
-                    "observed_at": observed_at,
+                    "decision": "rejected" if reason is not None else "accepted",
+                    "reason": reason,
                     "actor": actor,
                 }
-                for criterion_id, slug in rows
-            ]
-        )
+            )
+            if reason is None:
+                accepted.append(
+                    {
+                        "place_id": place_id,
+                        "criterion_id": criterion_id,
+                        "value": values[slug],
+                        "source": source,
+                        "source_license": source_license,
+                        "observed_at": observed_at,
+                        "actor": actor,
+                    }
+                )
+        # Every attempt is journaled, including a losing value (D-12).
+        await self._session.execute(insert(PlaceAccessibilityWriteModel).values(journal))
+        if not accepted:
+            return
+        statement = insert(PlaceAccessibilityModel).values(accepted)
         await self._session.execute(
             statement.on_conflict_do_update(
                 index_elements=[
