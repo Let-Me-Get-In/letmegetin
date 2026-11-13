@@ -22,6 +22,40 @@
             "title": "Label",
             "type": "object"
           },
+          "license": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License"
+          },
+          "observed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed At"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
           "value": {
             "additionalProperties": true,
             "title": "Value",
@@ -423,6 +457,17 @@
             ],
             "title": "Lat"
           },
+          "license": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License"
+          },
           "lng": {
             "anyOf": [
               {
@@ -437,6 +482,18 @@
           "name": {
             "title": "Name",
             "type": "string"
+          },
+          "observed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed At"
           },
           "operating_status": {
             "title": "Operating Status",
@@ -469,6 +526,17 @@
           "slug": {
             "title": "Slug",
             "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
           },
           "tree": {
             "default": [],

@@ -45,6 +45,10 @@ class AccessibilityValueOut(BaseModel):
     label: dict[str, str]
     handicap_families: list[str]
     value: dict[str, Any]
+    # Provenance: where the answer came from and under which licence (D-16).
+    source: str | None = None
+    license: str | None = None
+    observed_at: datetime | None = None
 
 
 class PhotoOut(BaseModel):
@@ -134,6 +138,10 @@ class ReviewPageOut(BaseModel):
 class PlaceDetailOut(PlaceSummaryOut):
     """A place record with its accessibility tree and reviews (PLACE-03/04, REV-01)."""
 
+    # The place's own provenance; ``observed_at`` is the source's claim, not our ingestion (D-16).
+    source: str | None = None
+    license: str | None = None
+    observed_at: datetime | None = None
     accessibility: list[AccessibilityValueOut] = []
     accessibility_by_family: dict[str, float] = {}
     tree: list[dict[str, Any]] = []
@@ -147,12 +155,18 @@ class PlaceDetailOut(PlaceSummaryOut):
         summary = PlaceSummaryOut.from_place(detail.place)
         return cls(
             **summary.model_dump(),
+            source=detail.place.source,
+            license=detail.place.source_license,
+            observed_at=detail.place.observed_at,
             accessibility=[
                 AccessibilityValueOut(
                     criterion=value.criterion_slug,
                     label=value.label,
                     handicap_families=value.handicap_families,
                     value=value.value,
+                    source=value.source,
+                    license=value.source_license,
+                    observed_at=value.observed_at,
                 )
                 for value in detail.accessibility
             ],
