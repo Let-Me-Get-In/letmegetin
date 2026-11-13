@@ -8,17 +8,32 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from datetime import datetime
+from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from sqlalchemy import text
 
-from letmegetin.infrastructure.persistence.repositories import SqlAlchemyPlaceRepository
-from tests.db import SessionLocal, execute, require_database, row, rows, run
+from letmegetin.application.places.contribute import contribute
+from letmegetin.application.places.import_acceslibre import (
+    import_acceslibre,
+    iter_acceslibre_rows,
+)
+from letmegetin.infrastructure.persistence.repositories import (
+    SqlAlchemyCategoryMappingRepository,
+    SqlAlchemyCategoryRepository,
+    SqlAlchemyCriterionRepository,
+    SqlAlchemyMergeLogRepository,
+    SqlAlchemyPlaceAliasRepository,
+    SqlAlchemyPlaceRepository,
+)
+from tests.db import SessionLocal, execute, require_database, row, rows, run, scalar
 
 _PLACE_SOURCE_ID = "test-p12c-place"
 _SLUG = "test-p12c-place-00000000"
 _CRITERION = "test-p12c-entry"
 _OTHER_CRITERION = "test-p12c-width"
+_USER_EMAIL = "test-p12c-user@example.test"
 
 _CLEANUP = "DELETE FROM place WHERE source_id LIKE 'test-p12c%'"
 _PLACE_PARAMS = {"place": _PLACE_SOURCE_ID}
@@ -41,6 +56,13 @@ async def _seed() -> None:
             ),
             {"source_id": _PLACE_SOURCE_ID, "slug": _SLUG},
         )
+        await session.execute(
+            text(
+                "INSERT INTO users (email, password_hash) VALUES (:email, 'test') "
+                "ON CONFLICT (email) DO NOTHING"
+            ),
+            {"email": _USER_EMAIL},
+        )
         await session.commit()
 
 
@@ -57,6 +79,7 @@ def db(test_sessions: None) -> Iterator[None]:
         "DELETE FROM criteria WHERE slug IN (:one, :two)",
         {"one": _CRITERION, "two": _OTHER_CRITERION},
     )
+    execute("DELETE FROM users WHERE email = :email", {"email": _USER_EMAIL})
 
 
 async def _upsert(
@@ -165,3 +188,165 @@ def test_a_contribution_takes_ownership_from_another_source(db: None) -> None:
     assert (written.value, written.source, written.actor) == ({"value": False}, "user", "user:7")
     accepted = _journal(_CRITERION)[-1]
     assert (accepted.decision, accepted.reason) == ("accepted", None)
+
+
+# --- the same matrix end-to-end, through the importer and ``contribute`` ------------------
+
+_IMPORT_SOURCE_ID = "test-p12c-import"
+_IMPORT_CRITERION = "entree-acces"
+_NEWER_DATE = "2026-04-01T09:00:00"
+_OLDER_DATE = "2026-03-01T09:00:00"
+_IMPORT_PARAMS = {"place": _IMPORT_SOURCE_ID, "criterion": _IMPORT_CRITERION}
+
+
+def _write_csv(path: Path, *, date_maj: str, value: str = "true") -> None:
+    path.write_text(
+        "id;nom;categorie;date_maj;entree_pmr\n"
+        f"{_IMPORT_SOURCE_ID};Lieu Conflit Import;bibliotheque;{date_maj};{value}\n",
+        encoding="utf-8",
+    )
+
+
+def _import(path: Path) -> None:
+    async def _run() -> None:
+        async with SessionLocal() as session:
+            await import_acceslibre(
+                SqlAlchemyPlaceRepository(session),
+                SqlAlchemyCategoryRepository(session),
+                SqlAlchemyCategoryMappingRepository(session),
+                SqlAlchemyPlaceAliasRepository(session),
+                SqlAlchemyMergeLogRepository(session),
+                list(iter_acceslibre_rows(path)),
+                dedup=False,
+            )
+            await session.commit()
+
+    run(_run())
+
+
+def _user_id() -> int:
+    return scalar("SELECT id FROM users WHERE email = :email", {"email": _USER_EMAIL})
+
+
+def _contribute(value: object) -> None:
+    slug = scalar(
+        "SELECT slug FROM place WHERE source_id = :source_id", {"source_id": _IMPORT_SOURCE_ID}
+    )
+    user_id = _user_id()
+
+    async def _run() -> None:
+        async with SessionLocal() as session:
+            await contribute(
+                SqlAlchemyPlaceRepository(session),
+                SqlAlchemyCriterionRepository(session),
+                slug,
+                _IMPORT_CRITERION,
+                SimpleNamespace(id=user_id),
+                value,
+            )
+            await session.commit()
+
+    run(_run())
+
+
+def _imported_answer() -> object:
+    return row(
+        "SELECT pa.value, pa.source, pa.source_license, pa.actor, pa.observed_at "
+        "FROM place_accessibility pa JOIN place p ON p.id = pa.place_id "
+        "JOIN criteria c ON c.id = pa.criterion_id "
+        "WHERE p.source_id = :place AND c.slug = :criterion",
+        _IMPORT_PARAMS,
+    )
+
+
+def _imported_journal() -> list[object]:
+    return rows(
+        "SELECT w.decision, w.reason, w.source, w.value FROM place_accessibility_write w "
+        "JOIN place p ON p.id = w.place_id JOIN criteria c ON c.id = w.criterion_id "
+        "WHERE p.source_id = :place AND c.slug = :criterion ORDER BY w.id",
+        _IMPORT_PARAMS,
+    )
+
+
+def test_a_contribution_takes_ownership_of_an_imported_answer(db: None, tmp_path: Path) -> None:
+    path = tmp_path / "acceslibre.csv"
+    _write_csv(path, date_maj=_NEWER_DATE)
+    _import(path)
+
+    _contribute(False)
+
+    written = _imported_answer()
+    assert (written.value["value"], written.source, written.actor) == (
+        False,
+        "user",
+        f"user:{_user_id()}",
+    )
+    assert _imported_journal()[-1].decision == "accepted"
+
+
+def test_a_reimport_cannot_revert_a_contribution(db: None, tmp_path: Path) -> None:
+    path = tmp_path / "acceslibre.csv"
+    _write_csv(path, date_maj=_NEWER_DATE)
+    _import(path)
+    _contribute(False)
+
+    _import(path)
+
+    written = _imported_answer()
+    assert (written.value["value"], written.source) == (False, "user")
+    rejected = _imported_journal()[-1]
+    assert (rejected.decision, rejected.reason, rejected.source) == (
+        "rejected",
+        "other_source",
+        "acceslibre",
+    )
+    assert rejected.value == {"value": "true", "source": "acceslibre", "key": "entree_pmr"}
+
+
+def test_replaying_the_same_file_keeps_the_value_and_journals_each_attempt(
+    db: None, tmp_path: Path
+) -> None:
+    path = tmp_path / "acceslibre.csv"
+    _write_csv(path, date_maj=_NEWER_DATE)
+    _import(path)
+    first = _imported_answer()
+
+    _import(path)
+
+    replayed = _imported_answer()
+    assert (replayed.value, replayed.source, replayed.observed_at) == (
+        first.value,
+        "acceslibre",
+        first.observed_at,
+    )
+    # D-12: every attempt is journaled — an idempotent replay adds an accepted row and no
+    # rejection, and the stored answer never changes.
+    assert [entry.decision for entry in _imported_journal()] == ["accepted", "accepted"]
+
+
+def test_an_older_file_is_rejected_as_stale(db: None, tmp_path: Path) -> None:
+    path = tmp_path / "acceslibre.csv"
+    _write_csv(path, date_maj=_NEWER_DATE)
+    _import(path)
+
+    _write_csv(path, date_maj=_OLDER_DATE, value="false")
+    _import(path)
+
+    written = _imported_answer()
+    assert written.value["value"] == "true"
+    rejected = _imported_journal()[-1]
+    assert (rejected.decision, rejected.reason) == ("rejected", "stale")
+    assert rejected.value["value"] == "false"
+
+
+def test_an_incoming_null_observed_at_is_rejected_as_stale(db: None, tmp_path: Path) -> None:
+    path = tmp_path / "acceslibre.csv"
+    _write_csv(path, date_maj=_NEWER_DATE)
+    _import(path)
+
+    _write_csv(path, date_maj="", value="false")
+    _import(path)
+
+    assert _imported_answer().value["value"] == "true"
+    rejected = _imported_journal()[-1]
+    assert (rejected.decision, rejected.reason) == ("rejected", "stale")
