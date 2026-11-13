@@ -1,16 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v2.0
-milestone_name: Federated Data & Partners
+current_phase: 12
+current_phase_name: Licence provenance
 status: planning
-last_updated: "2026-11-13T07:45:24.126Z"
+stopped_at: Phase 12 context gathered
+last_updated: "2026-11-13T10:36:02.484Z"
 last_activity: 2026-11-13
+last_activity_desc: Roadmap v2.0 defined (6 phases, 15 requirements)
+state_head: f5f2e3e268035b1e33d68994e1923061ed44661d
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 0
+milestone_name: Federated Data & Partners
 ---
 
 # State: LetMeGetIn
@@ -106,9 +110,9 @@ Last activity: 2026-11-13 — Roadmap v2.0 defined (6 phases, 15 requirements)
 
 ## Session Continuity
 
-Last session: 2026-11-08
-Stopped at: Phase 11 complete — all phases complete
-Resume file: .planning/phases/11-e2e-accessibility/11-04-SUMMARY.md
+Last session: 2026-11-13T10:36:02.472Z
+Stopped at: Phase 12 context gathered
+Resume file: .planning/phases/12-licence-provenance/12-CONTEXT.md
 
 ## Known debt
 
