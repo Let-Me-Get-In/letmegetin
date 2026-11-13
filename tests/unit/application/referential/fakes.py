@@ -9,6 +9,9 @@ from letmegetin.domain.referential.entities import (
     Category,
     CategoryMapping,
     Criterion,
+    Licence,
+    LicenceDestination,
+    SourceLicence,
     VocabularyEntry,
 )
 
@@ -146,6 +149,48 @@ class FakeCategoryGridRepository:
 
     async def get_for_slug(self, slug: str) -> Any:
         return None
+
+
+class FakeLicenceRepository:
+    """The licence catalogue, its matrix and the source mapping held in memory."""
+
+    def __init__(self, licences: list[Licence] | None = None) -> None:
+        self.licences: dict[str, Licence] = {item.slug: item for item in licences or []}
+        self.destinations: dict[tuple[str, str], LicenceDestination] = {}
+        self.sources: dict[str, SourceLicence] = {}
+        self.writes: list[str] = []
+
+    async def get_by_slug(self, slug: str) -> Licence | None:
+        return self.licences.get(slug)
+
+    async def list_licences(self) -> list[Licence]:
+        return sorted(self.licences.values(), key=lambda item: item.slug)
+
+    async def list_destinations(self, licence_slug: str | None = None) -> list[LicenceDestination]:
+        return [
+            row
+            for _key, row in sorted(self.destinations.items())
+            if licence_slug is None or row.licence_slug == licence_slug
+        ]
+
+    async def list_source_licences(self) -> list[SourceLicence]:
+        return sorted(self.sources.values(), key=lambda item: item.source)
+
+    async def allowed(self, licence_slug: str, destination: str) -> bool:
+        row = self.destinations.get((licence_slug, destination))
+        return bool(row and row.allowed)
+
+    async def upsert_licence(self, licence: Licence) -> None:
+        self.licences[licence.slug] = licence
+        self.writes.append(f"licence:{licence.slug}")
+
+    async def upsert_destination(self, row: LicenceDestination) -> None:
+        self.destinations[(row.licence_slug, row.destination)] = row
+        self.writes.append(f"destination:{row.licence_slug}:{row.destination}")
+
+    async def upsert_source_licence(self, row: SourceLicence) -> None:
+        self.sources[row.source] = row
+        self.writes.append(f"source:{row.source}")
 
 
 def criterion(
