@@ -300,12 +300,12 @@ Card markup stays the `Link` in `place-list.tsx`. Its inner rows, top to bottom:
      amber "Doublon possible" read as sibling statuses of equal weight;
    - the operating-status or duplicate pill (existing, when not `open`).
 
-The chip renders only when `documentation` is in the response. If the field is missing (older API,
-or the flag is off), no chip renders and the card looks as it does today. There is no border tint:
-selection and hover already own the border colour, and in dark mode four of the six tints are
-indistinguishable on `#101613` (Open Questions, item 8).
+The marker renders only when `documentation` is in the response. If the field is missing (older
+API, or the flag is off), no marker renders and the card looks as it does today. There is no
+border tint: selection and hover already own the border colour, and in dark mode four of the six
+tints are indistinguishable on `#101613` (Open Questions, item 8).
 
-**Primary visual anchor:** the place **name** (existing link text). The chip is the second thing
+**Primary visual anchor:** the place **name** (existing link text). The marker is the second thing
 read and carries the documentation signal as text.
 
 ---
