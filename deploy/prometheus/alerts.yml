@@ -57,3 +57,30 @@ groups:
           severity: critical
         annotations:
           summary: "Root filesystem is below 10% free"
+
+      # The restore drill's two signals, on the same textfile mechanism as BackupStale.
+      # The `absent()` branch is mandatory: a drill that stopped running writes nothing
+      # at all, and that is the failure worth paging on.
+      - alert: RestoreStale
+        expr: >
+          (time() - letmegetin_restore_last_success_timestamp_seconds > 691200)
+          or absent(letmegetin_restore_last_success_timestamp_seconds)
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Offsite restore drill is older than 8 days, or the success marker was never written"
+
+      # A failure more recent than the last success. The `* 0` carries the failure
+      # series' labels so the fallback matches when no success series exists yet -- a
+      # first-ever failure fires instead of waiting out the 8-day window.
+      - alert: RestoreDrillFailed
+        expr: >
+          letmegetin_restore_last_failure_timestamp_seconds
+          > (letmegetin_restore_last_success_timestamp_seconds
+          or letmegetin_restore_last_failure_timestamp_seconds * 0)
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "The offsite restore drill failed more recently than it succeeded"
