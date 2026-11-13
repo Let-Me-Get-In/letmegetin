@@ -98,8 +98,9 @@ async def _seed() -> None:
         )
         await session.execute(
             text(
-                "INSERT INTO place_accessibility (place_id, criterion_id, value) "
-                "SELECT :place_id, id, CAST(:value AS jsonb) FROM criteria WHERE slug = 'test-p4-a'"
+                "INSERT INTO place_accessibility (place_id, criterion_id, value, source, actor) "
+                "SELECT :place_id, id, CAST(:value AS jsonb), 'test-p4', 'test' "
+                "FROM criteria WHERE slug = 'test-p4-a'"
             ),
             {"place_id": place_id, "value": json.dumps({"value": True})},
         )

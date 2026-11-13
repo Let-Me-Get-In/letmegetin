@@ -89,16 +89,18 @@ async def _seed() -> None:
         )
         await session.execute(
             text(
-                "INSERT INTO place_accessibility (place_id, criterion_id, value) "
-                "SELECT p.id, c.id, CAST(:value AS jsonb) FROM place p, criteria c "
+                "INSERT INTO place_accessibility (place_id, criterion_id, value, source, actor) "
+                "SELECT p.id, c.id, CAST(:value AS jsonb), 'test-search', 'test' "
+                "FROM place p, criteria c "
                 "WHERE p.source_id = 'test-search-beta' AND c.slug = 'test-search-step'"
             ),
             {"value": json.dumps({"value": True})},
         )
         await session.execute(
             text(
-                "INSERT INTO place_accessibility (place_id, criterion_id, value) "
-                "SELECT p.id, c.id, CAST(:value AS jsonb) FROM place p, criteria c "
+                "INSERT INTO place_accessibility (place_id, criterion_id, value, source, actor) "
+                "SELECT p.id, c.id, CAST(:value AS jsonb), 'test-search', 'test' "
+                "FROM place p, criteria c "
                 "WHERE p.source_id = 'test-search-gamma' AND c.slug = 'test-search-loop'"
             ),
             {"value": json.dumps({"value": True})},
@@ -107,8 +109,9 @@ async def _seed() -> None:
         # beta/gamma each fail exactly one of them.
         await session.execute(
             text(
-                "INSERT INTO place_accessibility (place_id, criterion_id, value) "
-                "SELECT p.id, c.id, CAST(:value AS jsonb) FROM place p, criteria c "
+                "INSERT INTO place_accessibility (place_id, criterion_id, value, source, actor) "
+                "SELECT p.id, c.id, CAST(:value AS jsonb), 'test-search', 'test' "
+                "FROM place p, criteria c "
                 "WHERE p.source_id = 'test-search-delta' "
                 "AND c.slug IN ('test-search-step', 'test-search-loop')"
             ),
