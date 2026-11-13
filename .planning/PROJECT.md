@@ -8,36 +8,44 @@ LetMeGetIn is the modern rewrite of **Jaccede**, the collaborative guide to plac
 
 Let anyone know in seconds whether a place is truly accessible — through a structured, reliable accessibility record that any site or app can consume.
 
+## Current Milestone: v2.0 Federated Data & Partners
+
+**Goal:** Move from a single-source directory (AccesLibre, 634 961 places) to a federated referential whose data can flow in and out of every open source, with ODbL as the output licence.
+
+**Target features:**
+- Per-row licence provenance, with a redistribution filter per destination (LET-79)
+- Open ODbL export with cumulative attribution (LET-72)
+- AccesLibre feed in lov2, owned rows only (LET-73), and an idempotent write-back (LET-74)
+- Overture mapping, overlap measurement and volumetric import (LET-71, LET-76, LET-70)
+- OSM import as the community base (LET-77) and publishing our answers back to OSM (LET-78)
+- Documented-place visualisation (LET-75)
+
 ## Requirements
 
 ### Validated
 
-(None yet — ship to validate)
+- Referential (categories, typed hierarchical criteria, filters, labels), reconstructed seed, public read API — V1 phases 1–2, 7
+- Place search, place detail, reviews, auth and contribution — V1 phases 3–5
+- Next.js frontend, public API keys and deployment — V1 phases 6–7
+- Production operations, data quality, search quality (AND filters, pagination) — V1.1 phases 8–10.1
+- E2E suite, strict axe gate, fr/en UI and a documented screen-reader audit — V1.1 phase 11
 
 ### Active
 
-- [ ] Referential: categories, typed hierarchical criteria, filters, official labels exposed by the API
-- [ ] Seed reconstructed from the Jaccede archives (158 categories, 182 criteria, one full category grid)
-- [ ] Place search: geo + text + accessibility filters
-- [ ] Place detail with the accessibility tree and reviews
-- [ ] Auth (JWT) + contribution (complete a record, post a review)
-- [ ] Next.js frontend: search (map + list), detail, contribution, account
-- [x] Public API: API keys, OpenAPI, documentation
-
-### V1.1 — Production & quality
-
-- [ ] Real deployment: TLS, secrets, backups, monitoring, retention
-- [ ] Data quality: handicap families, category mapping, duplicate review queue, coverage metrics
-- [ ] Search quality: multi-criterion AND, category filter, ranking/pagination
-- [ ] E2E suite (separate repo) + screen-reader audit + fr/en UI
+- [ ] Licence provenance per place and per answer, enforced per redistribution destination
+- [ ] Open ODbL export of places and accessibility answers, attribution rendered in the export
+- [ ] AccesLibre round trip: a lov2 feed of owned rows, then an idempotent API write-back
+- [ ] Overture as the volumetric second source, with a reviewed category mapping and a measured overlap
+- [ ] OSM as the community base, and our answers published back with a documented import plan
+- [ ] How well documented a place is, visible on the map without pretending empty places are documented
 
 ### Out of Scope
 
-- Gamification (challenges, teams, points) — v2
-- Real-time messaging/chat — v2
+- Gamification (challenges, teams, points) — later
+- Real-time messaging/chat — later
 - Native mobile apps — later (API-first)
-- Partner referential imports (Macif, La Poste, LocalEyes, HandiPlage) — v2
-- Full moderation/back-office — minimal admin in v1
+- Partner referential imports outside the open sources (Macif, La Poste, LocalEyes, HandiPlage) — no licence basis
+- Full moderation/back-office — minimal admin CLI
 
 ## Context
 
@@ -63,7 +71,7 @@ The exact per-category grid is not fully recoverable: category 1 is used as the 
 
 ### Tracking
 
-Linear: dedicated **LetMeGetIn** workspace (`letmegetin`), team **LET**; one project per milestone (V1, V1.1). Every branch/commit/PR starts with `LET-<n>`. Mapping in `.planning/LINEAR.md`.
+Linear: dedicated **LetMeGetIn** workspace (`letmegetin`), team **LET**; one project per milestone (V1, V1.1, V2). Every branch/commit/PR starts with `LET-<n>`. Mapping in `.planning/LINEAR.md`.
 
 ## Constraints
 
@@ -84,7 +92,9 @@ Linear: dedicated **LetMeGetIn** workspace (`letmegetin`), team **LET**; one pro
 | Reconstructed seed (no dump) | Only data available; editable | — Pending |
 | Backend + frontend monorepo | Simplicity for now; e2e separate later | — Pending |
 | Linear (team LET) at the start of branch/commit/PR | Ticket ↔ code traceability | — Shipped |
-| V1 without gamification/messaging/mobile | Focus on the core | — Pending |
+| V1 without gamification/messaging/mobile | Focus on the core | ✓ Good |
+| Code licence AGPL-3.0, data licence ODbL | Network-use copyleft keeps hosted forks open; ODbL makes the round trips with OSM lawful | ✓ Good |
+| Licence provenance on every row before any round trip | Compatibility differs per source and per direction (lov2 ≠ ODbL) | — Pending |
 
 ## Evolution
 
@@ -104,4 +114,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-26 after moving to the LetMeGetIn GitHub organization*
+*Last updated: 2026-11-13 when starting milestone v2.0 (Federated Data & Partners)*

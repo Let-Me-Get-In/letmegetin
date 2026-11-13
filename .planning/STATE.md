@@ -1,38 +1,34 @@
 ---
 gsd_state_version: "1.0"
-milestone: V1.1
-milestone_name: Production & Quality
-current_phase: 11
-current_phase_name: Phase 11 of 11 is executing
-status: completed
-stopped_at: Phase 11 complete — all phases complete
-last_updated: "2026-11-12T14:04:42.245Z"
-last_activity: 2026-11-12
-last_activity_desc: Phase 11 complete
-state_head: 147fce4ef61dd1398af231ae54a07f76713f19ff
+milestone: v2.0
+milestone_name: Federated Data & Partners
+status: planning
+last_updated: "2026-11-13T07:45:24.126Z"
+last_activity: 2026-11-13
 progress:
-  total_phases: 12
-  completed_phases: 12
-  total_plans: 21
-  completed_plans: 18
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # State: LetMeGetIn
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-26)
+See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** V1.1 complete — next milestone V2 (Federated Data & Partners)
+**Current focus:** v2.0 — Federated Data & Partners
 
 ## Current Position
 
-Ticket: LET-35 (Phase 11 — complete)
-Phase: 11 of 11 (complete)
-Plan: 7 / 7 (11-01 … 11-07 complete)
-Status: Phase 11 complete (2026-11-12) — V1.1 done. VoiceOver pass recorded 12/12 over fr + en; NVDA not run (LET-82).
-Last activity: 2026-11-12 — Phase 11 complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-11-13 — Milestone v2.0 started
+
 
 ## Quick Tasks Completed
 
