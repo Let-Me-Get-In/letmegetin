@@ -4,15 +4,15 @@ milestone: v2.0
 current_phase: 12
 current_phase_name: Licence provenance
 status: planning
-stopped_at: Phase 12 context gathered
-last_updated: "2026-11-13T10:36:02.484Z"
+stopped_at: Phase 12 planned — 5 plans, 0 blockers
+last_updated: "2026-11-13T11:25:22.191Z"
 last_activity: 2026-11-13
 last_activity_desc: Roadmap v2.0 defined (6 phases, 15 requirements)
-state_head: f5f2e3e268035b1e33d68994e1923061ed44661d
+state_head: 5641c354a2046456485c88ce51b0ea04e859f65a
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 0
+  total_plans: 5
   completed_plans: 0
 milestone_name: Federated Data & Partners
 ---
@@ -110,9 +110,9 @@ Last activity: 2026-11-13 — Roadmap v2.0 defined (6 phases, 15 requirements)
 
 ## Session Continuity
 
-Last session: 2026-11-13T10:36:02.472Z
-Stopped at: Phase 12 context gathered
-Resume file: .planning/phases/12-licence-provenance/12-CONTEXT.md
+Last session: 2026-11-13T11:25:22.176Z
+Stopped at: Phase 12 planned — 5 plans, 0 blockers
+Resume file: .planning/phases/12-licence-provenance/12-01-PLAN.md
 
 ## Known debt
 
