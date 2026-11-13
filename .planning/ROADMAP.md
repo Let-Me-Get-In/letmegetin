@@ -28,13 +28,14 @@ V1 (product core) and V1.1 (production, data quality, search, e2e, accessibility
   3. A row derived from OSM is never included in a lov2 destination.
   4. Re-importing a source never overwrites a fresher contribution or a row that came from another source.
   5. Licence rules live in reviewed data (editable via the admin/CLI or seed), not in importer code.
-**Plans**: 4 plans
+**Plans**: 5 plans
 
 Plans:
-- [ ] 12-01-PLAN.md — End-to-end provenance tracer: schema + D-04 backfill, write-path stamping, detail-endpoint surfacing, public contract
-- [ ] 12-02-PLAN.md — Reviewed licence data (`licences.csv` + `licence_destinations.csv`) and the `admin licences sync|matrix|audit` surface
-- [ ] 12-03-PLAN.md — Enforcement predicate `can_redistribute` + SQL twin + exclusion manifest (the rule Phases 14–17 call)
-- [ ] 12-04-PLAN.md — Conflict/freshness rules on the shared write path (ownership, `observed_at`, insert-if-absent, write journal)
+- [ ] 12-01-PLAN.md — Provenance schema + reviewed licence data (`licences.csv`, `licence_destinations.csv`, `source_licences.csv`) + D-04 backfill (zero NULL licences)
+- [ ] 12-02-PLAN.md — Write-path provenance stamping (licence resolved from `source_licence`) + detail-endpoint surfacing + public contract
+- [ ] 12-03-PLAN.md — Reviewed licence data admin surface: `admin licences sync|matrix|audit` + seed integration (DDD-clean)
+- [ ] 12-04-PLAN.md — Enforcement predicate `can_redistribute` + SQL twin + exclusion manifest + `admin licences excluded` (the rule Phases 14–17 call)
+- [ ] 12-05-PLAN.md — Conflict/freshness rules on the shared write path (ownership, `observed_at` NULL combos, insert-if-absent, write journal)
 
 ### Phase 13: Documented-place visualisation
 **Goal**: A person can see how well documented a place is, and an undocumented place is still usable.
@@ -95,7 +96,7 @@ Plans:
 
 | Phase | Ticket | Plans Complete | Status | Completed |
 |-------|--------|----------------|--------|-----------|
-| 12. Licence provenance | LET-79 | 0/4 | Not started | — |
+| 12. Licence provenance | LET-79 | 0/5 | Not started | — |
 | 13. Documented-place visualisation | LET-75 | 0/— | Not started | — |
 | 14. Open ODbL export | LET-72 | 0/— | Not started | — |
 | 15. AccesLibre round trip | LET-73, LET-74 | 0/— | Not started | — |
