@@ -14,11 +14,12 @@ from datetime import date
 from pathlib import Path
 
 from letmegetin.core.exceptions import DomainError
+from letmegetin.domain.places.licence import DESTINATIONS
 from letmegetin.domain.referential.entities import Licence, LicenceDestination, SourceLicence
 from letmegetin.domain.referential.repositories import LicenceRepository
 
 # The closed set a licence may leave towards (D-06); a CheckConstraint backs it in the DB.
-LICENCE_DESTINATIONS: tuple[str, ...] = ("open_export", "osm", "lov2_partner")
+LICENCE_DESTINATIONS: tuple[str, ...] = DESTINATIONS
 
 _TRUE = {"true", "yes", "1"}
 _FALSE = {"false", "no", "0"}

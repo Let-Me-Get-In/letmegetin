@@ -77,6 +77,7 @@ from letmegetin.config import settings
 from letmegetin.core.db import SessionLocal
 from letmegetin.core.exceptions import CategoryNotFound, DomainError
 from letmegetin.domain.places.dedup import RELIABLE_MATCH_THRESHOLD
+from letmegetin.domain.places.licence import DESTINATIONS
 from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
 from letmegetin.domain.referential.labels import parse_label_pairs
 from letmegetin.infrastructure.persistence.licence_repositories import SqlAlchemyLicenceRepository
@@ -440,6 +441,44 @@ def licences_matrix() -> None:
 
     async def callback(session: AsyncSession) -> str:
         return format_matrix(await SqlAlchemyLicenceRepository(session).list_destinations())
+
+    _run_admin(callback, bump=False)
+
+
+@licences_app.command("excluded")
+def licences_excluded(
+    destination: Annotated[
+        str, typer.Option("--destination", help="open_export, osm or lov2_partner")
+    ],
+    verbose: Annotated[
+        bool, typer.Option("--verbose", help="List every excluded place id and its licence")
+    ] = False,
+) -> None:
+    """Count, per source and licence, what the matrix keeps out of a destination (D-14)."""
+    if destination not in DESTINATIONS:
+        allowed = ", ".join(DESTINATIONS)
+        typer.echo(f"unknown destination '{destination}' (allowed: {allowed})", err=True)
+        raise typer.Exit(code=1)
+
+    async def callback(session: AsyncSession) -> str:
+        repository = SqlAlchemyLicenceRepository(session)
+        counts = await repository.exclusion_counts(destination)
+        if not counts:
+            return f"{destination}: nothing excluded"
+        total = sum(count for _, _, count in counts)
+        lines = [
+            f"{destination}: excluded={total} across {len(counts)} source/licence groups",
+            *(
+                f"  {source}\t{licence or '(no licence)'}\t{count}"
+                for source, licence, count in counts
+            ),
+        ]
+        if verbose:
+            lines.extend(
+                f"  place {place_id}\t{licence or '(no licence)'}"
+                for place_id, licence in await repository.excluded_ids(destination)
+            )
+        return "\n".join(lines)
 
     _run_admin(callback, bump=False)
 
