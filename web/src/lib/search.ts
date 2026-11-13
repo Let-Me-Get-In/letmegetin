@@ -61,6 +61,9 @@ export function placesPath(state: SearchState, offset = 0): string {
     lng: String(state.lng),
     radius: String(state.radius),
     limit: "100",
+    // The search view always wants the documentation signal; the field is additive and
+    // the card simply omits the marker when the response does not carry it (D-07).
+    with_documentation: "true",
   });
   if (state.q) params.set("q", state.q);
   if (state.family) params.set("family", state.family);

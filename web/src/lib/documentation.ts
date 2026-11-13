@@ -22,8 +22,45 @@ const LEVEL_MESSAGE_KEYS = {
   complete: "docComplete",
 } as const;
 
+// UI-SPEC "Level → class mapping": the chip is the only colour surface, so a card never
+// tints its border (selection and hover own the border, and the dark tints collapsed).
+const LEVEL_CHIP_CLASSES: Record<DocLevel, string> = {
+  none: "border border-line text-muted",
+  sketch: "bg-doc-sketch text-ink",
+  partial: "bg-doc-partial text-ink",
+  good: "bg-doc-good text-ink",
+  very_good: "bg-doc-very-good text-ink",
+  complete: "bg-accent text-paper",
+};
+
+// The search card's marker dot: decorative, the level name next to it carries the fact.
+const LEVEL_DOT_CLASSES: Record<DocLevel, string> = {
+  none: "border border-dashed border-muted",
+  sketch: "bg-doc-sketch",
+  partial: "bg-doc-partial",
+  good: "bg-doc-good",
+  very_good: "bg-doc-very-good",
+  complete: "bg-accent",
+};
+
+function docLevel(slug: string): DocLevel | undefined {
+  return DOC_LEVELS.find((candidate) => candidate === slug);
+}
+
 /** The localized level name, or undefined for a slug this client does not know. */
 export function levelLabel(slug: string, locale: Locale = "fr"): string | undefined {
-  const level = DOC_LEVELS.find((candidate) => candidate === slug);
+  const level = docLevel(slug);
   return level ? t(locale, LEVEL_MESSAGE_KEYS[level]) : undefined;
+}
+
+/** Tailwind classes for a level chip, or undefined for a slug this client does not know. */
+export function levelChipClass(slug: string): string | undefined {
+  const level = docLevel(slug);
+  return level ? LEVEL_CHIP_CLASSES[level] : undefined;
+}
+
+/** Tailwind classes for the search card's marker dot, or undefined for an unknown slug. */
+export function levelDotClass(slug: string): string | undefined {
+  const level = docLevel(slug);
+  return level ? LEVEL_DOT_CLASSES[level] : undefined;
 }

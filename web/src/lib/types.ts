@@ -9,6 +9,8 @@ export type PlaceSummary = {
   lng: number | null;
   distance: number | null;
   operating_status: string;
+  // Present only when the request asked for it (with_documentation=true, D-07).
+  documentation?: Documentation;
 };
 
 export type AccessibilityValue = {
