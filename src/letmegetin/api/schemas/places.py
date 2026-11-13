@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from letmegetin.application.places.get_place import PlaceDetail
 from letmegetin.application.places.list_reviews import ReviewPage
+from letmegetin.domain.places.documentation import Documentation
 from letmegetin.domain.places.entities import Place, PlaceHit, Review
 
 
@@ -29,6 +30,17 @@ class DocumentationOut(BaseModel):
     )
 
 
+def documentation_out(documentation: Documentation | None) -> DocumentationOut | None:
+    """The wire shape of a derived documentation, or None when the caller has none."""
+    if documentation is None:
+        return None
+    return DocumentationOut(
+        rate=documentation.rate,
+        percent=documentation.percent,
+        level=documentation.level,
+    )
+
+
 class PlaceSummaryOut(BaseModel):
     """A place in a search result list."""
 
@@ -45,7 +57,13 @@ class PlaceSummaryOut(BaseModel):
     )
 
     @classmethod
-    def from_place(cls, place: Place, distance: float | None = None) -> PlaceSummaryOut:
+    def from_place(
+        cls,
+        place: Place,
+        distance: float | None = None,
+        documentation: Documentation | None = None,
+    ) -> PlaceSummaryOut:
+        out = documentation_out(documentation)
         return cls(
             slug=place.slug,
             name=place.name,
@@ -55,6 +73,9 @@ class PlaceSummaryOut(BaseModel):
             lng=place.lng,
             distance=round(distance, 1) if distance is not None else None,
             operating_status=place.operating_status,
+            # Left unset when there is none, so the search response omits the key
+            # entirely instead of printing `null` (D-07, response_model_exclude_unset).
+            **({"documentation": out} if out is not None else {}),
         )
 
 
@@ -176,15 +197,7 @@ class PlaceDetailOut(PlaceSummaryOut):
         documentation = detail.documentation
         return cls(
             **summary.model_dump(exclude={"documentation"}),
-            documentation=(
-                DocumentationOut(
-                    rate=documentation.rate,
-                    percent=documentation.percent,
-                    level=documentation.level,
-                )
-                if documentation is not None
-                else None
-            ),
+            documentation=documentation_out(documentation),
             source=detail.place.source,
             license=detail.place.source_license,
             observed_at=detail.place.observed_at,
