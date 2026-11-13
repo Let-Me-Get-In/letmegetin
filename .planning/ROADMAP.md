@@ -49,7 +49,7 @@ Plans:
 **Plans**: 3 plans
 Plans:
 - [ ] 13-01-PLAN.md — Server-owned documentation ladder + detail contract + record page level name (PROD-01)
-- [ ] 13-02-PLAN.md — Opt-in search field, batched rate, card chip and border tint (PROD-01)
+- [ ] 13-02-PLAN.md — Opt-in search field, batched rate, card marker (dot + level name) (PROD-01)
 - [ ] 13-03-PLAN.md — Per-family levels, legend, empty-record banner, tokens and public docs (PROD-01)
 **UI hint**: yes
 
