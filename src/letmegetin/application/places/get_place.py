@@ -6,16 +6,16 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from letmegetin.core.exceptions import PlaceNotFound
+from letmegetin.domain.places.documentation import (
+    Documentation,
+    answerable_criteria,
+    filled_rate,
+    recorded,
+)
 from letmegetin.domain.places.entities import Place, PlaceAccessibility, PlacePhoto
 from letmegetin.domain.places.repositories import PlaceRepository
-from letmegetin.domain.referential.entities import HANDICAP_FAMILIES, Criterion
-from letmegetin.domain.referential.repositories import (
-    CategoryGridRepository,
-    CriterionRepository,
-)
-
-_NON_CRITERION_TYPES = frozenset({"array", "option"})
-_EMPTY_VALUES: tuple[object, ...] = (None, "", [], {})
+from letmegetin.domain.referential.entities import HANDICAP_FAMILIES
+from letmegetin.domain.referential.repositories import CategoryGridRepository
 
 
 @dataclass
@@ -27,6 +27,7 @@ class PlaceDetail:
     accessibility_by_family: dict[str, float] = field(default_factory=dict)
     tree: list[dict[str, object]] = field(default_factory=list)
     filled_rate: float = 0.0
+    documentation: Documentation | None = None
     photos: list[PlacePhoto] = field(default_factory=list)
     rating: float | None = None
     review_count: int = 0
@@ -34,7 +35,6 @@ class PlaceDetail:
 
 async def get_place(
     places: PlaceRepository,
-    criteria: CriterionRepository,
     grids: CategoryGridRepository,
     slug: str,
 ) -> PlaceDetail:
@@ -46,50 +46,30 @@ async def get_place(
     values = await places.list_accessibility(place.id)
     by_slug = {value.criterion_slug: value.value for value in values}
     tree: list[dict[str, object]] = []
-    filled_rate = 0.0
+    rate = 0.0
+    leaves: dict[str, list[str]] = {}
     if place.category_slug:
         grid = await grids.get_for_slug(place.category_slug)
         if grid is not None:
             tree = _with_values(grid.tree, by_slug)
-            filled_rate = _filled_rate(grid.tree, by_slug)
+            rate = filled_rate(grid.tree, by_slug)
+            leaves = {
+                str(node["slug"]): list(node.get("handicap_families") or [])
+                for node in answerable_criteria(grid.tree)
+            }
 
     rating, review_count = await places.review_stats(place.id)
     return PlaceDetail(
         place=place,
         accessibility=values,
-        accessibility_by_family=_completion_by_family(
-            values, {criterion.slug: criterion for criterion in await criteria.list_all()}
-        ),
+        accessibility_by_family=_completion_by_family(values, leaves),
         tree=tree,
-        filled_rate=filled_rate,
+        filled_rate=rate,
+        documentation=Documentation.from_rate(rate),
         photos=await places.list_photos(place.id),
         rating=rating,
         review_count=review_count,
     )
-
-
-def _recorded(value: object) -> bool:
-    """A criterion is filled when a real value is recorded (False still counts as an answer)."""
-    if not isinstance(value, dict):
-        return value not in _EMPTY_VALUES
-    return value.get("value") not in _EMPTY_VALUES
-
-
-def _leaf_slugs(nodes: list[dict[str, Any]]) -> list[str]:
-    slugs: list[str] = []
-    for node in nodes:
-        if node.get("type") not in _NON_CRITERION_TYPES:
-            slugs.append(str(node["slug"]))
-        slugs.extend(_leaf_slugs(node.get("children") or []))
-    return slugs
-
-
-def _filled_rate(tree: list[dict[str, Any]], values: dict[str, dict[str, Any]]) -> float:
-    leaves = _leaf_slugs(tree)
-    if not leaves:
-        return 0.0
-    filled = [slug for slug in leaves if slug in values and _recorded(values[slug])]
-    return round(len(set(filled)) / len(leaves), 3)
 
 
 def _with_values(
@@ -107,18 +87,18 @@ def _with_values(
 
 
 def _completion_by_family(
-    values: list[PlaceAccessibility], criteria: dict[str, Criterion]
+    values: list[PlaceAccessibility], leaves: dict[str, list[str]]
 ) -> dict[str, float]:
-    """Share of the family's criteria the place has a positive value for."""
-    satisfied = {value.criterion_slug for value in values if _recorded(value.value)}
+    """Share of the family's answerable grid leaves the place carries a value for.
+
+    A family with no leaf in this place's grid is omitted rather than reported as 0.0:
+    "no criterion to answer" is not "not documented" (D-12).
+    """
+    satisfied = {value.criterion_slug for value in values if recorded(value.value)}
     scores: dict[str, float] = {}
     for family in HANDICAP_FAMILIES:
-        family_criteria = [
-            slug for slug, criterion in criteria.items() if family in criterion.handicap_families
-        ]
-        scores[family] = (
-            round(len(satisfied.intersection(family_criteria)) / len(family_criteria), 3)
-            if family_criteria
-            else 0.0
-        )
+        family_leaves = [slug for slug, families in leaves.items() if family in families]
+        if not family_leaves:
+            continue
+        scores[family] = round(len(satisfied.intersection(family_leaves)) / len(family_leaves), 3)
     return scores

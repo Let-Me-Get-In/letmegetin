@@ -136,6 +136,7 @@ def test_place_detail_returns_the_tree_values_and_completion(client: TestClient)
     body = client.get(f"/api/v1/places/{_SLUG}").json()
 
     assert body["filled_rate"] == 0.5
+    assert body["documentation"] == {"rate": 0.5, "percent": 50, "level": "partial"}
     assert body["rating"] == 4.0
     assert body["review_count"] == 2
     assert body["photos"][0]["url"] == "https://example.test/photo.jpg"

@@ -137,12 +137,10 @@ async def candidates(
 
 
 @router.get("/places/{slug}", response_model=PlaceDetailOut)
-async def place_detail(
-    slug: str, places: PlaceRepo, criteria: CriterionRepo, grids: CategoryGridRepo
-) -> PlaceDetailOut:
+async def place_detail(slug: str, places: PlaceRepo, grids: CategoryGridRepo) -> PlaceDetailOut:
     """Return one place with its accessibility tree, reviews summary and photos, or 404."""
     try:
-        detail = await get_place(places, criteria, grids, slug)
+        detail = await get_place(places, grids, slug)
     except PlaceNotFound:
         raise HTTPException(status_code=404, detail="Place not found") from None
     return PlaceDetailOut.from_detail(detail)
@@ -182,7 +180,7 @@ async def write_accessibility(
         return replayed
     try:
         await contribute(places, criteria, slug, criterion_slug, user, payload.value)
-        detail = await get_place(places, criteria, grids, slug)
+        detail = await get_place(places, grids, slug)
     except PlaceNotFound:
         raise HTTPException(status_code=404, detail="Place not found") from None
     except CriterionNotFound:
