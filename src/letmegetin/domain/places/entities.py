@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Literal
 
 from letmegetin.core.utils import slugify
+from letmegetin.domain.places.documentation import Documentation
 from letmegetin.domain.referential.entities import HANDICAP_FAMILIES, HandicapFamily
 
 __all__ = [
@@ -105,6 +106,9 @@ class PlaceHit:
     place: Place
     distance: float
     score: float = 0.0
+    # Derived on demand from the grid and the recorded values, never persisted (D-03).
+    # ``None`` means "the caller did not ask" (D-07, opt-in).
+    documentation: Documentation | None = None
 
 
 @dataclass(frozen=True, slots=True)
