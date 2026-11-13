@@ -10,10 +10,10 @@ import { PhotoGallery } from "@/components/record/photo-gallery";
 import { ReviewForm } from "@/components/record/review-form";
 import { ReviewList } from "@/components/record/review-list";
 import { ApiError } from "@/lib/api";
-import { levelLabel } from "@/lib/documentation";
+import { legendEntries, levelChipClass, levelDotClass, levelLabel } from "@/lib/documentation";
 import { LOCALE_COOKIE, format, parseLocale, t, tPlural } from "@/lib/i18n";
 import { serverApi } from "@/lib/server-api";
-import { familyLabel } from "@/lib/search";
+import { FAMILY_KEYS, familyLabel } from "@/lib/search";
 import type { PlaceDetail, ReviewPage } from "@/lib/types";
 
 type Props = {
@@ -106,10 +106,7 @@ export default async function PlacePage({ params, searchParams }: Props) {
                 : t(locale, "notYetRated")}
             </p>
             <p className="text-muted">
-              {format(t(locale, "reviewCountLine"), {
-                count: place.review_count,
-                percent,
-              })}
+              {format(t(locale, "reviewCountLine"), { count: place.review_count })}
             </p>
           </div>
         </div>
@@ -117,16 +114,36 @@ export default async function PlacePage({ params, searchParams }: Props) {
 
       <VerifyBanner locale={locale} />
 
-      <section aria-labelledby="completion">
-        <h2 id="completion" className="text-xl font-semibold">
-          {t(locale, "completion")}
-        </h2>
-        {levelName ? (
-          <h3 id="doc-overall" className="mt-2 text-xl font-semibold">
-            {levelName}
-          </h3>
-        ) : null}
-        <div className="mt-3 space-y-2">
+      {place.documentation.level === "none" ? (
+        <section
+          id="doc-undocumented"
+          aria-labelledby="doc-undocumented-title"
+          className="rounded-card border border-line p-4 space-y-2"
+        >
+          <h2 id="doc-undocumented-title" className="text-xl font-semibold">
+            {t(locale, "docUndocumentedTitle")}
+          </h2>
+          <p className="text-muted">{t(locale, "docUndocumentedBody")}</p>
+          {/* No criteria grid: there is nothing to complete, so no dead-end link. */}
+          {place.tree.length > 0 ? (
+            <a href="#contribute" className="font-semibold underline underline-offset-4">
+              {t(locale, "docBannerCta")}
+            </a>
+          ) : null}
+        </section>
+      ) : (
+        <section aria-labelledby="completion">
+          {/* A muted label, not a heading: the level name below must outrank its own section. */}
+          <h2 id="completion" className="text-base text-muted">
+            {t(locale, "completion")}
+          </h2>
+          <p className="mt-1 text-muted">{t(locale, "docLegendIntro")}</p>
+          {levelName ? (
+            <h3 id="doc-overall" className="mt-2 text-xl font-semibold">
+              {levelName}
+            </h3>
+          ) : null}
+          <p className="mt-3 text-muted">{format(t(locale, "criteriaHaveValue"), { percent })}</p>
           <div
             role="progressbar"
             aria-valuenow={percent}
@@ -138,23 +155,60 @@ export default async function PlacePage({ params, searchParams }: Props) {
                 ? format(t(locale, "docValueText"), { level: levelName, percent })
                 : undefined
             }
-            className="h-3 overflow-hidden rounded-full bg-line ring-1 ring-inset ring-muted"
+            className="mt-2 h-3 overflow-hidden rounded-full bg-line ring-1 ring-inset ring-muted"
           >
             <div className="h-full bg-accent" style={{ width: `${percent}%` }} />
           </div>
-          <p className="text-sm text-muted">
-            {format(t(locale, "criteriaHaveValue"), { percent })}
-          </p>
-        </div>
 
-        <dl className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-          {Object.entries(place.accessibility_by_family).map(([family, score]) => (
-            <div key={family} className="rounded-card border border-line px-3 py-2">
-              <dt className="text-sm text-muted">{familyLabel(family, locale)}</dt>
-              <dd className="text-lg font-medium">{Math.round(score * 100)}%</dd>
-            </div>
-          ))}
-        </dl>
+          <dl className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {FAMILY_KEYS.map((family) => {
+              const familyDoc = place.accessibility_by_family[family];
+              const label = familyDoc ? levelLabel(familyDoc.level, locale) : undefined;
+              const chip = familyDoc ? levelChipClass(familyDoc.level) : undefined;
+              return (
+                <div key={family} className="rounded-card border border-line px-3 py-2">
+                  <dt className="text-sm text-ink">{familyLabel(family, locale)}</dt>
+                  <dd className="mt-1">
+                    {label && chip ? (
+                      <span
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${chip}`}
+                      >
+                        {label}
+                      </span>
+                    ) : familyDoc ? null : (
+                      // A family with no criterion in this grid: not documented at 0 %.
+                      <span className="text-sm text-muted">{t(locale, "notProvided")}</span>
+                    )}
+                  </dd>
+                </div>
+              );
+            })}
+          </dl>
+        </section>
+      )}
+
+      <section aria-labelledby="doc-legend">
+        <h3 id="doc-legend" className="text-sm font-semibold">
+          {t(locale, "docLegendHeading")}
+        </h3>
+        <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm">
+          {legendEntries(place.documentation_ladder).map((rung) => {
+            const name = levelLabel(rung.slug, locale);
+            const swatch = levelDotClass(rung.slug);
+            if (!name || !swatch) return null;
+            return (
+              <li key={rung.slug} className="flex items-center gap-1">
+                <span aria-hidden="true" className={`h-3 w-3 rounded-full ${swatch}`} />
+                <span className="font-semibold">{name}</span>
+                <span className="text-muted">
+                  {rung.min === rung.max
+                    ? format(t(locale, "docBoundsExact"), { percent: rung.min })
+                    : format(t(locale, "docBoundsRange"), { min: rung.min, max: rung.max })}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       {place.photos.length > 0 ? (
