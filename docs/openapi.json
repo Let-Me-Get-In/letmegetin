@@ -230,6 +230,60 @@
         "title": "CriterionOut",
         "type": "object"
       },
+      "DocumentationLevelOut": {
+        "description": "One rung of the D-01 ladder: its slug and the integer percent bounds it covers.",
+        "properties": {
+          "max": {
+            "description": "Highest whole percent in this level, inclusive",
+            "title": "Max",
+            "type": "integer"
+          },
+          "min": {
+            "description": "Lowest whole percent in this level, inclusive",
+            "title": "Min",
+            "type": "integer"
+          },
+          "slug": {
+            "description": "Level slug, a stable enum member",
+            "title": "Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "min",
+          "max"
+        ],
+        "title": "DocumentationLevelOut",
+        "type": "object"
+      },
+      "DocumentationOut": {
+        "description": "How well documented a record is, on the D-01 ladder (PROD-01).",
+        "properties": {
+          "level": {
+            "description": "Documentation level slug: a stable enum in {none, sketch, partial, good, very_good, complete}, never display text (D-09)",
+            "title": "Level",
+            "type": "string"
+          },
+          "percent": {
+            "description": "The rounded integer percent the level was derived from (0-100); clients print it verbatim and never re-round",
+            "title": "Percent",
+            "type": "integer"
+          },
+          "rate": {
+            "description": "Share of the category grid's answerable criteria with a recorded value, in [0.0, 1.0]",
+            "title": "Rate",
+            "type": "number"
+          }
+        },
+        "required": [
+          "rate",
+          "percent",
+          "level"
+        ],
+        "title": "DocumentationOut",
+        "type": "object"
+      },
       "FilterOut": {
         "description": "A search filter.",
         "properties": {
@@ -402,9 +456,9 @@
           },
           "accessibility_by_family": {
             "additionalProperties": {
-              "type": "number"
+              "$ref": "#/components/schemas/DocumentationOut"
             },
-            "default": {},
+            "description": "Documentation {rate, percent, level} per handicap family, same ladder and the same grid-leaf denominator as the overall level (D-04); The six level slugs with their integer display bounds \u2014 none (0,0), sketch (1,25), partial (26,50), good (51,75), very_good (76,99), complete (100,100); the level is a stable enum, not display text (D-09)",
             "title": "Accessibility By Family",
             "type": "object"
           },
@@ -440,6 +494,25 @@
               }
             ],
             "title": "Distance"
+          },
+          "documentation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DocumentationOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Documentation level derived from filled_rate"
+          },
+          "documentation_ladder": {
+            "description": "The six level slugs with their integer display bounds \u2014 none (0,0), sketch (1,25), partial (26,50), good (51,75), very_good (76,99), complete (100,100); the level is a stable enum, not display text (D-09). This is the single server source for the legend; clients never restate the bounds (D-02)",
+            "items": {
+              "$ref": "#/components/schemas/DocumentationLevelOut"
+            },
+            "title": "Documentation Ladder",
+            "type": "array"
           },
           "filled_rate": {
             "default": 0.0,
@@ -591,6 +664,17 @@
               }
             ],
             "title": "Distance"
+          },
+          "documentation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DocumentationOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Documentation level derived from filled_rate"
           },
           "lat": {
             "anyOf": [
@@ -1603,6 +1687,18 @@
               "minimum": 0,
               "title": "Offset",
               "type": "integer"
+            }
+          },
+          {
+            "description": "When true, add a documentation {rate, percent, level} object to each result; absent by default (D-07/D-09)",
+            "in": "query",
+            "name": "with_documentation",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "When true, add a documentation {rate, percent, level} object to each result; absent by default (D-07/D-09)",
+              "title": "With Documentation",
+              "type": "boolean"
             }
           }
         ],
