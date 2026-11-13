@@ -167,7 +167,7 @@ export default async function PlacePage({ params, searchParams }: Props) {
               const chip = familyDoc ? levelChipClass(familyDoc.level) : undefined;
               return (
                 <div key={family} className="rounded-card border border-line px-3 py-2">
-                  <dt className="text-sm text-ink">{familyLabel(family, locale)}</dt>
+                  <dt className="text-base text-ink">{familyLabel(family, locale)}</dt>
                   <dd className="mt-1">
                     {label && chip ? (
                       <span
