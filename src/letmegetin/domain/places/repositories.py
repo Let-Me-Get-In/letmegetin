@@ -108,6 +108,16 @@ class PlaceRepository(Protocol):
 
     async def list_accessibility(self, place_id: int) -> list[PlaceAccessibility]: ...
 
+    async def list_accessibility_for_places(
+        self, place_ids: Sequence[int]
+    ) -> dict[int, list[PlaceAccessibility]]:
+        """Recorded values of several places in ONE query, keyed by place id.
+
+        A place with no recorded value has no key: callers must treat the missing key as
+        "undocumented", never as an error (D-06).
+        """
+        ...
+
     async def upsert_accessibility(
         self,
         place_id: int,

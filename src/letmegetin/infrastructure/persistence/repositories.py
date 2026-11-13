@@ -918,6 +918,27 @@ class SqlAlchemyPlaceRepository:
         ).all()
         return [place_accessibility_from_models(value, criterion) for value, criterion in rows]
 
+    async def list_accessibility_for_places(
+        self, place_ids: Sequence[int]
+    ) -> dict[int, list[PlaceAccessibility]]:
+        """Batched twin of ``list_accessibility``: the whole hit set in one query."""
+        if not place_ids:
+            return {}
+        rows = (
+            await self._session.execute(
+                select(PlaceAccessibilityModel, CriterionModel)
+                .join(CriterionModel, CriterionModel.id == PlaceAccessibilityModel.criterion_id)
+                .where(PlaceAccessibilityModel.place_id.in_(list(dict.fromkeys(place_ids))))
+                .order_by(CriterionModel.position)
+            )
+        ).all()
+        values: dict[int, list[PlaceAccessibility]] = {}
+        for value, criterion in rows:
+            values.setdefault(value.place_id, []).append(
+                place_accessibility_from_models(value, criterion)
+            )
+        return values
+
     async def upsert_accessibility(
         self,
         place_id: int,
@@ -1291,13 +1312,20 @@ class SqlAlchemyCategoryGridRepository:
         )
 
     async def get_for_slug(self, slug: str) -> CategoryGrid | None:
-        row = (
+        return (await self.get_for_slugs([slug])).get(slug)
+
+    async def get_for_slugs(self, slugs: Sequence[str]) -> dict[str, CategoryGrid]:
+        """The grids of every given category in one query (the batched search read)."""
+        if not slugs:
+            return {}
+        rows = (
             await self._session.execute(
                 select(CategoryModel.slug, CategoryGridModel.version, CategoryGridModel.tree)
                 .join(CategoryGridModel, CategoryGridModel.category_id == CategoryModel.id)
-                .where(CategoryModel.slug == slug)
+                .where(CategoryModel.slug.in_(list(dict.fromkeys(slugs))))
             )
-        ).first()
-        if row is None:
-            return None
-        return CategoryGrid(category_slug=row[0], version=int(row[1]), tree=row[2])
+        ).all()
+        return {
+            row[0]: CategoryGrid(category_slug=row[0], version=int(row[1]), tree=row[2])
+            for row in rows
+        }
