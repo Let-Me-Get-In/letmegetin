@@ -46,7 +46,11 @@ Plans:
   1. A place shows how well documented it is, on a stated threshold ladder.
   2. The ladder has an accessible legend.
   3. An undocumented place still appears in search and can be completed in place — empty is never presented as documented.
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 13-01-PLAN.md — Server-owned documentation ladder + detail contract + record page level name (PROD-01)
+- [ ] 13-02-PLAN.md — Opt-in search field, batched rate, card chip and border tint (PROD-01)
+- [ ] 13-03-PLAN.md — Per-family levels, legend, empty-record banner, tokens and public docs (PROD-01)
 **UI hint**: yes
 
 ### Phase 14: Open ODbL export
