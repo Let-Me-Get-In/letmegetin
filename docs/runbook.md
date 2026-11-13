@@ -83,10 +83,56 @@ Then restore into **`letmegetin_restore`**, never the live DB.
   Promotion stops the API, replaces the database and restarts the API. Verify `/health` before
   reopening traffic.
 
-### Restore test (quarterly)
+### Restore drill (daily, automated)
 
-Create a marker, back up, delete the marker, restore the scratch DB, verify the marker is back.
-Never promote during the drill.
+`letmegetin-restore-drill.timer` runs the drill every day at 04:00 UTC, after the 02:00 backup
+and the 03:00 retention. It is the only test of the copy that actually left the machine:
+
+1. Lists `lmgi-backups` over the S3 API (the same `curl --aws-sigv4` signing the backup uses),
+   and takes the newest archive.
+2. Downloads that archive and its `.sha256`, and verifies the checksum against the downloaded
+   bytes. The local `backups/` directory is never the source.
+3. Restores into **`letmegetin_restore`**, in the development stack — never production, and no
+   promote path.
+4. Asserts the restored copy against `letmegetin_dev`: same `public` table count, same
+   `alembic_version.version_num`, and `place`, `categories` and `place_accessibility` non-empty.
+5. Drops the scratch database on success.
+
+On failure the scratch database is **kept** for inspection, and the journal says so:
+`drill failed (rc=<n>): scratch database kept as letmegetin_restore`. The next clean run drops
+and recreates it, so nothing accumulates.
+
+Two markers in the node_exporter textfile directory, both read by Prometheus:
+
+| Marker | Written | Alert |
+|---|---|---|
+| `restore.prom` | on success only | `RestoreStale` — older than 8 days, or never written |
+| `restore-failure.prom` | on any failure | `RestoreDrillFailed` — a failure more recent than the last success |
+
+`RestoreStale` is what catches a timer that stopped running: it writes nothing, and `absent()`
+turns that silence into an alert. A clean run removes `restore-failure.prom`, so a recovered
+drill stops `RestoreDrillFailed` on the next evaluation.
+
+Run it by hand:
+
+```bash
+cd /opt/letmegetin
+set -a; . /etc/letmegetin/infisical.env; set +a
+RESTORE_DRILL_ENV_FILE=/opt/letmegetin-env/development.env STACK=lmgi-dev \
+  ./scripts/with-secrets.sh ./scripts/restore-drill.sh
+```
+
+**Prove each failure path.** `RESTORE_DRILL_FAULT` injects one fault at the stage it is meant
+to exercise, so the drill still runs its real pipeline and fails on a real fault:
+
+| Value | Injected | Surfaces as |
+|---|---|---|
+| `checksum` | the downloaded `.sha256` is corrupted | `sha256sum -c` fails before anything is restored |
+| `truncate` | 4 KiB cut off the dump after extraction | `pg_restore` fails on a truncated archive |
+| `revision` | `alembic_version` rewritten in the scratch DB | the revision assertion fails |
+
+Each exits non-zero, writes `restore-failure.prom` and leaves `restore.prom` untouched — check
+both markers after the run, then run it once without the variable to clear the failure.
 
 ## TLS
 
