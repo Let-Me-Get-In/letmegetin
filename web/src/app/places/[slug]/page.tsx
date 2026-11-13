@@ -10,6 +10,7 @@ import { PhotoGallery } from "@/components/record/photo-gallery";
 import { ReviewForm } from "@/components/record/review-form";
 import { ReviewList } from "@/components/record/review-list";
 import { ApiError } from "@/lib/api";
+import { levelLabel } from "@/lib/documentation";
 import { LOCALE_COOKIE, format, parseLocale, t, tPlural } from "@/lib/i18n";
 import { serverApi } from "@/lib/server-api";
 import { familyLabel } from "@/lib/search";
@@ -80,7 +81,9 @@ export default async function PlacePage({ params, searchParams }: Props) {
     // A reviews outage must not hide the record.
   }
 
-  const filledPercent = Math.round(place.filled_rate * 100);
+  // The server prints the percent it derived the level from; the web never re-rounds it.
+  const percent = place.documentation.percent;
+  const levelName = levelLabel(place.documentation.level, locale);
 
   return (
     <article className="space-y-8">
@@ -105,7 +108,7 @@ export default async function PlacePage({ params, searchParams }: Props) {
             <p className="text-muted">
               {format(t(locale, "reviewCountLine"), {
                 count: place.review_count,
-                percent: filledPercent,
+                percent,
               })}
             </p>
           </div>
@@ -118,19 +121,29 @@ export default async function PlacePage({ params, searchParams }: Props) {
         <h2 id="completion" className="text-xl font-semibold">
           {t(locale, "completion")}
         </h2>
+        {levelName ? (
+          <h3 id="doc-overall" className="mt-2 text-xl font-semibold">
+            {levelName}
+          </h3>
+        ) : null}
         <div className="mt-3 space-y-2">
           <div
             role="progressbar"
-            aria-valuenow={filledPercent}
+            aria-valuenow={percent}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label={t(locale, "completion")}
-            className="h-3 overflow-hidden rounded-full bg-line"
+            aria-valuetext={
+              levelName
+                ? format(t(locale, "docValueText"), { level: levelName, percent })
+                : undefined
+            }
+            className="h-3 overflow-hidden rounded-full bg-line ring-1 ring-inset ring-muted"
           >
-            <div className="h-full bg-accent" style={{ width: `${filledPercent}%` }} />
+            <div className="h-full bg-accent" style={{ width: `${percent}%` }} />
           </div>
           <p className="text-sm text-muted">
-            {format(t(locale, "criteriaHaveValue"), { percent: filledPercent })}
+            {format(t(locale, "criteriaHaveValue"), { percent })}
           </p>
         </div>
 

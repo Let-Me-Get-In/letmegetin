@@ -108,6 +108,15 @@ const MESSAGES = {
     unspecifiedSource: "Source non précisée",
     completion: "Complétude de la fiche",
     criteriaHaveValue: "{percent}% des critères ont une valeur.",
+
+    // Documentation ladder (D-01, D-11): the server owns the slugs and the bounds.
+    docNone: "Fiche non documentée",
+    docSketch: "Fiche peu documentée",
+    docPartial: "Fiche partielle",
+    docGood: "Fiche bien documentée",
+    docVeryGood: "Fiche très documentée",
+    docComplete: "Fiche complète",
+    docValueText: "{level}, {percent} %",
     reviewCountLine: "{count} avis · {percent}% de la fiche renseignée",
     photos: "Photos",
     accessibilitySection: "Accessibilité",
@@ -311,6 +320,15 @@ const MESSAGES = {
     unspecifiedSource: "Source not specified",
     completion: "Record completion",
     criteriaHaveValue: "{percent}% of criteria have a value.",
+
+    // Documentation ladder (D-01, D-11): the server owns the slugs and the bounds.
+    docNone: "Undocumented record",
+    docSketch: "Sparsely documented",
+    docPartial: "Partially documented",
+    docGood: "Well documented",
+    docVeryGood: "Very well documented",
+    docComplete: "Complete record",
+    docValueText: "{level}, {percent}%",
     reviewCountLine: "{count} reviews · {percent}% of the record filled",
     photos: "Photos",
     accessibilitySection: "Accessibility",
