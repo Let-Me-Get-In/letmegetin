@@ -56,6 +56,13 @@ describe("search state", () => {
     expect(placesPath(DEFAULT_SEARCH)).not.toContain("offset=");
     expect(placesPath(DEFAULT_SEARCH, 100)).toContain("offset=100");
   });
+
+  it("always asks for the documentation signal", () => {
+    expect(placesPath(DEFAULT_SEARCH)).toContain("with_documentation=true");
+    expect(placesPath({ ...DEFAULT_SEARCH, q: "hôtel" }, 100)).toContain(
+      "with_documentation=true",
+    );
+  });
 });
 
 describe("handicap families", () => {

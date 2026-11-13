@@ -8,6 +8,12 @@
   --color-line: #d8ddd4;
   --color-muted: #5d6a61;
   --color-warn: #a3521f;
+  /* The documentation ladder (D-01, UI-SPEC). Four tokens only: `none` reads line/muted
+     and `complete` reads accent, so a doc-none or doc-complete token would be dead. */
+  --color-doc-sketch: #dde4d9;
+  --color-doc-partial: #c3d4c5;
+  --color-doc-good: #a1bfab;
+  --color-doc-very-good: #75a48b;
   --radius-card: 1rem;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: var(--font-literata), ui-serif, Georgia, "Times New Roman", serif;
@@ -22,6 +28,10 @@
     --color-line: #2a352e;
     --color-muted: #a3b0a6;
     --color-warn: #e0a07a;
+    --color-doc-sketch: #1d2c25;
+    --color-doc-partial: #263b30;
+    --color-doc-good: #314e3f;
+    --color-doc-very-good: #416854;
   }
 }
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { levelDotClass, levelLabel } from "@/lib/documentation";
 import { t, type Locale } from "@/lib/i18n";
 import { formatDistance } from "@/lib/labels";
 import type { PlaceSummary } from "@/lib/types";
@@ -11,6 +12,22 @@ type Props = {
   onSelect: (slug: string) => void;
   loading: boolean;
 };
+
+// A dot plus the level name, deliberately not a pill: in this row a pill would read as a
+// sibling status of the "possible duplicate" pill beside it (D-08, UI-SPEC). The dot is
+// decorative; the name is the fact, so colour never carries it alone.
+function LevelMarker({ level, locale }: { level: string; locale: Locale }) {
+  const label = levelLabel(level, locale);
+  const dot = levelDotClass(level);
+  // An unknown slug renders nothing rather than a guess (D-02).
+  if (!label || !dot) return null;
+  return (
+    <span className="inline-flex items-center gap-2 text-sm text-muted">
+      <span aria-hidden="true" className={`h-2.5 w-2.5 rounded-full ${dot}`} />
+      {label}
+    </span>
+  );
+}
 
 export function PlaceList({ locale, places, selected, onSelect, loading }: Props) {
   if (loading) {
@@ -51,11 +68,18 @@ export function PlaceList({ locale, places, selected, onSelect, loading }: Props
               {place.category ?? t(locale, "unknownCategory")}
               {place.address ? ` · ${place.address}` : ""}
             </span>
-            {place.operating_status !== "open" ? (
-              <span className="mt-2 inline-block rounded-full bg-warn/10 px-2 py-0.5 text-xs text-warn">
-                {place.operating_status === "duplicate_review"
-                  ? t(locale, "possibleDuplicate")
-                  : place.operating_status}
+            {place.documentation || place.operating_status !== "open" ? (
+              <span className="mt-2 flex flex-wrap items-center gap-2">
+                {place.documentation ? (
+                  <LevelMarker level={place.documentation.level} locale={locale} />
+                ) : null}
+                {place.operating_status !== "open" ? (
+                  <span className="inline-block rounded-full bg-warn/10 px-2 py-0.5 text-xs text-warn">
+                    {place.operating_status === "duplicate_review"
+                      ? t(locale, "possibleDuplicate")
+                      : place.operating_status}
+                  </span>
+                ) : null}
               </span>
             ) : null}
           </Link>
