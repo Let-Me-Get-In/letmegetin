@@ -12,7 +12,7 @@ from sqlalchemy import text
 
 from letmegetin import seed as seed_module
 from letmegetin.config import settings
-from tests.db import SessionLocal, require_database
+from tests.db import SessionLocal, require_database, rows
 
 _DATA: Path = settings.data_dir
 _EXPECTED_VOCABULARY = len(json.loads((_DATA / "criteria.json").read_text(encoding="utf-8")))
@@ -70,3 +70,19 @@ def test_second_seed_changes_nothing(db: None) -> None:
     asyncio.run(seed_module.seed())
 
     assert _counts() == first
+
+
+def test_seed_loads_the_reviewed_licence_data(db: None) -> None:
+    """The catalogue, matrix and source mapping are loaded before any import (LIC-05, D-05–D-07)."""
+    require_database("licence_destination")
+
+    asyncio.run(seed_module.seed())
+
+    assert asyncio.run(_count("select count(*) from licence")) >= 3
+    assert asyncio.run(_count("select count(*) from licence_destination")) >= 9
+    mapping = {
+        row.source: row.licence_slug
+        for row in rows("SELECT source, licence_slug FROM source_licence")
+    }
+    assert mapping["acceslibre"] == "lov2"
+    assert mapping["user"] == "odbl"
