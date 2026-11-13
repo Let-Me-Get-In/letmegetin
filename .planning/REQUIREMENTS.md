@@ -168,11 +168,11 @@
 
 ### Licence provenance
 
-- [ ] **LIC-01**: Every place row records the source and licence it came from, and every accessibility answer records the source that produced it
-- [ ] **LIC-02**: A row can be classified as redistributable to a given destination (OSM, a lov2 partner, the open export), and that rule is enforced at every point where rows leave the system
-- [ ] **LIC-03**: A row derived from OSM is never sent to a lov2 destination
-- [ ] **LIC-04**: Re-importing a source never overwrites a fresher contribution or a row that came from another source
-- [ ] **LIC-05**: Licence rules live in reviewed data, not in importer code
+- [x] **LIC-01**: Every place row records the source and licence it came from, and every accessibility answer records the source that produced it
+- [x] **LIC-02**: A row can be classified as redistributable to a given destination (OSM, a lov2 partner, the open export), and that rule is enforced at every point where rows leave the system
+- [x] **LIC-03**: A row derived from OSM is never sent to a lov2 destination
+- [x] **LIC-04**: Re-importing a source never overwrites a fresher contribution or a row that came from another source
+- [x] **LIC-05**: Licence rules live in reviewed data, not in importer code
 
 ### Open export
 
@@ -220,11 +220,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LIC-01 | Phase 12 | Pending |
-| LIC-02 | Phase 12 | Pending |
-| LIC-03 | Phase 12 | Pending |
-| LIC-04 | Phase 12 | Pending |
-| LIC-05 | Phase 12 | Pending |
+| LIC-01 | Phase 12 | Complete |
+| LIC-02 | Phase 12 | Complete |
+| LIC-03 | Phase 12 | Complete |
+| LIC-04 | Phase 12 | Complete |
+| LIC-05 | Phase 12 | Complete |
 | PROD-01 | Phase 13 | Pending |
 | EXP-01 | Phase 14 | Pending |
 | EXP-02 | Phase 14 | Pending |

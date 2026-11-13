@@ -6,7 +6,7 @@
     {
       "number": "12",
       "name": "Licence provenance",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "number": "13",
@@ -36,8 +36,8 @@
   ],
   "next": {
     "command": "/gsd-progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 1 of 6 · executing"
+    "label": "Advance to the next step (plan phase 13)",
+    "reason": "Phase 2 of 6 — needs a plan"
   },
-  "updated_at": "2026-11-13T11:57:26.703Z"
+  "updated_at": "2026-11-13T12:59:19.914Z"
 }

@@ -175,6 +175,7 @@ OSM or Overture imports (Phases 16–17), nor any new UI (Phase 13).
 - **Storing every claim (multiple values per criterion)** — declined; single row per (place, criterion) with a write journal instead.
 - **D-14 exclusion counters at the exit point (output manifest / import report)** — Phase 14. Phase 12 ships the predicate, its SQL twin and the operator query `admin licences excluded`; there is no exit path to count against until the ODbL export exists, so the counters travel with it. Recorded here rather than only inside 12-04.
 - **`user → odbl` vs the lov2 partner destination** — open question for Phase 15. User contributions are stamped `odbl` (the backfill's only defensible default) and the reviewed matrix refuses `odbl × lov2_partner`; that is the LIC-03 one-way rule, which is about OSM-derived rows, not about user text. Before PART-01 ships a lov2 feed, decide whether a user contribution needs its own licence slug (or the matrix needs a source dimension) so owned rows are not silently withheld.
+- **Proper legal study of the licence matrix** — accepted as a provisional posture on 2026-11-13 ("on pourra rechanger plus tard si besoin, il va falloir étudier ça correctement"). Open: the obligations of each licence, whether a permissive licence (CDLA) may feed the lov2 partner (currently refused), and the ODbL↔OSM one-way rules. The CSV is the single place to change; `admin licences sync` reloads and re-audits.
 
 </deferred>
 

@@ -8,7 +8,7 @@ V1 (product core) and V1.1 (production, data quality, search, e2e, accessibility
 
 ## Phases
 
-- [ ] **Phase 12: Licence provenance** - Per-row source + licence, classified per destination and enforced at every exit point
+- [x] **Phase 12: Licence provenance** - Per-row source + licence, classified per destination and enforced at every exit point (completed 2026-11-13)
 - [ ] **Phase 13: Documented-place visualisation** - How well documented a place is, visible without pretending an empty place is documented
 - [ ] **Phase 14: Open ODbL export** - ODbL download of places, categories, criteria and answers with cumulative attribution
 - [ ] **Phase 15: AccesLibre round trip** - lov2 feed of owned rows, then an idempotent API write-back
@@ -28,7 +28,7 @@ V1 (product core) and V1.1 (production, data quality, search, e2e, accessibility
   3. A row derived from OSM is never included in a lov2 destination.
   4. Re-importing a source never overwrites a fresher contribution or a row that came from another source.
   5. Licence rules live in reviewed data (editable via the admin/CLI or seed), not in importer code.
-**Plans**: 5/5 plans executed
+**Plans**: 5/5 plans complete
 
 Plans:
 - [x] 12-01-PLAN.md — Provenance schema + reviewed licence data (`licences.csv`, `licence_destinations.csv`, `source_licences.csv`) + D-04 backfill (zero NULL licences)
@@ -96,7 +96,7 @@ Plans:
 
 | Phase | Ticket | Plans Complete | Status | Completed |
 |-------|--------|----------------|--------|-----------|
-| 12. Licence provenance | LET-79 | 5/5 | In Progress | — |
+| 12. Licence provenance | LET-79 | 5/5 | Complete    | 2026-11-13 |
 | 13. Documented-place visualisation | LET-75 | 0/— | Not started | — |
 | 14. Open ODbL export | LET-72 | 0/— | Not started | — |
 | 15. AccesLibre round trip | LET-73, LET-74 | 0/— | Not started | — |

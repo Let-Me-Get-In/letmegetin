@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v2.0
-current_phase: 12
-current_phase_name: Licence provenance
-status: executing
-stopped_at: Phase 12 planned — 5 plans, 0 blockers
-last_updated: "2026-11-13T11:57:26.687Z"
+current_phase: 13
+current_phase_name: Documented-place visualisation
+status: planning
+stopped_at: Phase 12 complete, ready to plan Phase 13
+last_updated: "2026-11-13T12:59:19.900Z"
 last_activity: 2026-11-13
-last_activity_desc: Phase 12 execution started
-state_head: fa40d792aeda2d7f17b05630d00fbcb56de77ff8
+last_activity_desc: Phase 12 complete, transitioned to Phase 13
+state_head: 4d37a8a2dbf9d9bed228c6261d165fd0d3f11625
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 0
+  completed_plans: 5
+  percent: 17
 milestone_name: Federated Data & Partners
 ---
 
@@ -24,14 +25,14 @@ milestone_name: Federated Data & Partners
 See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** Phase 12 — Licence provenance
+**Current focus:** Phase 13 — Documented-place visualisation
 
 ## Current Position
 
-Phase: 12 (Licence provenance) — EXECUTING
-Plan: 1 of 5
-Status: Executing Phase 12
-Last activity: 2026-11-13 — Phase 12 execution started
+Phase: 13 — Documented-place visualisation
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-13 — Phase 12 complete, transitioned to Phase 13
 
 
 ## Quick Tasks Completed
@@ -111,7 +112,7 @@ Last activity: 2026-11-13 — Phase 12 execution started
 ## Session Continuity
 
 Last session: 2026-11-13T11:25:22.176Z
-Stopped at: Phase 12 planned — 5 plans, 0 blockers
+Stopped at: Phase 12 complete, ready to plan Phase 13
 Resume file: .planning/phases/12-licence-provenance/12-01-PLAN.md
 
 ## Known debt
