@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from datetime import datetime
 from typing import Protocol
 
 from letmegetin.domain.places.entities import (
@@ -108,9 +109,19 @@ class PlaceRepository(Protocol):
     async def list_accessibility(self, place_id: int) -> list[PlaceAccessibility]: ...
 
     async def upsert_accessibility(
-        self, place_id: int, values: dict[str, dict[str, object]]
+        self,
+        place_id: int,
+        values: dict[str, dict[str, object]],
+        *,
+        source: str,
+        actor: str,
+        observed_at: datetime | None = None,
     ) -> None:
-        """Write values keyed by criterion slug; unknown slugs are ignored."""
+        """Write values keyed by criterion slug; unknown slugs are ignored.
+
+        The licence is resolved from the reviewed ``source_licence`` table at write time, never
+        passed in (LIC-05); an unmapped source raises ``DomainError`` (D-15).
+        """
         ...
 
     async def upsert_photos(self, place_id: int, photos: Sequence[PlacePhoto]) -> None: ...

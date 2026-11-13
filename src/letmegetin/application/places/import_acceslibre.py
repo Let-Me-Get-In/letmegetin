@@ -14,6 +14,7 @@ import csv
 import json
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -43,6 +44,8 @@ _COLUMNS: dict[str, tuple[str, ...]] = {
     "category": ("categorie", "category", "activite", "activite_principale"),
     "website": ("site_internet", "website", "url"),
     "phone": ("telephone", "phone", "tel"),
+    # The source's own claim about the data ("date de dernière mise à jour"), not ingestion time.
+    "observed_at": ("date_maj", "date_mise_a_jour", "updated_at"),
 }
 
 
@@ -60,6 +63,8 @@ class AcceslibreRow:
     category: str | None = None
     website: str | None = None
     phone: str | None = None
+    # What the source claims (``date_maj``), nullable; freshness compares this (D-02, D-10).
+    observed_at: datetime | None = None
     accessibility: dict[str, dict[str, object]] = field(default_factory=dict)
     photos: list[PlacePhoto] = field(default_factory=list)
 
@@ -91,6 +96,17 @@ def _coordinate(value: Any) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _date(value: Any) -> datetime | None:
+    """Parse a claimed date into naive UTC (the provenance columns carry no timezone)."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.strip())
+    except ValueError:
+        return None
+    return parsed.astimezone(UTC).replace(tzinfo=None) if parsed.tzinfo else parsed
 
 
 def _photos(record: dict[str, Any]) -> list[PlacePhoto]:
@@ -141,6 +157,7 @@ def _to_row(record: dict[str, Any]) -> AcceslibreRow | None:
         category=str(category) if category else None,
         website=_field(record, "website"),
         phone=_field(record, "phone"),
+        observed_at=_date(_field(record, "observed_at")),
         accessibility=accessibility_values(record),
         photos=_photos(record),
     )
@@ -196,7 +213,13 @@ async def _candidate(places: PlaceRepository, row: AcceslibreRow) -> tuple[Place
 
 async def _write_source_data(places: PlaceRepository, place_id: int, row: AcceslibreRow) -> None:
     """Persist the source-owned accessibility values and photos for one place."""
-    await places.upsert_accessibility(place_id, row.accessibility)
+    await places.upsert_accessibility(
+        place_id,
+        row.accessibility,
+        source=SOURCE_ACCESLIBRE,
+        actor=f"importer:{SOURCE_ACCESLIBRE}",
+        observed_at=row.observed_at,
+    )
     await places.upsert_photos(place_id, row.photos)
 
 
@@ -256,6 +279,9 @@ async def _import_row(
         canonical_id=candidate.id if kind == "auto" and candidate is not None else None,
         # Persisting the candidate is what turns the review bucket into a query.
         duplicate_of_id=candidate.id if kind == "review" and candidate is not None else None,
+        # When we took the copy, and what the source claims about it (D-02, D-16).
+        retrieved_at=datetime.now(UTC).replace(tzinfo=None),
+        observed_at=row.observed_at,
     )
     report.created += 1
     if kind == "auto" and candidate is not None:

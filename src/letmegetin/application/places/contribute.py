@@ -31,5 +31,11 @@ async def contribute(
     if criterion is None:
         raise CriterionNotFound(criterion_slug)
     stored = {"value": value, "source": "user", "user_id": user.id}
-    await places.upsert_accessibility(place.id, {criterion_slug: stored})
+    await places.upsert_accessibility(
+        place.id,
+        {criterion_slug: stored},
+        source="user",
+        actor=f"user:{user.id}",
+        observed_at=None,
+    )
     await places.add_contribution(place.id, user.id, criterion.id, stored)
