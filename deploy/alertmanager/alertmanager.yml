@@ -17,3 +17,12 @@ receivers:
   - name: discord
     discord_configs:
       - webhook_url_file: /etc/alertmanager-webhook/webhook.url
+        # The default message links to the Prometheus UI at its own internal
+        # address (127.0.0.1:9090), which nobody outside the host can open — and
+        # there is no public dashboard on purpose. The link a paged human needs
+        # is the checklist that tells them what to do, so it replaces the dead one.
+        title: "{{ .CommonLabels.alertname }} — {{ .Status }} ({{ .CommonLabels.severity }})"
+        message: |
+          {{ range .Alerts }}{{ .Annotations.summary }}
+          {{ end }}
+          Runbook: https://github.com/Let-Me-Get-In/letmegetin/blob/main/docs/runbook.md#incident-checklist
