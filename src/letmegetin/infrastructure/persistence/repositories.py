@@ -71,6 +71,7 @@ from letmegetin.infrastructure.persistence.models import (
     ReferentialVersionModel,
     RefreshTokenModel,
     ReviewModel,
+    SourceLicenceModel,
     UserModel,
 )
 
@@ -702,6 +703,24 @@ class SqlAlchemyPlaceRepository:
         )
         await self._session.flush()
 
+    async def _source_licence(self, source: str) -> str:
+        """The licence a write snapshots, resolved from reviewed data (LIC-05, D-07, D-15)."""
+        licence = await self._session.scalar(
+            select(SourceLicenceModel.licence_slug)
+            .where(
+                SourceLicenceModel.source == source,
+                SourceLicenceModel.effective_from <= func.now(),
+            )
+            .order_by(SourceLicenceModel.effective_from.desc())
+            .limit(1)
+        )
+        if licence is None:
+            raise DomainError(
+                f"source '{source}' has no reviewed licence in source_licence "
+                "(add it to data/referential/source_licences.csv)"
+            )
+        return licence
+
     async def add(self, place: Place) -> Place:
         model = PlaceModel(
             source=place.source,
@@ -723,6 +742,10 @@ class SqlAlchemyPlaceRepository:
             phone=place.phone,
             canonical_id=place.canonical_id,
             duplicate_of_id=place.duplicate_of_id,
+            source_license=await self._source_licence(place.source),
+            source_url=place.source_url,
+            retrieved_at=place.retrieved_at,
+            observed_at=place.observed_at,
         )
         self._session.add(model)
         await self._session.flush()
@@ -748,6 +771,11 @@ class SqlAlchemyPlaceRepository:
         model.phone = place.phone
         model.canonical_id = place.canonical_id
         model.duplicate_of_id = place.duplicate_of_id
+        # A copy keeps the licence it was taken under; only a missing one is resolved (D-07).
+        model.source_license = model.source_license or await self._source_licence(place.source)
+        model.source_url = place.source_url or model.source_url
+        model.retrieved_at = place.retrieved_at or model.retrieved_at
+        model.observed_at = place.observed_at or model.observed_at
         await self._session.flush()
         return place_from_model(model)
 
@@ -865,7 +893,13 @@ class SqlAlchemyPlaceRepository:
         return [place_accessibility_from_models(value, criterion) for value, criterion in rows]
 
     async def upsert_accessibility(
-        self, place_id: int, values: dict[str, dict[str, object]]
+        self,
+        place_id: int,
+        values: dict[str, dict[str, object]],
+        *,
+        source: str,
+        actor: str,
+        observed_at: datetime | None = None,
     ) -> None:
         if not values:
             return
@@ -877,9 +911,18 @@ class SqlAlchemyPlaceRepository:
         ).all()
         if not rows:
             return
+        source_license = await self._source_licence(source)
         statement = insert(PlaceAccessibilityModel).values(
             [
-                {"place_id": place_id, "criterion_id": criterion_id, "value": values[slug]}
+                {
+                    "place_id": place_id,
+                    "criterion_id": criterion_id,
+                    "value": values[slug],
+                    "source": source,
+                    "source_license": source_license,
+                    "observed_at": observed_at,
+                    "actor": actor,
+                }
                 for criterion_id, slug in rows
             ]
         )
@@ -889,7 +932,14 @@ class SqlAlchemyPlaceRepository:
                     PlaceAccessibilityModel.place_id,
                     PlaceAccessibilityModel.criterion_id,
                 ],
-                set_={"value": statement.excluded.value},
+                set_={
+                    "value": statement.excluded.value,
+                    "source": statement.excluded.source,
+                    "source_license": statement.excluded.source_license,
+                    "observed_at": statement.excluded.observed_at,
+                    "recorded_at": func.now(),
+                    "actor": statement.excluded.actor,
+                },
             )
         )
 
