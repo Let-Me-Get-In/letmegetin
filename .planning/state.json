@@ -1,12 +1,43 @@
 {
   "contract": "1.0.0",
   "flavor": "core",
-  "milestone": "V1.1 — Production & Quality",
-  "phases": [],
+  "milestone": "v2.0",
+  "phases": [
+    {
+      "number": "12",
+      "name": "Licence provenance",
+      "status": "pending"
+    },
+    {
+      "number": "13",
+      "name": "Documented-place visualisation",
+      "status": "pending"
+    },
+    {
+      "number": "14",
+      "name": "Open ODbL export",
+      "status": "pending"
+    },
+    {
+      "number": "15",
+      "name": "AccesLibre round trip",
+      "status": "pending"
+    },
+    {
+      "number": "16",
+      "name": "OpenStreetMap",
+      "status": "pending"
+    },
+    {
+      "number": "17",
+      "name": "Overture",
+      "status": "pending"
+    }
+  ],
   "next": {
-    "command": "/gsd-new-milestone",
-    "label": "Start a new milestone",
-    "reason": "All phases complete — start a new milestone"
+    "command": "/gsd-progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 1 of 6 · executing"
   },
-  "updated_at": "2026-11-12T14:04:42.261Z"
+  "updated_at": "2026-11-13T11:57:26.703Z"
 }

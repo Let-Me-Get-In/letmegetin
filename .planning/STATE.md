@@ -3,12 +3,12 @@ gsd_state_version: "1.0"
 milestone: v2.0
 current_phase: 12
 current_phase_name: Licence provenance
-status: planning
+status: executing
 stopped_at: Phase 12 planned — 5 plans, 0 blockers
-last_updated: "2026-11-13T11:25:22.191Z"
+last_updated: "2026-11-13T11:57:26.687Z"
 last_activity: 2026-11-13
-last_activity_desc: Roadmap v2.0 defined (6 phases, 15 requirements)
-state_head: 5641c354a2046456485c88ce51b0ea04e859f65a
+last_activity_desc: Phase 12 execution started
+state_head: fa40d792aeda2d7f17b05630d00fbcb56de77ff8
 progress:
   total_phases: 6
   completed_phases: 0
@@ -24,14 +24,14 @@ milestone_name: Federated Data & Partners
 See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** v2.0 — Federated Data & Partners
+**Current focus:** Phase 12 — Licence provenance
 
 ## Current Position
 
-Phase: 12 — Licence provenance
-Plan: —
-Status: Roadmap defined; plans not written
-Last activity: 2026-11-13 — Roadmap v2.0 defined (6 phases, 15 requirements)
+Phase: 12 (Licence provenance) — EXECUTING
+Plan: 1 of 5
+Status: Executing Phase 12
+Last activity: 2026-11-13 — Phase 12 execution started
 
 
 ## Quick Tasks Completed
