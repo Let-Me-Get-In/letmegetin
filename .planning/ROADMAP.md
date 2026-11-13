@@ -2,189 +2,99 @@
 
 ## Overview
 
-Modern rewrite of the collaborative accessible-places guide: normalized referential + public FastAPI API + Next.js frontend. V1 = the product core (referential, search, record, contribution), shipped. V1.1 = production readiness, data quality, search quality, e2e and accessibility. Gamification, integrations and mobile are deferred.
+v2.0 — Federated Data & Partners: move from a single-source directory (AccesLibre, 634 961 places) to a federated referential whose data can flow in and out of every open source, with **ODbL** as the output licence (code stays **AGPL-3.0**). The licence gate ships before anything leaves the system; the one pure-frontend requirement ships early so it is visible without waiting on the federation work.
+
+V1 (product core) and V1.1 (production, data quality, search, e2e, accessibility) are shipped; their roadmaps are archived under `.planning/milestones/V1-phases/` and `.planning/milestones/V1.1-phases/`.
 
 ## Phases
 
-### Phase 1: Foundation & CI
-**Goal:** A FastAPI + Postgres/PostGIS + Alembic + CI skeleton that starts and passes.
-**Mode:** mvp
-**Ticket:** LET-6
-**Requirements:** OPS-01, OPS-02, OPS-03
-**Success Criteria**:
-1. `docker compose up -d` starts PostGIS and the API serves `GET /health` → 200.
-2. `uv run alembic upgrade head` creates the schema.
-3. `uv run pytest`, `uv run ruff check .` and `uv run mypy` pass locally and in CI.
+- [ ] **Phase 12: Licence provenance** - Per-row source + licence, classified per destination and enforced at every exit point
+- [ ] **Phase 13: Documented-place visualisation** - How well documented a place is, visible without pretending an empty place is documented
+- [ ] **Phase 14: Open ODbL export** - ODbL download of places, categories, criteria and answers with cumulative attribution
+- [ ] **Phase 15: AccesLibre round trip** - lov2 feed of owned rows, then an idempotent API write-back
+- [ ] **Phase 16: OpenStreetMap** - OSM import as the community base, then policy-compliant write-back
+- [ ] **Phase 17: Overture** - Reviewed category mapping, measured overlap, volumetric import as the second source
 
-### Phase 2: Referential & seed
-**Goal:** The API exposes categories, the criteria tree and filters from the reconstructed seed.
-**Mode:** mvp
-**Ticket:** LET-7
-**Requirements:** REF-01, REF-02, REF-03, REF-04, REF-05
-**Success Criteria**:
-1. `uv run python scripts/build_referential.py` produces the seed JSON.
-2. `uv run python -m letmegetin.seed` loads 158 categories, 182 vocabulary rows and the category-1 grid.
-3. `GET /api/v1/categories` and `GET /api/v1/categories/{slug}/criteria` return multilingual labels.
-4. `GET /api/v1/filters` returns the 52 filters + official labels.
-5. A minimal admin/CLI can add/edit a criterion.
+## Phase Details
 
-**Plans:** 1 plan
-Plans:
-- [x] 02-01-PLAN.md — Curate the 182-label vocabulary into criterion_vocabulary, add the editable category-to-criteria mapping and the Typer admin CLI, then prove the multilingual reads
+### Phase 12: Licence provenance
+**Goal**: Every place and every answer records where it came from and under what licence, and the system enforces what can flow to which destination.
+**Depends on**: V1/V1.1 foundation (Phases 1–11, shipped)
+**Tickets**: LET-79
+**Requirements**: LIC-01, LIC-02, LIC-03, LIC-04, LIC-05
+**Success Criteria** (what must be TRUE):
+  1. Every place row records the source and licence it came from, and every accessibility answer records the source that produced it.
+  2. A row can be classified as redistributable to a given destination (OSM, a lov2 partner, the open export), and that rule is enforced at every point where rows leave the system.
+  3. A row derived from OSM is never included in a lov2 destination.
+  4. Re-importing a source never overwrites a fresher contribution or a row that came from another source.
+  5. Licence rules live in reviewed data (editable via the admin/CLI or seed), not in importer code.
+**Plans**: TBD
 
-### Phase 3: Places & search
-**Goal:** Search places by text, proximity and accessibility filters.
-**Mode:** mvp
-**Ticket:** LET-8
-**Requirements:** PLACE-01, PLACE-02, PLACE-03, PLACE-04, PLACE-05
-**Success Criteria**:
-1. A script imports a demo place dataset.
-2. `GET /api/v1/places?lat=&lng=&radius=&q=&filters=` returns distance-sorted results.
-3. Criterion filters narrow the results correctly.
-4. `GET /api/v1/places/{slug}` returns the full record (address, category, rating).
+### Phase 13: Documented-place visualisation
+**Goal**: A person can see how well documented a place is, and an undocumented place is still usable.
+**Depends on**: V1/V1.1 foundation (independent of the federation work)
+**Tickets**: LET-75
+**Requirements**: PROD-01
+**Success Criteria** (what must be TRUE):
+  1. A place shows how well documented it is, on a stated threshold ladder.
+  2. The ladder has an accessible legend.
+  3. An undocumented place still appears in search and can be completed in place — empty is never presented as documented.
+**Plans**: TBD
+**UI hint**: yes
 
-### Phase 4: Record & reviews (read)
-**Goal:** View a complete accessibility record and its reviews.
-**Mode:** mvp
-**Ticket:** LET-9
-**Requirements:** PLACE-03, PLACE-04, REV-01
-**Success Criteria**:
-1. The record returns the accessibility tree (groups → criteria → options) with values.
-2. The completion rate (`filled_rate`) is computed.
-3. Reviews are paginated and readable.
+### Phase 14: Open ODbL export
+**Goal**: A partner can download the whole referential as ODbL, with attribution rendered in the export.
+**Depends on**: Phase 12
+**Tickets**: LET-72
+**Requirements**: EXP-01, EXP-02
+**Success Criteria** (what must be TRUE):
+  1. A partner downloads an ODbL export of places, categories, criteria and answers, each row carrying a stable id and its origin id.
+  2. The export renders cumulative attribution (AccesLibre with source name and last-update date, OpenStreetMap, Overture).
+  3. The API and map are documented as Produced Works alongside the export.
+**Plans**: TBD
 
-### Phase 5: Auth & contribution
-**Goal:** Create an account, contribute to records and post reviews.
-**Mode:** mvp
-**Ticket:** LET-10
-**Requirements:** AUTH-01, AUTH-02, AUTH-03, CONTRIB-01, CONTRIB-02, REV-02
-**Success Criteria**:
-1. Sign-up + JWT login (access/refresh).
-2. An authenticated user completes a record → `accessibility_value` updated + `contribution` logged.
-3. The completion rate is recomputed.
-4. An authenticated review is created.
-5. `admin` roles protect referential edits.
+### Phase 15: AccesLibre round trip
+**Goal**: Owned rows flow back to AccesLibre as a lov2 feed, and our answers push to their API idempotently.
+**Depends on**: Phase 12
+**Tickets**: LET-73, LET-74
+**Requirements**: PART-01, PART-02
+**Success Criteria** (what must be TRUE):
+  1. AccesLibre receives a lov2 feed of owned rows keyed on their identifiers, with categories and criteria in their vocabulary, plus a mapping document listing every place of ours they cannot match and why.
+  2. An operator pushes our answers to the AccesLibre API idempotently.
+  3. Conflict rules and provenance are strong enough that a later import cannot overwrite a fresher community contribution.
+**Plans**: TBD
 
-### Phase 6: Next.js frontend
-**Goal:** Complete user journey (search, record, contribution, account).
-**Mode:** mvp
-**Ticket:** LET-11
-**Requirements:** FRONT-01, FRONT-02, FRONT-03, FRONT-04
-**Success Criteria**:
-1. Home + map/list search with filters.
-2. Place record with accessibility tree and reviews.
-3. Contribution from the frontend (auth required).
-4. Account/profile management.
+### Phase 16: OpenStreetMap
+**Goal**: OSM becomes the community base (import in), and our answers publish back under OSM policy.
+**Depends on**: Phase 12
+**Tickets**: LET-77, LET-78
+**Requirements**: OSM-01, OSM-02
+**Success Criteria** (what must be TRUE):
+  1. An operator imports the France OSM extract's POIs as `source='osm'`, idempotently on the node/way id, mapped to our categories through reviewed tags.
+  2. An operator publishes our answers to OSM, following OSM's documented import and automated-edit policy (import plan, wiki page, community discussion, per-changeset comments, bot account), once the terms-of-service consent exists.
+**Plans**: TBD
 
-### Phase 7: Public API & deployment
-**Goal:** Open the API to partners and deploy.
-**Mode:** mvp
-**Ticket:** LET-12
-**Requirements:** API-01, API-02
-**Success Criteria**:
-1. An API key authenticates and rate-limits partner calls.
-2. OpenAPI docs are published and up to date.
-3. The application is deployed (docker/CI) and reachable.
+### Phase 17: Overture
+**Goal**: Overture becomes the volumetric second source, on evidence rather than guesswork.
+**Depends on**: Phase 12
+**Tickets**: LET-70, LET-71, LET-76
+**Requirements**: OVT-01, OVT-02, OVT-03
+**Success Criteria** (what must be TRUE):
+  1. A committed CSV maps Overture `basic_category` to our category slugs, with non-visitable labels deliberately emptied and documented.
+  2. The Overture × AccesLibre overlap is measured by category and reported, so the import volume is chosen on evidence.
+  3. An operator imports Overture French places as `source='overture'` (GERS id as source_id), never overwriting an existing AccesLibre place, and a place with no matching category still imports.
+**Plans**: TBD
 
 ## Progress
 
-| Phase | Ticket | Status | Completed |
-|-------|--------|--------|-----------|
-| 1. Foundation & CI | LET-6 | Complete | 2026-10-27 |
-| 2. Referential & seed | LET-7 | Complete | 2026-10-27 |
-| 3. Places & search | LET-8 | Complete | 2026-10-27 |
-| 4. Record & reviews (read) | LET-9 | Complete | 2026-10-27 |
-| 5. Auth & contribution | LET-10 | Complete | 2026-10-27 |
-| 6. Next.js frontend | LET-11 | Complete | 2026-10-30 |
-| 7. Public API & deployment | LET-12 | Complete | 2026-10-31 |
+| Phase | Ticket | Plans Complete | Status | Completed |
+|-------|--------|----------------|--------|-----------|
+| 12. Licence provenance | LET-79 | 0/— | Not started | — |
+| 13. Documented-place visualisation | LET-75 | 0/— | Not started | — |
+| 14. Open ODbL export | LET-72 | 0/— | Not started | — |
+| 15. AccesLibre round trip | LET-73, LET-74 | 0/— | Not started | — |
+| 16. OpenStreetMap | LET-77, LET-78 | 0/— | Not started | — |
+| 17. Overture | LET-70, LET-71, LET-76 | 0/— | Not started | — |
 
 ---
-*Created: 2026-10-26*
-
-
-## V1.1 — Production & Quality
-
-### Phase 8: Production deployment & operations
-**Goal:** Run the stack on a real host with TLS, secrets, backups, monitoring and retention.
-**Mode:** mvp
-**Ticket:** LET-23
-**Requirements:** OPS-04, OPS-05, OPS-06
-**Success Criteria**:
-1. A real host serves the API and web over TLS with production secrets.
-2. Postgres and Redis backups run and a restore is tested.
-3. `/health`, the 429 rate and Redis availability are monitored/alerts.
-4. A retention job purges `idempotency_key` and stale rows; a runbook documents it.
-
-### Phase 9: Data quality & curation
-**Goal:** Make the referential trustworthy: families, categories, duplicates and coverage.
-**Mode:** mvp
-**Ticket:** LET-33
-**Requirements:** DATA-01, DATA-02, DATA-03, DATA-04
-**Success Criteria**:
-1. Every criterion and filter carries at least one handicap family.
-2. Imported categories resolve (no `bibliotheque`/`musee` NULL) and the mapping is auditable.
-3. A duplicate review queue exposes 0.60–0.90 matches with merge/reject actions and a log.
-4. Coverage metrics (by category/country) are exposed as an export or admin report.
-
-**Plans:** 3 plans
-Plans:
-- [x] 09-01-PLAN.md — Assign handicap families to every criterion and filter from `families.csv`
-- [x] 09-02-PLAN.md — Resolve Acceslibre categories through an auditable alias mapping
-- [x] 09-03-PLAN.md — Add the duplicate review queue and the coverage export
-
-### Phase 10: Search quality
-**Goal:** As a person looking for an accessible place, I want to narrow my search by category and accessibility criteria, so that I do not travel there for nothing.
-**Mode:** mvp
-**Ticket:** LET-34
-**Requirements:** SEARCH-01, SEARCH-02
-**Success Criteria**:
-1. Multiple criterion filters combine with AND (narrowing, not widening).
-2. Search filters by category.
-
-**Plans:** 2 plans
-Plans:
-- [x] 10-01-PLAN.md — Filter places by category, end to end (tracer: HTTP → PostGIS → contract → web)
-- [x] 10-02-PLAN.md — Combine multiple criterion filters with AND and publish the corrected semantics
-
-### Phase 10.1: Search pagination (INSERTED)
-**Goal:** As a person browsing a long result list, I want to go past the first 100 hits without losing my place, so that I can compare every place that fits.
-**Mode:** mvp
-**Ticket:** LET-34
-**Requirements:** SEARCH-03
-**Success Criteria**:
-1. Results have a total ordering (distance, then a stable tie-breaker) so a page boundary never duplicates or drops a place.
-2. `offset` paging works beyond 100 hits, `X-Has-More` says whether another page exists, and the web client offers "load more".
-
-**Plans:** 1 plan
-Plans:
-- [x] 10.1-01-PLAN.md — Total ordering, `offset` paging with `X-Has-More`, and a stable page contract
-
-### Phase 11: E2E & accessibility
-**Goal:** Prove the user journey in a browser and with assistive technology.
-**Mode:** mvp
-**Ticket:** LET-35
-**Requirements:** E2E-01, A11Y-01, A11Y-02, A11Y-03
-**Success Criteria**:
-1. A Playwright suite in a separate repo covers search, record, contribution and review in CI.
-2. A screen-reader audit of search and record is documented and blocking issues are fixed.
-3. The UI ships fr/en strings with a persisted language.
-4. The map has a usable non-visual path (list + keyboard) validated by the audit.
-
-**Plans:** 7/7 plans complete
-Plans:
-- [x] 11-01-PLAN.md — Localize the search path and the locale helpers (A11Y-02, A11Y-03)
-- [x] 11-02-PLAN.md — Add `admin user ensure --verified` so e2e can log in as a real user (E2E-01)
-- [x] 11-05-PLAN.md — Localize the record path (A11Y-02)
-- [x] 11-06-PLAN.md — Localize the auth and account pages and add the check:i18n guard (A11Y-02)
-- [x] 11-03-PLAN.md — Playwright specs for contribution, review and record against the deployed app (E2E-01)
-- [x] 11-04-PLAN.md — Report-only axe scan, the screen-reader audit protocol and the localized map assertion (A11Y-01, A11Y-03)
-- [x] 11-07-PLAN.md — Fix the serious/critical axe violations and flip the e2e CI axe gate to strict (A11Y-01)
-
-## V1.1 Progress
-
-| Phase | Ticket | Status | Completed |
-|-------|--------|--------|-----------|
-| 8. Production deployment & operations | LET-23 | Complete | 2026-11-01 |
-| 9. Data quality & curation | LET-33 | Complete (prod recompute outstanding) | 2026-11-09 |
-| 10. Search quality | LET-34 | Complete | 2026-11-06 |
-| 11. E2E & accessibility | LET-35 | Complete | 2026-11-12 |
+*Created: 2026-11-13 — milestone v2.0 (Federated Data & Partners)*
