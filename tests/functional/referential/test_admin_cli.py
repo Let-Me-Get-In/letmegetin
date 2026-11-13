@@ -17,7 +17,7 @@ from typer.testing import CliRunner
 
 from letmegetin import admin
 from letmegetin.infrastructure.persistence.models import CriterionModel, CriterionVocabularyModel
-from tests.db import SessionLocal, require_database
+from tests.db import SessionLocal, execute, require_database, rows
 
 _SLUGS = ["cli-test-access", "cli-test-ramp", "cli-test-lift"]
 
@@ -312,3 +312,72 @@ def test_criterion_add_accepts_families(db: None) -> None:
     )
     assert added.exit_code == 0, added.output
     assert asyncio.run(_criterion_families("cli-test-famille")) == ["visuel"]
+
+
+@pytest.fixture
+def licence_db(test_sessions: None) -> Iterator[None]:
+    """The licence gate needs migration 0011; skip cleanly on an older database."""
+    require_database("licence_destination")
+    yield
+
+
+def _sync_licences() -> None:
+    result = CliRunner().invoke(admin.app, ["licences", "sync"])
+    assert result.exit_code == 0, result.output
+
+
+def test_licences_sync_then_audit_passes(licence_db: None) -> None:
+    runner = CliRunner()
+
+    synced = runner.invoke(admin.app, ["licences", "sync"])
+    assert synced.exit_code == 0, synced.output
+    assert "licences sync:" in synced.output
+
+    audited = runner.invoke(admin.app, ["licences", "audit"])
+    assert audited.exit_code == 0, audited.output
+    assert "licences ok" in audited.output
+
+
+def test_licences_audit_names_the_licence_that_lost_a_matrix_row(licence_db: None) -> None:
+    _sync_licences()
+    execute(
+        "DELETE FROM licence_destination "
+        "WHERE licence_slug = 'odbl' AND destination = 'lov2_partner'"
+    )
+
+    audited = CliRunner().invoke(admin.app, ["licences", "audit"])
+
+    assert audited.exit_code == 1
+    assert "odbl" in audited.output
+    assert "lov2_partner" in audited.output
+
+    _sync_licences()
+    assert CliRunner().invoke(admin.app, ["licences", "audit"]).exit_code == 0
+
+
+def test_licences_matrix_shows_the_lic03_row(licence_db: None) -> None:
+    _sync_licences()
+
+    printed = CliRunner().invoke(admin.app, ["licences", "matrix"])
+
+    assert printed.exit_code == 0, printed.output
+    lic03 = [
+        line
+        for line in printed.output.splitlines()
+        if "lov2_partner" in line and "\todbl\t" in line
+    ]
+    assert lic03, printed.output
+    assert "denied" in lic03[0]
+
+
+def test_licences_sync_loads_the_reviewed_source_mapping(licence_db: None) -> None:
+    _sync_licences()
+
+    mapping = {
+        row.source: row.licence_slug
+        for row in rows("SELECT source, licence_slug FROM source_licence")
+    }
+
+    # Operator dates reviewed in data/referential/source_licences.csv (LET-79).
+    assert mapping["acceslibre"] == "lov2"
+    assert mapping["user"] == "odbl"
