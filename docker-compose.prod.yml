@@ -55,6 +55,9 @@ services:
       LETMEGETIN_SMTP_FROM: ${LETMEGETIN_SMTP_FROM:-no-reply@letmegetin.org}
       LETMEGETIN_PUBLIC_BASE_URL: ${LETMEGETIN_PUBLIC_BASE_URL:-http://localhost:3000}
       LETMEGETIN_GIT_SHA: ${GIT_SHA:-dev}
+      # Per IP, per minute. Defaults to the product's own limit; the development
+      # values file raises it because the e2e suite drives one IP hard.
+      LETMEGETIN_RATE_LIMIT_DEFAULT_RPM: ${LETMEGETIN_RATE_LIMIT_DEFAULT_RPM:-60}
     depends_on:
       db:
         condition: service_healthy
