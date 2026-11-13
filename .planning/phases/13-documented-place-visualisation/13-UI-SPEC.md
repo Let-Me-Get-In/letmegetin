@@ -89,6 +89,12 @@ Level → class mapping for chips:
 Chips are `inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold`. The chip is the
 only colour surface: no card border tint (see Open Questions, item 8).
 
+Search cards do not use the chip. They use a **marker**: `inline-flex items-center gap-2 text-sm
+text-muted` with `span aria-hidden` `h-2.5 w-2.5 rounded-full` in the level's colour (`none` =
+`border border-dashed border-muted`, `complete` = `bg-accent`, others `bg-doc-*`). The dot is
+decorative; the name carries the fact. `levelDotClass(slug)` returns the dot's classes and
+`levelChipClass(slug)` the chip's — two functions, two contexts, one source.
+
 ### Contrast verification
 
 Every pair below was computed with the WCAG 2.x relative-luminance formula, not estimated.
@@ -108,6 +114,7 @@ Every pair below was computed with the WCAG 2.x relative-luminance formula, not 
 | track boundary `muted` vs paper (ring) | 5.16 | 8.13 | 3 (non-text UI) |
 | banner ink on paper | 15.01 | 16.17 | 4.5 |
 | banner muted on paper | 5.16 | 8.13 | 4.5 |
+| `complete` marker dot on card surface | 5.91 | 8.92 | 3 (non-text UI) |
 
 ---
 
@@ -149,6 +156,12 @@ body text around them.
 
 Weight 500 is not used. The overall level uses the display face at Heading size. Percentages use
 `tabular-nums`.
+
+**Hierarchy rule.** The level must outrank its own section title. `h2#completion` is rendered as a
+small muted label — Body size, 400 weight, `text-muted` — not as a 20px heading. It stays an `h2`
+for the accessibility tree (section name), while the eye lands on the `h3` level. The eyebrow
+pattern from `DESIGN.md` is not used here: it is reserved for metadata and explicitly never a kicker
+above a heading.
 
 ---
 
@@ -281,7 +294,10 @@ Card markup stays the `Link` in `place-list.tsx`. Its inner rows, top to bottom:
 1. Name and distance (existing).
 2. Category and address (existing, muted).
 3. Row `flex flex-wrap items-center gap-2 mt-2`:
-   - the level chip (Label size, text = level name only, no percentage);
+   - the level **marker**: a 10px dot in the level's colour plus the level name in Label size,
+     `text-muted`, **no pill fill and no border**. It must not share the geometry of the
+     operating-status pill (a `warn` pill in the same row), or a green "Fiche complète" and an
+     amber "Doublon possible" read as sibling statuses of equal weight;
    - the operating-status or duplicate pill (existing, when not `open`).
 
 The chip renders only when `documentation` is in the response. If the field is missing (older API,
@@ -355,6 +371,8 @@ Other new strings:
 
 | Key | fr | en |
 |----|----|----|
+| `criteriaHaveValue` (edited) | {percent} % des critères ont une valeur. | {percent}% of criteria have a value. |
+| `reviewCountLine` (edited) | {count} avis | {count} reviews |
 | `docLegendHeading` | Niveaux de documentation | Documentation levels |
 | `docLegendIntro` | La complétude mesure la part des critères renseignés. Elle ne dit pas si le lieu est accessible. | Completeness measures the share of criteria that are filled in. It does not say whether the place is accessible. |
 | `docValueText` | {level}, {percent} % | {level}, {percent}% |
@@ -368,6 +386,10 @@ item 8).
 
 `docBannerCta` is a new key on purpose: `completeThisRecord` is the `h2` of the contribution
 section, and reusing it would print the same sentence twice on an empty record.
+
+`reviewCountLine` loses its `· {percent}% …` clause **together with the separator**: the new literal
+is `{count} avis` / `{count} reviews`, so the header never renders a trailing `· `. The percentage
+now appears once, in `criteriaHaveValue`.
 
 ### Pending: es, de, it (D-11)
 
@@ -522,4 +544,5 @@ attaches. Until then the item stays a backstop.
 
 **Approval:** approved by the operator on 2026-11-13; revised after critique the same day and
 re-checked (all seven dimensions PASS; the spacing scale gained the 12px `compact` step, typography
-wording and line heights were corrected, and the colour leftovers removed).
+wording and line heights were corrected, and the colour leftovers removed). Critique round 2 then
+fixed the level/section hierarchy, the search marker geometry and the two edited copy literals.
