@@ -160,3 +160,65 @@
 | A11Y-01 | Phase 11 | Complete |
 | A11Y-02 | Phase 11 | Complete |
 | A11Y-03 | Phase 11 | Complete |
+
+## v2.0 Requirements — Federated Data & Partners
+
+**Defined:** 2026-11-13
+**Output licence:** ODbL for the database and the open export; AGPL-3.0 for the code.
+
+### Licence provenance
+
+- [ ] **LIC-01**: Every place row records the source and licence it came from, and every accessibility answer records the source that produced it
+- [ ] **LIC-02**: A row can be classified as redistributable to a given destination (OSM, a lov2 partner, the open export), and that rule is enforced at every point where rows leave the system
+- [ ] **LIC-03**: A row derived from OSM is never sent to a lov2 destination
+- [ ] **LIC-04**: Re-importing a source never overwrites a fresher contribution or a row that came from another source
+- [ ] **LIC-05**: Licence rules live in reviewed data, not in importer code
+
+### Open export
+
+- [ ] **EXP-01**: A partner can download an ODbL export of places, categories, criteria and answers, carrying stable ids and each row's origin id
+- [ ] **EXP-02**: The export renders cumulative attribution (AccesLibre with source name and last-update date, OpenStreetMap, Overture) and documents the API and map as Produced Works
+
+### AccesLibre round trip
+
+- [ ] **PART-01**: AccesLibre can receive a lov2 feed of owned rows keyed on their identifiers, with categories and criteria expressed in their vocabulary, plus a mapping document listing every place of ours they cannot match and why
+- [ ] **PART-02**: An operator can push our answers to the AccesLibre API idempotently, with conflict rules and provenance strong enough that a later import cannot overwrite a fresher community contribution
+
+### OpenStreetMap
+
+- [ ] **OSM-01**: An operator can import the France OSM extract's POIs as `source='osm'`, idempotently on the node/way id, mapped to our categories through reviewed tags
+- [ ] **OSM-02**: An operator can publish our answers to OSM once the terms-of-service consent exists, following OSM's documented import and automated-edit policy (import plan, wiki page, community discussion, per-changeset comments, bot account)
+
+### Overture
+
+- [ ] **OVT-01**: A committed CSV maps Overture `basic_category` to our category slugs, with non-visitable labels deliberately emptied and documented
+- [ ] **OVT-02**: The Overture × AccesLibre overlap is measured by category and reported, so the import volume is chosen on evidence rather than guesswork
+- [ ] **OVT-03**: An operator can import Overture French places as `source='overture'` (GERS id as source_id), never overwriting an existing AccesLibre place, and a place with no matching category still imports
+
+### Product
+
+- [ ] **PROD-01**: A place shows how well documented it is, on a stated threshold ladder with an accessible legend, and an undocumented place still appears in search and can be completed in place
+
+## Future Requirements (after v2.0)
+
+- Gamification: challenges, teams, contribution points, leaderboards
+- Real-time messaging between contributors
+- Native iOS/Android apps
+- Full moderation back-office
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| 1:1 copy of the historical database | The dump no longer exists; we rebuild an editable grid |
+| Real-time chat (Crossbar) | Needless complexity for the core referential |
+| Native mobile apps | API-first first, mobile later |
+| Closed partner referential imports (Macif, La Poste, LocalEyes, HandiPlage) | No licence basis to redistribute or merge them |
+| Google Places as a source | Its ToS forbids storing the data |
+
+## Traceability (v2.0)
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+
+**Coverage:** filled by the roadmap.
