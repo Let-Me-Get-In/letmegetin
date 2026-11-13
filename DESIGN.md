@@ -46,6 +46,11 @@ Borders are 1px `line`. Shadows are soft and low: `0 18px 45px -32px rgba(24,33,
 - **Record card**: bordered paper panel, small uppercase header row, place name in display,
   green pill, criteria rows separated by hairlines with a trailing check.
 - **Pills**: `accent-soft` fill, `accent` text, full radius, 14px medium.
+- **Documentation ladder**: six levels, all derivable from `accent`. On a record, a level is a solid
+  pill — `none` = `line` border + `muted` text, `sketch`–`very_good` = `--color-doc-*` fill + `ink`
+  text, `complete` = `accent` fill + `paper` text. In a search card the level is a **marker** (10px
+  dot + `muted` text), never a pill: it sits in the same row as the `warn` status pill and must not
+  read as its sibling. Colour never carries the level alone; the name is always text.
 - **Marketing header**: wordmark left; section anchors, locale switch and app CTA right.
   On mobile only the wordmark and locale switch remain, keeping one 61px row.
 - **Marketing footer**: wordmark, one-line positioning, then contact, source, licence and app links.
