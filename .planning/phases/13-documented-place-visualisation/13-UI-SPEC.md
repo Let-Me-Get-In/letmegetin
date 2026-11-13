@@ -198,6 +198,10 @@ Order inside `<section aria-labelledby="completion">`:
 When `filled_rate` is `0`, the overall level is `none`: the fill has zero width, the value text
 reads "Non documenté, 0%", and the banner appears above the section.
 
+**Primary visual anchor:** the `h3` level name (`doc-overall`) — not the percentage and not the
+bar. The level is the sentence a person reads first, the number and the bar corroborate it. On the
+empty record the anchor is the banner heading, which stands above the completion section.
+
 ### Family chips
 
 Rendered with `FAMILY_KEYS` in this order: `moteur`, `auditif`, `visuel`, `mental`. Not
@@ -290,6 +294,10 @@ card's `bg-accent-soft/50` fill and by the level text.
 
 Card is `rounded-card border p-4` (existing). The tint is a 1px border colour change; no
 thickness change, so the card does not shift.
+
+**Primary visual anchor:** the place **name** (existing `h3`/link text). The level chip is the
+second thing read and the tint is the third; neither competes with the name, and the tint carries no
+meaning on its own.
 
 ---
 
@@ -441,20 +449,14 @@ Each gate is runnable. The checker confirms each one.
 
 ## Open Questions and Deviations
 
-These need a decision. Each has a recommended default so the planner can proceed if the user accepts it.
+**Resolved by the operator on 2026-11-13; the planner treats them as locked.**
 
-1. **Five locales vs `Locale = "fr" | "en"` (conflicts with D-11).** D-11 asks for fr, en, es, de and it. The dictionary and `parseLocale` cover only fr and en, and the cookie and `LocaleSwitch` follow the same two. *Recommended default:* ship fr and en now (the drafted es, de, it strings wait). Widening to five is its own change touching `Locale`, `parseLocale`, the locale cookie, `LocaleSwitch`, and `check:i18n`. Decision needed from the user before the es, de, it rows enter the dictionary.
-
-2. **Bounds source for the legend.** D-02 says thresholds live server-side, once. The legend must show bounds. *Recommended default:* the server exposes the ladder (slug, min, max) once, and the record page reads it. If that is judged too much API for this phase, the web keeps a single constant that is checked against the server's ladder in a unit test. Either way, one source.
-
-3. **Family levels are not in the API yet.** The per-family levels (D-04) need a shape the server does not emit today. This is a blocker for the family chips, not a UI choice. The planner adds it to the record contract, and `docs/public-api.md` and the OpenAPI description document it (D-09).
-
-4. **Percent spacing.** The new strings use a no-break space before `%` in fr (`1–25 %`, `{level}, {percent} %`, per D-01 and D-10). The existing page strings are `{N}%` with no space, and changing them would alter the e2e-selected French. The visible chips and family percentages keep the existing `N%` format, so the page has two conventions in fr. *Recommended default:* keep it as specified and do not touch the existing keys. Flagged, not silently resolved.
-
-5. **Progress track ring.** The ring (`ring-1 ring-inset ring-muted`) changes the visible bar slightly, which is a small visual change to an existing element. It is recommended, not required, because the bar's extent is also stated in text.
-
-6. **Banner beside the `noTree` message.** A record with no grid shows both the banner and the existing `noTree` line. Both are true. *Recommended default:* keep both; merging them would mean a new combined key and no gain in clarity.
-
+1. **Locales — resolved: fr and en only.** D-11's wider list waits. `Locale` stays `"fr" | "en"`; the es, de, it rows below are drafts kept out of the dictionary until the locale set widens in its own change. The executor adds keys to `fr` and `en` only, and `check:i18n` must stay green.
+2. **Bounds source — resolved: the server exposes the ladder.** One ladder (slug, min, max, label key) served with the documentation contract; the record page reads it and never restates the bounds.
+3. **Family levels — resolved: the planner adds `level` beside `rate` in `accessibility_by_family`.** Deriving it in the web is ruled out by D-02. `docs/public-api.md` and the OpenAPI description document the field.
+4. **Percent spacing — resolved: keep the two conventions for now.** New strings carry the no-break space; existing e2e-selected keys are not touched.
+5. **Progress track ring — resolved: add the ring.** The bar's extent is also stated in text, so the ring is decoration with a contrast reason (`line` on `paper` is 1.26:1).
+6. **Banner beside `noTree` — resolved: keep both.** Both statements are true.
 7. **Selection vs tint (resolved, recorded for the checker).** Selection wins over the border tint, and hover wins over the tint. The level text remains in every state, so no information is lost.
 
 ---
@@ -470,12 +472,12 @@ These need a decision. Each has a recommended default so the planner can proceed
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
-- [ ] Dimension 7 Inventory Provenance: PASS (not applicable: Tool: none, section omitted)
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
+- [x] Dimension 7 Inventory Provenance: PASS (not applicable: Tool: none, section omitted)
 
-**Approval:** pending. Open questions 1–3 need a decision before this contract moves to `approved`.
+**Approval:** approved by the operator on 2026-11-13; the open questions above are resolved and locked.
