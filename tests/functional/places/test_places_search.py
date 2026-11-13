@@ -350,9 +350,20 @@ def test_place_detail_returns_the_accessibility_skeleton(client: TestClient) -> 
     assert [item["criterion"] for item in body["accessibility"]] == ["test-search-step"]
     assert body["accessibility"][0]["handicap_families"] == ["moteur"]
     assert body["documentation"] == {"rate": 1.0, "percent": 100, "level": "complete"}
-    assert body["accessibility_by_family"] == {"moteur": 1.0}
+    assert body["accessibility_by_family"] == {
+        "moteur": {"rate": 1.0, "percent": 100, "level": "complete"}
+    }
     # No visuel leaf in the grid: absent, not a false "0 % documented" (D-12).
     assert "visuel" not in body["accessibility_by_family"]
+    # The ladder the legend reads: one server source for the six slugs and their bounds.
+    assert body["documentation_ladder"] == [
+        {"slug": "none", "min": 0, "max": 0},
+        {"slug": "sketch", "min": 1, "max": 25},
+        {"slug": "partial", "min": 26, "max": 50},
+        {"slug": "good", "min": 51, "max": 75},
+        {"slug": "very_good", "min": 76, "max": 99},
+        {"slug": "complete", "min": 100, "max": 100},
+    ]
 
 
 def test_place_detail_is_404_when_missing(client: TestClient) -> None:

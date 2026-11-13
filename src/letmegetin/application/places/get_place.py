@@ -24,7 +24,7 @@ class PlaceDetail:
 
     place: Place
     accessibility: list[PlaceAccessibility] = field(default_factory=list)
-    accessibility_by_family: dict[str, float] = field(default_factory=dict)
+    accessibility_by_family: dict[str, Documentation] = field(default_factory=dict)
     tree: list[dict[str, object]] = field(default_factory=list)
     filled_rate: float = 0.0
     documentation: Documentation | None = None
@@ -88,17 +88,19 @@ def _with_values(
 
 def _completion_by_family(
     values: list[PlaceAccessibility], leaves: dict[str, list[str]]
-) -> dict[str, float]:
-    """Share of the family's answerable grid leaves the place carries a value for.
+) -> dict[str, Documentation]:
+    """Each family's documentation, on the same ladder as the overall level (D-04).
 
-    A family with no leaf in this place's grid is omitted rather than reported as 0.0:
-    "no criterion to answer" is not "not documented" (D-12).
+    The rate divides by the family's answerable grid leaves. A family with no leaf in
+    this place's grid is omitted rather than reported as 0.0: "no criterion to answer"
+    is not "not documented" (D-12).
     """
     satisfied = {value.criterion_slug for value in values if recorded(value.value)}
-    scores: dict[str, float] = {}
+    scores: dict[str, Documentation] = {}
     for family in HANDICAP_FAMILIES:
         family_leaves = [slug for slug, families in leaves.items() if family in families]
         if not family_leaves:
             continue
-        scores[family] = round(len(satisfied.intersection(family_leaves)) / len(family_leaves), 3)
+        rate = round(len(satisfied.intersection(family_leaves)) / len(family_leaves), 3)
+        scores[family] = Documentation.from_rate(rate)
     return scores

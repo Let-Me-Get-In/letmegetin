@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from letmegetin.application.places.get_place import get_place
+from letmegetin.domain.places.documentation import Documentation
 from letmegetin.domain.places.entities import Place, PlaceAccessibility, PlacePhoto
 from letmegetin.domain.referential.entities import CategoryGrid
 
@@ -116,8 +117,11 @@ async def test_family_rates_divide_by_their_own_leaves_and_omit_absent_families(
         "test",
     )
 
-    # "b" is a visuel leaf with no value: reported as 0.0, not omitted.
-    assert detail.accessibility_by_family == {"moteur": 1.0, "visuel": 0.0}
+    # "b" is a visuel leaf with no value: level none, not omitted from the map.
+    assert detail.accessibility_by_family == {
+        "moteur": Documentation(rate=1.0, percent=100, level="complete"),
+        "visuel": Documentation(rate=0.0, percent=0, level="none"),
+    }
     # "auditif" has no leaf in this grid: absent, never a false "0 % documented".
     assert "auditif" not in detail.accessibility_by_family
 
