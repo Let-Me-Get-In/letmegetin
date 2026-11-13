@@ -11,7 +11,7 @@
     {
       "number": "13",
       "name": "Documented-place visualisation",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "number": "14",
@@ -36,8 +36,8 @@
   ],
   "next": {
     "command": "/gsd-progress --next",
-    "label": "Advance to the next step (plan phase 13)",
-    "reason": "Phase 2 of 6 — needs a plan"
+    "label": "Advance to the next step (plan phase 14)",
+    "reason": "Phase 3 of 6 — needs a plan"
   },
-  "updated_at": "2026-11-13T12:59:19.914Z"
+  "updated_at": "2026-11-13T23:08:07.896Z"
 }

@@ -9,7 +9,7 @@ V1 (product core) and V1.1 (production, data quality, search, e2e, accessibility
 ## Phases
 
 - [x] **Phase 12: Licence provenance** - Per-row source + licence, classified per destination and enforced at every exit point (completed 2026-11-13)
-- [ ] **Phase 13: Documented-place visualisation** - How well documented a place is, visible without pretending an empty place is documented
+- [x] **Phase 13: Documented-place visualisation** - How well documented a place is, visible without pretending an empty place is documented (completed 2026-11-14)
 - [ ] **Phase 14: Open ODbL export** - ODbL download of places, categories, criteria and answers with cumulative attribution
 - [ ] **Phase 15: AccesLibre round trip** - lov2 feed of owned rows, then an idempotent API write-back
 - [ ] **Phase 16: OpenStreetMap** - OSM import as the community base, then policy-compliant write-back
@@ -46,11 +46,11 @@ Plans:
   1. A place shows how well documented it is, on a stated threshold ladder.
   2. The ladder has an accessible legend.
   3. An undocumented place still appears in search and can be completed in place — empty is never presented as documented.
-**Plans**: 3 plans
+**Plans**: 3/3 plans complete
 Plans:
-- [ ] 13-01-PLAN.md — Server-owned documentation ladder + detail contract + record page level name (PROD-01)
-- [ ] 13-02-PLAN.md — Opt-in search field, batched rate, card marker (dot + level name) (PROD-01)
-- [ ] 13-03-PLAN.md — Per-family levels, legend, empty-record banner, tokens and public docs (PROD-01)
+- [x] 13-01-PLAN.md — Server-owned documentation ladder + detail contract + record page level name (PROD-01)
+- [x] 13-02-PLAN.md — Opt-in search field, batched rate, card marker (dot + level name) (PROD-01)
+- [x] 13-03-PLAN.md — Per-family levels, legend, empty-record banner, tokens and public docs (PROD-01)
 **UI hint**: yes
 
 ### Phase 14: Open ODbL export
@@ -101,7 +101,7 @@ Plans:
 | Phase | Ticket | Plans Complete | Status | Completed |
 |-------|--------|----------------|--------|-----------|
 | 12. Licence provenance | LET-79 | 5/5 | Complete    | 2026-11-13 |
-| 13. Documented-place visualisation | LET-75 | 0/— | Not started | — |
+| 13. Documented-place visualisation | LET-75 | 3/3 | Complete    | 2026-11-14 |
 | 14. Open ODbL export | LET-72 | 0/— | Not started | — |
 | 15. AccesLibre round trip | LET-73, LET-74 | 0/— | Not started | — |
 | 16. OpenStreetMap | LET-77, LET-78 | 0/— | Not started | — |
