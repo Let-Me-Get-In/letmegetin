@@ -70,7 +70,8 @@ async def _seed() -> None:
         await session.execute(
             text(
                 "INSERT INTO categories (slug, name, label) VALUES "
-                "('test-search-pharmacie', 'Pharmacie', '{}')"
+                "('test-search-pharmacie', 'Pharmacie', '{}'), "
+                "('test-search-librairie', 'Librairie', '{}')"
             )
         )
         await session.execute(
@@ -78,6 +79,33 @@ async def _seed() -> None:
                 "UPDATE place SET category_id = (SELECT id FROM categories "
                 "WHERE slug = 'test-search-pharmacie') WHERE source_id = 'test-search-gamma'"
             )
+        )
+        # Beta owns one answerable grid leaf, so the detail endpoint exercises the
+        # documentation ladder end to end (the record is complete on its only criterion).
+        await session.execute(
+            text(
+                "UPDATE place SET category_id = (SELECT id FROM categories "
+                "WHERE slug = 'test-search-librairie') WHERE source_id = 'test-search-beta'"
+            )
+        )
+        await session.execute(
+            text(
+                "INSERT INTO category_grid (category_id, version, tree) SELECT id, 1, "
+                "CAST(:tree AS jsonb) FROM categories WHERE slug = 'test-search-librairie'"
+            ),
+            {
+                "tree": json.dumps(
+                    [
+                        {
+                            "slug": "test-search-step",
+                            "label": {"fr": "Marche"},
+                            "type": "boolean",
+                            "handicap_families": ["moteur"],
+                            "children": [],
+                        }
+                    ]
+                )
+            },
         )
         await session.execute(
             text(
@@ -267,8 +295,10 @@ def test_place_detail_returns_the_accessibility_skeleton(client: TestClient) -> 
     assert body["lat"] == pytest.approx(45.0030)
     assert [item["criterion"] for item in body["accessibility"]] == ["test-search-step"]
     assert body["accessibility"][0]["handicap_families"] == ["moteur"]
-    assert body["accessibility_by_family"]["moteur"] > 0
-    assert body["accessibility_by_family"]["visuel"] == 0.0
+    assert body["documentation"] == {"rate": 1.0, "percent": 100, "level": "complete"}
+    assert body["accessibility_by_family"] == {"moteur": 1.0}
+    # No visuel leaf in the grid: absent, not a false "0 % documented" (D-12).
+    assert "visuel" not in body["accessibility_by_family"]
 
 
 def test_place_detail_is_404_when_missing(client: TestClient) -> None:
