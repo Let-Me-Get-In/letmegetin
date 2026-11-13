@@ -15,10 +15,9 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import event, text
 
-from letmegetin.core.db import engine
 from letmegetin.domain.places.dedup import normalize_name
 from letmegetin.domain.places.entities import make_slug
-from tests.db import SessionLocal, require_database
+from tests.db import SessionLocal, engine, require_database
 
 _ORIGIN = (45.0, 5.0)
 # Far from _ORIGIN and from any real AccesLibre row, so the bulk page tests see
@@ -148,12 +147,16 @@ async def _seed() -> None:
         )
         await session.execute(
             text(
-                "INSERT INTO place (source, source_id, name, name_normalized, slug, lat, lng) "
+                "INSERT INTO place (source, source_id, name, name_normalized, slug, lat, lng, "
+                "category_id) "
                 "SELECT 'test-search', 'test-search-bulk-' || i, 'Test Bulk ' || i, "
                 "'test bulk ' || i, 'test-search-bulk-' || i, "
                 # Ten coordinates, fifteen rows each: identical coordinates force the
                 # distance ties that a plain ORDER BY could not page deterministically.
-                ":lat + mod(i, 10) * 0.001, :lng + mod(i, 10) * 0.001 "
+                ":lat + mod(i, 10) * 0.001, :lng + mod(i, 10) * 0.001, "
+                # A shared category with a grid, so the batched documentation reads are
+                # exercised on a 100-hit page as well as on a one-hit one.
+                "(SELECT id FROM categories WHERE slug = 'test-search-librairie') "
                 "FROM generate_series(1, :count) AS i"
             ),
             {"lat": _BULK_ORIGIN[0], "lng": _BULK_ORIGIN[1], "count": _BULK_COUNT},
@@ -423,7 +426,7 @@ def _count_selects(client: TestClient, **params: Any) -> int:
 
 
 def test_search_documentation_reads_do_not_scale_with_hits(client: TestClient) -> None:
-    one_hit = {"radius": 500, "q": "alpha"}
+    one_hit = {"radius": 500, "q": "beta"}
     many_hits = {"lat": _BULK_ORIGIN[0], "lng": _BULK_ORIGIN[1], "radius": 5000, "limit": 100}
     assert len(_search(client, **one_hit)) == 1
     assert len(_search(client, **many_hits)) == 100

@@ -65,6 +65,9 @@ def _criterion_ids(raw: str | None) -> list[int]:
 @router.get(
     "/places",
     response_model=list[PlaceSummaryOut],
+    # `documentation` is left unset unless `with_documentation=true`, so the default
+    # response keeps exactly the shape it had (D-07).
+    response_model_exclude_unset=True,
     # FastAPI does not publish headers set through `response.headers`, so declare it.
     responses={
         200: {
@@ -80,6 +83,7 @@ def _criterion_ids(raw: str | None) -> list[int]:
 async def search(
     places: PlaceRepo,
     categories: CategoryRepo,
+    grids: CategoryGridRepo,
     response: Response,
     lat: Annotated[float, Query(ge=-90, le=90)],
     lng: Annotated[float, Query(ge=-180, le=180)],
@@ -97,6 +101,13 @@ async def search(
     offset: Annotated[
         int, Query(ge=0, le=10_000, description="Number of hits to skip")
     ] = DEFAULT_OFFSET,
+    with_documentation: Annotated[
+        bool,
+        Query(
+            description="When true, add a documentation {rate, percent, level} object to each "
+            "result; absent by default (D-07/D-09)"
+        ),
+    ] = False,
 ) -> list[PlaceSummaryOut]:
     """Search places by proximity, text and accessibility filters, nearest first.
 
@@ -110,6 +121,7 @@ async def search(
         category_id = found.id
     page = await search_places(
         places,
+        grids,
         lat,
         lng,
         radius,
@@ -119,9 +131,12 @@ async def search(
         category_id=category_id,
         limit=limit,
         offset=offset,
+        with_documentation=with_documentation,
     )
     response.headers["X-Has-More"] = "true" if page.has_more else "false"
-    return [PlaceSummaryOut.from_place(hit.place, hit.distance) for hit in page.hits]
+    return [
+        PlaceSummaryOut.from_place(hit.place, hit.distance, hit.documentation) for hit in page.hits
+    ]
 
 
 @router.get("/places/candidates", response_model=list[CandidateOut])
