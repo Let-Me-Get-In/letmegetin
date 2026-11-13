@@ -45,40 +45,52 @@ rank or filter search by documentation, does not touch licence provenance
 ### Where it shows
 - **D-05:** On the record page the ladder replaces the bare percentage: the
   progress bar stays, gains `aria-valuetext` with the level name, and a **static
-  inline legend** lists all six levels with their bounds and one line of meaning,
-  always visible (no tooltip, no `<details>`).
-- **D-06:** An undocumented place shows `0 %` and the `none` level, plus a
-  **dedicated banner** at the top of the record ("Cette fiche n'est pas encore
-  documentée") linking to the contribution form that already exists. It keeps
-  appearing in search, unranked and unfiltered.
+  inline legend** lists the six levels with their bounds, always visible (no
+  tooltip, no `<details>`). *Revised 2026-11-13 after critique: the per-level
+  meaning line was dropped (each restated its bounds and `partial` was not
+  exclusive), the single intro sentence moved above the level heading, and the
+  legend became a compact list instead of six cards.*
+- **D-06:** An undocumented place shows the `none` level, plus a **dedicated
+  banner** at the top of the record ("Cette fiche n'est pas encore documentée")
+  linking to the contribution form that already exists. It keeps appearing in
+  search, unranked and unfiltered. *Revised 2026-11-13 after critique: on `none`
+  the banner replaces the whole completion section (no 0 %, no bar, no family
+  grid), and the link is omitted when the place has no criteria grid.*
 - **D-07:** Search carries the same signal **opt-in**: `GET /api/v1/places?with_documentation=true`
   adds a `documentation` object (`rate`, `level`) to each result; absent by
   default so existing consumers pay nothing. The field is additive — the response
   stays a bare JSON array (SEARCH-03).
-- **D-08:** In the search results the level renders as a subtle **green tint on
-  the card border**, never color alone: the level name is always present as text
-  and the tint is decorative. Contrast is checked against the existing tokens.
+- **D-08:** In the search results the level renders as a **text chip**, never
+  colour alone. *Revised 2026-11-13 after critique: the green border tint was
+  removed — selection and hover already own the border colour, and four of the
+  six dark tints were indistinguishable on the dark surface.*
 
 ### Contract and accessibility
 - **D-09:** `docs/public-api.md` and the OpenAPI description document
   `with_documentation`, the six slugs and their bounds. The level is a stable
   enum, not display text.
-- **D-10:** The legend is a definition list (`<dl>`), the chips carry their level
-  name plus the percentage, and the progress bar keeps `aria-valuenow` (percent)
-  with `aria-valuetext` = "Level name, N %". Color never carries the only copy of
-  the information.
-- **D-11:** Six labels, six one-line descriptions and the legend heading enter the
-  single i18n dictionary for **fr, en, es, de, it**; `check:i18n` stays a gate.
+- **D-10:** The legend has a heading and a list, the chips carry their level
+  name, and the progress bar keeps `aria-valuenow` (percent) with
+  `aria-valuetext` = "Level name, N %". Color never carries the only copy of the
+  information. *Revised 2026-11-13 after critique: the percentage is printed once
+  on the page (family chips dropped theirs), and the legend is a `ul` because the
+  meanings it used to define are gone.*
+- **D-11:** Six labels, the legend heading and its intro enter the single i18n
+  dictionary for **fr, en** (es/de/it drafted, held until `Locale` widens);
+  `check:i18n` stays a gate. *Revised 2026-11-13: descriptions dropped with the
+  D-05 change, and the labels became record-centric ("Fiche complète", not
+  "Parfaitement documenté") so a fully documented place whose every answer is
+  "no" is not labelled as the best state in the product.*
 
 </decisions>
 
 <agent_discretion>
 ## Agent's Discretion
 
-- Exact palette step per level (one token family, contrast-checked) and the tint
-  alpha on the search card border.
-- Whether the family chips show the percentage alongside the level name (D-04
-  says named chips; the number is optional if the chip stays readable).
+- Exact palette step per level (one token family, contrast-checked). The search
+  card carries no tint (D-08 revised).
+- Family chips show the level name only; the percentage is printed once above the
+  bar (D-10 revised).
 - The shape of the `documentation` object beyond `rate` and `level`.
 
 </agent_discretion>
