@@ -35,7 +35,7 @@ groups:
         annotations:
           summary: "Redis is unreachable (limits fall back per worker)"
 
-      # Host layer (D-04): the two silent failures that cost data rather than
+      # Host layer: the two silent failures that cost data rather than
       # downtime. `absent()` is deliberate — a marker that was never written is
       # the worst case, not a non-event.
       - alert: BackupStale

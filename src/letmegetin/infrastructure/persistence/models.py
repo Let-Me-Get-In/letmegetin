@@ -309,7 +309,7 @@ class PlaceAccessibilityModel(Base):
 
 
 class ReviewModel(Base, TimestampMixin):
-    """A published review for a place (write path arrives with auth, Phase 5)."""
+    """A published review for a place, written by a signed-in contributor."""
 
     __tablename__ = "review"
     __table_args__ = (
