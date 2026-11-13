@@ -10,6 +10,7 @@ import pytest
 
 from letmegetin import seed as seed_module
 from letmegetin.application.referential.families import FamiliesReport
+from letmegetin.application.referential.licences import LicenceReport
 from letmegetin.infrastructure.persistence.models import (
     CategoryCriterionModel,
     CategoryModel,
@@ -108,7 +109,7 @@ class FakeSessionFactory:
 
 @pytest.fixture(autouse=True)
 def _skip_persistence(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Grids and families need PostGIS upserts; integration tests cover both."""
+    """Grids, families and licence tables need PostGIS upserts; integration tests cover them."""
 
     async def noop(*args: Any, **kwargs: Any) -> int:
         return 1
@@ -116,9 +117,16 @@ def _skip_persistence(monkeypatch: pytest.MonkeyPatch) -> None:
     async def no_families(*args: Any, **kwargs: Any) -> FamiliesReport:
         return FamiliesReport()
 
+    async def no_licences(*args: Any, **kwargs: Any) -> LicenceReport:
+        return LicenceReport()
+
     monkeypatch.setattr(seed_module, "rebuild_category_grids", noop)
     monkeypatch.setattr(seed_module, "apply_families", no_families)
     monkeypatch.setattr(seed_module, "load_families", lambda path: {})
+    monkeypatch.setattr(seed_module, "sync_licences", no_licences)
+    monkeypatch.setattr(seed_module, "load_licences", lambda path: [])
+    monkeypatch.setattr(seed_module, "load_licence_destinations", lambda path, slugs: [])
+    monkeypatch.setattr(seed_module, "load_source_licences", lambda path, slugs: [])
 
 
 @pytest.mark.parametrize(
