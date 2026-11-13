@@ -64,6 +64,14 @@ from letmegetin.application.referential.families import (
     audit_families,
     load_families,
 )
+from letmegetin.application.referential.licences import (
+    audit_licences,
+    format_matrix,
+    load_licence_destinations,
+    load_licences,
+    load_source_licences,
+    sync_licences,
+)
 from letmegetin.application.retention import run_retention
 from letmegetin.config import settings
 from letmegetin.core.db import SessionLocal
@@ -71,6 +79,7 @@ from letmegetin.core.exceptions import CategoryNotFound, DomainError
 from letmegetin.domain.places.dedup import RELIABLE_MATCH_THRESHOLD
 from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
 from letmegetin.domain.referential.labels import parse_label_pairs
+from letmegetin.infrastructure.persistence.licence_repositories import SqlAlchemyLicenceRepository
 from letmegetin.infrastructure.persistence.repositories import (
     SqlAlchemyApiKeyRepository,
     SqlAlchemyCategoryGridRepository,
@@ -94,6 +103,7 @@ criterion_app = typer.Typer(help="Add, edit and list criteria and options.")
 vocabulary_app = typer.Typer(help="Import, list and promote the flat criteria vocabulary.")
 labels_app = typer.Typer(help="Set multilingual labels on any referential entity.")
 families_app = typer.Typer(help="Fill and audit handicap families (moteur, auditif, visuel…).")
+licences_app = typer.Typer(help="Sync, render and audit the licence catalogue and matrix.")
 import_app = typer.Typer(help="Import open place datasets (Acceslibre first).")
 duplicates_app = typer.Typer(help="Review, merge or reject duplicate candidates from the import.")
 api_key_app = typer.Typer(help="Create, list and revoke partner API keys.")
@@ -103,6 +113,7 @@ app.add_typer(criterion_app, name="criterion")
 app.add_typer(vocabulary_app, name="vocabulary")
 app.add_typer(labels_app, name="labels")
 app.add_typer(families_app, name="families")
+app.add_typer(licences_app, name="licences")
 app.add_typer(import_app, name="import")
 app.add_typer(duplicates_app, name="duplicates")
 app.add_typer(api_key_app, name="api-key")
@@ -386,6 +397,68 @@ def families_audit() -> None:
     typer.echo("missing families:")
     for slug in slugs:
         typer.echo(slug)
+    raise typer.Exit(code=1)
+
+
+@licences_app.command("sync")
+def licences_sync(
+    licences_file: Annotated[
+        Path | None, typer.Option("--licences", help="Reviewed licence catalogue CSV")
+    ] = None,
+    destinations_file: Annotated[
+        Path | None, typer.Option("--destinations", help="Reviewed destination matrix CSV")
+    ] = None,
+    sources_file: Annotated[
+        Path | None, typer.Option("--sources", help="Reviewed source → licence CSV")
+    ] = None,
+) -> None:
+    """Load the three reviewed licence CSVs; a change bumps the referential version (D-08)."""
+    licences_path = licences_file or settings.data_dir / "licences.csv"
+    destinations_path = destinations_file or settings.data_dir / "licence_destinations.csv"
+    sources_path = sources_file or settings.data_dir / "source_licences.csv"
+
+    async def callback(session: AsyncSession) -> str:
+        licences = load_licences(licences_path)
+        slugs = {licence.slug for licence in licences}
+        report = await sync_licences(
+            SqlAlchemyLicenceRepository(session),
+            licences,
+            load_licence_destinations(destinations_path, slugs),
+            load_source_licences(sources_path, slugs),
+        )
+        return (
+            f"licences sync: created={report.created} updated={report.updated} "
+            f"unchanged={report.unchanged}"
+        )
+
+    _run_admin(callback)
+
+
+@licences_app.command("matrix")
+def licences_matrix() -> None:
+    """Print the redistribution matrix, grouped by destination."""
+
+    async def callback(session: AsyncSession) -> str:
+        return format_matrix(await SqlAlchemyLicenceRepository(session).list_destinations())
+
+    _run_admin(callback, bump=False)
+
+
+@licences_app.command("audit")
+def licences_audit() -> None:
+    """Fail when the catalogue or the matrix has a gap (D-08 gate)."""
+
+    async def issues() -> list[str]:
+        async with SessionLocal() as session:
+            return await audit_licences(SqlAlchemyLicenceRepository(session))
+
+    found = asyncio.run(issues())
+    if not found:
+        typer.echo("licences ok: every licence has a full matrix and every row resolves")
+        return
+    typer.echo("licence audit:")
+    for issue in found:
+        typer.echo(issue)
     raise typer.Exit(code=1)
 
 

@@ -21,9 +21,17 @@ from letmegetin.application.referential.admin import (
     rebuild_category_grids,
 )
 from letmegetin.application.referential.families import apply_families, load_families
+from letmegetin.application.referential.licences import (
+    LicenceReport,
+    load_licence_destinations,
+    load_licences,
+    load_source_licences,
+    sync_licences,
+)
 from letmegetin.config import settings
 from letmegetin.core.db import SessionLocal
 from letmegetin.core.utils import slugify
+from letmegetin.infrastructure.persistence.licence_repositories import SqlAlchemyLicenceRepository
 from letmegetin.infrastructure.persistence.models import (
     AccessibilityFilterModel,
     CategoryMappingModel,
@@ -129,6 +137,22 @@ async def _load_category_mapping(session: AsyncSession, path: Path) -> int:
     return written
 
 
+async def _load_licence_data(session: AsyncSession, data_dir: Path) -> LicenceReport:
+    """Load the reviewed licence catalogue, matrix and source mapping (D-05–D-08).
+
+    Runs before anything resolves a source → licence, so the first import never writes
+    a row without its reviewed licence.
+    """
+    licences = load_licences(data_dir / "licences.csv")
+    slugs = {licence.slug for licence in licences}
+    return await sync_licences(
+        SqlAlchemyLicenceRepository(session),
+        licences,
+        load_licence_destinations(data_dir / "licence_destinations.csv", slugs),
+        load_source_licences(data_dir / "source_licences.csv", slugs),
+    )
+
+
 async def seed() -> None:
     """Insert categories, filters, labels, the vocabulary and the category-1 grid."""
     data_dir = settings.data_dir
@@ -220,6 +244,9 @@ async def seed() -> None:
 
         mapping_written = await _load_category_mapping(session, data_dir / "category_mapping.csv")
 
+        # Before any place import resolves a source → licence (CONTEXT Integration Points).
+        licences = await _load_licence_data(session, data_dir)
+
         families = await apply_families(
             SqlAlchemyCriterionRepository(session),
             SqlAlchemyFilterRepository(session),
@@ -237,6 +264,7 @@ async def seed() -> None:
             f"seed ok: categories={len(categories)} base_criteria={base_criteria} "
             f"vocabulary_created={vocabulary_created} vocabulary_skipped={vocabulary_skipped} "
             f"mapping={mapping_written} "
+            f"licences={licences.created}c/{licences.updated}u "
             f"families={families.criteria_updated}/{families.filters_updated} "
             f"referential_version={version}"
         )
