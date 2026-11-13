@@ -6,16 +6,34 @@ monolithic module already carries every other context.
 
 from __future__ import annotations
 
-from sqlalchemy import select
+from sqlalchemy import and_, exists, func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.elements import ColumnElement
 
 from letmegetin.domain.referential.entities import Licence, LicenceDestination, SourceLicence
 from letmegetin.infrastructure.persistence.models import (
     LicenceDestinationModel,
     LicenceModel,
+    PlaceModel,
     SourceLicenceModel,
 )
+
+
+def _may_leave(destination: str) -> ColumnElement[bool]:
+    """The SQL twin of ``can_redistribute``: an allowed matrix row for the row's own licence.
+
+    Correlation is on ``place.source_license``, so a NULL or unknown licence matches
+    nothing — fail-closed, like the domain predicate (D-13, D-15). ``destination`` is a
+    bound parameter, never interpolated (T-12-04).
+    """
+    return exists(
+        select(1).where(
+            LicenceDestinationModel.licence_slug == PlaceModel.source_license,
+            LicenceDestinationModel.destination == destination,
+            LicenceDestinationModel.allowed.is_(True),
+        )
+    )
 
 
 class SqlAlchemyLicenceRepository:
@@ -137,3 +155,44 @@ class SqlAlchemyLicenceRepository:
                 },
             )
         )
+
+    async def redistributable_place_ids(self, destination: str) -> list[int]:
+        """Bulk twin of ``can_redistribute``: only rows the matrix lets leave (D-13).
+
+        The join carries the rule, so a NULL licence, an unknown licence and a denied
+        row all match nothing — the export path never re-implements the check.
+        """
+        statement = (
+            select(PlaceModel.id)
+            .join(
+                LicenceDestinationModel,
+                and_(
+                    LicenceDestinationModel.licence_slug == PlaceModel.source_license,
+                    LicenceDestinationModel.destination == destination,
+                    LicenceDestinationModel.allowed.is_(True),
+                ),
+            )
+            .order_by(PlaceModel.id)
+        )
+        return list((await self._session.scalars(statement)).all())
+
+    async def exclusion_counts(self, destination: str) -> list[tuple[str, str | None, int]]:
+        """Per ``(source, licence)`` counts of the places a destination leaves out (D-14)."""
+        statement = (
+            select(PlaceModel.source, PlaceModel.source_license, func.count(PlaceModel.id))
+            .where(~_may_leave(destination))
+            .group_by(PlaceModel.source, PlaceModel.source_license)
+            .order_by(PlaceModel.source, PlaceModel.source_license)
+        )
+        found = (await self._session.execute(statement)).all()
+        return [(str(source), licence, int(count)) for source, licence, count in found]
+
+    async def excluded_ids(self, destination: str) -> list[tuple[int, str | None]]:
+        """The place ids — with their licence — a destination cannot take (D-14)."""
+        statement = (
+            select(PlaceModel.id, PlaceModel.source_license)
+            .where(~_may_leave(destination))
+            .order_by(PlaceModel.id)
+        )
+        found = (await self._session.execute(statement)).all()
+        return [(int(place_id), licence) for place_id, licence in found]
