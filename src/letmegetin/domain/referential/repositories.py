@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Literal, Protocol
 
 from letmegetin.domain.referential.entities import (
@@ -95,6 +96,10 @@ class CategoryGridRepository(Protocol):
     ) -> None: ...
 
     async def get_for_slug(self, slug: str) -> CategoryGrid | None: ...
+
+    async def get_for_slugs(self, slugs: Sequence[str]) -> dict[str, CategoryGrid]:
+        """The grids of several categories in ONE query, keyed by category slug."""
+        ...
 
 
 class MappingAdminRepository(Protocol):
