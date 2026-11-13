@@ -4,17 +4,16 @@ milestone: v2.0
 current_phase: 13
 current_phase_name: Documented-place visualisation
 status: planning
-stopped_at: Phase 12 complete, ready to plan Phase 13
-last_updated: "2026-11-13T12:59:19.900Z"
+stopped_at: Phase 13 context gathered
+last_updated: "2026-11-13T16:13:49.053Z"
 last_activity: 2026-11-13
 last_activity_desc: Phase 12 complete, transitioned to Phase 13
-state_head: 4d37a8a2dbf9d9bed228c6261d165fd0d3f11625
+state_head: 11d9505ee4cb3f20ecd37098060969fa42273a72
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 5
   completed_plans: 5
-  percent: 17
 milestone_name: Federated Data & Partners
 ---
 
@@ -111,9 +110,9 @@ Last activity: 2026-11-13 — Phase 12 complete, transitioned to Phase 13
 
 ## Session Continuity
 
-Last session: 2026-11-13T11:25:22.176Z
-Stopped at: Phase 12 complete, ready to plan Phase 13
-Resume file: .planning/phases/12-licence-provenance/12-01-PLAN.md
+Last session: 2026-11-13T16:13:48.812Z
+Stopped at: Phase 13 context gathered
+Resume file: .planning/phases/13-documented-place-visualisation/13-CONTEXT.md
 
 ## Known debt
 
