@@ -12,6 +12,23 @@ from letmegetin.application.places.list_reviews import ReviewPage
 from letmegetin.domain.places.entities import Place, PlaceHit, Review
 
 
+class DocumentationOut(BaseModel):
+    """How well documented a record is, on the D-01 ladder (PROD-01)."""
+
+    rate: float = Field(
+        description="Share of the category grid's answerable criteria with a "
+        "recorded value, in [0.0, 1.0]"
+    )
+    percent: int = Field(
+        description="The rounded integer percent the level was derived from (0-100); "
+        "clients print it verbatim and never re-round"
+    )
+    level: str = Field(
+        description="Documentation level slug: a stable enum in {none, sketch, partial, "
+        "good, very_good, complete}, never display text (D-09)"
+    )
+
+
 class PlaceSummaryOut(BaseModel):
     """A place in a search result list."""
 
@@ -23,6 +40,9 @@ class PlaceSummaryOut(BaseModel):
     lng: float | None = None
     distance: float | None = None
     operating_status: str
+    documentation: DocumentationOut | None = Field(
+        default=None, description="Documentation level derived from filled_rate"
+    )
 
     @classmethod
     def from_place(cls, place: Place, distance: float | None = None) -> PlaceSummaryOut:
@@ -153,8 +173,18 @@ class PlaceDetailOut(PlaceSummaryOut):
     @classmethod
     def from_detail(cls, detail: PlaceDetail) -> PlaceDetailOut:
         summary = PlaceSummaryOut.from_place(detail.place)
+        documentation = detail.documentation
         return cls(
-            **summary.model_dump(),
+            **summary.model_dump(exclude={"documentation"}),
+            documentation=(
+                DocumentationOut(
+                    rate=documentation.rate,
+                    percent=documentation.percent,
+                    level=documentation.level,
+                )
+                if documentation is not None
+                else None
+            ),
             source=detail.place.source,
             license=detail.place.source_license,
             observed_at=detail.place.observed_at,
