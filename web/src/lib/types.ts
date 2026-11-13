@@ -61,10 +61,13 @@ export type ReviewPage = {
 
 export type PlaceDetail = PlaceSummary & {
   accessibility: AccessibilityValue[];
-  accessibility_by_family: Record<string, number>;
+  // Each family carries the same {rate, percent, level} shape as the overall level (D-04).
+  accessibility_by_family: Record<string, Documentation>;
   tree: TreeNode[];
   filled_rate: number;
   documentation: Documentation;
+  // The server-owned ladder the legend reads; the web never restates these bounds (D-02).
+  documentation_ladder: Array<{ slug: string; min: number; max: number }>;
   photos: Photo[];
   rating: number | null;
   review_count: number;

@@ -107,7 +107,7 @@ const MESSAGES = {
     notYetRated: "Pas encore noté",
     unspecifiedSource: "Source non précisée",
     completion: "Complétude de la fiche",
-    criteriaHaveValue: "{percent}% des critères ont une valeur.",
+    criteriaHaveValue: "{percent} % des critères ont une valeur.",
 
     // Documentation ladder (D-01, D-11): the server owns the slugs and the bounds.
     docNone: "Fiche non documentée",
@@ -117,7 +117,16 @@ const MESSAGES = {
     docVeryGood: "Fiche très documentée",
     docComplete: "Fiche complète",
     docValueText: "{level}, {percent} %",
-    reviewCountLine: "{count} avis · {percent}% de la fiche renseignée",
+    docLegendHeading: "Niveaux de documentation",
+    docLegendIntro:
+      "La complétude mesure la part des critères renseignés. Elle ne dit pas si le lieu est accessible.",
+    docBoundsRange: "{min}–{max} %",
+    docBoundsExact: "{percent} %",
+    docUndocumentedTitle: "Cette fiche n'est pas encore documentée",
+    docUndocumentedBody:
+      "Personne n'a encore renseigné cette fiche. Si vous connaissez le lieu, une seule réponse suffit à la rendre utile.",
+    docBannerCta: "Ajouter une information",
+    reviewCountLine: "{count} avis",
     photos: "Photos",
     accessibilitySection: "Accessibilité",
     completeThisRecord: "Compléter cette fiche",
@@ -329,7 +338,16 @@ const MESSAGES = {
     docVeryGood: "Very well documented",
     docComplete: "Complete record",
     docValueText: "{level}, {percent}%",
-    reviewCountLine: "{count} reviews · {percent}% of the record filled",
+    docLegendHeading: "Documentation levels",
+    docLegendIntro:
+      "Completeness measures the share of criteria that are filled in. It does not say whether the place is accessible.",
+    docBoundsRange: "{min}–{max}%",
+    docBoundsExact: "{percent}%",
+    docUndocumentedTitle: "This record is not documented yet",
+    docUndocumentedBody:
+      "No one has added information about this place yet. If you know it, one answer is enough to make it useful.",
+    docBannerCta: "Add information",
+    reviewCountLine: "{count} reviews",
     photos: "Photos",
     accessibilitySection: "Accessibility",
     completeThisRecord: "Complete this record",

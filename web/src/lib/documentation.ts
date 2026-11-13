@@ -64,3 +64,19 @@ export function levelDotClass(slug: string): string | undefined {
   const level = docLevel(slug);
   return level ? LEVEL_DOT_CLASSES[level] : undefined;
 }
+
+// The bounds the server serves with the documentation contract (D-02, D-09).
+export type LevelBounds = { slug: string; min: number; max: number };
+
+/** The server's own bounds for a level slug, or undefined when it does not serve it. */
+export function levelBounds(
+  ladder: readonly LevelBounds[],
+  slug: string,
+): LevelBounds | undefined {
+  return ladder.find((rung) => rung.slug === slug);
+}
+
+/** The served rungs in the declared ladder order, so a reordered payload cannot reorder the key. */
+export function legendEntries(ladder: readonly LevelBounds[]): LevelBounds[] {
+  return DOC_LEVELS.flatMap((slug) => levelBounds(ladder, slug) ?? []);
+}
