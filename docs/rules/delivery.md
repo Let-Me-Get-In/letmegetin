@@ -14,6 +14,12 @@ delivers. The rest — branches, commits, pull requests, stacks — is unchanged
   because the PR finishes it.
 - **If a merge closes a ticket with work left**, reopen it and file the remainder
   the same day. That is the most common drift.
+- **A phase or milestone closure files its residuals the same day.** Whatever the
+  phase knowingly leaves — a skipped audit, a measurement not taken, a counter
+  deferred to the next phase — becomes **one ticket per residual**, linked
+  `related` to the phase ticket, before the phase is marked complete. A
+  `Deferred Ideas` entry in `.planning/` is not a tracker item: it is invisible to
+  the board and dies with the branch.
 - **Everything written in the tracker is in English.**
 
 ### With Linear
