@@ -23,7 +23,9 @@ name: main guard
 #                       the logic below is identical on both entry points, so a
 #                       dispatch cannot turn a red detection green.
 #
-# Prerequisite, per calling repository: a repository secret `DISCORD_WEBHOOK`
+# Prerequisite, per calling repository: a repository secret `DISCORD_DEPLOY_WEBHOOK`
+# holding the webhook of the **deploy** channel — deliberately a different channel from
+# the alerts (`ALERT_WEBHOOK`), so a guard notice never interrupts an incident.
 # holding the Discord channel webhook URL (the config repository already keeps
 # that value as Infisical's ALERT_WEBHOOK). A missing secret fails the run loudly
 # instead of reporting nowhere.
@@ -43,7 +45,7 @@ on:
         required: false
         default: ""
     secrets:
-      DISCORD_WEBHOOK:
+      DISCORD_DEPLOY_WEBHOOK:
         description: Discord channel webhook URL the detection posts to.
         required: true
   workflow_dispatch:
@@ -68,7 +70,7 @@ jobs:
       # The one resolved commit both entry points operate on.
       COMMIT_SHA: ${{ inputs.commit_sha || github.sha }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      DISCORD_DEPLOY_WEBHOOK: ${{ secrets.DISCORD_DEPLOY_WEBHOOK }}
     steps:
       - name: Check the commit for a merged pull request
         run: |
@@ -120,8 +122,8 @@ jobs:
 
           # Checked, not defaulted: an absent webhook fails the run loudly
           # instead of reporting nowhere.
-          if [ -z "${DISCORD_WEBHOOK:-}" ]; then
-            echo "::error::The main guard detects $COMMIT_SHA on $REPO with no merged pull request (author $author) but DISCORD_WEBHOOK is not set, so it cannot report it — add the repository secret."
+          if [ -z "${DISCORD_DEPLOY_WEBHOOK:-}" ]; then
+            echo "::error::The main guard detects $COMMIT_SHA on $REPO with no merged pull request (author $author) but DISCORD_DEPLOY_WEBHOOK is not set, so it cannot report it — add the repository secret."
             exit 1
           fi
 
@@ -144,7 +146,7 @@ jobs:
           posted=no
           if printf '%s' "$payload" | curl -fsS -m 20 -X POST \
             -A 'letmegetin-main-guard/1.0' \
-            -H 'Content-Type: application/json' --data @- "$DISCORD_WEBHOOK" >/dev/null; then
+            -H 'Content-Type: application/json' --data @- "$DISCORD_DEPLOY_WEBHOOK" >/dev/null; then
             posted=yes
           fi
 
