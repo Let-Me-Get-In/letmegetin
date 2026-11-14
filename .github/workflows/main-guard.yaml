@@ -23,12 +23,17 @@ name: main guard
 #                       the logic below is identical on both entry points, so a
 #                       dispatch cannot turn a red detection green.
 #
-# Prerequisite, per calling repository: a repository secret `DISCORD_DEPLOY_WEBHOOK`
-# holding the webhook of the **deploy** channel — deliberately a different channel from
-# the alerts (`ALERT_WEBHOOK`), so a guard notice never interrupts an incident.
-# holding the Discord channel webhook URL (the config repository already keeps
-# that value as Infisical's ALERT_WEBHOOK). A missing secret fails the run loudly
-# instead of reporting nowhere.
+# Prerequisites, per calling repository:
+#   secrets    INFISICAL_CLIENT_ID, INFISICAL_CLIENT_SECRET (machine identity)
+#   variables  INFISICAL_PROJECT_ID
+#   input      infisical_domain (default https://eu.infisical.com)
+# The webhook itself is `DISCORD_DEPLOY_WEBHOOK` in Infisical (environment `prod`,
+# path `/`) and belongs to a **deploy** channel of its own — never the alerts
+# channel (`ALERT_WEBHOOK`), so a guard notice does not land in an incident.
+#
+# The notification is best effort and never decides the verdict: the CLI install
+# and the login are `continue-on-error`, and an unreachable Infisical turns a
+# detection into "cannot report it" — still a red run, never a green one.
 #
 # Permissions here are the callee's ceiling only: GitHub caps a called
 # workflow's token at what the caller grants, so every caller stub's job declares
@@ -44,9 +49,21 @@ on:
         type: string
         required: false
         default: ""
+      infisical_project_id:
+        description: Infisical project holding DISCORD_DEPLOY_WEBHOOK.
+        type: string
+        required: true
+      infisical_domain:
+        description: Infisical domain (EU Cloud or self-hosted).
+        type: string
+        required: false
+        default: https://eu.infisical.com
     secrets:
-      DISCORD_DEPLOY_WEBHOOK:
-        description: Discord channel webhook URL the detection posts to.
+      INFISICAL_CLIENT_ID:
+        description: Machine identity client id.
+        required: true
+      INFISICAL_CLIENT_SECRET:
+        description: Machine identity client secret.
         required: true
   workflow_dispatch:
     inputs:
@@ -70,8 +87,40 @@ jobs:
       # The one resolved commit both entry points operate on.
       COMMIT_SHA: ${{ inputs.commit_sha || github.sha }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      DISCORD_DEPLOY_WEBHOOK: ${{ secrets.DISCORD_DEPLOY_WEBHOOK }}
+      # A caller passes the input; a diagnostic dispatch has none and falls back
+      # to this repository's variable, so the smoke run works here.
+      INFISICAL_PROJECT_ID: ${{ inputs.infisical_project_id || vars.INFISICAL_PROJECT_ID }}
+      INFISICAL_DOMAIN: ${{ inputs.infisical_domain || 'https://eu.infisical.com' }}
+      INFISICAL_CLIENT_ID: ${{ secrets.INFISICAL_CLIENT_ID }}
+      INFISICAL_CLIENT_SECRET: ${{ secrets.INFISICAL_CLIENT_SECRET }}
     steps:
+      # Pinned like every other action here. continue-on-error: the notification
+      # is best effort, so a missing CLI must not fail a run whose commit *did*
+      # come from a merged pull request.
+      - name: Install the Infisical CLI
+        continue-on-error: true
+        run: |
+          curl -sSfL "https://github.com/Infisical/cli/releases/download/v0.44.13/cli_0.44.13_linux_amd64.tar.gz" \
+            | tar xz -C "$RUNNER_TEMP" infisical
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+
+      # --domain is mandatory: without it the CLI talks to US Cloud and the EU
+      # identity is unknown there.
+      - name: Log in with the machine identity
+        continue-on-error: true
+        run: |
+          token=$(infisical login --method=universal-auth \
+            --client-id "$INFISICAL_CLIENT_ID" \
+            --client-secret "$INFISICAL_CLIENT_SECRET" \
+            --domain "$INFISICAL_DOMAIN" \
+            --silent --plain) || exit 0
+          if [ -z "${token:-}" ]; then
+            echo "::warning::Infisical login returned no token; a detection will be reported as unnotified."
+            exit 0
+          fi
+          echo "::add-mask::$token"
+          printf 'INFISICAL_TOKEN=%s\n' "$token" >> "$GITHUB_ENV"
+
       - name: Check the commit for a merged pull request
         run: |
           set -uo pipefail
@@ -120,10 +169,19 @@ jobs:
           ' 2>/dev/null) || author=unknown
           fi
 
-          # Checked, not defaulted: an absent webhook fails the run loudly
-          # instead of reporting nowhere.
-          if [ -z "${DISCORD_DEPLOY_WEBHOOK:-}" ]; then
-            echo "::error::The main guard detects $COMMIT_SHA on $REPO with no merged pull request (author $author) but DISCORD_DEPLOY_WEBHOOK is not set, so it cannot report it — add the repository secret."
+          # Read lazily, on the failure path only: a merged-PR commit never
+          # depends on Infisical being reachable.
+          webhook=""
+          if [ -n "${INFISICAL_TOKEN:-}" ]; then
+            webhook=$(infisical secrets get DISCORD_DEPLOY_WEBHOOK --plain \
+              --projectId "$INFISICAL_PROJECT_ID" \
+              --env prod --path / \
+              --domain "$INFISICAL_DOMAIN" \
+              --token "$INFISICAL_TOKEN" 2>/dev/null) || webhook=""
+          fi
+
+          if [ -z "$webhook" ]; then
+            echo "::error::The main guard detects $COMMIT_SHA on $REPO with no merged pull request (author $author) and cannot report it: DISCORD_DEPLOY_WEBHOOK is unreachable in Infisical (project $INFISICAL_PROJECT_ID, env prod, path /)."
             exit 1
           fi
 
@@ -146,7 +204,7 @@ jobs:
           posted=no
           if printf '%s' "$payload" | curl -fsS -m 20 -X POST \
             -A 'letmegetin-main-guard/1.0' \
-            -H 'Content-Type: application/json' --data @- "$DISCORD_DEPLOY_WEBHOOK" >/dev/null; then
+            -H 'Content-Type: application/json' --data @- "$webhook" >/dev/null; then
             posted=yes
           fi
 
