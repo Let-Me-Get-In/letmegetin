@@ -60,6 +60,7 @@ def load_licences(path: Path) -> list[Licence]:
                 name=name,
                 url=(row.get("url") or "").strip() or None,
                 obligations=[item for item in obligations if item],
+                attribution_text=(row.get("attribution_text") or "").strip() or None,
             )
         )
     return licences

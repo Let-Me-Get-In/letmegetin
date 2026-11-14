@@ -393,6 +393,8 @@ class LicenceModel(Base):
     name: Mapped[str] = mapped_column(String(255))
     url: Mapped[str | None] = mapped_column(String(500))
     obligations: Mapped[list] = mapped_column(JSONB, default=list)
+    # Reviewed sentence rendered into ATTRIBUTION.txt (D-05); nullable, cdla may carry none.
+    attribution_text: Mapped[str | None] = mapped_column(Text)
 
 
 class LicenceDestinationModel(Base):
