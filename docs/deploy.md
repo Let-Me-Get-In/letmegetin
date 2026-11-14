@@ -114,6 +114,29 @@ webhook the config repo renders from `ALERT_WEBHOOK`.
 | `ALERT_WEBHOOK` | Discord webhook — rendered to a 0600 file at deploy time, never a Compose variable |
 | `API_KEY` | leave empty for the public web; partner keys are server-side |
 
+## ODbL export
+
+The partner export is generated on the host and served by the API from one named volume:
+
+- The operator CLI writes `latest.json` and the snapshot/delta ZIPs into the `export_data`
+  volume. The API mounts it **read-only** at `LETMEGETIN_EXPORT_DIR` (`/data/export`) and serves
+  `/api/v1/export/latest.json` and `/api/v1/export/<name>.zip` under the anonymous rate limit. It
+  never writes the directory and never generates an archive.
+- One-off generation needs the same volume read-**write**. Compose appends `-v` mounts to the
+  service's own list instead of replacing it, so `run -v …:/data/export:rw` is still refused as
+  read-only; mount the volume at a second, writable target instead and point `--out` at it:
+
+  ```bash
+  ./scripts/with-secrets.sh docker compose -p letmegetin-prod \
+    -f docker-compose.prod.yml run --rm -T \
+    -v export_data:/data/export-rw api letmegetin-admin export odbl --out /data/export-rw
+  ```
+
+  Add `--delta` for an incremental archive instead of a full snapshot. The files land in the
+  volume, so the running API serves them under `/api/v1/export/`.
+- Nothing in the volume is secret. `latest.json.lock` and the transient `.<name>.zip.tmp` files
+  sit there too; the API never serves or indexes them.
+
 ## Operations
 
 - After a deploy that changes the referential seed, fill the handicap families and

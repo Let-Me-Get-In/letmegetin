@@ -58,6 +58,14 @@ services:
       # Per IP, per minute. Defaults to the product's own limit; the development
       # values file raises it because the e2e suite drives one IP hard.
       LETMEGETIN_RATE_LIMIT_DEFAULT_RPM: ${LETMEGETIN_RATE_LIMIT_DEFAULT_RPM:-60}
+      # Where the read-only export volume lands; the operator CLI writes it.
+      LETMEGETIN_EXPORT_DIR: /data/export
+    volumes:
+      # Read-only on purpose: this process serves the export but never writes it.
+      # The one-off generation mounts the same volume at a second target
+      # (/data/export-rw) because Compose appends `-v` mounts and cannot relax
+      # this mode — see docs/deploy.md.
+      - export_data:/data/export:ro
     depends_on:
       db:
         condition: service_healthy
@@ -118,3 +126,6 @@ networks:
 
 volumes:
   pgdata:
+  # The served ODbL export (latest.json + snapshot/delta ZIPs), written by the
+  # host generation and mounted read-only into api.
+  export_data:
