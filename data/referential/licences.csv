@@ -1,4 +1,4 @@
-slug;name;url;obligations
-lov2;Licence Ouverte v2.0 (Etalab 2.0);https://www.etalab.gouv.fr/licence-ouverte-open-licence/;attribution
-odbl;Open Database License 1.0;https://opendatacommons.org/licenses/odbl/1-0/;attribution|share_alike|keep_open
-cdla;Community Data License Agreement - Permissive 2.0;https://cdla.dev/permissive-2-0/;
+slug;name;url;obligations;attribution_text
+lov2;Licence Ouverte v2.0 (Etalab 2.0);https://www.etalab.gouv.fr/licence-ouverte-open-licence/;attribution;« Source » : nom du producteur et date de dernière mise à jour.
+odbl;Open Database License 1.0;https://opendatacommons.org/licenses/odbl/1-0/;attribution|share_alike|keep_open;© contributeurs — base de données sous ODbL 1.0 : toute base dérivée reste sous ODbL (partage à l'identique) et doit rester ouverte tant qu'elle est utilisée.
+cdla;Community Data License Agreement - Permissive 2.0;https://cdla.dev/permissive-2-0/;;Contains data provided by the data provider(s) under CDLA-Permissive 2.0.
