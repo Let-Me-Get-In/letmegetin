@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import csv
 import io
 from datetime import date, datetime
@@ -13,6 +14,7 @@ from letmegetin.application.places.attribution import (
     PRODUCED_WORKS_SENTENCE,
     render_source_line,
 )
+from letmegetin.core.exceptions import DomainError
 from letmegetin.domain.places.export_plan import (
     ANSWERS_FILE,
     ANSWERS_HEADER,
@@ -277,3 +279,21 @@ def test_every_row_type_serialises_in_its_header_order() -> None:
     assert category.to_csv()[0] == 1
     assert criterion.to_csv()[6] == '["moteur"]'
     assert alias.to_csv() == (9, 3)
+
+
+class _EmptyMatrix:
+    """An export repository whose reviewed licence matrix was never loaded."""
+
+    async def begin_repeatable_read(self) -> None:
+        return None
+
+    async def licence_rules_count(self) -> int:
+        return 0
+
+
+def test_an_empty_licence_matrix_refuses_to_write_a_silently_empty_export(tmp_path) -> None:
+    from letmegetin.application.places.export import export_odbl
+
+    with pytest.raises(DomainError, match="licence matrix is empty"):
+        asyncio.run(export_odbl(_EmptyMatrix(), None, out=tmp_path))  # type: ignore[arg-type]
+    assert not list(tmp_path.glob("*.zip"))
