@@ -7,7 +7,7 @@
 <domain>
 ## Phase Boundary
 
-A partner can download the whole referential as ODbL — places, categories, criteria, answers — with cumulative attribution rendered inside the export. The phase also builds the append-only change journal that makes incremental delivery and per-place history possible; it does not build a web UI for that history, and it does not send anything to AccesLibre, OSM or Overture (phases 15–17).
+A partner can download the whole referential as ODbL — places, categories, criteria, answers — with attribution for the sources actually present in the export, rendered inside it. The phase also builds the append-only change journal that makes incremental delivery and per-place history possible; it does not build a web UI for that history, and it does not send anything to AccesLibre, OSM or Overture (phases 15–17).
 
 </domain>
 
