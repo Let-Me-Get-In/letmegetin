@@ -4,11 +4,11 @@ milestone: v2.0
 current_phase: 14
 current_phase_name: Open ODbL export
 status: planning
-stopped_at: Phase 14 planned — 5 plans, 0 blockers after 3 review rounds
-last_updated: "2026-11-14T20:29:21.049Z"
+stopped_at: Phase 14 context revised — 5 decisions reopened, plans now stale
+last_updated: "2026-11-14T20:52:30.867Z"
 last_activity: 2026-11-14
 last_activity_desc: Phase 13 complete, transitioned to Phase 14
-state_head: 6c7dd5bdb10f5a955dfe884e9985d5718c9a7e51
+state_head: 8170cc3d66bb10d60cf3b48dcd5f4e450afee058
 progress:
   total_phases: 6
   completed_phases: 2
@@ -110,9 +110,9 @@ Last activity: 2026-11-14 — Phase 13 complete, transitioned to Phase 14
 
 ## Session Continuity
 
-Last session: 2026-11-14T20:29:20.824Z
-Stopped at: Phase 14 planned — 5 plans, 0 blockers after 3 review rounds
-Resume file: .planning/phases/14-open-odbl-export/14-01-PLAN.md
+Last session: 2026-11-14T20:52:30.640Z
+Stopped at: Phase 14 context revised — 5 decisions reopened, plans now stale
+Resume file: .planning/phases/14-open-odbl-export/14-CONTEXT.md
 
 ## Known debt
 
