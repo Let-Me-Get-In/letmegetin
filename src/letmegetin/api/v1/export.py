@@ -40,6 +40,8 @@ async def get_export_latest() -> JSONResponse:
 @router.get(
     "/export/{name}.zip",
     summary="Download an ODbL export archive",
+    response_class=FileResponse,
+    responses={200: {"description": "The archive.", "content": {"application/zip": {}}}},
     description=(
         "A snapshot, delta or catch-up archive from the export directory. The name must be a "
         "plain file name: a separator, `..`, a dotfile, the lock or a temp file is refused with "

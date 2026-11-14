@@ -2,8 +2,16 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
+from letmegetin.application.places.attribution import (
+    FORWARD_LOOKING_SENTENCE,
+    PRODUCED_WORKS_SENTENCE,
+)
 from letmegetin.domain.places.documentation import DOCUMENTATION_LADDER
 from letmegetin.main import app
+
+_PUBLIC_API_DOC = Path(__file__).resolve().parents[3] / "docs" / "public-api.md"
 
 
 def test_openapi_exposes_the_public_contract() -> None:
@@ -13,11 +21,24 @@ def test_openapi_exposes_the_public_contract() -> None:
     assert "/api/v1/places/{slug}" in schema["paths"]
     assert "/api/v1/places/{slug}/reviews" in schema["paths"]
     assert "/api/v1/categories/{slug}/grid" in schema["paths"]
+    assert "/api/v1/export/latest.json" in schema["paths"]
+    assert "/api/v1/export/{name}.zip" in schema["paths"]
+
+    archive_ok = schema["paths"]["/api/v1/export/{name}.zip"]["get"]["responses"]["200"]
+    assert "application/zip" in archive_ok["content"]
 
     schemes = schema["components"]["securitySchemes"]
     assert schemes["APIKeyHeader"]["type"] == "apiKey"
     assert schemes["APIKeyHeader"]["in"] == "header"
     assert schemes["APIKeyHeader"]["name"] == "X-API-Key"
+
+
+def test_public_api_documents_the_shared_attribution_sentences() -> None:
+    """I2: the partner document and ATTRIBUTION.txt read one shared constant, not two copies."""
+    markdown = _PUBLIC_API_DOC.read_text(encoding="utf-8")
+
+    assert PRODUCED_WORKS_SENTENCE in markdown
+    assert FORWARD_LOOKING_SENTENCE in markdown
 
 
 def test_openapi_documents_the_documentation_contract() -> None:
