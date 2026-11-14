@@ -11,7 +11,9 @@ from datetime import datetime
 
 import pytest
 from sqlalchemy import select
+from typer.testing import CliRunner
 
+from letmegetin import admin
 from letmegetin.domain.places.entities import Place
 from letmegetin.infrastructure.persistence.export_repositories import (
     SqlAlchemyExportEventRepository,
@@ -373,3 +375,17 @@ def test_safe_seq_publishes_an_event_only_after_its_transaction_commits(db: None
 
     assert before < seq, "an in-flight transaction must not be published"
     assert after >= seq, "the committed event must be published"
+
+
+def test_place_history_prints_both_events_in_seq_order(db: None) -> None:
+    place = run(_add("history", "Lieu Histoire Avant"))
+    run(_rename(place.id, "Lieu Histoire Après"))
+
+    result = CliRunner().invoke(admin.app, ["place", "history", place.slug])
+
+    assert result.exit_code == 0, result.output
+    lines = result.output.strip().splitlines()
+    assert len(lines) == 2
+    assert "insert" in lines[0]
+    assert "update" in lines[1]
+    assert "name=Lieu Histoire Après" in lines[1]
