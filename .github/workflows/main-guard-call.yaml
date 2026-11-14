@@ -1,0 +1,46 @@
+name: main guard
+
+# The caller side of the guard. The logic lives only in
+# Let-Me-Get-In/letmegetin's `main-guard.yaml`; this file is a stub, so no copy
+# of it can drift between repositories.
+#
+# `uses:` is pinned to a full 40-hex commit SHA. A branch or tag can be
+# re-pointed after review, which would silently swap the guard for anything
+# else; `just main-guard` refuses an unpinned ref.
+#
+# `permissions:` sits on the job, not only in the called workflow, because
+# GitHub caps a called workflow's token at what the caller grants: without
+# `pull-requests: read` here the `/commits/{sha}/pulls` lookup 403s on this
+# private repository and the guard cannot tell a merged head from a pushed one.
+# `contents: read` reads the commit's author for the Discord post.
+#
+#   secrets:   INFISICAL_CLIENT_ID, INFISICAL_CLIENT_SECRET
+#   variables: INFISICAL_PROJECT_ID
+# The webhook itself is `DISCORD_DEPLOY_WEBHOOK` in Infisical, read at post
+# time: no copy of it lives here.
+
+on:
+  push:
+    branches: [main]
+  # A diagnostic: name a commit for inspection without pushing to `main`.
+  workflow_dispatch:
+
+concurrency:
+  group: main-guard
+  # Never cancel: a detection run that was cancelled reports nothing.
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: guard
+    permissions:
+      contents: read
+      pull-requests: read
+    # The merge commit of PR #75 on letmegetin's `main` — the commit that
+    # brought `main-guard.yaml` in. Never a branch, never a tag.
+    uses: Let-Me-Get-In/letmegetin/.github/workflows/main-guard.yaml@9bf3070226d85c8e19534aadef4fbad8b6a88287
+    with:
+      infisical_project_id: ${{ vars.INFISICAL_PROJECT_ID }}
+    secrets:
+      INFISICAL_CLIENT_ID: ${{ secrets.INFISICAL_CLIENT_ID }}
+      INFISICAL_CLIENT_SECRET: ${{ secrets.INFISICAL_CLIENT_SECRET }}
