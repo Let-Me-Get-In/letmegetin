@@ -72,7 +72,8 @@ Plans:
 - [ ] 14-05-PLAN.md — Production generation: `scripts/export-odbl.sh` wrapper (snapshot|delta) + weekly/daily systemd units + `workflow_dispatch` (D-12)
 
 Notes:
-- Retention/pruning of old daily delta ZIPs (keep N) is deferred — tracked as a follow-up on LET-72 (see 14-05).
+- Retention is in scope: `export_event` is pruned to the previous snapshot boundary and delta ZIPs older than the last snapshot are removed (D-15).
+- Answer remapping for merged places, and present-sources-only attribution, were decided in the 2026-11-14 review (D-04, D-05).
 
 ### Phase 15: AccesLibre round trip
 **Goal**: Owned rows flow back to AccesLibre as a lov2 feed, and our answers push to their API idempotently.
