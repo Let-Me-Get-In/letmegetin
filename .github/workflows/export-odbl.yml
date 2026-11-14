@@ -1,0 +1,42 @@
+name: ODbL export
+
+# On-demand generation on the host. Only the host SSH connection lives in
+# Actions: the database credential and every API secret stay in Infisical, read
+# on the host by scripts/with-secrets.sh.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "snapshot = new baseline (prunes the journal); delta = the window since the watermark"
+        type: choice
+        options: [delta, snapshot]
+        default: delta
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    name: Generate on the host
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run the export wrapper over SSH
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          # The host public key is public data, so it is a repository variable,
+          # not a secret; unset, the action does not verify the host key.
+          fingerprint: ${{ vars.DEPLOY_HOST_FINGERPRINT }}
+          # A snapshot streams every answer row; the default 10m is too short.
+          command_timeout: 2h
+          envs: MODE=${{ inputs.mode }}
+          script: |
+            set -eu
+            case "$MODE" in
+              snapshot|delta) ;;
+              *) echo "unexpected mode: $MODE" >&2; exit 2 ;;
+            esac
+            cd /opt/letmegetin
+            ./scripts/with-secrets.sh ./scripts/export-odbl.sh "$MODE"
