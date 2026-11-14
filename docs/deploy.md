@@ -116,26 +116,86 @@ webhook the config repo renders from `ALERT_WEBHOOK`.
 
 ## ODbL export
 
-The partner export is generated on the host and served by the API from one named volume:
+The partner export is generated on the host and served by the API from one named volume,
+`export_data`:
 
-- The operator CLI writes `latest.json` and the snapshot/delta ZIPs into the `export_data`
-  volume. The API mounts it **read-only** at `LETMEGETIN_EXPORT_DIR` (`/data/export`) and serves
+- The operator CLI writes `latest.json` and the snapshot/delta ZIPs into the volume. The API
+  mounts it **read-only** at `LETMEGETIN_EXPORT_DIR` (`/data/export`) and serves
   `/api/v1/export/latest.json` and `/api/v1/export/<name>.zip` under the anonymous rate limit. It
   never writes the directory and never generates an archive.
 - One-off generation needs the same volume read-**write**. Compose appends `-v` mounts to the
   service's own list instead of replacing it, so `run -v …:/data/export:rw` is still refused as
-  read-only; mount the volume at a second, writable target instead and point `--out` at it:
+  read-only; `scripts/export-odbl.sh` mounts the volume at a second, writable target and points
+  `--out` at it:
 
   ```bash
-  ./scripts/with-secrets.sh docker compose -p letmegetin-prod \
-    -f docker-compose.prod.yml run --rm -T \
-    -v export_data:/data/export-rw api letmegetin-admin export odbl --out /data/export-rw
+  # what the wrapper runs, once per generation
+  docker compose -p letmegetin-prod -f docker-compose.prod.yml \
+    run --rm -T -v export_data:/data/export-rw api \
+    letmegetin-admin export odbl --out /data/export-rw [--delta]
   ```
 
-  Add `--delta` for an incremental archive instead of a full snapshot. The files land in the
-  volume, so the running API serves them under `/api/v1/export/`.
 - Nothing in the volume is secret. `latest.json.lock` and the transient `.<name>.zip.tmp` files
   sit there too; the API never serves or indexes them.
+
+### Generation — wrapper and timers
+
+`scripts/export-odbl.sh {snapshot|delta}` is the generation entry point. It bakes in no secret and
+is always run under `scripts/with-secrets.sh`:
+
+```bash
+./scripts/with-secrets.sh ./scripts/export-odbl.sh snapshot   # weekly
+./scripts/with-secrets.sh ./scripts/export-odbl.sh delta      # daily
+```
+
+`delta` passes `--delta`: the export command reads the watermark from `latest.json` under its own
+`flock` and advances it only after the delta ZIP is written and fsynced, so a failed run re-emits
+the same window and a delta is never cumulative. `--since <snapshot_seq>` remains the cumulative
+catch-up for a partner who lost a delta, and is refused below `retention_floor_seq`.
+
+Two timers, each with its own service, because the mode is the `ExecStart` argument
+(`deploy/systemd/`):
+
+| Timer | Schedule | Service `ExecStart` |
+|---|---|---|
+| `letmegetin-export-odbl-snapshot.timer` | `OnCalendar=Mon *-*-* 04:00:00` | `ExecStart=/opt/letmegetin/scripts/with-secrets.sh /opt/letmegetin/scripts/export-odbl.sh snapshot` |
+| `letmegetin-export-odbl-delta.timer` | `OnCalendar=*-*-* 03:15:00` | `ExecStart=/opt/letmegetin/scripts/with-secrets.sh /opt/letmegetin/scripts/export-odbl.sh delta` |
+
+The services are `Type=oneshot` and the timers carry `Persistent=true`, so a host that was down at
+the scheduled time runs the unit on the next boot. Enable them once:
+
+```bash
+systemctl enable --now letmegetin-export-odbl-snapshot.timer letmegetin-export-odbl-delta.timer
+```
+
+### On demand — GitHub Actions
+
+`.github/workflows/export-odbl.yml` is `workflow_dispatch` only, with a `delta`/`snapshot` choice:
+it SSHes to the host and runs the same wrapper. No database credential and no API secret ever
+enters Actions — only the SSH connection does; the database and API secrets are read on the host by
+`with-secrets.sh`.
+
+Prerequisites before the first run:
+
+- `DEPLOY_HOST` (host name), `DEPLOY_USER` (SSH user) and `DEPLOY_SSH_KEY` (private host key) as
+  **Actions secrets**;
+- `DEPLOY_HOST_FINGERPRINT` (the host's SHA256 public-key fingerprint) as a repository
+  **variable** — public data, not a secret. Set it: the action then refuses a host whose key does
+  not match. Unset, the action does not verify the host key at all;
+- the host firewall allowlists the Actions runner IP for the run and closes it after
+  ([rules/deploy.md](rules/deploy.md) — "SSH closed by default", no standing `0.0.0.0/0` rule,
+  host keys verified).
+
+### Retention and the import
+
+- **Retention is automatic; there is no separate export job.** After each snapshot the export
+  command prunes `export_event` to the **previous** snapshot boundary — never the current one, so a
+  replay from either of the last two snapshots stays possible — and deletes the delta ZIPs the new
+  snapshot subsumes plus any orphan `delta-*.zip`, all inside the same `flock`. `letmegetin-retention`
+  is a different job (refresh tokens, idempotency keys).
+- **The AccesLibre import is untouched and stays atomic.** It commits the whole run in a single
+  transaction, exactly as before: the MVCC boundary removed the per-transaction event cap, so there
+  is no chunking and no resumability contract to honour.
 
 ## Operations
 
