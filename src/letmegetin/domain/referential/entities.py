@@ -103,6 +103,9 @@ class Licence:
     name: str
     url: str | None = None
     obligations: list[str] = field(default_factory=list)
+    # The reviewed sentence the licence requires in an ATTRIBUTION file (D-05); empty is
+    # allowed (cdla asks for none) and never invented here.
+    attribution_text: str | None = None
 
 
 @dataclass
