@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from datetime import datetime
+from typing import Any
 
 from geoalchemy2 import Geography
 from sqlalchemy import ColumnElement, and_, delete, func, or_, select, update
@@ -30,6 +31,7 @@ from letmegetin.domain.places.entities import (
     Review,
     ReviewDecision,
 )
+from letmegetin.domain.places.export import _jsonable
 from letmegetin.domain.places.repositories import DEFAULT_CANDIDATE_RADIUS
 from letmegetin.domain.referential.entities import (
     AccessibilityFilter,
@@ -60,6 +62,7 @@ from letmegetin.infrastructure.persistence.models import (
     ContributionModel,
     CriterionModel,
     CriterionVocabularyModel,
+    ExportEventModel,
     IdempotencyKeyModel,
     OtherInformationModel,
     PlaceAccessibilityModel,
@@ -328,6 +331,61 @@ def _point(lat: float, lng: float) -> object:
     return func.ST_SetSRID(func.ST_MakePoint(lng, lat), 4326).cast(Geography)
 
 
+# The referential state a journal event snapshots: ``location`` is derived from lat/lng,
+# ``name_normalized`` from name, and created/updated are bookkeeping (I-PAYLOAD).
+_PLACE_PAYLOAD_COLUMNS = (
+    "id",
+    "source",
+    "source_id",
+    "name",
+    "slug",
+    "category_id",
+    "source_category",
+    "address_full",
+    "city",
+    "postal_code",
+    "country_code",
+    "lat",
+    "lng",
+    "operating_status",
+    "website",
+    "phone",
+    "canonical_id",
+    "duplicate_of_id",
+    "confidence",
+    "source_license",
+    "source_url",
+    "retrieved_at",
+    "observed_at",
+)
+
+# A re-submitted identical answer changes none of these, so it appends nothing (D-08).
+_ANSWER_IDENTITY = ("value", "source", "source_license", "observed_at")
+
+
+def _row_value(row: object, name: str) -> Any:
+    return row.get(name) if isinstance(row, Mapping) else getattr(row, name)
+
+
+def _place_payload(row: Any) -> dict[str, object]:
+    """The full post-write place row, JSONB-safe, as the journal stores it (D-07)."""
+    return _jsonable({name: _row_value(row, name) for name in _PLACE_PAYLOAD_COLUMNS})
+
+
+def _answer_unchanged(existing: object, written: Any) -> bool:
+    return all(_row_value(existing, name) == written[name] for name in _ANSWER_IDENTITY)
+
+
+def _place_update_events(
+    rows: Sequence[Any],
+) -> list[tuple[str, int, str, str, dict[str, object]]]:
+    """One journal event per place a bulk write touched, from its RETURNING rows (W-N+1)."""
+    return [
+        ("place", int(row["id"]), "update", f"importer:{row['source']}", _place_payload(row))
+        for row in rows
+    ]
+
+
 _USER_SOURCE = "user"
 
 
@@ -562,6 +620,25 @@ class SqlAlchemyPlaceRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
+    async def _append_export_events(
+        self, events: Sequence[tuple[str, int, str, str, dict[str, object]]]
+    ) -> None:
+        # Fail-closed: if this flush raises the whole write rolls back. A committed write
+        # with no journal event is a partner-visible gap, worse than a failed write (D-08).
+        for entity, entity_id, op, actor, payload in events:
+            self._session.add(
+                ExportEventModel(
+                    entity=entity, entity_id=entity_id, op=op, actor=actor, payload=payload
+                )
+            )
+        if events:
+            await self._session.flush()
+
+    async def _append_export_event(
+        self, entity: str, entity_id: int, op: str, actor: str, payload: dict[str, object]
+    ) -> None:
+        await self._append_export_events([(entity, entity_id, op, actor, payload)])
+
     async def get_by_id(self, place_id: int) -> Place | None:
         row = await self._session.get(PlaceModel, place_id)
         return place_from_model(row) if row is not None else None
@@ -614,15 +691,23 @@ class SqlAlchemyPlaceRepository:
 
     async def reassign_category(self, source_category: str, category_id: int) -> int:
         """Re-resolve one imported label without re-reading the national export."""
-        result = await self._session.execute(
-            update(PlaceModel)
-            .where(
-                PlaceModel.source_category == source_category,
-                PlaceModel.category_id.is_(None),
+        rows = (
+            (
+                await self._session.execute(
+                    update(PlaceModel)
+                    .where(
+                        PlaceModel.source_category == source_category,
+                        PlaceModel.category_id.is_(None),
+                    )
+                    .values(category_id=category_id)
+                    .returning(*PlaceModel.__table__.columns)
+                )
             )
-            .values(category_id=category_id)
+            .mappings()
+            .all()
         )
-        return int(getattr(result, "rowcount", 0) or 0)
+        await self._append_export_events(_place_update_events(rows))
+        return len(rows)
 
     async def list_for_dedup(self, limit: int | None = None) -> list[DedupRow]:
         query = (
@@ -651,21 +736,40 @@ class SqlAlchemyPlaceRepository:
         ]
 
     async def set_duplicate_candidate(self, place_id: int, candidate_id: int, score: float) -> None:
-        await self._session.execute(
-            update(PlaceModel)
-            .where(PlaceModel.id == place_id)
-            .values(duplicate_of_id=candidate_id, confidence=round(score, 3))
+        rows = (
+            (
+                await self._session.execute(
+                    update(PlaceModel)
+                    .where(PlaceModel.id == place_id)
+                    .values(duplicate_of_id=candidate_id, confidence=round(score, 3))
+                    .returning(*PlaceModel.__table__.columns)
+                )
+            )
+            .mappings()
+            .all()
         )
+        await self._append_export_events(_place_update_events(rows))
 
     async def clear_duplicate_candidates(self) -> int:
         # Only undecided rows: a merge set canonical_id and a reject already cleared
         # duplicate_of_id, so neither can be resurrected by a later recompute.
-        result = await self._session.execute(
-            update(PlaceModel)
-            .where(PlaceModel.canonical_id.is_(None), PlaceModel.duplicate_of_id.is_not(None))
-            .values(duplicate_of_id=None, confidence=None)
+        rows = (
+            (
+                await self._session.execute(
+                    update(PlaceModel)
+                    .where(
+                        PlaceModel.canonical_id.is_(None),
+                        PlaceModel.duplicate_of_id.is_not(None),
+                    )
+                    .values(duplicate_of_id=None, confidence=None)
+                    .returning(*PlaceModel.__table__.columns)
+                )
+            )
+            .mappings()
+            .all()
         )
-        return int(getattr(result, "rowcount", 0) or 0)
+        await self._append_export_events(_place_update_events(rows))
+        return len(rows)
 
     async def list_pending_reviews(
         self, limit: int = 50, min_confidence: float | None = None
@@ -710,10 +814,16 @@ class SqlAlchemyPlaceRepository:
         model = await self._session.get(PlaceModel, place_id)
         if model is None:
             raise DomainError(f"place #{place_id} is not persisted")
+        before = (model.canonical_id, model.duplicate_of_id, model.operating_status)
         model.canonical_id = canonical_id
         model.duplicate_of_id = duplicate_of_id
         model.operating_status = operating_status
         await self._session.flush()
+        if (canonical_id, duplicate_of_id, operating_status) != before:
+            op = "merge" if canonical_id is not None else "update"
+            await self._append_export_event(
+                "place", place_id, op, "operator", _place_payload(model)
+            )
         return place_from_model(model)
 
     async def add_review_decision(self, decision: ReviewDecision) -> None:
@@ -775,6 +885,9 @@ class SqlAlchemyPlaceRepository:
         )
         self._session.add(model)
         await self._session.flush()
+        await self._append_export_event(
+            "place", model.id, "insert", f"importer:{model.source}", _place_payload(model)
+        )
         return place_from_model(model)
 
     async def update(self, place: Place) -> Place:
@@ -803,6 +916,9 @@ class SqlAlchemyPlaceRepository:
         model.retrieved_at = place.retrieved_at or model.retrieved_at
         model.observed_at = place.observed_at or model.observed_at
         await self._session.flush()
+        await self._append_export_event(
+            "place", model.id, "update", f"importer:{model.source}", _place_payload(model)
+        )
         return place_from_model(model)
 
     async def list_near(
@@ -966,7 +1082,9 @@ class SqlAlchemyPlaceRepository:
                 await self._session.execute(
                     select(
                         PlaceAccessibilityModel.criterion_id,
+                        PlaceAccessibilityModel.value,
                         PlaceAccessibilityModel.source,
+                        PlaceAccessibilityModel.source_license,
                         PlaceAccessibilityModel.observed_at,
                     ).where(
                         PlaceAccessibilityModel.place_id == place_id,
@@ -1016,21 +1134,42 @@ class SqlAlchemyPlaceRepository:
         if not accepted:
             return
         statement = insert(PlaceAccessibilityModel).values(accepted)
-        await self._session.execute(
-            statement.on_conflict_do_update(
-                index_elements=[
-                    PlaceAccessibilityModel.place_id,
-                    PlaceAccessibilityModel.criterion_id,
-                ],
-                set_={
-                    "value": statement.excluded.value,
-                    "source": statement.excluded.source,
-                    "source_license": statement.excluded.source_license,
-                    "observed_at": statement.excluded.observed_at,
-                    "recorded_at": func.now(),
-                    "actor": statement.excluded.actor,
-                },
+        written = (
+            (
+                await self._session.execute(
+                    statement.on_conflict_do_update(
+                        index_elements=[
+                            PlaceAccessibilityModel.place_id,
+                            PlaceAccessibilityModel.criterion_id,
+                        ],
+                        set_={
+                            "value": statement.excluded.value,
+                            "source": statement.excluded.source,
+                            "source_license": statement.excluded.source_license,
+                            "observed_at": statement.excluded.observed_at,
+                            "recorded_at": func.now(),
+                            "actor": statement.excluded.actor,
+                        },
+                    ).returning(*PlaceAccessibilityModel.__table__.columns)
+                )
             )
+            .mappings()
+            .all()
+        )
+        slugs = {criterion_id: slug for criterion_id, slug in rows}
+        await self._append_export_events(
+            [
+                (
+                    "place_accessibility",
+                    place_id,
+                    "insert" if row["criterion_id"] not in current else "update",
+                    actor,
+                    _jsonable({**dict(row), "criterion_slug": slugs[row["criterion_id"]]}),
+                )
+                for row in written
+                if (existing := current.get(row["criterion_id"])) is None
+                or not _answer_unchanged(existing, row)
+            ]
         )
 
     async def upsert_photos(self, place_id: int, photos: Sequence[PlacePhoto]) -> None:
