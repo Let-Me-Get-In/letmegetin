@@ -1,7 +1,7 @@
 # Public API v1
 
 Base URL: `https://api.letmegetin.org/api/v1` (a local instance uses `http://localhost:8000`).
-Interactive docs: `/docs`; machine schema: `/openapi.json`; this file: `docs/openapi.json`.
+Interactive docs: `/docs`; machine schema: `/openapi.json`; generated schema in the repo: `docs/openapi.json`.
 
 ## Authentication
 
@@ -48,6 +48,8 @@ worker count) if Redis is unavailable. Behind Caddy the client IP is read from
 | GET | `/categories/{slug}/criteria` | Criteria tree (ids included) |
 | GET | `/categories/{slug}/grid` | Precomputed grid, `ETag`, `304` |
 | GET | `/filters`, `/other-information` | Search filters, official labels |
+| GET | `/export/latest.json` | Current ODbL snapshot pointer, watermark, retention floor and available deltas |
+| GET | `/export/{name}.zip` | One snapshot, delta or catch-up ODbL export archive |
 
 The `category` value of `/places` is a slug from `GET /api/v1/categories`; an unknown slug is
 `422`, like an unknown `family`.
@@ -149,6 +151,175 @@ Writes: `POST /auth/register|login|refresh|logout|verify-email|resend-verificati
 `PUT /places/{slug}/accessibility/{criterion}` and `POST /places/{slug}/reviews` (bearer token,
 verified email); `PATCH /reviews/{id}` (admin).
 
+## ODbL export
+
+The whole referential is also published as an ODbL export, independently of the JSON API. The
+operator generates the archives on the host (`letmegetin-admin export odbl`); the API only reads
+the export directory and serves what is there. Nothing is built per request and there is no
+authentication beyond the normal anonymous quota (or a partner key's quota).
+
+| Method | Path | Cache | Purpose |
+|---|---|---|---|
+| GET | `/export/latest.json` | `max-age=300` | Current snapshot pointer, delta watermark, retention floor and available deltas |
+| GET | `/export/{name}.zip` | `max-age=3600` | One snapshot, delta or catch-up archive, `application/zip` |
+
+A missing index, an unknown archive and an unusable name all answer `404` with the same body —
+never `503` — so the routes are not an oracle for which files exist. `latest.json` is `404` until
+the first export exists, including on a deployment whose export volume is not provisioned.
+
+### What an archive holds
+
+Every archive is UTF-8, comma-separated, RFC 4180 quoted, with a header row on every file and no
+BOM. It has the same seven entries whether it is a snapshot or a delta:
+
+| Entry | Content |
+|---|---|
+| `places.csv` | One row per canonical place, including places with no answer |
+| `categories.csv` | The full category tree |
+| `criteria.csv` | The full criterion tree |
+| `answers.csv` | One winning answer per `(place_id, criterion_slug)` |
+| `aliases.csv` | Merged place id → canonical place id (the tombstone stream) |
+| `ATTRIBUTION.txt` | The sources this ZIP actually contains, plus the Produced Works notice |
+| `manifest.json` | `schema_version`, `generated_at`, `referential_version`, per-file row counts, exclusion counters and `attribution_ref` |
+
+A delta archive carries `mode`, `from_seq` and `to_seq` in its manifest; a snapshot carries none of
+the three. Read `manifest.json` first and refuse a `schema_version` major you do not know
+(currently `"1.0"`).
+
+**Places.** Only canonical places are exported. A merged place never appears as a place: it appears
+in `aliases.csv` as `alias_id → canonical_id`, and its answers are rewritten onto the canonical
+place's id in `answers.csv`. A place is never dropped because one of its answers is withheld.
+
+**Answers.** One winning answer per `(place_id, criterion_slug)`. When the canonical place itself
+holds a value for that criterion, it wins; otherwise the newest recorded answer among the merged
+places wins. An answer whose own licence (or whose canonical place's licence) does not allow
+`open_export` is omitted, and the manifest counts it — a partner always knows what was withheld.
+
+**Exclusions.** `excluded_places`, `excluded_answers` and `place_withheld_answers` are arrays of
+`{source, licence, count}`, per `(source, licence)`: canonical places withheld at place level,
+answers withheld or displaced by the winner rule, and answers absent because their canonical place
+is withheld. The counters are part of the contract, not diagnostics: they are how a partial place
+stays auditable.
+
+**Dates.** `date` is the source's own last-update claim (`observed_at`) when it declares one,
+otherwise our retrieval time for a place / recording time for an answer. `manifest.generated_at` is
+when the archive was produced, and `referential_version` identifies the referential state it holds.
+
+### Columns and origin ids
+
+```text
+places.csv:      place_id,origin_id,slug,name,category_slug,source_category,address_full,city,postal_code,country_code,lat,lng,operating_status,website,phone,source,source_license,source_url,date
+categories.csv:  category_id,slug,parent_id,parent_slug,name,label
+criteria.csv:    criterion_id,slug,parent_id,parent_slug,type,position,handicap_families,label,en17210_ref
+answers.csv:     place_id,criterion_slug,value,source,source_license,source_url,date
+aliases.csv:     alias_id,canonical_id
+```
+
+`label` (`{fr, en}`), `value` (the recorded answer object) and `handicap_families` (a list) are
+JSON text. `source_license` is the licence slug (`lov2`, `odbl`, `cdla`); `source_url` may be
+empty. `category_slug` and `criterion_slug` join to the `slug` in the referential files — do not
+join answers on the internal criterion id.
+
+The `*_id` columns are our surrogate ids. They are stable within one archive and useful for joins
+inside it, but they are **not** the origin identity. Per file, the origin id is:
+
+| File | Origin id |
+|---|---|
+| `places.csv` | the pair `(source, origin_id)` — `origin_id` is the source's own id |
+| `answers.csv` | the natural key `(place_id, criterion_slug)` — answers have no source-side surrogate id |
+| `categories.csv`, `criteria.csv` | the `slug` |
+
+### Delta contract
+
+`latest.json` is the index. It always carries the snapshot, the watermark, the retention floor and
+the delta chain as **separate** fields:
+
+```json
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-14T10:15:00.123456Z",
+  "referential_version": 42,
+  "snapshot": {"name": "export-20261114T101500123456Z-full.zip", "seq": 900},
+  "watermark": 940,
+  "retention_floor_seq": 800,
+  "deltas": [
+    {"name": "delta-20261115T101500123456Z.zip", "from_seq": 900, "to_seq": 920},
+    {"name": "delta-20261116T101500123456Z.zip", "from_seq": 920, "to_seq": 940}
+  ],
+  "attribution_ref": "ATTRIBUTION.txt"
+}
+```
+
+- `snapshot {name, seq}` — the last full snapshot and its boundary. Download that archive first.
+- `watermark` — the highest event sequence published in a delta; later rows are not published yet.
+- `retention_floor_seq` — the oldest replayable boundary; a catch-up below it is refused.
+- `deltas[]` — the deltas published since that snapshot, each `{name, from_seq, to_seq}`.
+
+The delta boundary is PostgreSQL's **MVCC boundary**, not a row count. A delta contains exactly the
+events `watermark < seq <= safe_seq()`, where `safe_seq()` is the highest event whose inserting
+transaction had already committed when the run started. `safe_seq()` is read as the first statement
+of the same `REPEATABLE READ` transaction that streams the rows, so the boundary and the streamed
+rows agree by construction. An event from a transaction still in flight is excluded and picked up
+by a later delta — never lost, never duplicated.
+
+Apply the archives **in order**: the snapshot, then each delta in `deltas[]` order. Each delta's
+`from_seq` equals the previous delta's `to_seq` (the first starts at `snapshot.seq`), and each
+archive repeats `from_seq`/`to_seq` in its own `manifest.json`, so a partner can verify contiguity
+before applying. Every event is a full row state keyed by id, so applying the same delta twice is
+harmless (idempotent upsert). A delta is one window, never "cumulative since the snapshot"; the
+windows are the chain.
+
+A delta archive contains the same seven entries: `categories.csv` and `criteria.csv` are always
+complete (the referential is small and versioned), while `places.csv`, `answers.csv` and
+`aliases.csv` hold only the rows whose events fall in the window. Nothing is ever deleted from the
+data; merges are the tombstone stream in `aliases.csv`, so there is no deletion file.
+
+The watermark moves only after the delta archive is completely written and fsynced. A failed run
+leaves it untouched, so the next run re-emits the same window. A new snapshot starts a new chain:
+`deltas` becomes empty, `watermark` equals the new snapshot's `seq`, and `retention_floor_seq`
+becomes the previous snapshot's `seq` (the first snapshot uses its own).
+
+**Catch-up.** `letmegetin-admin export odbl --since <seq>` (or `--since <ISO date>`) writes a
+cumulative catch-up archive for a partner who lost a delta. It leaves `latest.json` untouched. It
+is refused when the boundary resolves below `retention_floor_seq`; the error names the floor and
+the snapshot to restart from. `--since <date>` resolves to the last event of that ISO day, in
+server time.
+
+### CSV formula guard
+
+A cell is guarded only when it is a **free-text** column and starts with `=`, `+`, `-` or `@`; the
+writer then prefixes a single `'` so a spreadsheet cannot run it as a formula. The allow-list is
+fixed per file:
+
+| File | Guarded columns |
+|---|---|
+| `places.csv` | `name`, `address_full`, `city`, `source_category` |
+| `categories.csv` | `name`, `label` |
+| `criteria.csv` | `label` |
+
+The header row is never guarded, and no numeric, id, date, count or JSON column is guarded:
+`lat`, `lng`, `phone`, `postal_code`, ids, dates, `value` and `handicap_families` reach the partner
+unchanged. A negative longitude or a `+` phone number therefore stays intact, while a formula typed
+into a name or an address is neutralised. `label` is JSON (`{"fr": …}`), so it cannot begin with a
+formula character and the guard never changes it in practice.
+
+### Attribution and licence
+
+`ATTRIBUTION.txt` is inside every ZIP and repeated verbatim in `manifest.attribution`. It lists
+**only the sources present in that ZIP** — a source is present when at least one of its rows is
+exported. A source whose rows are all withheld is not listed, so the notice never claims data the
+archive does not contain. For each present source it carries the legal name and licence from
+`data/referential/licences.csv`, the last-update date of the data held, and the licence's reviewed
+`attribution_text` sentence — the wording the licence requires, not a generic placeholder. There
+is no per-row attribution column: the text belongs in one place, not on 1.7M answer rows.
+
+There is no OpenStreetMap or Overture line today: upstream sources appear the day their rows do.
+Nothing is hard-coded and no partner name is invented.
+
+The API and the map are Produced Works under the ODbL (attribution only, no share-alike obligation on them).
+
+Later exports may include sources not listed in this one.
+
 ## Idempotency
 
 Write endpoints accept an `Idempotency-Key` header (max 128 characters):
@@ -172,6 +343,7 @@ append a contribution row. `POST /auth/logout` is idempotent (204 even without a
 
 ## Versioning and licence
 
-The path is versioned (`/api/v1`). Breaking changes go to `/api/v2`. The referential is open data
-(Acceslibre Etalab 2.0, OpenStreetMap ODbL, Overture CDLA); attribution is required and the ODbL
-share-alike applies to derived databases.
+The path is versioned (`/api/v1`). Breaking changes go to `/api/v2`. The referential is open data.
+Attribution and share-alike obligations for a given archive are those of the licences listed in its
+`ATTRIBUTION.txt`; the [ODbL export](#odbl-export) section above is the contract for the export,
+and it lists only the sources a ZIP actually contains.
