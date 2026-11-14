@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     api_title: str = "LetMeGetIn API"
     api_version: str = "0.1.0"
     data_dir: Path = Path("data/referential")
+    export_dir: Path = Path("/data/export")
     jwt_secret: str = "dev-insecure-secret-change-me"
     access_token_ttl: int = 900
     refresh_token_ttl: int = 2_592_000

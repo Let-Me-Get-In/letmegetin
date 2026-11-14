@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from letmegetin.api.v1 import auth, places, referential
+from letmegetin.api.v1 import auth, export, places, referential
 
 router = APIRouter()
 router.include_router(auth.router)
 router.include_router(referential.router)
 router.include_router(places.router)
+router.include_router(export.router)
