@@ -62,7 +62,13 @@ Plans:
   1. A partner downloads an ODbL export of places, categories, criteria and answers, each row carrying a stable id and its origin id.
   2. The export renders cumulative attribution (AccesLibre with source name and last-update date, OpenStreetMap, Overture).
   3. The API and map are documented as Produced Works alongside the export.
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 14-01-PLAN.md — Append-only `export_event` journal at the four write choke points + `admin place history <slug>` (D-07, D-08, D-09, D-13)
+- [ ] 14-02-PLAN.md — ODbL ZIP assembly (places/categories/criteria/answers/aliases + ATTRIBUTION + manifest) + `admin export odbl --out [--since]` + `latest.json` (D-01…D-06, D-10, D-14)
+- [ ] 14-03-PLAN.md — Read-only export routes + `export_data` volume + `scripts/export-odbl.sh` + systemd timer (D-11, D-12)
+- [ ] 14-04-PLAN.md — Public export docs + Produced Works statement + OpenAPI regeneration (EXP-02)
 
 ### Phase 15: AccesLibre round trip
 **Goal**: Owned rows flow back to AccesLibre as a lov2 feed, and our answers push to their API idempotently.
@@ -102,7 +108,7 @@ Plans:
 |-------|--------|----------------|--------|-----------|
 | 12. Licence provenance | LET-79 | 5/5 | Complete    | 2026-11-13 |
 | 13. Documented-place visualisation | LET-75 | 3/3 | Complete    | 2026-11-14 |
-| 14. Open ODbL export | LET-72 | 0/— | Not started | — |
+| 14. Open ODbL export | LET-72 | 0/4 | Not started | — |
 | 15. AccesLibre round trip | LET-73, LET-74 | 0/— | Not started | — |
 | 16. OpenStreetMap | LET-77, LET-78 | 0/— | Not started | — |
 | 17. Overture | LET-70, LET-71, LET-76 | 0/— | Not started | — |
