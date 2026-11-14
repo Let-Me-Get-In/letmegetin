@@ -4,17 +4,16 @@ milestone: v2.0
 current_phase: 14
 current_phase_name: Open ODbL export
 status: planning
-stopped_at: Phase 13 complete, ready to plan Phase 14
-last_updated: "2026-11-13T23:08:07.882Z"
+stopped_at: Phase 14 context gathered
+last_updated: "2026-11-14T19:50:53.394Z"
 last_activity: 2026-11-14
 last_activity_desc: Phase 13 complete, transitioned to Phase 14
-state_head: f40abb8074c7553cfa9fb81cb25d6ca92e8d6705
+state_head: c55da88ac075b428f41daa16434c7eaf48a5a4bb
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 8
   completed_plans: 8
-  percent: 33
 milestone_name: Federated Data & Partners
 ---
 
@@ -111,9 +110,9 @@ Last activity: 2026-11-14 — Phase 13 complete, transitioned to Phase 14
 
 ## Session Continuity
 
-Last session: 2026-11-13T20:22:33.116Z
-Stopped at: Phase 13 complete, ready to plan Phase 14
-Resume file: .planning/phases/13-documented-place-visualisation/13-01-PLAN.md
+Last session: 2026-11-14T19:50:53.165Z
+Stopped at: Phase 14 context gathered
+Resume file: .planning/phases/14-open-odbl-export/14-CONTEXT.md
 
 ## Known debt
 
