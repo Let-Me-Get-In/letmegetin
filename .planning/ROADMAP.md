@@ -62,13 +62,17 @@ Plans:
   1. A partner downloads an ODbL export of places, categories, criteria and answers, each row carrying a stable id and its origin id.
   2. The export renders cumulative attribution (AccesLibre with source name and last-update date, OpenStreetMap, Overture).
   3. The API and map are documented as Produced Works alongside the export.
-**Plans**: 4 plans
+**Plans**: 5 plans
 
 Plans:
-- [ ] 14-01-PLAN.md — Append-only `export_event` journal at the four write choke points + `admin place history <slug>` (D-07, D-08, D-09, D-13)
+- [ ] 14-01-PLAN.md — Append-only `export_event` journal at every place-write choke point + `admin place history <slug>` (D-07, D-08, D-09, D-13)
 - [ ] 14-02-PLAN.md — ODbL ZIP assembly (places/categories/criteria/answers/aliases + ATTRIBUTION + manifest) + `admin export odbl --out [--since]` + `latest.json` (D-01…D-06, D-10, D-14)
-- [ ] 14-03-PLAN.md — Read-only export routes + `export_data` volume + `scripts/export-odbl.sh` + systemd timer (D-11, D-12)
+- [ ] 14-03-PLAN.md — Read-only export routes + `export_data` volume (D-11, D-12)
 - [ ] 14-04-PLAN.md — Public export docs + Produced Works statement + OpenAPI regeneration (EXP-02)
+- [ ] 14-05-PLAN.md — Production generation: `scripts/export-odbl.sh` wrapper (snapshot|delta) + weekly/daily systemd units + `workflow_dispatch` (D-12)
+
+Notes:
+- Retention/pruning of old daily delta ZIPs (keep N) is deferred — tracked as a follow-up on LET-72 (see 14-05).
 
 ### Phase 15: AccesLibre round trip
 **Goal**: Owned rows flow back to AccesLibre as a lov2 feed, and our answers push to their API idempotently.
