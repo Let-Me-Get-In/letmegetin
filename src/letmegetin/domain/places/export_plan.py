@@ -337,6 +337,10 @@ class ExportPlanRepository(Protocol):
 
     async def referential_version(self) -> int: ...
 
+    async def licence_rules_count(self) -> int:
+        """Rows in the reviewed matrix; zero means the licence data was never loaded (D-15)."""
+        ...
+
     def stream_canonical_places(
         self, destination: str, since_seq: int | None = None
     ) -> AsyncIterator[PlaceRow]: ...

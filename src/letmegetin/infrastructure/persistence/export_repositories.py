@@ -263,6 +263,13 @@ class SqlAlchemyExportRepository:
         )
         return int(version or 1)
 
+    async def licence_rules_count(self) -> int:
+        """Rows in the reviewed matrix; zero means `admin licences sync` never ran (D-15)."""
+        count = await self._session.scalar(
+            select(func.count()).select_from(LicenceDestinationModel)
+        )
+        return int(count or 0)
+
     async def stream_canonical_places(
         self, destination: str, since_seq: int | None = None
     ) -> AsyncIterator[PlaceRow]:

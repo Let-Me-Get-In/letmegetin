@@ -367,6 +367,11 @@ async def export_odbl(
         # First statement of the REPEATABLE READ transaction: it pins the snapshot that every
         # later read, and the boundary itself, then share (B5).
         await export.begin_repeatable_read()
+        if await export.licence_rules_count() == 0:
+            raise DomainError(
+                "the reviewed licence matrix is empty: run `letmegetin-admin licences sync` "
+                "(or the seed) before exporting, or every row is withheld and the ZIP is empty"
+            )
         boundary = await events.safe_seq()
 
         from_seq: int | None = None
