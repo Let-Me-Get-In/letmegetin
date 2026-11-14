@@ -43,6 +43,7 @@ app = FastAPI(
     openapi_tags=[
         {"name": "places", "description": "Search, detail, contributions and reviews."},
         {"name": "referential", "description": "Categories, criteria trees, filters and grids."},
+        {"name": "export", "description": "Read-only ODbL export archives and their index."},
         {"name": "auth", "description": "Accounts, sessions and email verification."},
         {"name": "ops", "description": "Health probe."},
     ],

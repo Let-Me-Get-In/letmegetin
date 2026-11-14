@@ -1486,6 +1486,77 @@
         ]
       }
     },
+    "/api/v1/export/latest.json": {
+      "get": {
+        "description": "The index written by `letmegetin-admin export odbl`: current snapshot, delta watermark, retention floor and the deltas available. The API serves the file as written and never generates or rewrites it. Returns 404 when no export exists \u2014 including on a deployment whose export volume is not provisioned (the directory has no default content).",
+        "operationId": "get_export_latest_api_v1_export_latest_json_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Latest ODbL export index",
+        "tags": [
+          "export"
+        ]
+      }
+    },
+    "/api/v1/export/{name}.zip": {
+      "get": {
+        "description": "A snapshot, delta or catch-up archive from the export directory. The name must be a plain file name: a separator, `..`, a dotfile, the lock or a temp file is refused with 404 before the filesystem is touched, and 404 is also the answer for an archive that does not exist yet.",
+        "operationId": "get_export_zip_api_v1_export__name__zip_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Download an ODbL export archive",
+        "tags": [
+          "export"
+        ]
+      }
+    },
     "/api/v1/filters": {
       "get": {
         "description": "List the active accessibility filters.",
@@ -2244,6 +2315,10 @@
     {
       "description": "Categories, criteria trees, filters and grids.",
       "name": "referential"
+    },
+    {
+      "description": "Read-only ODbL export archives and their index.",
+      "name": "export"
     },
     {
       "description": "Accounts, sessions and email verification.",
