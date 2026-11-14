@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily LetMeGetIn ODbL export delta
+
+[Timer]
+OnCalendar=*-*-* 03:15:00
+Persistent=true
+Unit=letmegetin-export-odbl-delta.service
+
+[Install]
+WantedBy=timers.target
