@@ -1,0 +1,156 @@
+name: main guard
+
+# Detects a commit that reached `main` without a merged pull request. It does
+# not stop one: rulesets and classic branch protection are both unavailable on
+# a private repository under the free plan, so nothing here refuses a push. The
+# guard asks GitHub whether the head commit came from a merged pull request
+# (GET /repos/{owner}/{repo}/commits/{sha}/pulls, filtered on `merged_at`); a
+# head with no merged PR fails this run and is posted to Discord with the commit
+# and its author. It detects, it never stops the push.
+#
+# This file is the single implementation. The app, config and e2e repositories
+# call it (`on: workflow_call`) from a stub pinned to this file's merge commit,
+# so no copy of the logic exists anywhere.
+#
+# Two entry points, one code path:
+#   workflow_call       the real trigger — every caller stub runs it on
+#                       `push: branches: [main]`, and the commit checked is the
+#                       commit that was pushed.
+#   workflow_dispatch   a diagnostic. It exists so the behaviour can be proven by
+#                       naming a commit for inspection without pushing to `main`
+#                       or rewriting history. It selects WHICH commit is checked
+#                       and never changes the merged-PR verdict for that commit:
+#                       the logic below is identical on both entry points, so a
+#                       dispatch cannot turn a red detection green.
+#
+# Prerequisite, per calling repository: a repository secret `DISCORD_WEBHOOK`
+# holding the Discord channel webhook URL (the config repository already keeps
+# that value as Infisical's ALERT_WEBHOOK). A missing secret fails the run loudly
+# instead of reporting nowhere.
+#
+# Permissions here are the callee's ceiling only: GitHub caps a called
+# workflow's token at what the caller grants, so every caller stub's job declares
+# the same `contents: read` + `pull-requests: read`. `pull-requests: read` reads
+# the merged-PR state; `contents: read` reads the commit's author for the post,
+# which matters on the private repositories.
+
+on:
+  workflow_call:
+    inputs:
+      commit_sha:
+        description: Commit to check; empty means the commit that triggered the caller.
+        type: string
+        required: false
+        default: ""
+    secrets:
+      DISCORD_WEBHOOK:
+        description: Discord channel webhook URL the detection posts to.
+        required: true
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: Commit to check; empty means the head of this repository.
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  guard:
+    name: guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      REPO: ${{ github.repository }}
+      # The one resolved commit both entry points operate on.
+      COMMIT_SHA: ${{ inputs.commit_sha || github.sha }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+    steps:
+      - name: Check the commit for a merged pull request
+        run: |
+          set -uo pipefail
+
+          api="https://api.github.com/repos/$REPO"
+
+          pulls=$(curl -fsS -m 20 \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "$api/commits/$COMMIT_SHA/pulls") || {
+            echo "::error::The main guard detects nothing this run: GitHub returned an error for the pull requests of $COMMIT_SHA on $REPO."
+            exit 1
+          }
+
+          if ! merged=$(printf '%s' "$pulls" | python3 -c '
+          import json
+          import sys
+
+          pulls = json.load(sys.stdin)
+          print("yes" if any(entry.get("merged_at") for entry in pulls) else "no")
+          '); then
+            echo "::error::The main guard detects nothing this run: the pull-request answer for $COMMIT_SHA on $REPO is not JSON."
+            exit 1
+          fi
+
+          if [ "$merged" = yes ]; then
+            echo "ok: $COMMIT_SHA on $REPO came from a merged pull request"
+            exit 0
+          fi
+
+          # The post names the author, so read the commit itself. A failure here
+          # reports "unknown" rather than losing the detection.
+          author=unknown
+          if commit=$(curl -fsS -m 20 \
+              -H 'Accept: application/vnd.github+json' \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              "$api/commits/$COMMIT_SHA"); then
+            author=$(printf '%s' "$commit" | python3 -c '
+          import json
+          import sys
+
+          commit = json.load(sys.stdin)
+          login = (commit.get("author") or {}).get("login")
+          name = ((commit.get("commit") or {}).get("author") or {}).get("name")
+          print(login or name or "unknown")
+          ' 2>/dev/null) || author=unknown
+          fi
+
+          # Checked, not defaulted: an absent webhook fails the run loudly
+          # instead of reporting nowhere.
+          if [ -z "${DISCORD_WEBHOOK:-}" ]; then
+            echo "::error::The main guard detects $COMMIT_SHA on $REPO with no merged pull request (author $author) but DISCORD_WEBHOOK is not set, so it cannot report it — add the repository secret."
+            exit 1
+          fi
+
+          payload=$(python3 -c '
+          import json
+          import sys
+
+          sha, repo, author = sys.argv[1:4]
+          print(json.dumps({"content":
+              f"**letmegetin main guard — {repo} has a commit with no merged pull request**\n"
+              f"- commit: {sha}\n"
+              f"- author: {author}\n"
+              "The guard detects; nothing stopped the push."}))
+          ' "$COMMIT_SHA" "$REPO" "$author")
+
+          # Best-effort: a Discord or network failure must not mask the verdict,
+          # so the post's exit code is swallowed and the detection still fails
+          # the run below. curl with an explicit User-Agent, never python-urllib:
+          # Cloudflare in front of Discord answers a python client with 403.
+          posted=no
+          if printf '%s' "$payload" | curl -fsS -m 20 -X POST \
+            -A 'letmegetin-main-guard/1.0' \
+            -H 'Content-Type: application/json' --data @- "$DISCORD_WEBHOOK" >/dev/null; then
+            posted=yes
+          fi
+
+          if [ "$posted" = yes ]; then
+            echo "::error::The main guard detects $COMMIT_SHA on $REPO with no merged pull request (author $author); posted to Discord."
+          else
+            echo "::error::The main guard detects $COMMIT_SHA on $REPO with no merged pull request (author $author); the Discord post failed too."
+          fi
+          exit 1
