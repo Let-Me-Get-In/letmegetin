@@ -9,6 +9,7 @@ import asyncio
 import os
 import sys
 from collections.abc import Awaitable, Callable, Iterable, Iterator
+from datetime import date
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -36,6 +37,7 @@ from letmegetin.application.places.duplicates import (
     merge_duplicate,
     reject_duplicate,
 )
+from letmegetin.application.places.export import export_odbl
 from letmegetin.application.places.history import place_history
 from letmegetin.application.places.import_acceslibre import (
     AcceslibreRow,
@@ -83,6 +85,7 @@ from letmegetin.domain.referential.entities import Category, Criterion, Label, V
 from letmegetin.domain.referential.labels import parse_label_pairs
 from letmegetin.infrastructure.persistence.export_repositories import (
     SqlAlchemyExportEventRepository,
+    SqlAlchemyExportRepository,
 )
 from letmegetin.infrastructure.persistence.licence_repositories import SqlAlchemyLicenceRepository
 from letmegetin.infrastructure.persistence.repositories import (
@@ -112,6 +115,7 @@ licences_app = typer.Typer(help="Sync, render and audit the licence catalogue an
 import_app = typer.Typer(help="Import open place datasets (Acceslibre first).")
 duplicates_app = typer.Typer(help="Review, merge or reject duplicate candidates from the import.")
 place_app = typer.Typer(help="Read a place's change journal.")
+export_app = typer.Typer(help="Write the open ODbL export (snapshot, delta or catch-up).")
 api_key_app = typer.Typer(help="Create, list and revoke partner API keys.")
 user_app = typer.Typer(help="Create and verify operator/E2E accounts.")
 app.add_typer(category_app, name="category")
@@ -123,6 +127,7 @@ app.add_typer(licences_app, name="licences")
 app.add_typer(import_app, name="import")
 app.add_typer(duplicates_app, name="duplicates")
 app.add_typer(place_app, name="place")
+app.add_typer(export_app, name="export")
 app.add_typer(api_key_app, name="api-key")
 app.add_typer(user_app, name="user")
 
@@ -876,6 +881,68 @@ def place_history_command(
 
     async def callback(session: AsyncSession) -> str:
         lines = await place_history(SqlAlchemyExportEventRepository(session), slug)
+        return "\n".join(lines)
+
+    _run_admin(callback, bump=False)
+
+
+def _parse_since(value: str | None) -> tuple[int | None, date | None]:
+    """``--since`` takes a journal sequence number or an ISO date, never both (D-10)."""
+    if value is None:
+        return None, None
+    try:
+        return int(value), None
+    except ValueError:
+        pass
+    try:
+        return None, date.fromisoformat(value)
+    except ValueError as exc:
+        raise DomainError(
+            f"--since needs a journal sequence number or an ISO date, got '{value}'"
+        ) from exc
+
+
+@export_app.command("odbl")
+def export_odbl_command(
+    out: Annotated[Path, typer.Option("--out", help="Directory the ZIPs and latest.json go to")],
+    delta: Annotated[
+        bool, typer.Option("--delta", help="Publish only the events since the watermark")
+    ] = False,
+    since: Annotated[
+        str | None, typer.Option("--since", help="Cumulative catch-up from a seq or an ISO date")
+    ] = None,
+) -> None:
+    """Write the ODbL ZIP and latest.json; a snapshot also prunes the journal (D-11, D-15)."""
+
+    async def callback(session: AsyncSession) -> str:
+        since_seq, since_date = _parse_since(since)
+        report = await export_odbl(
+            SqlAlchemyExportRepository(session),
+            SqlAlchemyExportEventRepository(session),
+            out=out,
+            since=since_seq,
+            since_date=since_date,
+            delta=delta,
+        )
+        lines = [
+            f"{report.mode} export: {report.name}",
+            "  files: " + ", ".join(f"{name}={count}" for name, count in report.files.items()),
+            f"  snapshot={report.snapshot_seq} watermark={report.watermark} "
+            f"floor={report.retention_floor_seq}",
+        ]
+        for label, counts in (
+            ("excluded places", report.excluded_places),
+            ("excluded answers", report.excluded_answers),
+            ("place-withheld answers", report.place_withheld_answers),
+        ):
+            lines.extend(
+                f"  {label}: {source} {licence or '(no licence)'} {count}"
+                for source, licence, count in counts
+            )
+        if report.pruned_events or report.pruned_deltas:
+            lines.append(
+                f"  pruned: events={report.pruned_events} deltas={len(report.pruned_deltas)}"
+            )
         return "\n".join(lines)
 
     _run_admin(callback, bump=False)
