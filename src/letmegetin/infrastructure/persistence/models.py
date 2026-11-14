@@ -7,12 +7,14 @@ from typing import Any
 
 import geoalchemy2
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     CheckConstraint,
     Computed,
     Date,
     Double,
     ForeignKey,
+    Identity,
     Index,
     Integer,
     SmallInteger,
@@ -24,6 +26,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.types import UserDefinedType
 
 # PostGIS derives the point from the plain lat/lng columns, so the two never drift.
 _LOCATION_SQL = (
@@ -345,6 +348,40 @@ class PlaceAccessibilityWriteModel(Base):
     reason: Mapped[str | None] = mapped_column(String(32))
     actor: Mapped[str] = mapped_column(String(64))
     created: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class XID8(UserDefinedType):
+    """PostgreSQL ``xid8``; SQLAlchemy has no native type and the boundary compares in it."""
+
+    cache_ok = True
+
+    def get_col_spec(self, **kw: object) -> str:
+        return "XID8"
+
+
+class ExportEventModel(Base):
+    """Append-only change journal: the complete row state after each write (D-07)."""
+
+    __tablename__ = "export_event"
+    __table_args__ = (
+        CheckConstraint("entity IN ('place','place_accessibility')", name="export_event_entity_ck"),
+        CheckConstraint("op IN ('insert','update','merge')", name="export_event_op_ck"),
+        Index("ix_export_event_entity_id_seq", "entity_id", "seq"),
+    )
+
+    # The identity sequence is the replay order; ``place_accessibility_write.id`` is not.
+    seq: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    # The inserting transaction's id: safe_seq() only publishes rows below the snapshot xmin.
+    xid: Mapped[int] = mapped_column(
+        XID8(), server_default=text("pg_current_xact_id()"), nullable=False
+    )
+    # The wall clock of the INSERT, not the transaction stamp, so it orders like ``seq``.
+    occurred_at: Mapped[datetime] = mapped_column(server_default=func.clock_timestamp())
+    entity: Mapped[str] = mapped_column(String(32))
+    entity_id: Mapped[int] = mapped_column(BigInteger)
+    op: Mapped[str] = mapped_column(String(16))
+    actor: Mapped[str] = mapped_column(String(64))
+    payload: Mapped[dict] = mapped_column(JSONB, default=dict, server_default=text("'{}'::jsonb"))
 
 
 class LicenceModel(Base):
