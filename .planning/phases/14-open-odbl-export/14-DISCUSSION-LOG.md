@@ -148,3 +148,93 @@
 - Parquet / GeoPackage / spatial export and format negotiation.
 - Backfilling pre-journal history from `created`/`updated`.
 - Destination-specific exports (AccesLibre, OSM, Overture) — phases 15–17.
+
+---
+
+# Decision Review — 2026-11-14
+
+The phase was planned, then five decisions were reopened before execution. The trigger
+was the plan review: two of the chosen shapes were correct but expensive in ways the
+first pass had not surfaced.
+
+## Areas reopened
+
+### Delta shape (D-10)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Incremental deltas with a moving watermark | `latest.json` keeps `snapshot {name, seq}` and a `watermark`; each daily ZIP carries only the events since the last published delta, with an overlap window; `--since <snapshot_seq>` stays as a cumulative catch-up | ✓ |
+| Keep the cumulative delta | every delta replays the snapshot boundary; self-healing but re-downloads the base daily | |
+| Cumulative for v1, incremental later | document the limitation, build it in phase 15 | |
+
+**User's choice:** incremental deltas.
+**Notes:** the watermark advances only after the delta ZIP is written and fsynced, under
+the same lock that reads `latest.json`; a failed run re-emits the same window.
+
+### Journal weight (D-07)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Full row per event | replay is a dumb upsert, `place history` reads without diffing; ~2× the base data per cycle | ✓ |
+| Changed columns only | smaller, but replay must start from the snapshot row and history must reconstruct | |
+| Timestamps instead of a journal | no new table, but `place_accessibility` has no `updated` and no tombstone, so answer updates would be missed | |
+
+**User's choice:** full row.
+**Notes:** chosen with the consequence made explicit — retention becomes mandatory, not optional (see below).
+
+### Import and the event cap (D-16, new)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Cap + resumable import | keep `EXPORT_MAX_EVENTS_PER_TXN`, chunk the AccesLibre load, rely on the existing `(source, source_id)` idempotence to repair an interrupted run | ✓ |
+| Commit counter, atomic import | `committed_seq` under an advisory lock; import stays all-or-nothing, one more concurrency mechanism | |
+| Outbox in a second pass | atomic and under the cap, but two transactions per row | |
+
+**User's choice:** cap + resumable.
+**Notes:** the importer already is idempotent; the runbook says so instead of claiming atomicity we no longer have.
+
+### Merged places' answers (D-04)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Remap onto the canonical place | answers of a merged place are rewritten on the canonical id; the canonical's own answer wins, otherwise the most recent `recorded_at` wins, losers counted by source and licence | ✓ |
+| Exclude and count them | the D-04 shape; a partner silently loses collected data | |
+| Separate `answers_aliases.csv` | recoverable but pushes the merge logic onto the partner | |
+
+**User's choice:** remap.
+**Notes:** nothing is lost without a trace; the manifest carries the drop counters.
+
+### Attribution of absent sources (D-05)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Present sources only | `ATTRIBUTION.txt` lists the sources with at least one exported row, plus a sentence that later exports may add sources | ✓ |
+| Keep all four sources | a forward declaration inside a legal notice | |
+| Every licence in `source_licences.csv` | same defect with a simpler rule | |
+
+**User's choice:** present sources only.
+**Notes:** a legal notice must describe the file it ships.
+
+### Retention (D-15, new)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Prune journal and delta ZIPs in this phase | `export_event` pruned to the previous snapshot boundary; delta ZIPs older than the last snapshot removed | ✓ |
+| Leave it to a separate ticket | ~500 MB per cycle accumulating until it lands | |
+
+**User's choice:** in scope.
+
+## Consequences recorded as decisions, not re-asked
+
+- `latest.json` gains `snapshot {name, seq}` and `watermark` as separate fields.
+- Precedence for remapped answers: canonical wins, else most recent `recorded_at`, others counted.
+- "Source present" means at least one exported row.
+- The earlier hard-coded OSM/Overture attribution exception is withdrawn.
+
+## Deferred Ideas (unchanged, plus)
+
+- Web UI for place history.
+- Per-partner export feeds and keys.
+- Parquet / GeoPackage / spatial export.
+- Pre-journal history backfill.
+- Destination-specific exports — phases 15–17.
