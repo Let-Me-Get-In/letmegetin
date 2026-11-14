@@ -115,6 +115,12 @@ A partner can download the whole referential as ODbL — places, categories, cri
 - Backfill of pre-journal history from `created`/`updated` (lossy, deliberately refused).
 - AccesLibre/OSM/Overture destination files — phases 15–17.
 
+**Note (W-LICENCE-HARDCODE):** the OSM and Overture attribution lines are hard-coded string literals in
+`application/places/attribution.py` (OSM_ATTRIBUTION_LINE, OVERTURE_ATTRIBUTION_LINE) as a DELIBERATE,
+documented exception — OSM and Overture are upstream sources not yet present in `source_licences.csv`
+(they arrive in phases 16–17). When they do, these literals move into the reviewed CSV data. The
+AccesLibre line is NOT hard-coded: it is read from `licences.csv` by slug `lov2`.
+
 </deferred>
 
 ---
