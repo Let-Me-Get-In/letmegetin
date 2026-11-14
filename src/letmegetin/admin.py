@@ -36,6 +36,7 @@ from letmegetin.application.places.duplicates import (
     merge_duplicate,
     reject_duplicate,
 )
+from letmegetin.application.places.history import place_history
 from letmegetin.application.places.import_acceslibre import (
     AcceslibreRow,
     import_acceslibre,
@@ -80,6 +81,9 @@ from letmegetin.domain.places.dedup import RELIABLE_MATCH_THRESHOLD
 from letmegetin.domain.places.licence import DESTINATIONS
 from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
 from letmegetin.domain.referential.labels import parse_label_pairs
+from letmegetin.infrastructure.persistence.export_repositories import (
+    SqlAlchemyExportEventRepository,
+)
 from letmegetin.infrastructure.persistence.licence_repositories import SqlAlchemyLicenceRepository
 from letmegetin.infrastructure.persistence.repositories import (
     SqlAlchemyApiKeyRepository,
@@ -107,6 +111,7 @@ families_app = typer.Typer(help="Fill and audit handicap families (moteur, audit
 licences_app = typer.Typer(help="Sync, render and audit the licence catalogue and matrix.")
 import_app = typer.Typer(help="Import open place datasets (Acceslibre first).")
 duplicates_app = typer.Typer(help="Review, merge or reject duplicate candidates from the import.")
+place_app = typer.Typer(help="Read a place's change journal.")
 api_key_app = typer.Typer(help="Create, list and revoke partner API keys.")
 user_app = typer.Typer(help="Create and verify operator/E2E accounts.")
 app.add_typer(category_app, name="category")
@@ -117,6 +122,7 @@ app.add_typer(families_app, name="families")
 app.add_typer(licences_app, name="licences")
 app.add_typer(import_app, name="import")
 app.add_typer(duplicates_app, name="duplicates")
+app.add_typer(place_app, name="place")
 app.add_typer(api_key_app, name="api-key")
 app.add_typer(user_app, name="user")
 
@@ -860,6 +866,19 @@ def duplicates_reject(
         return f"duplicate rejected: {place_id} (both places kept)"
 
     _run_admin(callback)
+
+
+@place_app.command("history")
+def place_history_command(
+    slug: Annotated[str, typer.Argument(help="Place slug")],
+) -> None:
+    """Print date, op, actor and the changed fields of every journal event (D-13)."""
+
+    async def callback(session: AsyncSession) -> str:
+        lines = await place_history(SqlAlchemyExportEventRepository(session), slug)
+        return "\n".join(lines)
+
+    _run_admin(callback, bump=False)
 
 
 @app.command("coverage")
