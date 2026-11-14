@@ -163,13 +163,15 @@ first pass had not surfaced.
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Incremental deltas with a moving watermark | `latest.json` keeps `snapshot {name, seq}` and a `watermark`; each daily ZIP carries only the events since the last published delta, with an overlap window; `--since <snapshot_seq>` stays as a cumulative catch-up | ✓ |
+| MVCC boundary (safe_seq) | `export_event` gains `xid`; the delta boundary is `max(seq) WHERE xid < pg_snapshot_xmin(pg_current_snapshot())`, read in the same REPEATABLE READ transaction that streams the rows — committed events only, in-flight transactions picked up by a later delta, no overlap window and no cap | ✓ |
 | Keep the cumulative delta | every delta replays the snapshot boundary; self-healing but re-downloads the base daily | |
 | Cumulative for v1, incremental later | document the limitation, build it in phase 15 | |
 
-**User's choice:** incremental deltas.
-**Notes:** the watermark advances only after the delta ZIP is written and fsynced, under
-the same lock that reads `latest.json`; a failed run re-emits the same window.
+**User's choice:** MVCC boundary (`safe_seq`).
+**Notes:** the reviewer showed a count-based event cap cannot bound transaction age — a
+transaction can hold `seq` `s` open past any fixed overlap, so the watermark could move past it
+permanently. The MVCC boundary is a proof, not a guess; the watermark advances only after the
+delta ZIP is written and fsynced, under the same lock that reads `latest.json`.
 
 ### Journal weight (D-07)
 
@@ -182,16 +184,16 @@ the same lock that reads `latest.json`; a failed run re-emits the same window.
 **User's choice:** full row.
 **Notes:** chosen with the consequence made explicit — retention becomes mandatory, not optional (see below).
 
-### Import and the event cap (D-16, new)
+### Import and the event cap (D-16, reversed)
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Cap + resumable import | keep `EXPORT_MAX_EVENTS_PER_TXN`, chunk the AccesLibre load, rely on the existing `(source, source_id)` idempotence to repair an interrupted run | ✓ |
-| Commit counter, atomic import | `committed_seq` under an advisory lock; import stays all-or-nothing, one more concurrency mechanism | |
-| Outbox in a second pass | atomic and under the cap, but two transactions per row | |
+| Import untouched, stays atomic | with the MVCC boundary there is no cap and no chunking; the AccesLibre import keeps its single end-of-run commit, exactly as today | ✓ |
+| Cap + resumable import | keep `EXPORT_MAX_EVENTS_PER_TXN`, chunk the AccesLibre load (earlier choice) | |
 
-**User's choice:** cap + resumable.
-**Notes:** the importer already is idempotent; the runbook says so instead of claiming atomicity we no longer have.
+**User's choice:** import untouched, stays atomic.
+**Notes:** the cap existed only to bound the delta overlap window; `safe_seq()` removes the need for
+both, so the import reverts to its existing atomic shape and `import_acceslibre.py` is not modified.
 
 ### Merged places' answers (D-04)
 
@@ -226,7 +228,8 @@ the same lock that reads `latest.json`; a failed run re-emits the same window.
 
 ## Consequences recorded as decisions, not re-asked
 
-- `latest.json` gains `snapshot {name, seq}` and `watermark` as separate fields.
+- `latest.json` gains `snapshot {name, seq}`, `watermark`, `retention_floor_seq` and `deltas[]` (each `{name, from_seq, to_seq}`) as separate fields.
+- The delta boundary is `safe_seq()` (MVCC), not a count-based window: `export_event` gains `xid`; the import is untouched and stays atomic.
 - Precedence for remapped answers: canonical wins, else most recent `recorded_at`, others counted.
 - "Source present" means at least one exported row.
 - The earlier hard-coded OSM/Overture attribution exception is withdrawn.

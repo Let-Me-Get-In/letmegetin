@@ -10,7 +10,7 @@ V1 (product core) and V1.1 (production, data quality, search, e2e, accessibility
 
 - [x] **Phase 12: Licence provenance** - Per-row source + licence, classified per destination and enforced at every exit point (completed 2026-11-13)
 - [x] **Phase 13: Documented-place visualisation** - How well documented a place is, visible without pretending an empty place is documented (completed 2026-11-14)
-- [ ] **Phase 14: Open ODbL export** - ODbL download of places, categories, criteria and answers with cumulative attribution
+- [ ] **Phase 14: Open ODbL export** - ODbL download of places, categories, criteria and answers with attribution listing the sources present in the export
 - [ ] **Phase 15: AccesLibre round trip** - lov2 feed of owned rows, then an idempotent API write-back
 - [ ] **Phase 16: OpenStreetMap** - OSM import as the community base, then policy-compliant write-back
 - [ ] **Phase 17: Overture** - Reviewed category mapping, measured overlap, volumetric import as the second source
@@ -62,21 +62,20 @@ Plans:
   1. A partner downloads an ODbL export of places, categories, criteria and answers, each row carrying a stable id and its origin id.
   2. The export renders attribution listing only the sources present in the export, with legal names read from licences.csv (AccesLibre with source name and last-update date).
   3. The API and map are documented as Produced Works alongside the export.
-**Plans**: 6 plans
+**Plans**: 5 plans
 
 Plans:
-- [ ] 14-01-PLAN.md — Append-only `export_event` journal at every place-write choke point + `admin place history <slug>` (D-07, D-08, D-09, D-13)
-- [ ] 14-02-PLAN.md — ODbL ZIP assembly (places/categories/criteria/answers/aliases + ATTRIBUTION + manifest) + `admin export odbl --out [--delta] [--since]` + moving-watermark `latest.json` + retention (D-01…D-06, D-10, D-14, D-15)
+- [ ] 14-01-PLAN.md — Append-only `export_event` journal (with MVCC `xid` boundary) at every place-write choke point + `admin place history <slug>` (D-07, D-08, D-09, D-13)
+- [ ] 14-02-PLAN.md — ODbL ZIP assembly (places/categories/criteria/answers/aliases + ATTRIBUTION + manifest) + `admin export odbl --out [--delta] [--since]` + MVCC-boundary `latest.json` + retention + reviewed `attribution_text` (D-01…D-06, D-10, D-14, D-15)
 - [ ] 14-03-PLAN.md — Read-only export routes + `export_data` volume (D-11, D-12)
 - [ ] 14-04-PLAN.md — Public export docs + Produced Works statement + OpenAPI regeneration (EXP-02)
 - [ ] 14-05-PLAN.md — Production generation: `scripts/export-odbl.sh` wrapper (snapshot|delta) + weekly/daily systemd units + `workflow_dispatch` (D-12)
-- [ ] 14-06-PLAN.md — Chunked, resumable AccesLibre import at the event cap (D-16)
 
 Notes:
-- Delivery is snapshot + moving-watermark deltas: `latest.json` carries `snapshot {name, seq}` and `watermark`; `--since <snapshot_seq>` is a cumulative catch-up (D-10).
+- Delivery is snapshot + moving-watermark deltas over the MVCC boundary (`safe_seq()`): `latest.json` carries `snapshot {name, seq}`, `watermark`, `retention_floor_seq` and `deltas[]` (each `{name, from_seq, to_seq}`); `--since <snapshot_seq>` is a cumulative catch-up refused below the retention floor (D-10).
 - Retention is in scope (in 14-02): `export_event` is pruned to the previous snapshot boundary and delta ZIPs older than the last snapshot are removed, inside the export flock (D-15).
 - Merged places' answers are remapped onto the canonical id (not dropped) and attribution lists only present sources, both decided in the 2026-11-14 review (D-04, D-05).
-- The AccesLibre import is chunked and resumable, repaired by re-running (D-16).
+- The AccesLibre import is untouched and stays atomic — the MVCC boundary removed the per-transaction event cap (D-16).
 
 ### Phase 15: AccesLibre round trip
 **Goal**: Owned rows flow back to AccesLibre as a lov2 feed, and our answers push to their API idempotently.
@@ -116,7 +115,7 @@ Notes:
 |-------|--------|----------------|--------|-----------|
 | 12. Licence provenance | LET-79 | 5/5 | Complete    | 2026-11-13 |
 | 13. Documented-place visualisation | LET-75 | 3/3 | Complete    | 2026-11-14 |
-| 14. Open ODbL export | LET-72 | 0/4 | Not started | — |
+| 14. Open ODbL export | LET-72 | 0/5 | Not started | — |
 | 15. AccesLibre round trip | LET-73, LET-74 | 0/— | Not started | — |
 | 16. OpenStreetMap | LET-77, LET-78 | 0/— | Not started | — |
 | 17. Overture | LET-70, LET-71, LET-76 | 0/— | Not started | — |

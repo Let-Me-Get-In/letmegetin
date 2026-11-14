@@ -177,7 +177,7 @@
 ### Open export
 
 - [ ] **EXP-01**: A partner can download an ODbL export of places, categories, criteria and answers, carrying stable ids and each row's origin id
-- [ ] **EXP-02**: The export renders cumulative attribution (AccesLibre with source name and last-update date, OpenStreetMap, Overture) and documents the API and map as Produced Works
+- [ ] **EXP-02**: The export renders attribution listing the sources present in the export and documents the API and map as Produced Works
 
 ### AccesLibre round trip
 
