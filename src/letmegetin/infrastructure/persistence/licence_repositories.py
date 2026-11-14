@@ -47,7 +47,11 @@ class SqlAlchemyLicenceRepository:
         if model is None:
             return None
         return Licence(
-            slug=model.slug, name=model.name, url=model.url, obligations=list(model.obligations)
+            slug=model.slug,
+            name=model.name,
+            url=model.url,
+            obligations=list(model.obligations),
+            attribution_text=model.attribution_text,
         )
 
     async def list_licences(self) -> list[Licence]:
@@ -60,6 +64,7 @@ class SqlAlchemyLicenceRepository:
                 name=model.name,
                 url=model.url,
                 obligations=list(model.obligations),
+                attribution_text=model.attribution_text,
             )
             for model in models
         ]
@@ -112,6 +117,7 @@ class SqlAlchemyLicenceRepository:
             "name": licence.name,
             "url": licence.url,
             "obligations": licence.obligations,
+            "attribution_text": licence.attribution_text,
         }
         statement = insert(LicenceModel).values(**values)
         await self._session.execute(
