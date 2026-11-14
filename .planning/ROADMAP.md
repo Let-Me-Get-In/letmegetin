@@ -60,20 +60,23 @@ Plans:
 **Requirements**: EXP-01, EXP-02
 **Success Criteria** (what must be TRUE):
   1. A partner downloads an ODbL export of places, categories, criteria and answers, each row carrying a stable id and its origin id.
-  2. The export renders cumulative attribution (AccesLibre with source name and last-update date, OpenStreetMap, Overture).
+  2. The export renders attribution listing only the sources present in the export, with legal names read from licences.csv (AccesLibre with source name and last-update date).
   3. The API and map are documented as Produced Works alongside the export.
-**Plans**: 5 plans
+**Plans**: 6 plans
 
 Plans:
 - [ ] 14-01-PLAN.md — Append-only `export_event` journal at every place-write choke point + `admin place history <slug>` (D-07, D-08, D-09, D-13)
-- [ ] 14-02-PLAN.md — ODbL ZIP assembly (places/categories/criteria/answers/aliases + ATTRIBUTION + manifest) + `admin export odbl --out [--since]` + `latest.json` (D-01…D-06, D-10, D-14)
+- [ ] 14-02-PLAN.md — ODbL ZIP assembly (places/categories/criteria/answers/aliases + ATTRIBUTION + manifest) + `admin export odbl --out [--delta] [--since]` + moving-watermark `latest.json` + retention (D-01…D-06, D-10, D-14, D-15)
 - [ ] 14-03-PLAN.md — Read-only export routes + `export_data` volume (D-11, D-12)
 - [ ] 14-04-PLAN.md — Public export docs + Produced Works statement + OpenAPI regeneration (EXP-02)
 - [ ] 14-05-PLAN.md — Production generation: `scripts/export-odbl.sh` wrapper (snapshot|delta) + weekly/daily systemd units + `workflow_dispatch` (D-12)
+- [ ] 14-06-PLAN.md — Chunked, resumable AccesLibre import at the event cap (D-16)
 
 Notes:
-- Retention is in scope: `export_event` is pruned to the previous snapshot boundary and delta ZIPs older than the last snapshot are removed (D-15).
-- Answer remapping for merged places, and present-sources-only attribution, were decided in the 2026-11-14 review (D-04, D-05).
+- Delivery is snapshot + moving-watermark deltas: `latest.json` carries `snapshot {name, seq}` and `watermark`; `--since <snapshot_seq>` is a cumulative catch-up (D-10).
+- Retention is in scope (in 14-02): `export_event` is pruned to the previous snapshot boundary and delta ZIPs older than the last snapshot are removed, inside the export flock (D-15).
+- Merged places' answers are remapped onto the canonical id (not dropped) and attribution lists only present sources, both decided in the 2026-11-14 review (D-04, D-05).
+- The AccesLibre import is chunked and resumable, repaired by re-running (D-16).
 
 ### Phase 15: AccesLibre round trip
 **Goal**: Owned rows flow back to AccesLibre as a lov2 feed, and our answers push to their API idempotently.
