@@ -54,6 +54,14 @@ class ExportEventRepository(Protocol):
         """Highest ``seq`` whose inserting transaction has ended; 0 when empty."""
         ...
 
+    async def seq_at_or_before(self, moment: datetime) -> int:
+        """The last ``seq`` that occurred at or before ``moment``; 0 when none did."""
+        ...
+
+    async def delete_up_to(self, seq: int) -> int:
+        """Retention: delete the events at or below a completed snapshot boundary."""
+        ...
+
 
 def describe_changes(before: dict[str, object], after: dict[str, object]) -> dict[str, object]:
     """Top-level keys whose value differs, mapped to their new value (D-13, read time)."""

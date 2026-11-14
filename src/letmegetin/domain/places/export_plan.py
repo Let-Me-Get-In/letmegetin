@@ -331,6 +331,10 @@ def answer_precedence(
 class ExportPlanRepository(Protocol):
     """The bulk read an export needs; streamed, never materialised (635k places / 1.7M answers)."""
 
+    async def begin_repeatable_read(self) -> None:
+        """Pin one REPEATABLE READ snapshot before the boundary is read (B5)."""
+        ...
+
     async def referential_version(self) -> int: ...
 
     def stream_canonical_places(
