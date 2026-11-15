@@ -206,3 +206,15 @@ None. No secret was read. The AccesLibre API key (`LETMEGETIN_ACCESLIBRE_API_KEY
 
 *Phase: 15-acceslibre-round-trip*
 *Completed: 2026-11-15*
+
+## Post-audit correction (2026-11-15)
+
+The `new-only` decision was taken on the assumption that user answers already existed.
+They do not: `place_accessibility where source='user'` = 0, `contribution` = 0,
+`place where source='user'` = 0 on the dev database, and `source_licence` already maps
+`user → dual` with `dual → lov2_partner` allowed.
+
+So the consequence recorded above — "the feed carries only post-change `dual`
+contributions, never all owned rows" — has **no effect today**: there are no owned rows
+to leave behind, and every future contribution is stamped `dual` at write time. `new-only`
+and a re-stamp are indistinguishable until the contributor terms ship (LET-131).

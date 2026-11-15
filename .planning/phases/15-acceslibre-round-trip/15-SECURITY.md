@@ -53,7 +53,7 @@ created: "2026-11-15"
 
 | Risk ID | Threat Ref | Rationale | Accepted By | Date |
 |---------|------------|-----------|-------------|------|
-| AR-15-01 | T-15-11 | The `new-only` decision leaves historical user answers on `odbl`, which the matrix forbids to `lov2_partner`. The alternative — re-stamping rows whose contributors were never told the terms — was judged worse than a narrower feed. Reversible only by a contribution-terms clause plus a reviewed migration (LET-131) | operator | 2026-11-15 |
+| AR-15-01 | T-15-11 | The `new-only` decision leaves historical user answers on `odbl`, which the matrix forbids to `lov2_partner`. **Measured on 2026-11-15: there are zero user rows** — `place_accessibility where source='user'` = 0, `contribution` = 0, `place where source='user'` = 0, and `source_licence` already maps `user → dual` with `dual → lov2_partner` allowed. So `new-only` and a re-stamp are indistinguishable today: the decision has no retroactive cost, and it can be revisited for free once a contribution-terms clause exists (LET-131) | operator | 2026-11-15 |
 
 *Accepted risks do not resurface in future audit runs.*
 
@@ -66,6 +66,29 @@ Not declared mitigations and not open at the block threshold:
 1. **The partner PATCH happens before the run's single commit** (T-15-10). A crash in that window loses the `accepted` journal rows while their side already holds the value; a replay then sees equality and journals nothing. Inherent to one commit per run; the replay is still correct, only the audit trail is thin.
 2. `place_id` appears in the partner feed, as it already does in the public export. It is an anonymous autoincrement id, not a user identifier.
 3. **PART-02 is unverified against the live service** — A1 (a PATCH returning 200 with an `ErpImport`) and the real `accessibilite` key names are still assumptions, gated on LET-130.
+
+---
+
+## Post-Audit Measurement (2026-11-15)
+
+The `new-only` decision was taken defensively, on the assumption that user answers might
+already exist. They do not. Measured on the dev database:
+
+| Query | Count |
+|---|---|
+| `place_accessibility where source='user'` | **0** |
+| `place_accessibility where source='user' and source_license='odbl'` | **0** |
+| `contribution` | **0** |
+| `place where source='user'` | **0** |
+
+And the resolved tables are already aligned: `source_licence` maps `user → dual`,
+`licence_destination` allows `dual → lov2_partner | open_export | osm`.
+
+Consequence: the residual risk AR-15-01 is **empty today**. Nothing is left behind,
+because nothing exists yet, and every future contribution is stamped `dual` at write
+time and is therefore eligible for the partner feed from its first second. The
+`new-only` decision costs nothing; it only becomes a real constraint if a contribution
+is ever written before the contributor terms ship.
 
 ---
 
