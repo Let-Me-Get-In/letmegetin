@@ -37,6 +37,14 @@ ticketed separately, see Deferred).
   nothing; a changed object updates in place through the Phase 12 write path.
 - **D-03:** OSM rows carry **`source='osm'`**. Nothing else about the place model changes.
 
+  > **Amendment (2026-11-16):** D-03 is amended in exactly one respect, and no other. Two nullable
+  > columns are added to `place` — `osm_version` (Integer) and `osm_tags` (JSONB) — and nothing else
+  > about the place model changes. Reason: an OSM `.osmChange` `<modify>` element **replaces** the
+  > target object wholesale, so the generator must hold the object's full raw tag set to emit it back
+  > verbatim; without `osm_tags`, a `<modify>` would silently delete every live tag we never mapped
+  > (BLOCKER 1). `osm_version` is required by the OSM API to address the object being modified. No
+  > other place-model change is authorised by this amendment.
+
 ### What gets imported
 - **D-04:** **All POIs in the mapped categories**, not only those carrying accessibility tags. The
   point of the phase is to have undocumented places to fill, so a bakery with no accessibility data
