@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     cache_ttl: int = 3600
     sentry_dsn: str | None = None
     git_sha: str = "dev"
+    # Read-only partner key: the AccesLibre origin is a module constant in the adapter,
+    # never a setting, so a misconfigured host cannot leak the key (T-15-03).
+    acceslibre_api_key: str | None = None
     retention_idempotency_hours: int = 24
     retention_refresh_days: int = 30
 
