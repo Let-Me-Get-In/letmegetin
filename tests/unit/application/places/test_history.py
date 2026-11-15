@@ -8,8 +8,8 @@ from datetime import datetime
 from decimal import Decimal
 
 import pytest
-from letmegetin.application.places.history import format_history, place_history
 
+from letmegetin.application.places.history import format_history, place_history
 from letmegetin.core.exceptions import DomainError
 from letmegetin.domain.places.export import ExportEvent, _jsonable, describe_changes
 
