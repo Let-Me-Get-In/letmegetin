@@ -230,6 +230,8 @@ class PlaceModel(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(String(255))
     name_normalized: Mapped[str] = mapped_column(String(255))
     slug: Mapped[str] = mapped_column(String(300), unique=True, index=True)
+    # AccesLibre's own ERP slug, the identifier the 15-03 probe resolves (D-05) — not our slug.
+    erp_slug: Mapped[str | None] = mapped_column(String(255))
     category_id: Mapped[int | None] = mapped_column(
         ForeignKey("categories.id", ondelete="SET NULL"), index=True
     )
