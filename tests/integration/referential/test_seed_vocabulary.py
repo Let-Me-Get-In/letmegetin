@@ -85,4 +85,4 @@ def test_seed_loads_the_reviewed_licence_data(db: None) -> None:
         for row in rows("SELECT source, licence_slug FROM source_licence")
     }
     assert mapping["acceslibre"] == "lov2"
-    assert mapping["user"] == "odbl"
+    assert mapping["user"] == "dual"
