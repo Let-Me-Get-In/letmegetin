@@ -1,8 +1,9 @@
-"""Generate the ``.osmChange`` an operator uploads — never an upload (D-09).
+"""Generate the ``.osmChange`` and changeset comment an operator uploads — never an upload (D-09).
 
-The publish path writes one file and opens no network connection: OSM's automated-edit policy
-requires a human to review and send the changeset, so this module produces the document and the
-gate that must be satisfied before it may exist.
+The publish path writes two files and opens no network connection: OSM's automated-edit policy
+requires a human to review and send the changeset, so this module produces the document, the
+changeset comment that points reviewers at the wiki page, and the gate that must be satisfied
+before either may exist.
 
 Non-destructive by construction (BLOCKER 1): a ``.osmChange`` ``<modify>`` element replaces the
 target object's whole tag set, so every element carries the *stored* ``osm_tags`` merged with the
@@ -10,9 +11,11 @@ accessibility tags our reviewed mapping writes back. A place whose stored tag se
 refused and counted, never emitted with a partial set: that would delete every live tag the
 element omits.
 
-The gate is fail-closed (D-10, D-11): the five policy artefacts and an explicit ``accepted``
-terms-of-service flag must be present under ``<data_dir>/osm/`` before anything is written.
-16-05 authors those artefacts; this module only refuses to run without them.
+The gate is fail-closed and content-aware (D-10, D-11): the five policy artefacts and an explicit
+``accepted`` terms-of-service flag must be present under ``<data_dir>/osm/``, the comment template
+must name the project and carry ``{wiki_url}``, and both the discussion URL and the wiki page's
+``url:`` line must be real ``https://`` values, before anything is written. Consent is a human
+action: this module never infers it.
 """
 
 from __future__ import annotations
@@ -22,9 +25,14 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from letmegetin.application.referential.licences import (
+    load_licence_destinations,
+    load_licences,
+)
 from letmegetin.application.referential.osm_tags import load_osm_accessibility_tags
 from letmegetin.core.exceptions import DomainError
 from letmegetin.domain.places.entities import Place, PlaceAccessibility
+from letmegetin.domain.places.licence import can_redistribute
 from letmegetin.domain.places.osm_change import ACTION_MODIFY, serialize_document, serialize_element
 from letmegetin.domain.places.osm_map import SOURCE, AccessibilityMapping
 from letmegetin.domain.places.repositories import PlaceRepository
@@ -33,8 +41,7 @@ from letmegetin.domain.places.repositories import PlaceRepository
 # (D-10, BLOCKER 4). Nothing in this phase sleeps on it: the generator writes a file.
 OSM_THROTTLE_SECONDS = 5.0
 
-# ``changeset_comment_template.txt`` is a gate artefact too, but the generator writes only the
-# .osmChange; 16-05 owns the comment rendering.
+# The six reviewed files the gate reads; the generator refuses to write without them (D-10).
 POLICY_ARTEFACTS = (
     "import_plan.md",
     "wiki_page.md",
@@ -46,9 +53,15 @@ TOS_CONSENT = "tos_consent.txt"
 CONSENT_ACCEPTED = "accepted"
 
 OUTPUT_NAME = "answers.osmChange"
+COMMENT_NAME = "changeset_comment.txt"
+
+# Any of these in a URL means a human has not published it yet (BLOCKER 2, WARNING 7).
+PLACEHOLDER_MARKERS = ("<", "TODO", "to be published")
+# The template's hole for the published wiki page; the gate refuses a template without it.
+WIKI_URL_PLACEHOLDER = "{wiki_url}"
 
 # Why a selected place produced no element. Stable strings: the report prints them verbatim.
-NO_ANSWER = "no reviewed accessibility answer to publish"
+NO_ANSWER = "no answer both redistributable to osm and mapped to a reviewed tag"
 NO_STORED_TAGS = "no stored osm_tags (a partial modify would delete live tags)"
 NO_VERSION = "no osm_version"
 NOT_A_NODE = "not a node/<id> object"
@@ -62,6 +75,7 @@ class OsmPublishReport:
     emitted: int = 0
     element_count: int = 0
     not_emitted: dict[str, int] = field(default_factory=dict)
+    comment_path: Path | None = None
 
 
 def format_publish_report(report: OsmPublishReport) -> list[str]:
@@ -69,27 +83,116 @@ def format_publish_report(report: OsmPublishReport) -> list[str]:
     lines.extend(
         f"  not emitted ({reason}): {count}" for reason, count in sorted(report.not_emitted.items())
     )
+    if report.comment_path is not None:
+        lines.append(f"  changeset comment: {report.comment_path}")
     return lines
 
 
-def _require_policy(data_dir: Path) -> None:
-    """Refuse to write until every artefact OSM's policy asks for is present (D-10, D-11)."""
-    osm_dir = data_dir / "osm"
-    missing = [name for name in (*POLICY_ARTEFACTS, TOS_CONSENT) if not (osm_dir / name).is_file()]
-    if missing:
-        raise DomainError(
-            f"osm publish refused: {osm_dir} is missing {', '.join(missing)}; OSM's automated-edit "
-            "policy requires every artefact before a changeset may be generated (D-10)"
-        )
+@dataclass(frozen=True)
+class PublishGate:
+    """The reviewed artefacts, read once; a ``pending`` flag or a placeholder lives here too."""
+
+    import_plan: str
+    wiki_page: str
+    discussion_url: str
+    changeset_comment_template: str
+    bot_account: str
+    tos_consent: str
+
+    @property
+    def wiki_url(self) -> str:
+        """The ``url:`` line of the wiki page's front matter, or ``""`` when absent."""
+        lines = self.wiki_page.splitlines()
+        if not lines or lines[0].strip() != "---":
+            return ""
+        for line in lines[1:]:
+            if line.strip() == "---":
+                break
+            key, _, value = line.partition(":")
+            if key.strip() == "url":
+                return value.strip()
+        return ""
+
+
+def _read_artefact(osm_dir: Path, name: str) -> str:
+    path = osm_dir / name
     try:
-        consent = (osm_dir / TOS_CONSENT).read_text(encoding="utf-8").rstrip("\r\n")
+        return path.read_text(encoding="utf-8")
     except OSError as exc:
-        raise DomainError(f"{osm_dir / TOS_CONSENT} is unreadable: {exc}") from exc
+        raise DomainError(
+            f"osm publish refused: {path} is missing or unreadable ({exc}); OSM's automated-edit "
+            "policy requires every artefact before a changeset may be generated (D-10)"
+        ) from exc
+
+
+def load_publish_gate(data_dir: Path) -> PublishGate:
+    """Read the six reviewed files; a missing one is refused before any content is judged."""
+    osm_dir = data_dir / "osm"
+    return PublishGate(
+        import_plan=_read_artefact(osm_dir, "import_plan.md"),
+        wiki_page=_read_artefact(osm_dir, "wiki_page.md"),
+        discussion_url=_read_artefact(osm_dir, "discussion_url.txt"),
+        changeset_comment_template=_read_artefact(osm_dir, "changeset_comment_template.txt"),
+        bot_account=_read_artefact(osm_dir, "bot_account.md"),
+        tos_consent=_read_artefact(osm_dir, TOS_CONSENT),
+    )
+
+
+def _require_real_url(label: str, value: str) -> None:
+    """A missing, non-``https://`` or placeholder URL refuses the run (BLOCKER 2)."""
+    if not value.startswith("https://") or any(marker in value for marker in PLACEHOLDER_MARKERS):
+        raise DomainError(
+            f"osm publish refused: {label} must be a real https:// URL, not '{value}'; publish it "
+            "before generating a changeset the community will be pointed at (D-10)"
+        )
+
+
+def assert_publish_gate(gate: PublishGate) -> None:
+    """Refuse until every artefact is present, substantive, published, and the consent is real."""
+    contents = {
+        "import_plan.md": gate.import_plan,
+        "wiki_page.md": gate.wiki_page,
+        "discussion_url.txt": gate.discussion_url,
+        "changeset_comment_template.txt": gate.changeset_comment_template,
+        "bot_account.md": gate.bot_account,
+        TOS_CONSENT: gate.tos_consent,
+    }
+    for name, content in contents.items():
+        if not content.strip():
+            raise DomainError(
+                f"osm publish refused: {name} is empty; OSM's policy requires it (D-10)"
+            )
+    # Only the trailing newline is stripped: `accepted ` is not consent, and `pending` never is.
+    consent = gate.tos_consent.rstrip("\r\n")
     if consent != CONSENT_ACCEPTED:
         raise DomainError(
-            f"osm publish refused: {osm_dir / TOS_CONSENT} must read '{CONSENT_ACCEPTED}', not "
-            f"'{consent}'; publishing requires terms-of-service consent the user granted (D-11)"
+            f"osm publish refused: {TOS_CONSENT} must read '{CONSENT_ACCEPTED}', not '{consent}'; "
+            "publishing requires terms-of-service consent the user granted, never one this code "
+            "infers (D-11)"
         )
+    if "LetMeGetIn" not in gate.changeset_comment_template:
+        raise DomainError(
+            "osm publish refused: changeset_comment_template.txt must name the project LetMeGetIn, "
+            "because that is what an OSM reviewer looks for (D-09)"
+        )
+    if WIKI_URL_PLACEHOLDER not in gate.changeset_comment_template:
+        raise DomainError(
+            "osm publish refused: changeset_comment_template.txt must carry a "
+            f"{WIKI_URL_PLACEHOLDER} placeholder so the comment can link the wiki page (D-09)"
+        )
+    _require_real_url("discussion_url.txt", gate.discussion_url.strip())
+    _require_real_url("the wiki page url: line", gate.wiki_url)
+
+
+def _licence_matrix(data_dir: Path) -> dict[tuple[str, str], bool]:
+    """The reviewed redistribution matrix, as ``can_redistribute`` reads it (D-12)."""
+    try:
+        slugs = {licence.slug for licence in load_licences(data_dir / "licences.csv")}
+        destinations = load_licence_destinations(data_dir / "licence_destinations.csv", slugs)
+    except OSError as exc:
+        # Fail closed: a missing reviewed matrix must not fall through as an empty allow-set.
+        raise DomainError(f"osm publish refused: the licence matrix is unreadable: {exc}") from exc
+    return {(row.licence_slug, row.destination): row.allowed for row in destinations}
 
 
 def _invert(mapping: AccessibilityMapping) -> dict[tuple[str, str], tuple[str, str]]:
@@ -103,10 +206,13 @@ def _invert(mapping: AccessibilityMapping) -> dict[tuple[str, str], tuple[str, s
 def _mapped_tags(
     answers: Iterable[PlaceAccessibility],
     inverse: Mapping[tuple[str, str], tuple[str, str]],
+    matrix: Mapping[tuple[str, str], bool],
 ) -> dict[str, str]:
-    """The accessibility answers a reviewed inverse mapping can express as OSM tags."""
+    """The answers we may send to OSM (D-12) that a reviewed inverse mapping can express as tags."""
     tags: dict[str, str] = {}
     for answer in answers:
+        if not can_redistribute(answer.source_license, "osm", matrix):
+            continue
         value = answer.value.get("value") if isinstance(answer.value, dict) else None
         if not isinstance(value, str):
             continue
@@ -155,17 +261,15 @@ def _write_atomic(path: Path, payload: bytes) -> None:
 
 
 async def osm_publish(places: PlaceRepository, *, out: Path, data_dir: Path) -> OsmPublishReport:
-    """Write ``answers.osmChange`` for every OSM place we hold an answer for (D-09).
+    """Write ``answers.osmChange`` and its changeset comment for every OSM place we may publish.
 
     Elements are ordered by numeric object id, so two runs over the same data produce the same
     document. The file is written even when nothing is emitted: an empty ``osmChange`` is a
     valid, reviewable answer, and the gate is what decides whether it may exist at all.
-
-    ``shortcut:`` the licence matrix is not re-read here — every reviewed source is allowed to
-    the ``osm`` destination (``licence_destinations.csv``), and only ``source='osm'`` places are
-    emitted. Re-check with ``can_redistribute`` when a source is added that OSM may not receive.
     """
-    _require_policy(data_dir)
+    gate = load_publish_gate(data_dir)
+    assert_publish_gate(gate)
+    matrix = _licence_matrix(data_dir)
     accessibility = load_osm_accessibility_tags(data_dir / "osm_accessibility_tags.csv")
     inverse = _invert(accessibility)
 
@@ -175,7 +279,7 @@ async def osm_publish(places: PlaceRepository, *, out: Path, data_dir: Path) -> 
     report = OsmPublishReport()
     elements: list[tuple[int, str]] = []
     for place in places_of_source:
-        mapped = _mapped_tags(answers.get(place.id, ()), inverse)
+        mapped = _mapped_tags(answers.get(place.id, ()), inverse, matrix)
         osmid = _node_id(place.source_id)
         reason = _refusal(place, mapped, osmid)
         if reason is not None:
@@ -205,5 +309,9 @@ async def osm_publish(places: PlaceRepository, *, out: Path, data_dir: Path) -> 
         out / OUTPUT_NAME,
         serialize_document(element for _, element in elements).encode("utf-8"),
     )
+    # The gate refused a placeholder wiki URL before this point, so the comment cannot carry one.
+    comment = gate.changeset_comment_template.replace(WIKI_URL_PLACEHOLDER, gate.wiki_url)
+    _write_atomic(out / COMMENT_NAME, comment.encode("utf-8"))
     report.element_count = len(elements)
+    report.comment_path = out / COMMENT_NAME
     return report
