@@ -40,6 +40,7 @@ from letmegetin.domain.places.lov2_projection import (
     ProjectedCriterion,
     ProjectedPlace,
     UnmappableAnswer,
+    UnmappableCategory,
     UnmappablePlace,
     canonical_activites,
     project_alias,
@@ -63,7 +64,7 @@ LOV2_HEADERS = ExportHeaders(
     aliases=ALIASES_HEADER,
 )
 
-Unmappable = UnmappablePlace | UnmappableAnswer
+Unmappable = UnmappablePlace | UnmappableCategory | UnmappableAnswer
 
 
 def _read_csv(path: Path, header: Sequence[str]) -> list[dict[str, str]]:
@@ -218,7 +219,7 @@ class Lov2ExportRepository:
         for row in await self._inner.list_categories():
             category = project_category(row, self._activite_for)
             if category is None:
-                self._divert(UnmappablePlace(row.slug, "no_category_inverse", "category"))
+                self._divert(UnmappableCategory(row.slug, "no_category_inverse"))
             else:
                 projected.append(category)
         return projected
