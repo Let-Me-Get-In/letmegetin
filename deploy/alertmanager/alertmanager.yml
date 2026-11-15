@@ -21,8 +21,13 @@ receivers:
         # address (127.0.0.1:9090), which nobody outside the host can open — and
         # there is no public dashboard on purpose. The link a paged human needs
         # is the checklist that tells them what to do, so it replaces the dead one.
-        title: "{{ .CommonLabels.alertname }} — {{ .Status }} ({{ .CommonLabels.severity }})"
+        # Icon first, so the channel shows severity before any word: a firing
+        # critical is red, a firing warning is amber, a resolution is green.
+        # `alertname` stays in the title because it is the key the runbook and
+        # the Prometheus rules are written against.
+        title: >-
+          {{ if eq .Status "firing" }}{{ if eq .CommonLabels.severity "critical" }}🔴{{ else }}⚠️{{ end }}{{ else }}✅{{ end }} LetMeGetIn · {{ .CommonLabels.alertname }}
         message: |
           {{ range .Alerts }}{{ .Annotations.summary }}
           {{ end }}
-          Runbook: https://github.com/Let-Me-Get-In/letmegetin/blob/main/docs/runbook.md#incident-checklist
+          → https://github.com/Let-Me-Get-In/letmegetin/blob/main/docs/runbook.md#incident-checklist
