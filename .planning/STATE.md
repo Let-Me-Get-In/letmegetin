@@ -4,11 +4,11 @@ milestone: v2.0
 current_phase: 15
 current_phase_name: AccesLibre round trip
 status: executing
-stopped_at: Phase 15 merged; verification pending
-last_updated: "2026-11-15T20:39:02.385Z"
+stopped_at: Phase 16 context gathered
+last_updated: "2026-11-15T21:29:55.145Z"
 last_activity: 2026-11-15
 last_activity_desc: Phase 15 execution started
-state_head: 29d701f635c41594ce732bc889377d27d01b3ea7
+state_head: b005363ee77f4f0ff5d0d00a0f56e295b2867646
 progress:
   total_phases: 6
   completed_phases: 3
@@ -131,9 +131,9 @@ Last activity: 2026-11-15 — 15-03 probe command and erp_slug column landed; li
 
 ## Session Continuity
 
-Last session: 2026-11-15T20:39:01.917Z
-Stopped at: Phase 15 merged; verification pending
-Resume file: None
+Last session: 2026-11-15T21:29:54.633Z
+Stopped at: Phase 16 context gathered
+Resume file: .planning/phases/16-openstreetmap/16-CONTEXT.md
 
 ## Known debt
 
