@@ -113,7 +113,18 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. An operator imports the France OSM extract's POIs as `source='osm'`, idempotently on the node/way id, mapped to our categories through reviewed tags.
   2. An operator publishes our answers to OSM, following OSM's documented import and automated-edit policy (import plan, wiki page, community discussion, per-changeset comments, bot account), once the terms-of-service consent exists.
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+**Wave 1**
+- [ ] 16-01-PLAN.md — The tracer slice: pinned `pyosmium` behind an infrastructure PBF reader, the `import osm` use case writing an idempotent `source='osm'` place (with `osm_version`), and the pure `.osmChange` serialiser — one POI flows PBF → place row → `.osmChange` element (OSM-01, OSM-02)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 16-02-PLAN.md — Reviewed data completion: `category_mapping.csv` osm_tag (124 cells) + the full `osm_accessibility_tags.csv` + `osm tags audit` + the `osm;odbl` source_licences row and the D-12 refusal test (OSM-01)
+- [ ] 16-03-PLAN.md — Wire the phase-3 dedup scorer into `import osm` (linked rows, not duplicates) and the D-06 unmatched-tag-combination report (OSM-01)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 16-04-PLAN.md — Author the five policy artefacts + the reviewed ToS flag, and complete the fail-closed `.osmChange` generator + changeset comment (no upload) (OSM-02)
 
 ### Phase 17: Overture
 **Goal**: Overture becomes the volumetric second source, on evidence rather than guesswork.
@@ -134,7 +145,7 @@ Plans:
 | 13. Documented-place visualisation | LET-75 | 3/3 | Complete    | 2026-11-14 |
 | 14. Open ODbL export | LET-72 | 5/5 | Complete    | 2026-11-15 |
 | 15. AccesLibre round trip | LET-73, LET-74 | 6/6 | In Progress | — |
-| 16. OpenStreetMap | LET-77, LET-78 | 0/— | Not started | — |
+| 16. OpenStreetMap | LET-77, LET-78 | 0/4 | Not started | — |
 | 17. Overture | LET-70, LET-71, LET-76 | 0/— | Not started | — |
 
 ---
