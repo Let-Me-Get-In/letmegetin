@@ -198,3 +198,7 @@ class CategoryMappingRepository(Protocol):
     """Resolve a source vocabulary term to one of our categories."""
 
     async def resolve_slug(self, slug: str) -> int | None: ...
+
+    async def resolve_osm_tag(self, tag: str) -> int | None:
+        """Category id for one reviewed ``category_mapping.osm_tag`` value, else ``None``."""
+        ...

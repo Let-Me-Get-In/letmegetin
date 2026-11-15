@@ -262,6 +262,10 @@ class PlaceModel(Base, TimestampMixin):
     retrieved_at: Mapped[datetime | None] = mapped_column()
     # The source's own claim about the data (Acceslibre ``date_maj``), not ingestion time.
     observed_at: Mapped[datetime | None] = mapped_column()
+    # OSM identity: the object version addresses a .osmChange <modify>, the raw tag set is
+    # what makes that element non-destructive (D-03 amendment). NULL for every other source.
+    osm_version: Mapped[int | None] = mapped_column(Integer)
+    osm_tags: Mapped[dict | None] = mapped_column(JSONB)
 
 
 class PlaceReviewDecisionModel(Base):

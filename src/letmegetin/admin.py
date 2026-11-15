@@ -45,6 +45,7 @@ from letmegetin.application.places.import_acceslibre import (
     import_acceslibre,
     iter_acceslibre_rows,
 )
+from letmegetin.application.places.import_osm import OsmRow, import_osm, render_unmatched
 from letmegetin.application.places.lov2_export import load_identifier_rule
 from letmegetin.application.places.push_acceslibre import PushReport, push_acceslibre
 from letmegetin.application.places.reclassify import reclassify_places
@@ -87,6 +88,7 @@ from letmegetin.domain.places.licence import DESTINATIONS
 from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
 from letmegetin.domain.referential.labels import parse_label_pairs
 from letmegetin.infrastructure.acceslibre.client import AccesLibreClient
+from letmegetin.infrastructure.osm_pbf import iter_osm_rows
 from letmegetin.infrastructure.persistence.export_repositories import (
     SqlAlchemyExportEventRepository,
     SqlAlchemyExportRepository,
@@ -705,6 +707,53 @@ def import_acceslibre_command(
         ]
         ranked = sorted(report.unresolved.items(), key=lambda item: (-item[1], item[0]))
         lines.extend(f"  unresolved: {value}={count}" for value, count in ranked[:20])
+        return "\n".join(lines)
+
+    _run_admin(callback, bump=False, commit=not dry_run)
+
+
+@import_app.command("osm")
+def import_osm_command(
+    file: Annotated[Path, typer.Option("--file", "-f", help="Local .osm.pbf extract")],
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", help="Report resolution and write nothing")
+    ] = False,
+    no_dedup: Annotated[
+        bool,
+        typer.Option(
+            "--no-dedup",
+            help="Skip the per-row duplicate lookup (first bulk load; run the dedup pass after)",
+        ),
+    ] = False,
+) -> None:
+    """Import a local OpenStreetMap PBF extract; idempotent by (source, source_id)."""
+
+    def _progress(rows: Iterable[OsmRow], every: int = 5000) -> Iterator[OsmRow]:
+        # One transaction means the table shows nothing until the end: this is the
+        # only way to tell "slow" apart from "stuck" while a national extract runs.
+        for index, row in enumerate(rows, 1):
+            if index % every == 0:
+                print(f"  ... {index} objects read", file=sys.stderr, flush=True)
+            yield row
+
+    async def callback(session: AsyncSession) -> str:
+        report = await import_osm(
+            SqlAlchemyPlaceRepository(session),
+            SqlAlchemyCategoryRepository(session),
+            SqlAlchemyCategoryMappingRepository(session),
+            SqlAlchemyPlaceAliasRepository(session),
+            SqlAlchemyMergeLogRepository(session),
+            SqlAlchemyCriterionRepository(session),
+            _progress(iter_osm_rows(file)),
+            dry_run=dry_run,
+            dedup=not no_dedup,
+        )
+        lines = [
+            f"osm import: created={report.created} linked={report.linked} "
+            f"review={report.review} skipped={report.skipped} resolved={report.resolved} "
+            f"unresolved={report.unresolved} dry_run={dry_run}"
+        ]
+        lines.extend(render_unmatched(report))
         return "\n".join(lines)
 
     _run_admin(callback, bump=False, commit=not dry_run)
