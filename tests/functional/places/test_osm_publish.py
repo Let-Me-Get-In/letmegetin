@@ -50,17 +50,30 @@ _NODE_1_MAPPED = {"wheelchair": "yes"}
 
 @pytest.fixture
 def partner_data(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """The reviewed data plus the six policy files 16-05 will author for real."""
+    """The reviewed data and the real policy artefacts, with the gate's placeholders promoted."""
     data = tmp_path / "referential"
     data.mkdir()
-    shutil.copy(_REFERENTIAL / "osm_accessibility_tags.csv", data / "osm_accessibility_tags.csv")
-    policy = data / "osm"
-    policy.mkdir()
-    for name in POLICY_ARTEFACTS:
-        (policy / name).write_text(f"reviewed {name}\n", encoding="utf-8")
-    (policy / TOS_CONSENT).write_text("accepted\n", encoding="utf-8")
+    for name in ("osm_accessibility_tags.csv", "licences.csv", "licence_destinations.csv"):
+        shutil.copy(_REFERENTIAL / name, data / name)
+    shutil.copytree(_REFERENTIAL / "osm", data / "osm")
+    _promote_gate(data / "osm")
     monkeypatch.setattr(settings, "data_dir", data)
     return data
+
+
+def _promote_gate(policy: Path) -> None:
+    """The three human actions the checkpoint asks for, so a happy path can run at all."""
+    (policy / TOS_CONSENT).write_text("accepted\n", encoding="utf-8")
+    (policy / "discussion_url.txt").write_text(
+        "https://example.invalid/osm-community-thread\n", encoding="utf-8"
+    )
+    wiki = policy / "wiki_page.md"
+    wiki.write_text(
+        wiki.read_text(encoding="utf-8").replace(
+            "<to be published>", "https://example.invalid/wiki"
+        ),
+        encoding="utf-8",
+    )
 
 
 @pytest.fixture
