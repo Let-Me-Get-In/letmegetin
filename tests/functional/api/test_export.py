@@ -133,6 +133,7 @@ def test_a_symlink_out_of_the_directory_is_not_served(
         ("secret.txt", False),
         ("latest.json.lock", False),
         (".export-1.zip.tmp", False),
+        ("export-2026\x0011.zip", False),
     ],
 )
 def test_only_a_plain_zip_name_is_servable(name: str, servable: bool) -> None:

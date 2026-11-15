@@ -69,6 +69,7 @@ def _is_servable(filename: str) -> bool:
     """A served name is a plain `.zip` file name, never a path, a lock or a temp file."""
     return (
         filename.endswith(".zip")
+        and filename.isprintable()  # a NUL byte would reach Path.resolve() and raise
         and not filename.startswith(".")
         and "/" not in filename
         and "\\" not in filename
