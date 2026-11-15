@@ -4,16 +4,16 @@ milestone: v2.0
 current_phase: 15
 current_phase_name: AccesLibre round trip
 status: executing
-stopped_at: Completed 15-01-PLAN.md
-last_updated: "2026-11-15T18:11:23.016Z"
+stopped_at: Completed 15-02-PLAN.md
+last_updated: "2026-11-15T18:17:08.171Z"
 last_activity: 2026-11-15
 last_activity_desc: Phase 15 execution started
-state_head: b1894de0dffac71cae581f84129ceb0a6f80a578
+state_head: 9e6a41abdc50cb7aaf669940d34b234e9d81065c
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 19
-  completed_plans: 14
+  completed_plans: 15
 milestone_name: Federated Data & Partners
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 ## Current Position
 
 Phase: 15 (AccesLibre round trip) — EXECUTING
-Plan: 2 of 6
+Plan: 3 of 6
 Status: Ready to execute
 Last activity: 2026-11-15 — Phase 15 execution started
 
@@ -54,6 +54,7 @@ Last activity: 2026-11-15 — Phase 15 execution started
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 15 P01 | 3min | 2 tasks | 3 files |
+| Phase 15 P02 | 4min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -97,6 +98,9 @@ Last activity: 2026-11-15 — Phase 15 execution started
 - An axe scan waits for the last client-only thing to hydrate (the map) before running: a half-rendered page reports zero violations, and an artifact with a quiet zero would send the fix plan after nothing.
 - [Phase 15]: Partner archives are named lov2_partner-<stamp>-full.zip; ODbL snapshot and delta names are unchanged
 - [Phase 15]: A non-open_export destination refuses --delta/--since: partner feeds are full snapshots until a partner delta chain is specified
+- [Phase 15]: The AccesLibre push sends booleans as "true"/"false" strings: the live write schema declares them string, while the read side returns real booleans (Pitfall 9).
+- [Phase 15]: The AccesLibre origin is a module constant an adapter test pins; a host setting must never come back — it would be a key-exfiltration path.
+- [Phase 15]: Push freshness is a named amended-D-11 rule: our claim date is observed_at else recorded_at, so a community answer with NULL observed_at can still win.
 
 ### Pending Todos
 
@@ -118,8 +122,8 @@ Last activity: 2026-11-15 — Phase 15 execution started
 
 ## Session Continuity
 
-Last session: 2026-11-15T18:11:22.780Z
-Stopped at: Completed 15-01-PLAN.md
+Last session: 2026-11-15T18:17:07.921Z
+Stopped at: Completed 15-02-PLAN.md
 Resume file: None
 
 ## Known debt
