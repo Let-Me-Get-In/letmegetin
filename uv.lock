@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.12"
 resolution-markers = [
     "python_full_version >= '3.15'",
@@ -626,6 +626,7 @@ dependencies = [
     { name = "asyncpg" },
     { name = "fastapi" },
     { name = "geoalchemy2" },
+    { name = "httpx" },
     { name = "prometheus-client" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -640,7 +641,6 @@ dependencies = [
 dev = [
     { name = "bandit" },
     { name = "fakeredis" },
-    { name = "httpx" },
     { name = "mypy" },
     { name = "pre-commit" },
     { name = "pytest" },
@@ -655,6 +655,7 @@ requires-dist = [
     { name = "asyncpg", specifier = ">=0.29.0" },
     { name = "fastapi", specifier = ">=0.115.0" },
     { name = "geoalchemy2", specifier = ">=0.15.0" },
+    { name = "httpx", specifier = ">=0.27.0" },
     { name = "prometheus-client", specifier = ">=0.26.0" },
     { name = "pydantic", specifier = ">=2.8.0" },
     { name = "pydantic-settings", specifier = ">=2.4.0" },
@@ -669,7 +670,6 @@ requires-dist = [
 dev = [
     { name = "bandit", specifier = ">=1.7.9" },
     { name = "fakeredis", specifier = ">=2.40.0" },
-    { name = "httpx", specifier = ">=0.27.0" },
     { name = "mypy", specifier = ">=1.11.0" },
     { name = "pre-commit", specifier = ">=4.7.0" },
     { name = "pytest", specifier = ">=8.2.0" },
