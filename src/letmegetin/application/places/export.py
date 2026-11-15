@@ -58,7 +58,6 @@ from letmegetin.domain.places.export_plan import (
 )
 from letmegetin.domain.referential.entities import Licence
 
-DESTINATION = "open_export"
 MODE_DELTA = "delta"
 MODE_SINCE = "since"
 
@@ -243,6 +242,7 @@ async def _write_zip(
     boundary: int,
     from_seq: int | None,
     answer_window: tuple[int, int] | None,
+    destination: str = "open_export",
 ) -> _ZipResult:
     """Stream the seven entries; ATTRIBUTION and the manifest close the archive."""
     presence = _Presence()
@@ -255,7 +255,7 @@ async def _write_zip(
                 PLACES_FILE,
                 PLACES_HEADER,
                 PLACES_FILE,
-                _seeing(export.stream_canonical_places(DESTINATION, from_seq), presence),
+                _seeing(export.stream_canonical_places(destination, from_seq), presence),
             )
             files[CATEGORIES_FILE] = await _write_csv_entry(
                 archive,
@@ -276,7 +276,7 @@ async def _write_zip(
                 ANSWERS_FILE,
                 ANSWERS_HEADER,
                 ANSWERS_FILE,
-                _seeing(export.stream_answers(DESTINATION, answer_window), presence),
+                _seeing(export.stream_answers(destination, answer_window), presence),
             )
             files[ALIASES_FILE] = await _write_csv_entry(
                 archive,
@@ -285,9 +285,9 @@ async def _write_zip(
                 ALIASES_FILE,
                 export.stream_aliases(from_seq),
             )
-            excluded_places = await export.place_exclusion_counts(DESTINATION)
-            excluded_answers = await export.answer_exclusion_counts(DESTINATION)
-            withheld_answers = await export.place_withheld_answer_counts(DESTINATION)
+            excluded_places = await export.place_exclusion_counts(destination)
+            excluded_answers = await export.answer_exclusion_counts(destination)
+            withheld_answers = await export.place_withheld_answer_counts(destination)
             attribution = _render_attribution(presence, _licence_catalogue())
             archive.writestr(ATTRIBUTION_FILE, attribution)
             files[ATTRIBUTION_FILE] = 1
@@ -346,12 +346,18 @@ async def export_odbl(
     since: int | None = None,
     since_date: date | None = None,
     delta: bool = False,
+    destination: str = "open_export",
 ) -> ExportReport:
     """Write one ZIP plus ``latest.json``; a snapshot also prunes the journal (D-10, D-15)."""
     if delta and (since is not None or since_date is not None):
         raise DomainError("--delta and --since are exclusive: a delta follows the watermark")
     if since is not None and since_date is not None:
         raise DomainError("--since takes a sequence number or an ISO date, not both")
+    if destination != "open_export" and (delta or since is not None or since_date is not None):
+        raise DomainError(
+            "partner feeds are full snapshots only: deltas are deferred until a partner "
+            "delta chain is specified"
+        )
     mode = (
         MODE_DELTA if delta else (MODE_SINCE if since is not None or since_date else MODE_SNAPSHOT)
     )
@@ -392,10 +398,13 @@ async def export_odbl(
         generated_at = datetime.now(UTC)
         # Microseconds keep two runs in the same second from overwriting each other's ZIP.
         stamp = generated_at.strftime("%Y%m%dT%H%M%S%fZ")
+        # A partner archive must never collide with an ODbL snapshot name; the ODbL names
+        # stay as they are, so every existing consumer's glob keeps matching.
+        stem = "export" if destination == "open_export" else destination
         name = {
-            MODE_SNAPSHOT: f"export-{stamp}-full.zip",
+            MODE_SNAPSHOT: f"{stem}-{stamp}-full.zip",
             MODE_DELTA: f"delta-{stamp}.zip",
-            MODE_SINCE: f"export-{stamp}-since-{from_seq}.zip",
+            MODE_SINCE: f"{stem}-{stamp}-since-{from_seq}.zip",
         }[mode]
         result = await _write_zip(
             out / name,
@@ -405,6 +414,7 @@ async def export_odbl(
             boundary=boundary,
             from_seq=from_seq,
             answer_window=None if from_seq is None else (from_seq, boundary),
+            destination=destination,
         )
 
         deltas: list[dict[str, object]] = []
