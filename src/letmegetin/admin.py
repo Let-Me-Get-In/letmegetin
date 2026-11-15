@@ -38,7 +38,7 @@ from letmegetin.application.places.duplicates import (
     merge_duplicate,
     reject_duplicate,
 )
-from letmegetin.application.places.export import export_odbl
+from letmegetin.application.places.export import export_odbl, refuse_partner_window
 from letmegetin.application.places.history import place_history
 from letmegetin.application.places.import_acceslibre import (
     AcceslibreRow,
@@ -924,21 +924,32 @@ def export_odbl_command(
 
     async def callback(session: AsyncSession) -> str:
         since_seq, since_date = _parse_since(since)
-        report = await export_odbl(
-            SqlAlchemyExportRepository(session),
-            SqlAlchemyExportEventRepository(session),
-            out=out,
-            since=since_seq,
-            since_date=since_date,
-            delta=delta,
-            destination=destination,
-        )
+        refuse_partner_window(destination, delta=delta, since=since_seq, since_date=since_date)
+        repository = SqlAlchemyExportRepository(session)
+        events = SqlAlchemyExportEventRepository(session)
+        if destination == "lov2_partner":
+            # The partner feed projects every row into AccesLibre's vocabulary (D-04, D-05).
+            from letmegetin.application.places.lov2_export import build_lov2_feed
+
+            report = await build_lov2_feed(repository, events, out=out)
+        else:
+            report = await export_odbl(
+                repository,
+                events,
+                out=out,
+                since=since_seq,
+                since_date=since_date,
+                delta=delta,
+                destination=destination,
+            )
         lines = [
             f"{report.mode} export: {report.name}",
             "  files: " + ", ".join(f"{name}={count}" for name, count in report.files.items()),
             f"  snapshot={report.snapshot_seq} watermark={report.watermark} "
             f"floor={report.retention_floor_seq}",
         ]
+        if destination == "lov2_partner":
+            lines.append(f"  mapping: {out / 'mapping.csv'}")
         for label, counts in (
             ("excluded places", report.excluded_places),
             ("excluded answers", report.excluded_answers),

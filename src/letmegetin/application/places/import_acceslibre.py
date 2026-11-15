@@ -44,6 +44,9 @@ _COLUMNS: dict[str, tuple[str, ...]] = {
     "category": ("categorie", "category", "activite", "activite_principale"),
     "website": ("site_internet", "website", "url"),
     "phone": ("telephone", "phone", "tel"),
+    # AccesLibre's own ERP slug — the identifier the API addresses ERPs by, and the one
+    # `resolve_identifier` keys a `slug` rule on (D-05, 15-03 probe).
+    "erp_slug": ("slug",),
     # The source's own claim about the data ("date de dernière mise à jour"), not ingestion time.
     "observed_at": ("date_maj", "date_mise_a_jour", "updated_at"),
 }
@@ -63,6 +66,8 @@ class AcceslibreRow:
     category: str | None = None
     website: str | None = None
     phone: str | None = None
+    # AccesLibre's ERP slug: null when the export has no slug column (D-05, research corr. 3).
+    erp_slug: str | None = None
     # What the source claims (``date_maj``), nullable; freshness compares this (D-02, D-10).
     observed_at: datetime | None = None
     accessibility: dict[str, dict[str, object]] = field(default_factory=dict)
@@ -157,6 +162,7 @@ def _to_row(record: dict[str, Any]) -> AcceslibreRow | None:
         category=str(category) if category else None,
         website=_field(record, "website"),
         phone=_field(record, "phone"),
+        erp_slug=_field(record, "erp_slug"),
         observed_at=_date(_field(record, "observed_at")),
         accessibility=accessibility_values(record),
         photos=_photos(record),
@@ -251,8 +257,12 @@ async def _import_row(
 
     existing = await places.get_by_source_id(SOURCE_ACCESLIBRE, row.source_id)
     if existing is not None:
-        # Re-import refreshes the source-owned values without touching contributions.
+        # Re-import refreshes the source-owned values without touching contributions, and fills
+        # the ERP slug the partner feed keys on when the export finally carries it (D-05).
         if not dry_run:
+            if row.erp_slug and existing.erp_slug != row.erp_slug:
+                existing.erp_slug = row.erp_slug
+                await places.update(existing)
             await _write_source_data(places, existing.id, row)
         report.skipped += 1
         return
@@ -276,6 +286,7 @@ async def _import_row(
         confidence=round(score, 3) if candidate is not None else None,
         website=row.website,
         phone=row.phone,
+        erp_slug=row.erp_slug,
         canonical_id=candidate.id if kind == "auto" and candidate is not None else None,
         # Persisting the candidate is what turns the review bucket into a query.
         duplicate_of_id=candidate.id if kind == "review" and candidate is not None else None,

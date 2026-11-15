@@ -876,6 +876,7 @@ class SqlAlchemyPlaceRepository:
             confidence=place.confidence,
             website=place.website,
             phone=place.phone,
+            erp_slug=place.erp_slug,
             canonical_id=place.canonical_id,
             duplicate_of_id=place.duplicate_of_id,
             source_license=await self._source_licence(place.source),
@@ -908,6 +909,8 @@ class SqlAlchemyPlaceRepository:
         model.confidence = place.confidence
         model.website = place.website
         model.phone = place.phone
+        # Only ever filled, never cleared: an export without a slug column must not erase it.
+        model.erp_slug = place.erp_slug or model.erp_slug
         model.canonical_id = place.canonical_id
         model.duplicate_of_id = place.duplicate_of_id
         # A copy keeps the licence it was taken under; only a missing one is resolved (D-07).
