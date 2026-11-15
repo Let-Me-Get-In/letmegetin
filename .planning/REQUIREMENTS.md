@@ -176,8 +176,8 @@
 
 ### Open export
 
-- [ ] **EXP-01**: A partner can download an ODbL export of places, categories, criteria and answers, carrying stable ids and each row's origin id
-- [ ] **EXP-02**: The export renders attribution listing the sources present in the export and documents the API and map as Produced Works
+- [x] **EXP-01**: A partner can download an ODbL export of places, categories, criteria and answers, carrying stable ids and each row's origin id
+- [x] **EXP-02**: The export renders attribution listing the sources present in the export and documents the API and map as Produced Works
 
 ### AccesLibre round trip
 
@@ -226,8 +226,8 @@
 | LIC-04 | Phase 12 | Complete |
 | LIC-05 | Phase 12 | Complete |
 | PROD-01 | Phase 13 | Complete |
-| EXP-01 | Phase 14 | Pending |
-| EXP-02 | Phase 14 | Pending |
+| EXP-01 | Phase 14 | Complete |
+| EXP-02 | Phase 14 | Complete |
 | PART-01 | Phase 15 | Pending |
 | PART-02 | Phase 15 | Pending |
 | OSM-01 | Phase 16 | Pending |
