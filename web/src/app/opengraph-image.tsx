@@ -60,12 +60,12 @@ export default function OpengraphImage() {
             <div style={{ display: "flex" }}>Savoir si on peut entrer.</div>
             <div style={{ display: "flex" }}>Avant de partir.</div>
           </div>
-          <div style={{ display: "flex", fontSize: "30px", color: "#4b5850" }}>
+          <div style={{ display: "flex", fontSize: "30px", color: "#5d6a61" }}>
             L&apos;accessibilité des lieux, pour de vrai.
           </div>
         </div>
 
-        <div style={{ display: "flex", fontSize: "24px", color: "#4b5850" }}>
+        <div style={{ display: "flex", fontSize: "24px", color: "#5d6a61" }}>
           letmegetin.org — 634 931 lieux en France · référentiel ouvert
         </div>
       </div>
