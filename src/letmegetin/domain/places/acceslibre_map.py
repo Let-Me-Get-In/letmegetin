@@ -29,6 +29,12 @@ FIELD_MAP: dict[str, str] = {
     "transport_station_presence": "exterieur-transports-accessibles-a-proximite",
 }
 
+# The inverse the partner feed needs (D-07): one AccesLibre field name per criterion slug.
+# FIELD_MAP is bijective over 8 entries; a future edit that breaks that fails at import, not
+# silently in a partner archive.
+THEIR_FIELD_FOR_SLUG: dict[str, str] = {slug: field for field, slug in FIELD_MAP.items()}
+assert len(THEIR_FIELD_FOR_SLUG) == len(FIELD_MAP) == 8
+
 _EMPTY = (None, "")
 
 
