@@ -45,6 +45,8 @@ from letmegetin.application.places.import_acceslibre import (
     import_acceslibre,
     iter_acceslibre_rows,
 )
+from letmegetin.application.places.lov2_export import load_identifier_rule
+from letmegetin.application.places.push_acceslibre import PushReport, push_acceslibre
 from letmegetin.application.places.reclassify import reclassify_places
 from letmegetin.application.referential.admin import (
     add_category,
@@ -90,6 +92,7 @@ from letmegetin.infrastructure.persistence.export_repositories import (
     SqlAlchemyExportRepository,
 )
 from letmegetin.infrastructure.persistence.licence_repositories import SqlAlchemyLicenceRepository
+from letmegetin.infrastructure.persistence.push_repositories import SqlAlchemyPushRepository
 from letmegetin.infrastructure.persistence.repositories import (
     SqlAlchemyApiKeyRepository,
     SqlAlchemyCategoryGridRepository,
@@ -1207,6 +1210,53 @@ def acceslibre_probe(
             client.close()
 
     _run_admin(callback, bump=False, commit=False)
+
+
+def _push_summary(report: PushReport) -> str:
+    """One line of counters, then the per-ERP diff a dry run printed (D-14)."""
+    reasons = (
+        ", ".join(f"{reason}={count}" for reason, count in sorted(report.skipped_reasons.items()))
+        or "none"
+    )
+    lines = [
+        f"acceslibre push: pushed={report.pushed} skipped={report.skipped} "
+        f"reasons={reasons} dry_run={report.dry_run}"
+    ]
+    lines.extend(
+        f"  {identifier}: "
+        + ", ".join(f"{field}={value}" for field, value in sorted(fields.items()))
+        for identifier, fields in sorted(report.diffs.items())
+    )
+    if report.dry_run:
+        lines.append("  dry run: nothing was patched and no journal row was written")
+    return "\n".join(lines)
+
+
+@acceslibre_app.command("push")
+def acceslibre_push(
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", help="Print the diff per place and write nothing")
+    ] = False,
+) -> None:
+    """Push the answers we own: read each ERP, diff, patch only what differs (D-10, D-14)."""
+
+    async def callback(session: AsyncSession) -> str:
+        key = settings.acceslibre_api_key
+        if key is None:
+            raise DomainError(
+                "no AccesLibre API key: set LETMEGETIN_ACCESLIBRE_API_KEY (see 15-PARTNER-ASK.md)"
+            )
+        rule = load_identifier_rule(settings.data_dir / _IDENTIFIER_RULE_FILE)
+        client = AccesLibreClient(key)
+        try:
+            report = await push_acceslibre(
+                SqlAlchemyPushRepository(session), client, rule=rule, dry_run=dry_run
+            )
+        finally:
+            client.close()
+        return _push_summary(report)
+
+    _run_admin(callback, bump=False, commit=not dry_run)
 
 
 if __name__ == "__main__":
