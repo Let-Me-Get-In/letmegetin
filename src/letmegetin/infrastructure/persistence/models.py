@@ -352,6 +352,39 @@ class PlaceAccessibilityWriteModel(Base):
     created: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
+class AccesLibrePushWriteModel(Base):
+    """Append-only journal of every attempted outbound push (D-12, Pitfall 6).
+
+    A separate table from ``place_accessibility_write``: that one records inbound writes to our
+    own DB and its CHECKs cannot express ``skipped``/``their_fresher``/``rpa_locked``.
+    """
+
+    __tablename__ = "acceslibre_push_write"
+    __table_args__ = (
+        CheckConstraint(
+            "decision IN ('accepted','skipped')", name="acceslibre_push_write_decision_ck"
+        ),
+        CheckConstraint(
+            "reason IS NULL OR reason IN "
+            "('their_fresher','rpa_locked','not_redistributable','unmappable','invalid_value')",
+            name="acceslibre_push_write_reason_ck",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("place.id", ondelete="CASCADE"), index=True)
+    criterion_id: Mapped[int] = mapped_column(ForeignKey("criteria.id", ondelete="CASCADE"))
+    # The value we held, whether it won (accepted) or lost (skipped).
+    value: Mapped[dict] = mapped_column(JSONB, default=dict)
+    source: Mapped[str] = mapped_column(String(32))
+    source_license: Mapped[str | None] = mapped_column(String(64))
+    decision: Mapped[str] = mapped_column(String(16))
+    # NULL for an accepted push; a skipped one names why.
+    reason: Mapped[str | None] = mapped_column(String(32))
+    actor: Mapped[str] = mapped_column(String(64))
+    created: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
 class XID8(UserDefinedType):
     """PostgreSQL ``xid8``; SQLAlchemy has no native type and the boundary compares in it."""
 
