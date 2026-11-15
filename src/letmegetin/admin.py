@@ -911,6 +911,10 @@ def export_odbl_command(
     since: Annotated[
         str | None, typer.Option("--since", help="Cumulative catch-up from a seq or an ISO date")
     ] = None,
+    destination: Annotated[
+        str,
+        typer.Option("--destination", help="open_export or lov2_partner (full snapshots only)"),
+    ] = "open_export",
 ) -> None:
     """Write the ODbL ZIP and latest.json; a snapshot also prunes the journal (D-11, D-15)."""
 
@@ -923,6 +927,7 @@ def export_odbl_command(
             since=since_seq,
             since_date=since_date,
             delta=delta,
+            destination=destination,
         )
         lines = [
             f"{report.mode} export: {report.name}",
