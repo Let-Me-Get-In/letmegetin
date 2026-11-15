@@ -122,7 +122,12 @@ Last activity: 2026-11-15 — 15-03 probe command and erp_slug column landed; li
   back-to-back run intermittently renders "Rate limit exceeded" and fails unrelated read-only specs.
   Run the gate as a first run after a ~70 s cooldown; options and evidence in
   `.planning/phases/11-e2e-accessibility/deferred-items.md`.
-- 15-03 halts at its blocking-human probe: LETMEGETIN_ACCESLIBRE_API_KEY does not exist yet, so the identifier rule stays blocked;UNVERIFIED and 15-04/15-05 cannot key the feed or the push
+- **15-03 halts at its blocking-human probe** — tracked as **LET-130** ("Partner - obtain the
+  AccesLibre API key and OSM attribution permission"). `LETMEGETIN_ACCESLIBRE_API_KEY` does not exist
+  yet, so `data/referential/acceslibre_identifier_rule.csv` stays `blocked;UNVERIFIED` and 15-04/15-05
+  cannot key the feed or the push. Everything else in wave 2 is built and green; only the live probe
+  remains. Do not assert `origin_id` as the slug to unblock: a wrong guess makes every PATCH in 15-05
+  target the wrong ERP.
 
 ## Session Continuity
 
