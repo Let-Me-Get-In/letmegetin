@@ -86,14 +86,15 @@ Notes:
   1. AccesLibre receives a lov2 feed of owned rows keyed on their identifiers, with categories and criteria in their vocabulary, plus a mapping document listing every place of ours they cannot match and why.
   2. An operator pushes our answers to the AccesLibre API idempotently.
   3. Conflict rules and provenance are strong enough that a later import cannot overwrite a fresher community contribution.
-**Plans**: 5 plans
+**Plans**: 6 plans
 
 Plans:
 - [ ] 15-01-PLAN.md — Parameterise the export destination and prove the lov2_partner licence gate + directory separation (PART-01)
-- [ ] 15-02-PLAN.md — Promote httpx, build the fixed-origin AccesLibre adapter + pure push decision, and run the blocking identifier probe first (PART-02)
-- [ ] 15-03-PLAN.md — Project our keys into AccesLibre's vocabulary (slug-first identifier) and emit the mapping document (PART-01)
-- [ ] 15-04-PLAN.md — The outbound journal, the read-then-diff push use case + `acceslibre push` (PART-02)
-- [ ] 15-05-PLAN.md — The `dual` licence rows (D-01/D-02) and the contributor-terms-gated re-stamp migration (PART-01, PART-02)
+- [ ] 15-02-PLAN.md — Promote httpx, build the fixed-origin AccesLibre adapter + pure push decision + identifier resolver (PART-02)
+- [ ] 15-03-PLAN.md — The read-only identifier probe (erp_slug + rule CSV) and its blocking live run (PART-01, PART-02)
+- [ ] 15-04-PLAN.md — Project our keys into AccesLibre's vocabulary (slug-first) and emit the mapping document (PART-01)
+- [ ] 15-05-PLAN.md — The outbound journal, the read-then-diff push use case + `acceslibre push`, and the A1 no-op PATCH gate (PART-02)
+- [ ] 15-06-PLAN.md — The `dual` licence rows (D-01/D-02) and the contributor-terms-gated re-stamp migration (PART-01, PART-02)
 
 ### Phase 16: OpenStreetMap
 **Goal**: OSM becomes the community base (import in), and our answers publish back under OSM policy.
