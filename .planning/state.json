@@ -16,7 +16,7 @@
     {
       "number": "14",
       "name": "Open ODbL export",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "number": "15",
@@ -36,8 +36,8 @@
   ],
   "next": {
     "command": "/gsd-progress --next",
-    "label": "Advance to the next step (plan phase 14)",
-    "reason": "Phase 3 of 6 — needs a plan"
+    "label": "Advance to the next step (plan phase 15)",
+    "reason": "Phase 4 of 6 — needs a plan"
   },
-  "updated_at": "2026-11-13T23:08:07.896Z"
+  "updated_at": "2026-11-15T08:36:59.098Z"
 }

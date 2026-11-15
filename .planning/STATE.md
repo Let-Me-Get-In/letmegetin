@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v2.0
-current_phase: 14
-current_phase_name: Open ODbL export
+current_phase: 15
+current_phase_name: AccesLibre round trip
 status: planning
-stopped_at: Phase 14 context revised — 5 decisions reopened, plans now stale
-last_updated: "2026-11-14T20:52:30.867Z"
-last_activity: 2026-11-14
-last_activity_desc: Phase 13 complete, transitioned to Phase 14
-state_head: 8170cc3d66bb10d60cf3b48dcd5f4e450afee058
+stopped_at: Phase 14 complete, ready to plan Phase 15
+last_updated: "2026-11-15T08:36:59.085Z"
+last_activity: 2026-11-15
+last_activity_desc: Phase 14 complete, transitioned to Phase 15
+state_head: bc4c22e945ebd1a8d635ff611316f2ff6500f5a9
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 13
-  completed_plans: 8
+  completed_plans: 13
+  percent: 50
 milestone_name: Federated Data & Partners
 ---
 
@@ -24,14 +25,14 @@ milestone_name: Federated Data & Partners
 See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** Phase 13 — Documented-place visualisation
+**Current focus:** Phase 14 — Open ODbL export
 
 ## Current Position
 
-Phase: 14 — Open ODbL export
+Phase: 15 — AccesLibre round trip
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-14 — Phase 13 complete, transitioned to Phase 14
+Last activity: 2026-11-15 — Phase 14 complete, transitioned to Phase 15
 
 
 ## Quick Tasks Completed
@@ -111,7 +112,7 @@ Last activity: 2026-11-14 — Phase 13 complete, transitioned to Phase 14
 ## Session Continuity
 
 Last session: 2026-11-14T20:52:30.640Z
-Stopped at: Phase 14 context revised — 5 decisions reopened, plans now stale
+Stopped at: Phase 14 complete, ready to plan Phase 15
 Resume file: .planning/phases/14-open-odbl-export/14-CONTEXT.md
 
 ## Known debt
