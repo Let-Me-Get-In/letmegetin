@@ -296,6 +296,7 @@ class SqlAlchemyExportRepository:
                 PlaceModel.source_url,
                 PlaceModel.observed_at,
                 PlaceModel.retrieved_at,
+                PlaceModel.erp_slug,
             )
             .outerjoin(CategoryModel, CategoryModel.id == PlaceModel.category_id)
             .where(PlaceModel.canonical_id.is_(None))
@@ -327,6 +328,7 @@ class SqlAlchemyExportRepository:
                 source_url=row.source_url,
                 # Source-first date (D-06): the source's claim, else our retrieval.
                 date=row.observed_at or row.retrieved_at,
+                erp_slug=row.erp_slug,
             )
 
     async def stream_answers(
@@ -362,9 +364,22 @@ class SqlAlchemyExportRepository:
             )
 
     async def stream_aliases(self, since_seq: int | None = None) -> AsyncIterator[AliasRow]:
-        """Every merged place and its canonical id — the incremental tombstone stream (D-04)."""
+        """Every merged place and its canonical id — the incremental tombstone stream (D-04).
+
+        Each side also carries its identifier candidates, so the partner projection can key the
+        pair on AccesLibre's identifiers without a second lookup; the ODbL CSV reads only the ids.
+        """
+        canonical = aliased(PlaceModel)
         statement = (
-            select(PlaceModel.id, PlaceModel.canonical_id)
+            select(
+                PlaceModel.id,
+                PlaceModel.canonical_id,
+                PlaceModel.erp_slug,
+                PlaceModel.source_id,
+                canonical.erp_slug.label("canonical_erp_slug"),
+                canonical.source_id.label("canonical_origin_id"),
+            )
+            .join(canonical, canonical.id == PlaceModel.canonical_id)
             .where(PlaceModel.canonical_id.isnot(None))
             .order_by(PlaceModel.id)
         )
@@ -383,7 +398,14 @@ class SqlAlchemyExportRepository:
         async for row in result:
             if row.canonical_id is None:  # narrowed for the type checker
                 continue
-            yield AliasRow(alias_id=row.id, canonical_id=row.canonical_id)
+            yield AliasRow(
+                alias_id=row.id,
+                canonical_id=row.canonical_id,
+                alias_erp_slug=row.erp_slug,
+                alias_origin_id=row.source_id,
+                canonical_erp_slug=row.canonical_erp_slug,
+                canonical_origin_id=row.canonical_origin_id,
+            )
 
     async def list_categories(self) -> list[CategoryRow]:
         categories = await SqlAlchemyCategoryRepository(self._session).list_all()

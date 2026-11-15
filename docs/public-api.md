@@ -320,6 +320,37 @@ The API and the map are Produced Works under the ODbL (attribution only, no shar
 
 Later exports may include sources not listed in this one.
 
+### lov2 partner feed
+
+The same archive is also produced for a **lov2** destination
+(`letmegetin-admin export odbl --destination lov2_partner --out <dir>`). It is not served by the
+API: like any non-ODbL export it is written to the directory the operator names, so
+`/export/{name}.zip` never resolves to it.
+
+The partner feed is the Phase 14 export with the licence predicate at `lov2_partner`: exactly the
+rows the reviewed destination matrix allows there, full snapshots only (no delta chain). It carries
+the same seven entries, the same `manifest.json` and the same `latest.json`, with **partner keys**
+instead of ours:
+
+| Entry | Key column |
+|---|---|
+| `places.csv` | `identifier` (AccesLibre's ERP slug, else its `origin_id`) and `activite` (its category value) |
+| `categories.csv` | `activite` (the canonical value of the category, its largest population) |
+| `criteria.csv` | `field` (one of AccesLibre's 8 writable field names) |
+| `answers.csv` | `field` — the answer's value only, never a user id |
+| `aliases.csv` | `alias_id`, `canonical_id`, both partner identifiers |
+
+No column is named `slug`, `category_slug` or `criterion_slug`: our vocabulary never reaches the
+feed. A place, category or answer we cannot express in AccesLibre's vocabulary is **not** dropped
+silently: it lands in `mapping.csv`, written next to the archive (never inside it), with one row per
+`entity;identifier;reason;detail`. That sidecar merges the reviewed document
+`data/referential/acceslibre_mapping.csv` (every criterion outside the 8 field names, and the
+canonical `activite` chosen per category) with whatever this run could not key.
+
+If the identifier rule recorded by `letmegetin-admin acceslibre probe` is still `blocked`, every
+place diverts to the mapping document and `places.csv` is header-only — the feed never keys on an
+unverified identifier.
+
 ## Idempotency
 
 Write endpoints accept an `Idempotency-Key` header (max 128 characters):

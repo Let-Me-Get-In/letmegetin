@@ -85,6 +85,7 @@ def place_from_model(model: PlaceModel) -> Place:
         confidence=model.confidence,
         website=model.website,
         phone=model.phone,
+        erp_slug=model.erp_slug,
         canonical_id=model.canonical_id,
         duplicate_of_id=model.duplicate_of_id,
         source_license=model.source_license,
