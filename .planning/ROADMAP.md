@@ -86,7 +86,7 @@ Notes:
   1. AccesLibre receives a lov2 feed of owned rows keyed on their identifiers, with categories and criteria in their vocabulary, plus a mapping document listing every place of ours they cannot match and why.
   2. An operator pushes our answers to the AccesLibre API idempotently.
   3. Conflict rules and provenance are strong enough that a later import cannot overwrite a fresher community contribution.
-**Plans**: 3/6 plans executed
+**Plans**: 6/6 plans executed
 
 Plans:
 **Wave 1**
@@ -97,13 +97,13 @@ Plans:
 - [x] 15-03-PLAN.md — The read-only identifier probe (erp_slug + rule CSV) and its blocking live run (PART-01, PART-02) — built; the live probe is still gated on the partner key (SUMMARY status: halted)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 15-04-PLAN.md — Project our keys into AccesLibre's vocabulary (slug-first) and emit the mapping document (PART-01)
+- [x] 15-04-PLAN.md — Project our keys into AccesLibre's vocabulary (slug-first) and emit the mapping document (PART-01)
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 15-05-PLAN.md — The outbound journal, the read-then-diff push use case + `acceslibre push`, and the A1 no-op PATCH gate (PART-02)
+- [x] 15-05-PLAN.md — The outbound journal, the read-then-diff push use case + `acceslibre push`, and the A1 no-op PATCH gate (PART-02)
 
 **Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 15-06-PLAN.md — The `dual` licence rows (D-01/D-02) and the contributor-terms-gated re-stamp migration (PART-01, PART-02)
+- [x] 15-06-PLAN.md — The `dual` licence rows (D-01/D-02) and the contributor-terms-gated re-stamp migration (PART-01, PART-02)
 
 ### Phase 16: OpenStreetMap
 **Goal**: OSM becomes the community base (import in), and our answers publish back under OSM policy.
@@ -133,7 +133,7 @@ Plans:
 | 12. Licence provenance | LET-79 | 5/5 | Complete    | 2026-11-13 |
 | 13. Documented-place visualisation | LET-75 | 3/3 | Complete    | 2026-11-14 |
 | 14. Open ODbL export | LET-72 | 5/5 | Complete    | 2026-11-15 |
-| 15. AccesLibre round trip | LET-73, LET-74 | 3/6 | In Progress | — |
+| 15. AccesLibre round trip | LET-73, LET-74 | 6/6 | In Progress | — |
 | 16. OpenStreetMap | LET-77, LET-78 | 0/— | Not started | — |
 | 17. Overture | LET-70, LET-71, LET-76 | 0/— | Not started | — |
 
