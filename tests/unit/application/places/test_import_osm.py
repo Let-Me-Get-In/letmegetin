@@ -69,11 +69,11 @@ def test_render_unmatched_ranks_by_count_then_tag() -> None:
     )
 
     assert render_unmatched(report) == [
-        "  unmatched: highway=residential=3",
-        "  unmatched: amenity=bogus=1",
-        "  unmatched: name=Café amenity=cafe=1",
+        "  unmatched: highway=residential = 3",
+        "  unmatched: amenity=bogus = 1",
+        "  unmatched: name=Café|amenity=cafe = 1",
     ]
-    assert render_unmatched(report, limit=1) == ["  unmatched: highway=residential=3"]
+    assert render_unmatched(report, limit=1) == ["  unmatched: highway=residential = 3"]
 
 
 class FakePlaces:

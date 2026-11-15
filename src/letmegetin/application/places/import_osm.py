@@ -79,7 +79,7 @@ def resolve_osm_category(tags: Mapping[str, str], osm_tag_for: Mapping[str, int]
 def render_unmatched(report: OsmImportReport, limit: int = 20) -> list[str]:
     """The top unmatched tag combinations, most frequent first: evidence to grow the CSV."""
     ranked = sorted(report.unmatched.items(), key=lambda item: (-item[1], item[0]))
-    return [f"  unmatched: {' '.join(tags)}={count}" for tags, count in ranked[:limit]]
+    return [f"  unmatched: {'|'.join(tags)} = {count}" for tags, count in ranked[:limit]]
 
 
 async def _write_source_data(

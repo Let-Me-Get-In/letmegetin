@@ -16,10 +16,15 @@ from typer.testing import CliRunner
 from letmegetin import admin
 from letmegetin.application.referential.osm_tags import HEADER as OSM_TAGS_HEADER
 from letmegetin.config import settings
+from letmegetin.domain.places.entities import Place, make_slug
+from letmegetin.infrastructure.persistence.repositories import SqlAlchemyPlaceRepository
 from tests.db import SessionLocal, execute, require_database, seed_source_licences
 from tests.fixtures.osm_pbf import write_osm_pbf
 
-_CLEANUP = "DELETE FROM place WHERE source = 'osm'"
+_CLEANUP = (
+    "DELETE FROM place WHERE source = 'osm' "
+    "OR (source = 'acceslibre' AND source_id LIKE 'test-osm-%')"
+)
 
 _NODE_1_TAGS = {"amenity": "cafe", "name": "Café du Coin", "wheelchair": "yes"}
 _CRITERION = "circulation-acces-en-fauteuil-a-tout-le-lieu"
@@ -68,6 +73,29 @@ def _reviewed(data: Path, row: str) -> None:
     )
 
 
+def _acceslibre_place(name: str, lat: float, lng: float, source_id: str) -> int:
+    """A place another source already imported: the duplicate target, via the real write path."""
+    slug = make_slug(name, "acceslibre", source_id)
+
+    async def _add() -> int:
+        async with SessionLocal() as session:
+            created = await SqlAlchemyPlaceRepository(session).add(
+                Place(
+                    id=0,
+                    name=name,
+                    slug=slug,
+                    source="acceslibre",
+                    source_id=source_id,
+                    lat=lat,
+                    lng=lng,
+                )
+            )
+            await session.commit()
+            return created.id
+
+    return asyncio.run(_add())
+
+
 def test_osm_import_writes_one_place_with_version_and_raw_tags(
     db: None, osm_licence: None, tmp_path: Path
 ) -> None:
@@ -76,8 +104,8 @@ def test_osm_import_writes_one_place_with_version_and_raw_tags(
     assert "created=1" in output
     assert "resolved=1" in output
     assert "unresolved=2" in output
-    assert "unmatched: amenity=drinking_water name=Fontaine du Coin=1" in output
-    assert "unmatched: highway=residential=1" in output
+    assert "unmatched: amenity=drinking_water|name=Fontaine du Coin = 1" in output
+    assert "unmatched: highway=residential = 1" in output
 
     rows = _places(
         "SELECT p.source_id, c.slug, p.source_category, p.osm_version, p.osm_tags, "
@@ -159,6 +187,61 @@ def test_osm_import_skips_unmapped_objects(db: None, osm_licence: None, tmp_path
         "SELECT source_id FROM place WHERE source = 'osm' AND source_id IN ('node/2', 'way/100')"
     )
     assert rows == []
+
+
+def test_osm_import_links_a_duplicate_of_another_source_place(
+    db: None, osm_licence: None, tmp_path: Path
+) -> None:
+    canonical = _acceslibre_place("Cafe du Coin", 45.1, 5.1, "test-osm-linked")
+
+    output = _import(_pbf(tmp_path))
+
+    assert "created=1" in output
+    assert "linked=1" in output
+    # Two rows, not three: the OSM POI is a linked row of the AccesLibre place (D-08).
+    rows = _places(
+        "SELECT canonical_id, duplicate_of_id, operating_status, confidence FROM place "
+        "WHERE source = 'osm'"
+    )
+    assert len(rows) == 1
+    canonical_id, duplicate_of_id, status, confidence = rows[0]
+    assert (canonical_id, duplicate_of_id, status) == (canonical, None, "open")
+    assert confidence == 1.0
+    assert _places(f"SELECT name FROM place_alias WHERE place_id = {canonical}") == [
+        ("Café du Coin",)
+    ]
+    assert _places(f"SELECT actor FROM place_merge_log WHERE kept_id = {canonical}") == [("osm",)]
+
+
+def test_osm_import_diverts_a_weak_match_to_the_review_queue(
+    db: None, osm_licence: None, tmp_path: Path
+) -> None:
+    canonical = _acceslibre_place("Boulangerie du Pain", 45.5, 5.5, "test-osm-review")
+
+    output = _import(_pbf(tmp_path, with_bakery=True))
+
+    assert "review=1" in output
+    rows = _places(
+        "SELECT canonical_id, duplicate_of_id, operating_status, confidence FROM place "
+        "WHERE source = 'osm' AND source_id = 'node/3'"
+    )
+    assert rows[0][:3] == (None, canonical, "duplicate_review")
+    assert 0.75 <= rows[0][3] < 0.90
+    assert _places(f"SELECT id FROM place_merge_log WHERE kept_id = {canonical}") == []
+
+
+def test_osm_import_no_dedup_creates_an_unlinked_place(
+    db: None, osm_licence: None, tmp_path: Path
+) -> None:
+    canonical = _acceslibre_place("Cafe du Coin", 45.1, 5.1, "test-osm-nodedup")
+
+    output = _import(_pbf(tmp_path), "--no-dedup")
+
+    assert "linked=0" in output
+    assert _places("SELECT canonical_id, confidence FROM place WHERE source = 'osm'") == [
+        (None, None)
+    ]
+    assert _places(f"SELECT id FROM place_merge_log WHERE kept_id = {canonical}") == []
 
 
 @pytest.mark.parametrize(
