@@ -1,0 +1,367 @@
+entity;identifier;reason;detail
+note;identifier-rule;d05-deviation;the importer never stored AccesLibre's slug (research correction 3) so place.erp_slug stays null until the 15-03 probe records `slug` and the importer re-runs. Until then the recorded rule is `blocked` and every place diverts to this document rather than being keyed on an unverified origin_id
+criterion;1;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;2;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;3;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;90-cm-et-plus;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;a-cle;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;a-code;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;a-moins-de-120-cm-de-haut;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;a-proximite-de-l-etablissement;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;abaisses-a-proximite;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;abattable;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;acces;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;acces-a-l-estrade-en-fauteuil-roulant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;acces-de-plain-pied;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;acces-en-fauteuil-roulant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;aire-de-manuvre-d-au-moins-150-cm;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;alarme-incendie-clignotante-ou-vibrante;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;allees-larges;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;amovible;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;amphitheatre;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;amphitheatre-accessible-en-fauteuil-roulant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;annonce-vocale-des-etages;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;ascenseur-s;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;audio;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;audioguides;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;auditive;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;automates;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;automatique-ou-absence-de-porte;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;autre;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;aux-contrastes-renforces;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;avec-ressaut;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;bac-a-shampooing-adapte-pour-fauteuil-roulant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;baignoire;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;bande-d-eveil-a-la-vigilance;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;bande-de-guidage-tactile-jusquau-guichet-d-accueil;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;barre-s-d-appui;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;barre-s-d-appui-dans-la-douche;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;base-du-miroir-a-maximum-1m-du-sol;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;boucle-magnetique;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;cabine-d-essayage;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;caisses-a-hauteur-adaptee;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;cantine;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;casiers;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;chaise-haute-pour-enfant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;chambre-s;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-acces-en-fauteuil-a-tout-le-lieu;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-acces-en-fauteuil-a-tout-le-lieu-acces-en-fauteuil-possible-partout;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-acces-en-fauteuil-a-tout-le-lieu-certains-espaces-ne-sont-pas-accessibles-en-fauteuil;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-aisee-jusqu-a-la-chambre;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-ascenseurs-adaptations;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-ascenseurs-adaptations-annonce-vocale-des-etages;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-ascenseurs-adaptations-chiffres-en-relief-sur-le-panneau-de-commande;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-ascenseurs-adaptations-commandes-a-hauteur-de-fauteuil;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-ascenseurs-dimensions;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-ascenseurs-dimensions-ascenseur-de-dimensions-suffisantes;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-ascenseurs-dimensions-ascenseur-de-grandes-dimensions;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-ascenseurs-dimensions-ascenseur-de-petites-dimensions;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-circulation-dans-les-allees-circulation-aisee-dans-les-allees;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;circulation-circulation-dans-les-allees-circulation-difficile-dans-les-allees;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;coffre-mobile-sur-demande;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;commandes;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;commandes-a-hauteur-de-fauteuil-roulant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;contraste-par-rapport-au-mur;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;contrastee-visuellement;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;contrastes;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;crochets-a-moins-de-120-cm-du-sol;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;dans-l-enceinte-de-l-etablissement;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;de-plain-pied;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;de-plain-pied-et-amenages;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;de-plain-pied-sans-amenagement;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;devant-la-penderie;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;devant-la-porte-de-la-chambre;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;devant-la-porte-de-la-salle-de-bain;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;devers-important;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;dimensions-de-la-cabine;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;dispositif;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;dispositif-audio;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;dispositif-d-attente;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;dispositif-de-mise-a-l-eau;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;documents-adaptes;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;douche;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;douche-a-l-italienne;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;du-personnel-peut-accompagner-les-personnes-ayant-des-besoins-specifiques;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;eclairage-adapte;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;ecran-dedie-au-sous-titrage-sur-titrage;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;elevateur;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;en-braille;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;en-gros-caracteres;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;en-gros-caracteres-sur-fond-contrastant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;en-relief;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;enseigne-visible-et-lisible;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entre-90-et-120-cm-du-sol;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-acces-1-marche-a-l-entree-hauteur-cm;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-acces-acces-avec-rampe;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-acces-acces-de-plain-pied;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-acces-acces-par-ascenseur-ou-elevateur;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-acces-ressaut-a-l-entree;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-lentree-accessible-est-lentree-principale;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-lentree-accessible-est-lentree-principale-oui;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-obstacles-a-la-porte-d-entree-absence-de-marquage-sur-porte-vitree;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-obstacles-a-la-porte-d-entree-poignee-peu-ergonomique;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-obstacles-a-la-porte-d-entree-porte-difficile-a-maintenir-ouverte;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-ouverture-de-porte-porte-a-ouverture-automatique;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;entree-ouverture-de-porte-porte-a-ouverture-manuelle;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;espace-calme;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;espace-confidentiel-accessible-en-fauteuil-roulant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;espace-dau-moins-20-cm-de-haut-sous-le-lit;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;espace-de-90-cm-de-largeur-au-moins-dun-cote-du-lit;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;exterieur;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;exterieur-enseigne-suffisamment-visible-et-lisible;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;exterieur-enseigne-suffisamment-visible-et-lisible-oui;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;exterieur-place-gig-gic-a-proximite-place-gig-gic-a-proximite;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;exterieur-trottoirs-obstacles;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;exterieur-trottoirs-obstacles-trottoirs-en-devers;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;exterieur-trottoirs-obstacles-trottoirs-etroits;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;exterieur-trottoirs-obstacles-trottoirs-paves;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;exterieur-trottoirs-obstacles-trottoirs-sans-abaisses;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;exterieur-trottoirs-obstacles-trottoirs-sans-obstacles;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;facile-dutilisation;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;faciles-a-utiliser-et-a-comprendre;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;fauteuil-roulant-manuel;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;fauteuil-tout-terrain;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;film-s-visite-s-propose-s-en-audiodescription;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;fixe;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;grand;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;guichet-d-accueil;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;haute-superieure-a-45-cm;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;hauteur-adaptee;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;hauteur-de-l-assise-des-toilettes;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;hauteur-de-lit-en-cm-matelas-inclu;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;hauteur-de-marche-cm;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;il-y-a-plusieurs-niveaux;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;information-relative-au-trafic;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;intellectuelle;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;interieur;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;interphone-bouton-d-appel;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;interrupteur-et-prises-de-courant-contrastes;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;largeur-du-passage-de-la-porte-cm;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;largeur-du-passage-de-la-porte-d-entree-cm;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;lavabo-adapte;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;lecteur-de-carte-bancaire-amovible;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;lentree-evaluee-est-l-entree-principale;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;les-informations-visuelles-sont-lisibles-et-comprehensibles;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;leve-personne;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;lit-a-hauteur-ajustable;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;main-courante;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;manuelle;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;marche-s;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;marche-s-escaliers;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;marquages-sur-porte-vitree;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;materiel-a-disposition;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;menu-accessible;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;mobilier-amovible;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;mode-de-transport-accessible-en-fauteuil-roulant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;moins-de-90-cm;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;motrice;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;nez-de-marches-contrastes-et-antiderapants;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;nombre-de-chambres-accessibles-annonce;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;nombre-de-marches;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;numero-de-la-chambre-en-relief-en-braille;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;ouverture-de-porte;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;panneau-prioritaire;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;partiel;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;pas-de-plain-pied;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;paves;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;personnel-forme-a-l-accueil-des-personnes-en-situation-de-handicap;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;personnel-initie-a-la-langue-des-signes;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;petit;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;place-de-stationnement-handicape;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;places-reservees-aux-personnes-en-fauteuil-roulant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;plan-du-lieu-proche-de-l-entree;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;plan-incline;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;plus-de-3;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;plus-grande-que-les-autres-places;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;poignee-ergonomique;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;porte-difficile-a-maintenir-ouverte;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;porte-facile-a-maintenir-ouverte;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;porte-legere-et-poignee-ergonomique;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;possibilite-de-s-asseoir;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;precisez;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;presence-de-balises-sonores-telecommandees;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;proche-de-l-entree;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;rampe-amovible-disponible-sur-demande;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;rehausse-wc;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;rue-en-pente;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;salle-a-manger;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;salle-de-bain;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;salle-de-reunion-accessible-en-fauteuil-roulant;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;sanitaires;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;savon-et-seche-main-entre-90-et-120-cm-du-sol;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;service-a-la-table-possible;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-hauteur-adaptee-des-comptoirs-guichets;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-hauteur-adaptee-des-comptoirs-guichets-oui;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-menu-en-braille;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-menu-en-braille-oui;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-mobilier-et-equipements;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-mobilier-et-equipements-mobilier-et-ou-equipements-adaptes;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-mobilier-et-equipements-mobilier-et-ou-equipements-amovibles;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-personnel-forme-a-l-accueil-des-personnes-en-situation-de-handicap;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-personnel-forme-a-l-accueil-des-personnes-en-situation-de-handicap-oui;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-personnel-initie-a-la-langue-des-signes;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-personnel-initie-a-la-langue-des-signes-oui;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-sanitaires-sanitaires-amenages-pour-les-pmr;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-sanitaires-sanitaires-inaccessibles;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-sanitaires-sanitaires-non-amenages-mais-de-plain-pied;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;services-et-equipements-sanitaires-sanitaires-non-renseigne;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;siege-de-douche;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;siege-pliable;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;simples-a-comprendre;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;sonore;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;sous-titrage-sur-titrage;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;standard-110-x-130-cm;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;standard-entre-40-et-45-cm;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;sur-les-commandes-les-chiffres-sont;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;table-a-langer;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;tables-accessibles;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;teletranscription;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;total;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;transfert-possible-sur-siege-classique;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;tres-etroits;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;tringle-de-penderie-ou-etageres-a-moins-de-140-cm-du-sol;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;trottoirs;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;vehicule-s-adapte-s;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;version-audio;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;vestiaires;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;visites-et-ou-activites-adaptees-aux-personnes-ayant-une-deficience;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;visiteur-visible-depuis-l-interieur;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;visuel;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;visuelle;not_expressible;not yet expressible in the AccesLibre vocabulary
+criterion;zone-de-transfert-a-cote-des-toilettes;not_expressible;not yet expressible in the AccesLibre vocabulary
+category;accounting;canonical_activite;Comptable expert-comptable (139 places)
+category;airport;canonical_activite;Aéroport, aérodrome (23 places)
+category;amusement_park;canonical_activite;Parc d’attraction (47 places)
+category;antique_furniture_store;canonical_activite;Antiquaire (123 places)
+category;aquarium;canonical_activite;Aquarium (15 places)
+category;art_gallery;canonical_activite;Art, centre d'art (825 places)
+category;association_or_organization;canonical_activite;Association (4114 places)
+category;bakery;canonical_activite;Boulangerie Pâtisserie (21633 places)
+category;bank;canonical_activite;Banques, caisses d'épargne (12530 places)
+category;bar;canonical_activite;Bar tabac (952 places)
+category;bazar;canonical_activite;Bazar (642 places)
+category;beach_resort;canonical_activite;Plage, zone de baignade (98 places)
+category;beauty_salon;canonical_activite;Soins de beauté, esthétique (20393 places)
+category;bed_and_breakfast;canonical_activite;Chambre d'hôtes, gîte, pension, meublé de tourisme (4111 places)
+category;bicycle_store;canonical_activite;Cycle vente et entretien (121 places)
+category;book_store;canonical_activite;Librairie (6668 places)
+category;bowling_alley;canonical_activite;Bowling (88 places)
+category;bus_station;canonical_activite;Gare routière (18 places)
+category;butcher_shop;canonical_activite;Boucherie / commerce de viande (19977 places)
+category;cafe;canonical_activite;Café, bar, brasserie (11989 places)
+category;campground;canonical_activite;Camping caravaning (1125 places)
+category;car_dealer;canonical_activite;Commerce automobile (592 places)
+category;car_rental;canonical_activite;Location véhicules (87 places)
+category;car_repair;canonical_activite;Carrosserie (17583 places)
+category;car_wash;canonical_activite;Station lavage auto (33 places)
+category;casino;canonical_activite;Casino (56 places)
+category;catering_service;canonical_activite;Traiteur, gastronomie (525 places)
+category;cell_phone_store;canonical_activite;Téléphonie (507 places)
+category;cemetery;canonical_activite;Cimetière (5795 places)
+category;cheese_shop;canonical_activite;Fromagerie (4449 places)
+category;child_care_agency;canonical_activite;Crèche (849 places)
+category;chocolate_shop;canonical_activite;Chocolatier (5289 places)
+category;city_hall;canonical_activite;Mairie (38006 places)
+category;clothing_store;canonical_activite;Vêtements (6063 places)
+category;convenience_store;canonical_activite;Supérette (5436 places)
+category;copy_shop;canonical_activite;Papeterie, presse, journaux (352 places)
+category;corporate_office;canonical_activite;Coworking (3620 places)
+category;courthouse;canonical_activite;Point justice (1409 places)
+category;cultural_center;canonical_activite;Centre culturel (768 places)
+category;dentist;canonical_activite;Dentiste, chirurgien dentiste (15969 places)
+category;doctor;canonical_activite;Médecin généraliste (2107 places)
+category;driving_school;canonical_activite;Auto école (9119 places)
+category;electrician;canonical_activite;Construction, rénovation (407 places)
+category;electronics_store;canonical_activite;Électroménager et matériel audio-vidéo (482 places)
+category;elementary_school;canonical_activite;École primaire (regroupement maternelle et élémentaire) (1629 places)
+category;establishment;canonical_activite;Autre (848 places)
+category;fast_food_restaurant;canonical_activite;Restauration rapide (37044 places)
+category;fitness_center;canonical_activite;Club de sport (804 places)
+category;florist;canonical_activite;Fleuriste (12194 places)
+category;function_room_facility;canonical_activite;Salle des fêtes (10012 places)
+category;funeral_home;canonical_activite;Pompes funèbres (8871 places)
+category;furniture_store;canonical_activite;Meubles ameublement (891 places)
+category;gas_station;canonical_activite;Station service (111 places)
+category;government_office;canonical_activite;Administration publique (3808 places)
+category;green_grocers;canonical_activite;Commerce bio (555 places)
+category;grocery_store;canonical_activite;Épicerie (1465 places)
+category;gym;canonical_activite;Gymnase (937 places)
+category;hair_care;canonical_activite;Coiffure (31293 places)
+category;hardware_store;canonical_activite;Droguerie (7042 places)
+category;high_school;canonical_activite;Lycée (3451 places)
+category;home_goods_store;canonical_activite;Décoration Design (706 places)
+category;home_improvement_store;canonical_activite;Aménagement intérieur de la maison (849 places)
+category;hospital;canonical_activite;Hôpital (3790 places)
+category;hotel;canonical_activite;Hôtel (14997 places)
+category;insurance_agency;canonical_activite;Assurance (3505 places)
+category;internet_cafe;canonical_activite;Espace numérique (63 places)
+category;jewelry_store;canonical_activite;Bijouterie joaillerie (8767 places)
+category;laundry;canonical_activite;Laverie (274 places)
+category;lawyer;canonical_activite;Notaire (624 places)
+category;library;canonical_activite;Bibliothèque médiathèque (8759 places)
+category;liquor_store;canonical_activite;Caviste / commerce de détail de boissons (899 places)
+category;locksmith;canonical_activite;Cordonnerie serrurerie (280 places)
+category;lodging;canonical_activite;Résidence, foyer (264 places)
+category;luggage_store;canonical_activite;Maroquinerie sellerie articles de voyage (283 places)
+category;market;canonical_activite;Marché (91 places)
+category;medical_lab;canonical_activite;Laboratoire d'analyse médicale (6913 places)
+category;middle_school;canonical_activite;Collège (6950 places)
+category;monument;canonical_activite;Monument historique (135 places)
+category;movie_theater;canonical_activite;Cinéma (1130 places)
+category;museum;canonical_activite;Musée (1869 places)
+category;music_store;canonical_activite;Instruments et matériel de musique (99 places)
+category;national_park;canonical_activite;Randonnées pédestres ou vélos (14 places)
+category;night_club;canonical_activite;Discothèque (74 places)
+category;nursing_agency;canonical_activite;Ehpad (4387 places)
+category;opera_house;canonical_activite;Opéra (19 places)
+category;optician;canonical_activite;Opticien (13076 places)
+category;orthesist;canonical_activite;Ergothérapeute (19 places)
+category;park;canonical_activite;Espace vert et naturel (159 places)
+category;parking;canonical_activite;Parking & stationnement (130 places)
+category;performing_arts_theater;canonical_activite;Théâtre (3485 places)
+category;perfume_store;canonical_activite;Parfumerie, cosmétique (748 places)
+category;pet_store;canonical_activite;Animalerie (244 places)
+category;pharmacy;canonical_activite;Pharmacie (22302 places)
+category;photo_lab;canonical_activite;Photographie (8141 places)
+category;physiotherapist;canonical_activite;Kinésithérapeute (1065 places)
+category;physiotherapy_center;canonical_activite;Soin, médecine douce (41 places)
+category;place_of_worship;canonical_activite;Lieu de culte (1132 places)
+category;police;canonical_activite;Gendarmerie (3661 places)
+category;post_office;canonical_activite;Bureau de poste (6776 places)
+category;public_bathroom;canonical_activite;Toilettes publiques (5854 places)
+category;public_swimming_pool;canonical_activite;Piscine, centre aquatique (3971 places)
+category;real_estate_agency;canonical_activite;Agence immobilière (17314 places)
+category;recreation_center;canonical_activite;Centre de loisirs (581 places)
+category;restaurant;canonical_activite;Restaurant (25239 places)
+category;school;canonical_activite;Groupe scolaire (767 places)
+category;seafood_market;canonical_activite;Poissonnerie / commerce de poissons, crustacés et mollusques (229 places)
+category;shoe_store;canonical_activite;Chaussures (1127 places)
+category;shopping_mall;canonical_activite;Centre commercial (376 places)
+category;social_services_organization;canonical_activite;Point information jeunesse (488 places)
+category;spa;canonical_activite;Bien-être (2974 places)
+category;sporting_goods_store;canonical_activite;Sports et loisirs (4169 places)
+category;sports_complex;canonical_activite;Complexe sportif (655 places)
+category;stadium;canonical_activite;Stade (7939 places)
+category;storage;canonical_activite;Déménageur (13 places)
+category;store;canonical_activite;Commerce (3057 places)
+category;supermarket;canonical_activite;Supermarché (10565 places)
+category;tattoo_shop;canonical_activite;Tatouage Piercing (276 places)
+category;taxi_service;canonical_activite;Taxi (25 places)
+category;tea_house;canonical_activite;Vente de cafés et thés (405 places)
+category;tobacco_shop;canonical_activite;Tabac (676 places)
+category;tourist_information_center;canonical_activite;Office de tourisme (3515 places)
+category;toy_store;canonical_activite;Jeux jouets (432 places)
+category;train_station;canonical_activite;Gare sncf (91 places)
+category;training_center;canonical_activite;Emploi, formation (2130 places)
+category;transit_station;canonical_activite;Transport (75 places)
+category;travel_agency;canonical_activite;Agence de voyage (847 places)
+category;unemployment_office;canonical_activite;Mission locale pour l'insertion professionnelle et sociale des jeunes (36 places)
+category;university;canonical_activite;Université ou école supérieure (483 places)
+category;vacation_appartment;canonical_activite;Résidence de tourisme (373 places)
+category;veterinary_care;canonical_activite;Vétérinaire (6705 places)
+category;wheelchair_store;canonical_activite;Magasin d'appareils auditifs (654 places)
+category;wine_store;canonical_activite;Oenotourisme (93 places)
+category;zoo;canonical_activite;Jardin botanique et/ou zoologique (62 places)

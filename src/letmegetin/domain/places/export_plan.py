@@ -76,6 +76,45 @@ ANSWERS_HEADER = (
 )
 ALIASES_HEADER = ("alias_id", "canonical_id")
 
+
+class CsvRow(Protocol):
+    """Anything the writer can serialise: the ODbL rows and the partner's projected rows."""
+
+    def to_csv(self) -> tuple[object, ...]: ...
+
+
+class SourcedRow(Protocol):
+    """The three fields ATTRIBUTION and the manifest presence are built from (D-05)."""
+
+    @property
+    def source(self) -> str: ...
+
+    @property
+    def source_license(self) -> str | None: ...
+
+    @property
+    def date(self) -> datetime | None: ...
+
+
+@dataclass(frozen=True, slots=True)
+class ExportHeaders:
+    """One column tuple per archive entry: the only difference between the feeds (D-04)."""
+
+    places: tuple[str, ...]
+    categories: tuple[str, ...]
+    criteria: tuple[str, ...]
+    answers: tuple[str, ...]
+    aliases: tuple[str, ...]
+
+
+OPEN_EXPORT_HEADERS = ExportHeaders(
+    places=PLACES_HEADER,
+    categories=CATEGORIES_HEADER,
+    criteria=CRITERIA_HEADER,
+    answers=ANSWERS_HEADER,
+    aliases=ALIASES_HEADER,
+)
+
 # The formula-injection guard is allow-listed to free text, never blanket (F4): a negative
 # longitude or a +phone number must reach the partner unchanged. JSON columns always start
 # with "{" so listing them costs nothing and keeps the rule per-column.
@@ -255,7 +294,7 @@ def _guard_csv_cell(value: object) -> object:
     return value
 
 
-def guarded_cells(row: ExportRow, indexes: Sequence[int]) -> list[object]:
+def guarded_cells(row: CsvRow, indexes: Sequence[int]) -> list[object]:
     """The row's cells with the free-text columns guarded; every other column untouched."""
     cells = list(row.to_csv())
     for index in indexes:
@@ -263,7 +302,7 @@ def guarded_cells(row: ExportRow, indexes: Sequence[int]) -> list[object]:
     return cells
 
 
-def serialise_rows(header: Sequence[str], rows: Iterable[ExportRow], file: str) -> str:
+def serialise_rows(header: Sequence[str], rows: Iterable[CsvRow], file: str) -> str:
     """RFC 4180 CSV text, UTF-8, header row, no BOM — the exact shape D-02 promises."""
     indexes = guard_indexes(header, file)
     buffer = io.StringIO()

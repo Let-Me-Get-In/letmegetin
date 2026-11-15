@@ -35,23 +35,19 @@ from letmegetin.core.exceptions import DomainError
 from letmegetin.domain.places.export import ExportEventRepository
 from letmegetin.domain.places.export_plan import (
     ALIASES_FILE,
-    ALIASES_HEADER,
     ANSWERS_FILE,
-    ANSWERS_HEADER,
     ATTRIBUTION_FILE,
     CATEGORIES_FILE,
-    CATEGORIES_HEADER,
     CRITERIA_FILE,
-    CRITERIA_HEADER,
     MANIFEST_FILE,
     MODE_SNAPSHOT,
+    OPEN_EXPORT_HEADERS,
     PLACES_FILE,
-    PLACES_HEADER,
     SCHEMA_VERSION,
-    AnswerRow,
+    CsvRow,
+    ExportHeaders,
     ExportPlanRepository,
-    ExportRow,
-    PlaceRow,
+    SourcedRow,
     build_manifest,
     guard_indexes,
     guarded_cells,
@@ -177,9 +173,7 @@ async def _aiter[T](rows: Iterable[T]) -> AsyncIterator[T]:
         yield row
 
 
-async def _seeing[T: PlaceRow | AnswerRow](
-    rows: AsyncIterator[T], presence: _Presence
-) -> AsyncIterator[T]:
+async def _seeing[T: SourcedRow](rows: AsyncIterator[T], presence: _Presence) -> AsyncIterator[T]:
     async for row in rows:
         presence.see(row.source, row.source_license, row.date)
         yield row
@@ -190,7 +184,7 @@ async def _write_csv_entry(
     name: str,
     header: tuple[str, ...],
     file: str,
-    rows: AsyncIterator[ExportRow],
+    rows: AsyncIterator[CsvRow],
 ) -> int:
     """Stream one CSV entry; returns its data row count (header excluded)."""
     indexes = guard_indexes(header, file)
@@ -243,6 +237,7 @@ async def _write_zip(
     from_seq: int | None,
     answer_window: tuple[int, int] | None,
     destination: str = "open_export",
+    headers: ExportHeaders = OPEN_EXPORT_HEADERS,
 ) -> _ZipResult:
     """Stream the seven entries; ATTRIBUTION and the manifest close the archive."""
     presence = _Presence()
@@ -253,35 +248,35 @@ async def _write_zip(
             files[PLACES_FILE] = await _write_csv_entry(
                 archive,
                 PLACES_FILE,
-                PLACES_HEADER,
+                headers.places,
                 PLACES_FILE,
                 _seeing(export.stream_canonical_places(destination, from_seq), presence),
             )
             files[CATEGORIES_FILE] = await _write_csv_entry(
                 archive,
                 CATEGORIES_FILE,
-                CATEGORIES_HEADER,
+                headers.categories,
                 CATEGORIES_FILE,
                 _aiter(await export.list_categories()),
             )
             files[CRITERIA_FILE] = await _write_csv_entry(
                 archive,
                 CRITERIA_FILE,
-                CRITERIA_HEADER,
+                headers.criteria,
                 CRITERIA_FILE,
                 _aiter(await export.list_criteria()),
             )
             files[ANSWERS_FILE] = await _write_csv_entry(
                 archive,
                 ANSWERS_FILE,
-                ANSWERS_HEADER,
+                headers.answers,
                 ANSWERS_FILE,
                 _seeing(export.stream_answers(destination, answer_window), presence),
             )
             files[ALIASES_FILE] = await _write_csv_entry(
                 archive,
                 ALIASES_FILE,
-                ALIASES_HEADER,
+                headers.aliases,
                 ALIASES_FILE,
                 export.stream_aliases(from_seq),
             )
@@ -338,6 +333,17 @@ def _prune_deltas(out: Path, listed: set[str]) -> list[str]:
     return pruned
 
 
+def refuse_partner_window(
+    destination: str, *, delta: bool, since: int | None, since_date: date | None
+) -> None:
+    """A partner feed is a full snapshot only, until a partner delta chain is specified (D-04)."""
+    if destination != "open_export" and (delta or since is not None or since_date is not None):
+        raise DomainError(
+            "partner feeds are full snapshots only: deltas are deferred until a partner "
+            "delta chain is specified"
+        )
+
+
 async def export_odbl(
     export: ExportPlanRepository,
     events: ExportEventRepository,
@@ -347,17 +353,14 @@ async def export_odbl(
     since_date: date | None = None,
     delta: bool = False,
     destination: str = "open_export",
+    headers: ExportHeaders = OPEN_EXPORT_HEADERS,
 ) -> ExportReport:
     """Write one ZIP plus ``latest.json``; a snapshot also prunes the journal (D-10, D-15)."""
     if delta and (since is not None or since_date is not None):
         raise DomainError("--delta and --since are exclusive: a delta follows the watermark")
     if since is not None and since_date is not None:
         raise DomainError("--since takes a sequence number or an ISO date, not both")
-    if destination != "open_export" and (delta or since is not None or since_date is not None):
-        raise DomainError(
-            "partner feeds are full snapshots only: deltas are deferred until a partner "
-            "delta chain is specified"
-        )
+    refuse_partner_window(destination, delta=delta, since=since, since_date=since_date)
     mode = (
         MODE_DELTA if delta else (MODE_SINCE if since is not None or since_date else MODE_SNAPSHOT)
     )
@@ -415,6 +418,7 @@ async def export_odbl(
             from_seq=from_seq,
             answer_window=None if from_seq is None else (from_seq, boundary),
             destination=destination,
+            headers=headers,
         )
 
         deltas: list[dict[str, object]] = []

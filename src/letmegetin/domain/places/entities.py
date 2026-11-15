@@ -50,6 +50,8 @@ class Place:
     confidence: float | None = None
     website: str | None = None
     phone: str | None = None
+    # AccesLibre's own ERP slug (the identifier the partner feed keys on); never our slug.
+    erp_slug: str | None = None
     canonical_id: int | None = None
     # Review-queue candidate: what makes the 0.75-0.90 bucket a query, not a recomputation.
     duplicate_of_id: int | None = None
