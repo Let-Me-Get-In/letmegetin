@@ -86,11 +86,11 @@ Notes:
   1. AccesLibre receives a lov2 feed of owned rows keyed on their identifiers, with categories and criteria in their vocabulary, plus a mapping document listing every place of ours they cannot match and why.
   2. An operator pushes our answers to the AccesLibre API idempotently.
   3. Conflict rules and provenance are strong enough that a later import cannot overwrite a fresher community contribution.
-**Plans**: 6 plans
+**Plans**: 1/6 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 15-01-PLAN.md — Parameterise the export destination and prove the lov2_partner licence gate + directory separation (PART-01)
+- [x] 15-01-PLAN.md — Parameterise the export destination and prove the lov2_partner licence gate + directory separation (PART-01)
 - [ ] 15-02-PLAN.md — Promote httpx, build the fixed-origin AccesLibre adapter + pure push decision + identifier resolver (PART-02)
 
 **Wave 2** *(blocked on Wave 1 completion)*
@@ -133,7 +133,7 @@ Plans:
 | 12. Licence provenance | LET-79 | 5/5 | Complete    | 2026-11-13 |
 | 13. Documented-place visualisation | LET-75 | 3/3 | Complete    | 2026-11-14 |
 | 14. Open ODbL export | LET-72 | 5/5 | Complete    | 2026-11-15 |
-| 15. AccesLibre round trip | LET-73, LET-74 | 0/— | Not started | — |
+| 15. AccesLibre round trip | LET-73, LET-74 | 1/6 | In Progress | — |
 | 16. OpenStreetMap | LET-77, LET-78 | 0/— | Not started | — |
 | 17. Overture | LET-70, LET-71, LET-76 | 0/— | Not started | — |
 

@@ -21,7 +21,7 @@
     {
       "number": "15",
       "name": "AccesLibre round trip",
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "number": "16",
@@ -39,5 +39,5 @@
     "label": "Advance to the next step",
     "reason": "Phase 4 of 6 · executing"
   },
-  "updated_at": "2026-11-15T17:24:58.725Z"
+  "updated_at": "2026-11-15T18:11:19.135Z"
 }

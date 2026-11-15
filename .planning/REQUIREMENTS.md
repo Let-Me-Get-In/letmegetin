@@ -181,7 +181,7 @@
 
 ### AccesLibre round trip
 
-- [ ] **PART-01**: AccesLibre can receive a lov2 feed of owned rows keyed on their identifiers, with categories and criteria expressed in their vocabulary, plus a mapping document listing every place of ours they cannot match and why
+- [x] **PART-01**: AccesLibre can receive a lov2 feed of owned rows keyed on their identifiers, with categories and criteria expressed in their vocabulary, plus a mapping document listing every place of ours they cannot match and why
 - [ ] **PART-02**: An operator can push our answers to the AccesLibre API idempotently, with conflict rules and provenance strong enough that a later import cannot overwrite a fresher community contribution
 
 ### OpenStreetMap
