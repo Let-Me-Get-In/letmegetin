@@ -8,7 +8,11 @@ and counted, never guessed (D-06). Accessibility values come from the reviewed
 dropped, never coerced, and the mapping is validated against the referential before the first
 row is read, so a bad row fails the whole run instead of one place.
 
-shortcut: ``dedup`` is accepted but inert until 16-03 wires the candidate lookup and merge log.
+Duplicates are resolved by the Phase-3 scorer unchanged, against our own database — never an
+external API (D-07): the DB blocks spatially at 100 m, the names are scored here, and the
+reviewed thresholds decide. An auto match is a *linked* row (``canonical_id``, name kept as an
+alias, merge logged), a 0.75-0.90 match is diverted to the review queue, and nothing is ever
+deleted or hard-merged (D-08).
 """
 
 from __future__ import annotations
@@ -23,6 +27,7 @@ from letmegetin.application.referential.osm_tags import (
 )
 from letmegetin.config import settings
 from letmegetin.core.exceptions import DomainError
+from letmegetin.domain.places.dedup import classify_match, similar_score
 from letmegetin.domain.places.entities import Place, make_slug
 from letmegetin.domain.places.osm_map import (
     SOURCE,
@@ -86,9 +91,20 @@ async def _write_source_data(
     )
 
 
+async def _candidate(places: PlaceRepository, row: OsmRow) -> tuple[Place | None, float]:
+    """Best nearby name match and its score; the DB blocks spatially, we score names."""
+    if row.lat is None or row.lng is None or not row.name:
+        return None, 0.0
+    candidates = await places.get_candidates(row.lat, row.lng, row.name)
+    scored = [(hit.place, similar_score(hit.place.name, row.name)) for hit in candidates]
+    return max(scored, key=lambda item: item[1], default=(None, 0.0))
+
+
 async def _import_row(
     places: PlaceRepository,
     mapping: CategoryMappingRepository,
+    place_aliases: PlaceAliasRepository,
+    merges: MergeLogRepository,
     row: OsmRow,
     report: OsmImportReport,
     osm_tag_for: dict[str, int],
@@ -96,6 +112,7 @@ async def _import_row(
     accessibility: AccessibilityMapping,
     *,
     dry_run: bool,
+    dedup: bool,
 ) -> None:
     if not row.tags:
         # An untagged object is geometry (a way's shared nodes), never a POI.
@@ -141,6 +158,8 @@ async def _import_row(
         report.skipped += 1
         return
 
+    candidate, score = await _candidate(places, row) if dedup else (None, 0.0)
+    kind = classify_match(score) if candidate is not None else "new"
     place = Place(
         id=0,
         name=row.name,
@@ -151,6 +170,12 @@ async def _import_row(
         source_category=matched,
         lat=row.lat,
         lng=row.lng,
+        # D-08: a duplicate is a soft link, never a second place and never a deletion.
+        operating_status="duplicate_review" if kind == "review" else "open",
+        confidence=round(score, 3) if candidate is not None else None,
+        canonical_id=candidate.id if kind == "auto" and candidate is not None else None,
+        # Persisting the candidate is what turns the review bucket into a query.
+        duplicate_of_id=candidate.id if kind == "review" and candidate is not None else None,
         # The two facts the .osmChange <modify> later needs (BLOCKER 1).
         osm_version=row.version,
         osm_tags=row.tags,
@@ -158,10 +183,19 @@ async def _import_row(
         observed_at=None,
     )
     report.created += 1
+    if kind == "auto" and candidate is not None:
+        report.linked += 1
+    elif kind == "review":
+        report.review += 1
     if dry_run:
         return
     created = await places.add(place)
     await _write_source_data(places, created.id, values)
+
+    if kind == "auto" and candidate is not None:
+        await merges.add(candidate.id, created.id, score, actor=SOURCE)
+        if candidate.name.casefold() != created.name.casefold():
+            await place_aliases.add(candidate.id, created.name)
 
 
 async def import_osm(
@@ -178,9 +212,9 @@ async def import_osm(
 ) -> OsmImportReport:
     """Upsert OSM rows by ``(source, source_id)``.
 
-    ``categories``, ``place_aliases``, ``merges`` and ``dedup`` are the contract the 16-03
-    slice fills: dedup candidate lookup and the merge log. They are inert here so the CLI
-    does not change again.
+    ``dedup=False`` skips the per-row candidate lookup: the initial national load has nothing
+    to compare against, yet pays one PostGIS proximity query per POI — the same documented
+    fast path as the AccesLibre importer. Keep the default for incremental imports.
     """
     accessibility = load_osm_accessibility_tags(settings.data_dir / "osm_accessibility_tags.csv")
     gaps = accessibility_gaps(await criteria.list_all(), accessibility)
@@ -197,11 +231,14 @@ async def import_osm(
         await _import_row(
             places,
             mapping,
+            place_aliases,
+            merges,
             row,
             report,
             osm_tag_for,
             looked_up,
             accessibility,
             dry_run=dry_run,
+            dedup=dedup,
         )
     return report
