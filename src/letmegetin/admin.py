@@ -6,6 +6,7 @@ Usage: ``uv run python -m letmegetin.admin --help`` or ``uv run letmegetin-admin
 from __future__ import annotations
 
 import asyncio
+import csv
 import os
 import sys
 from collections.abc import Awaitable, Callable, Iterable, Iterator
@@ -83,6 +84,7 @@ from letmegetin.domain.places.dedup import RELIABLE_MATCH_THRESHOLD
 from letmegetin.domain.places.licence import DESTINATIONS
 from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
 from letmegetin.domain.referential.labels import parse_label_pairs
+from letmegetin.infrastructure.acceslibre.client import AccesLibreClient
 from letmegetin.infrastructure.persistence.export_repositories import (
     SqlAlchemyExportEventRepository,
     SqlAlchemyExportRepository,
@@ -118,6 +120,7 @@ place_app = typer.Typer(help="Read a place's change journal.")
 export_app = typer.Typer(help="Write the open ODbL export (snapshot, delta or catch-up).")
 api_key_app = typer.Typer(help="Create, list and revoke partner API keys.")
 user_app = typer.Typer(help="Create and verify operator/E2E accounts.")
+acceslibre_app = typer.Typer(help="Probe the AccesLibre ERP identifier and push owned answers.")
 app.add_typer(category_app, name="category")
 app.add_typer(criterion_app, name="criterion")
 app.add_typer(vocabulary_app, name="vocabulary")
@@ -130,6 +133,7 @@ app.add_typer(place_app, name="place")
 app.add_typer(export_app, name="export")
 app.add_typer(api_key_app, name="api-key")
 app.add_typer(user_app, name="user")
+app.add_typer(acceslibre_app, name="acceslibre")
 
 AdminCallback = Callable[[AsyncSession], Awaitable[str]]
 LabelPairs = Annotated[
@@ -1110,6 +1114,88 @@ def retention(
         )
 
     _run_admin(callback, bump=False)
+
+
+_IDENTIFIER_RULE_FILE = "acceslibre_identifier_rule.csv"
+
+
+def _write_identifier_rule(path: Path, rule: str, detail: str) -> None:
+    """Overwrite the single recorded rule that the feed and the push read (D-05)."""
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle, delimiter=";")
+        writer.writerow(["rule", "detail"])
+        writer.writerow([rule, detail])
+
+
+def probe_identifier(client: AccesLibreClient, source_id: str, path: Path) -> str:
+    """Read-only probe: settle Open Question 1 and record the rule the feed will key on.
+
+    Both documented lookups are tried, then one ``get_erp`` prints the read ``accessibilite``
+    section names (A2). A rule is written only after every call succeeded, so a refusal leaves
+    the previous rule in place. A read cannot confirm A1 (the PATCH success shape).
+    """
+    by_uuid = client.list_erps(uuid=source_id)
+    by_source = client.list_erps(source="acceslibre", source_id=source_id)
+    lines = [
+        f"?uuid={source_id} -> {len(by_uuid)} erp(s)",
+        f"?source=acceslibre&source_id={source_id} -> {len(by_source)} erp(s)",
+    ]
+    slugs: list[str] = []
+    for erp in [*by_source, *by_uuid]:
+        slug = erp.get("slug")
+        lines.append(f"  slug={slug} source={erp.get('source')} source_id={erp.get('source_id')}")
+        if isinstance(slug, str) and slug and slug not in slugs:
+            slugs.append(slug)
+
+    if not slugs:
+        rule = "blocked"
+        detail = (
+            f"neither ?uuid= nor ?source=acceslibre&source_id= returned an ERP for '{source_id}'"
+        )
+    elif source_id in slugs:
+        rule = "origin_id"
+        detail = "the ERP slug is the origin_id itself, so keying on origin_id addresses it"
+    else:
+        rule = "slug"
+        detail = (
+            f"the ERP slug '{slugs[0]}' differs from origin_id '{source_id}' — "
+            "re-import the slug column to populate erp_slug"
+        )
+
+    if slugs:
+        body = client.get_erp(slugs[0])
+        section = body.get("accessibilite")
+        keys = sorted(section) if isinstance(section, dict) else []
+        lines.append(f"accessibilite keys ({slugs[0]}): {', '.join(keys)}")
+
+    _write_identifier_rule(path, rule, detail)
+    lines.append(f"rule recorded in {path}: {rule}")
+    return "\n".join(lines)
+
+
+@acceslibre_app.command("probe")
+def acceslibre_probe(
+    source_id: Annotated[str, typer.Argument(help="Our place.source_id (AccesLibre's CSV id)")],
+) -> None:
+    """Resolve which identifier AccesLibre addresses an ERP by (D-05, Open Question 1)."""
+    key = settings.acceslibre_api_key
+    if not key:
+        typer.echo(
+            "error: LETMEGETIN_ACCESLIBRE_API_KEY is not set; the probe never calls "
+            "AccesLibre unauthenticated",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    client = AccesLibreClient(key)
+    path = settings.data_dir / _IDENTIFIER_RULE_FILE
+
+    async def callback(_session: AsyncSession) -> str:
+        try:
+            return probe_identifier(client, source_id, path)
+        finally:
+            client.close()
+
+    _run_admin(callback, bump=False, commit=False)
 
 
 if __name__ == "__main__":
