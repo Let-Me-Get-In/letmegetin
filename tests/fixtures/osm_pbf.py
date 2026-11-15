@@ -7,7 +7,7 @@ By default exactly three objects, and node/1 is the single object that produces 
 (16-01) and the single emitted ``<modify>`` element (16-04):
 
 - node/1 — ``amenity=cafe``, named, wheelchair-tagged: the one mapped POI.
-- node/2 — ``shop=antiques``, named: no reviewed category, skipped-and-counted.
+- node/2 — ``amenity=drinking_water``, named: no reviewed category, skipped-and-counted.
 - way/100 — ``highway=residential``: no reviewed category, exercises the way → point path.
 
 ``with_bakery`` adds node/3, a mapped POI with no accessibility tag: the D-04 case, imported as
@@ -22,7 +22,7 @@ import osmium
 from osmium.osm.mutable import Node, Way
 
 _TAGS_NODE_1 = {"amenity": "cafe", "name": "Café du Coin", "wheelchair": "yes"}
-_TAGS_NODE_2 = {"shop": "antiques", "name": "Antiquités"}
+_TAGS_NODE_2 = {"amenity": "drinking_water", "name": "Fontaine du Coin"}
 _TAGS_NODE_3 = {"shop": "bakery", "name": "Boulangerie du Coin"}
 _TAGS_WAY_100 = {"highway": "residential"}
 
