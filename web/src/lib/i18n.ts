@@ -50,6 +50,7 @@ const MESSAGES = {
     placesAdded: { one: "lieu supplémentaire", many: "lieux supplémentaires" },
     geoUnavailable: "La géolocalisation n'est pas disponible dans ce navigateur.",
     geoDenied: "Localisation refusée : la recherche reste centrée sur Paris.",
+    searchThisArea: "Rechercher dans cette zone",
     searchPlaceholder: "Nom, catégorie, adresse…",
     criteriaLegend: "Critères d'accessibilité",
     noPlaces:
@@ -272,6 +273,7 @@ const MESSAGES = {
     placesAdded: { one: "place added", many: "places added" },
     geoUnavailable: "Geolocation is not available in this browser.",
     geoDenied: "Location denied: search stays centred on Paris.",
+    searchThisArea: "Search this area",
     searchPlaceholder: "Name, category, address…",
     criteriaLegend: "Accessibility criteria",
     noPlaces: "No places found. Try widening the radius or removing a filter.",
