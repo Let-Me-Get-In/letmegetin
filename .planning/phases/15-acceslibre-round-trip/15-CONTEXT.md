@@ -67,9 +67,13 @@ scheduled delivery to them (that is an ops concern once the key exists), and the
 - **D-10:** The push is **read-then-diff**: `GET /api/erps/<slug>/` first, compare field by field,
   push only what differs. Blind PATCH was rejected — it would overwrite a correction made upstream
   after our import.
-- **D-11:** When both sides hold a value for the same field, **freshness decides**, reusing the Phase
-  12 rules verbatim (`observed_at`, NULL = oldest, user takes ownership). Our newer answer wins; their
-  newer answer is skipped and recorded.
+- **D-11:** When both sides hold a value for the same field, **freshness decides**. Our side's claim
+  date is the answer's `recorded_at` when `observed_at` is NULL (which it always is for community
+  answers), otherwise `observed_at`; their side's is the ERP-level `updated_at`. Our newer answer
+  wins; their newer answer is skipped and recorded.
+  *Amended 2026-11-15 (was: "reusing the Phase 12 rules verbatim, NULL = oldest"). Phase 12's
+  NULL-is-oldest rule would make every community answer lose to any dated AccesLibre value, which
+  defeats PART-02. Found in research; amended by the developer, not the planner.*
 - **D-12:** Every attempt is journaled, accepted or skipped, with the losing value kept — the same
   shape as `place_accessibility_write`. Idempotent: a replayed run produces no write and no new
   accepted event.
