@@ -119,6 +119,8 @@ class PlaceRow:
     source_license: str | None
     source_url: str | None
     date: datetime | None
+    # AccesLibre's own ERP slug (15-03): feeds the partner projection, never an ODbL column.
+    erp_slug: str | None = None
 
     def to_csv(self) -> tuple[object, ...]:
         return (
@@ -227,6 +229,11 @@ class AliasRow:
 
     alias_id: int
     canonical_id: int
+    # Identifier candidates the partner projection resolves; the ODbL CSV never reads them.
+    alias_erp_slug: str | None = None
+    alias_origin_id: str | None = None
+    canonical_erp_slug: str | None = None
+    canonical_origin_id: str | None = None
 
     def to_csv(self) -> tuple[object, ...]:
         return (self.alias_id, self.canonical_id)
