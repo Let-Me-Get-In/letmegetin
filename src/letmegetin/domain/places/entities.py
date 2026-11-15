@@ -60,6 +60,10 @@ class Place:
     retrieved_at: datetime | None = None
     # What the source claims about the data itself (Acceslibre ``date_maj``).
     observed_at: datetime | None = None
+    # OSM object version and its full raw tag set, captured at import; the .osmChange
+    # generator reads them to emit a non-destructive <modify> (D-03 amendment).
+    osm_version: int | None = None
+    osm_tags: dict[str, str] | None = None
     # Read-only projection: filled by the repository when it joins the category.
     category_slug: str | None = None
 

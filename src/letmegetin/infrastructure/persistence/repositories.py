@@ -883,6 +883,8 @@ class SqlAlchemyPlaceRepository:
             source_url=place.source_url,
             retrieved_at=place.retrieved_at,
             observed_at=place.observed_at,
+            osm_version=place.osm_version,
+            osm_tags=place.osm_tags,
         )
         self._session.add(model)
         await self._session.flush()
@@ -918,6 +920,9 @@ class SqlAlchemyPlaceRepository:
         model.source_url = place.source_url or model.source_url
         model.retrieved_at = place.retrieved_at or model.retrieved_at
         model.observed_at = place.observed_at or model.observed_at
+        # Only ever filled, never cleared: a non-OSM update must not erase the OSM identity.
+        model.osm_version = place.osm_version or model.osm_version
+        model.osm_tags = place.osm_tags or model.osm_tags
         await self._session.flush()
         await self._append_export_event(
             "place", model.id, "update", f"importer:{model.source}", _place_payload(model)
@@ -1398,6 +1403,16 @@ class SqlAlchemyCategoryMappingRepository:
             select(CategoryModel.id).where(CategoryModel.slug == slug)
         )
         return int(direct) if direct is not None else None
+
+    async def resolve_osm_tag(self, tag: str) -> int | None:
+        mapped = await self._session.scalar(
+            select(CategoryMappingModel.category_id)
+            .where(CategoryMappingModel.osm_tag == tag)
+            # Deterministic: a tag mapped to several buckets always resolves to the same grid.
+            .order_by(CategoryMappingModel.category_id)
+            .limit(1)
+        )
+        return int(mapped) if mapped is not None else None
 
     async def upsert(self, mapping: CategoryMapping) -> None:
         statement = insert(CategoryMappingModel).values(
