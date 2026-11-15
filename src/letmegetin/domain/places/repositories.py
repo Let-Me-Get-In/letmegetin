@@ -202,3 +202,7 @@ class CategoryMappingRepository(Protocol):
     async def resolve_osm_tag(self, tag: str) -> int | None:
         """Category id for one reviewed ``category_mapping.osm_tag`` value, else ``None``."""
         ...
+
+    async def list_osm_tags(self) -> dict[str, str]:
+        """Every reviewed ``osm_tag`` with the slug of the category it maps to."""
+        ...

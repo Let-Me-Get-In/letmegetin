@@ -1414,6 +1414,17 @@ class SqlAlchemyCategoryMappingRepository:
         )
         return int(mapped) if mapped is not None else None
 
+    async def list_osm_tags(self) -> dict[str, str]:
+        rows = (
+            await self._session.execute(
+                select(CategoryMappingModel.osm_tag, CategoryModel.slug)
+                .join(CategoryModel, CategoryModel.id == CategoryMappingModel.category_id)
+                .where(CategoryMappingModel.osm_tag.is_not(None))
+                .order_by(CategoryMappingModel.category_id)
+            )
+        ).all()
+        return {tag: slug for tag, slug in rows if tag}
+
     async def upsert(self, mapping: CategoryMapping) -> None:
         statement = insert(CategoryMappingModel).values(
             category_id=mapping.category_id,

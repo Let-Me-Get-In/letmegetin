@@ -3,11 +3,12 @@
 Mirrors the AccesLibre importer: streaming rows, idempotent on ``(source, source_id)``
 (D-02), and every category decision comes from reviewed ``category_mapping.osm_tag`` data —
 never from a branch in this module (D-05). A POI whose tags match no reviewed tag is skipped
-and counted, never guessed (D-06).
+and counted, never guessed (D-06). Accessibility values come from the reviewed
+``osm_accessibility_tags.csv`` through the same rule: a tag pair the review did not map is
+dropped, never coerced, and the mapping is validated against the referential before the first
+row is read, so a bad row fails the whole run instead of one place.
 
-shortcut: this slice imports the POI, its mapped category and its raw tag set only. No
-accessibility value is written (``_write_source_data`` arrives in 16-02 with the reviewed
-``osm_accessibility_tags.csv``) and ``dedup`` is accepted but inert until 16-03.
+shortcut: ``dedup`` is accepted but inert until 16-03 wires the candidate lookup and merge log.
 """
 
 from __future__ import annotations
@@ -16,8 +17,19 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
+from letmegetin.application.referential.osm_tags import (
+    accessibility_gaps,
+    load_osm_accessibility_tags,
+)
+from letmegetin.config import settings
+from letmegetin.core.exceptions import DomainError
 from letmegetin.domain.places.entities import Place, make_slug
-from letmegetin.domain.places.osm_map import SOURCE, OsmRow
+from letmegetin.domain.places.osm_map import (
+    SOURCE,
+    AccessibilityMapping,
+    OsmRow,
+    accessibility_values,
+)
 from letmegetin.domain.places.repositories import (
     CategoryMappingRepository,
     MergeLogRepository,
@@ -65,6 +77,15 @@ def render_unmatched(report: OsmImportReport, limit: int = 20) -> list[str]:
     return [f"  unmatched: {' '.join(tags)}={count}" for tags, count in ranked[:limit]]
 
 
+async def _write_source_data(
+    places: PlaceRepository, place_id: int, values: dict[str, dict[str, object]]
+) -> None:
+    """Persist the source-owned accessibility values for one place (never a contribution)."""
+    await places.upsert_accessibility(
+        place_id, values, source=SOURCE, actor=f"importer:{SOURCE}", observed_at=None
+    )
+
+
 async def _import_row(
     places: PlaceRepository,
     mapping: CategoryMappingRepository,
@@ -72,6 +93,7 @@ async def _import_row(
     report: OsmImportReport,
     osm_tag_for: dict[str, int],
     looked_up: set[str],
+    accessibility: AccessibilityMapping,
     *,
     dry_run: bool,
 ) -> None:
@@ -101,6 +123,8 @@ async def _import_row(
         # A mapped object without a name is still not a place (place.name is required).
         return
     report.resolved += 1
+    # D-05/D-06: only reviewed tag pairs produce a value; the rest are dropped, not guessed.
+    values = accessibility_values(row.tags, accessibility)
 
     existing = await places.get_by_source_id(SOURCE, row.source_id)
     if existing is not None:
@@ -113,6 +137,7 @@ async def _import_row(
             existing.osm_tags = row.tags
             existing.retrieved_at = datetime.now(UTC).replace(tzinfo=None)
             await places.update(existing)
+            await _write_source_data(places, existing.id, values)
         report.skipped += 1
         return
 
@@ -135,7 +160,8 @@ async def _import_row(
     report.created += 1
     if dry_run:
         return
-    await places.add(place)
+    created = await places.add(place)
+    await _write_source_data(places, created.id, values)
 
 
 async def import_osm(
@@ -152,10 +178,17 @@ async def import_osm(
 ) -> OsmImportReport:
     """Upsert OSM rows by ``(source, source_id)``.
 
-    ``categories``, ``place_aliases``, ``merges``, ``criteria`` and ``dedup`` are the
-    contract the 16-02/16-03 slices fill: accessibility mapping, dedup candidate lookup and
-    the merge log. They are inert here so the CLI does not change again.
+    ``categories``, ``place_aliases``, ``merges`` and ``dedup`` are the contract the 16-03
+    slice fills: dedup candidate lookup and the merge log. They are inert here so the CLI
+    does not change again.
     """
+    accessibility = load_osm_accessibility_tags(settings.data_dir / "osm_accessibility_tags.csv")
+    gaps = accessibility_gaps(await criteria.list_all(), accessibility)
+    if gaps:
+        # Fail closed before the first row: a reviewed row that names nothing is a data bug,
+        # never a value to coerce (open question 2).
+        raise DomainError("osm accessibility mapping is not coherent:\n" + "\n".join(gaps))
+
     report = OsmImportReport()
     # Memoised like the AccesLibre importer's label cache: a reviewed tag is resolved once.
     osm_tag_for: dict[str, int] = {}
@@ -168,6 +201,7 @@ async def import_osm(
             report,
             osm_tag_for,
             looked_up,
+            accessibility,
             dry_run=dry_run,
         )
     return report
