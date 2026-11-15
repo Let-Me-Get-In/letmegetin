@@ -4,16 +4,16 @@ milestone: v2.0
 current_phase: 15
 current_phase_name: AccesLibre round trip
 status: executing
-stopped_at: Completed 15-02-PLAN.md
-last_updated: "2026-11-15T18:17:08.171Z"
+stopped_at: Halted at 15-03 Task 2 (blocking-human AccesLibre probe)
+last_updated: "2026-11-15T18:22:23.627Z"
 last_activity: 2026-11-15
 last_activity_desc: Phase 15 execution started
-state_head: 9e6a41abdc50cb7aaf669940d34b234e9d81065c
+state_head: a2914eec12fb98721f74178c7daddb3b29352bbf
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 19
-  completed_plans: 15
+  completed_plans: 16
 milestone_name: Federated Data & Partners
 ---
 
@@ -30,8 +30,8 @@ See: .planning/PROJECT.md (updated 2026-11-13)
 
 Phase: 15 (AccesLibre round trip) — EXECUTING
 Plan: 3 of 6
-Status: Ready to execute
-Last activity: 2026-11-15 — Phase 15 execution started
+Status: Halted at 15-03 Task 2 — blocking-human probe waiting on the AccesLibre API key (15-03 built, not verified)
+Last activity: 2026-11-15 — 15-03 probe command and erp_slug column landed; live probe gated on the partner key
 
 
 ## Quick Tasks Completed
@@ -55,6 +55,7 @@ Last activity: 2026-11-15 — Phase 15 execution started
 |------|----------|-------|-------|
 | Phase 15 P01 | 3min | 2 tasks | 3 files |
 | Phase 15 P02 | 4min | 2 tasks | 11 files |
+| Phase 15 P03 | 5min | 1 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,8 @@ Last activity: 2026-11-15 — Phase 15 execution started
 - [Phase 15]: The AccesLibre push sends booleans as "true"/"false" strings: the live write schema declares them string, while the read side returns real booleans (Pitfall 9).
 - [Phase 15]: The AccesLibre origin is a module constant an adapter test pins; a host setting must never come back — it would be a key-exfiltration path.
 - [Phase 15]: Push freshness is a named amended-D-11 rule: our claim date is observed_at else recorded_at, so a community answer with NULL observed_at can still win.
+- [Phase 15]: The probe writes the identifier rule only after every read-only call succeeded, so a refusal leaves the committed blocked;UNVERIFIED row in place — A partially observed ERP must never become the key the feed and push address rows by (T-15-05)
+- [Phase 15]: The rule CSV detail text avoids ';' so the file needs no CSV quoting and diffs cleanly for 15-04's DictReader
 
 ### Pending Todos
 
@@ -119,11 +122,12 @@ Last activity: 2026-11-15 — Phase 15 execution started
   back-to-back run intermittently renders "Rate limit exceeded" and fails unrelated read-only specs.
   Run the gate as a first run after a ~70 s cooldown; options and evidence in
   `.planning/phases/11-e2e-accessibility/deferred-items.md`.
+- 15-03 halts at its blocking-human probe: LETMEGETIN_ACCESLIBRE_API_KEY does not exist yet, so the identifier rule stays blocked;UNVERIFIED and 15-04/15-05 cannot key the feed or the push
 
 ## Session Continuity
 
-Last session: 2026-11-15T18:17:07.921Z
-Stopped at: Completed 15-02-PLAN.md
+Last session: 2026-11-15T18:22:19.858Z
+Stopped at: Halted at 15-03 Task 2 (blocking-human AccesLibre probe)
 Resume file: None
 
 ## Known debt
