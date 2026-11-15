@@ -1,0 +1,5 @@
+osm_key;osm_value;criterion_slug;criterion_value
+wheelchair;yes;circulation-acces-en-fauteuil-a-tout-le-lieu;circulation-acces-en-fauteuil-a-tout-le-lieu-acces-en-fauteuil-possible-partout
+wheelchair;limited;circulation-acces-en-fauteuil-a-tout-le-lieu;circulation-acces-en-fauteuil-a-tout-le-lieu-certains-espaces-ne-sont-pas-accessibles-en-fauteuil
+toilets:wheelchair;yes;services-et-equipements-sanitaires;services-et-equipements-sanitaires-sanitaires-amenages-pour-les-pmr
+toilets:wheelchair;no;services-et-equipements-sanitaires;services-et-equipements-sanitaires-sanitaires-inaccessibles
