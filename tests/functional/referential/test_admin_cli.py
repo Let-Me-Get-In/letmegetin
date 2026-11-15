@@ -380,4 +380,4 @@ def test_licences_sync_loads_the_reviewed_source_mapping(licence_db: None) -> No
 
     # Operator dates reviewed in data/referential/source_licences.csv (LET-79).
     assert mapping["acceslibre"] == "lov2"
-    assert mapping["user"] == "odbl"
+    assert mapping["user"] == "dual"

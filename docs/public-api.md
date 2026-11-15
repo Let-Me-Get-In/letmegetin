@@ -216,7 +216,7 @@ aliases.csv:     alias_id,canonical_id
 ```
 
 `label` (`{fr, en}`), `value` (the recorded answer object) and `handicap_families` (a list) are
-JSON text. `source_license` is the licence slug (`lov2`, `odbl`, `cdla`); `source_url` may be
+JSON text. `source_license` is the licence slug (`lov2`, `odbl`, `cdla`, `dual`); `source_url` may be
 empty. `category_slug` and `criterion_slug` join to the `slug` in the referential files — do not
 join answers on the internal criterion id.
 
