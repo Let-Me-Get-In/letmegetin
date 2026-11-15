@@ -4,16 +4,16 @@ milestone: v2.0
 current_phase: 15
 current_phase_name: AccesLibre round trip
 status: executing
-stopped_at: Phase 15 context gathered
-last_updated: "2026-11-15T17:24:58.708Z"
+stopped_at: Completed 15-01-PLAN.md
+last_updated: "2026-11-15T18:11:23.016Z"
 last_activity: 2026-11-15
-last_activity_desc: Phase 14 complete, transitioned to Phase 15
-state_head: 4495d96bdaeba42b0ef1db9da0ea102d7f33cb4a
+last_activity_desc: Phase 15 execution started
+state_head: b1894de0dffac71cae581f84129ceb0a6f80a578
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 19
-  completed_plans: 13
+  completed_plans: 14
 milestone_name: Federated Data & Partners
 ---
 
@@ -24,14 +24,14 @@ milestone_name: Federated Data & Partners
 See: .planning/PROJECT.md (updated 2026-11-13)
 
 **Core value:** Let anyone know in seconds whether a place is truly accessible.
-**Current focus:** Phase 14 — Open ODbL export
+**Current focus:** Phase 15 — AccesLibre round trip
 
 ## Current Position
 
-Phase: 15 (AccesLibre round trip) — READY TO EXECUTE
-Plan: Not started
+Phase: 15 (AccesLibre round trip) — EXECUTING
+Plan: 2 of 6
 Status: Ready to execute
-Last activity: 2026-11-15 — Phase 14 complete, transitioned to Phase 15
+Last activity: 2026-11-15 — Phase 15 execution started
 
 
 ## Quick Tasks Completed
@@ -48,6 +48,12 @@ Last activity: 2026-11-15 — Phase 14 complete, transitioned to Phase 15
 - Linear tickets: LET-5..LET-12
 - Plans completed: 18
 - Phases complete: V1 7/7; V1.1 4/4 (Phase 9 verified on 2026-11-09; Phase 11 closed)
+
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 15 P01 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -89,6 +95,8 @@ Last activity: 2026-11-15 — Phase 14 complete, transitioned to Phase 15
 - The one serious axe finding is `link-in-text-block` on the search page: the MapLibre **attribution link** (2.02:1 contrast, no underline). It is the map library's control, so the fix is a CSS override in `web/`, not a component rewrite (A11Y-01).
 - The map assertion matches `/list/i`, not `/liste/i`: the label is localized, and a case-insensitive `list` is a substring of both `liste` and `list`, so one assertion covers both locales — while `tabindex="0"` stays refused, because localizing the label did not make the map a keyboard destination (A11Y-03).
 - An axe scan waits for the last client-only thing to hydrate (the map) before running: a half-rendered page reports zero violations, and an artifact with a quiet zero would send the fix plan after nothing.
+- [Phase 15]: Partner archives are named lov2_partner-<stamp>-full.zip; ODbL snapshot and delta names are unchanged
+- [Phase 15]: A non-open_export destination refuses --delta/--since: partner feeds are full snapshots until a partner delta chain is specified
 
 ### Pending Todos
 
@@ -110,9 +118,9 @@ Last activity: 2026-11-15 — Phase 14 complete, transitioned to Phase 15
 
 ## Session Continuity
 
-Last session: 2026-11-15T15:29:31.484Z
-Stopped at: Phase 15 context gathered
-Resume file: .planning/phases/15-acceslibre-round-trip/15-CONTEXT.md
+Last session: 2026-11-15T18:11:22.780Z
+Stopped at: Completed 15-01-PLAN.md
+Resume file: None
 
 ## Known debt
 
