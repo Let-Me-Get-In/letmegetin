@@ -649,6 +649,14 @@ class SqlAlchemyPlaceRepository:
         )
         return place_from_model(row) if row is not None else None
 
+    async def list_by_source(self, source: str) -> list[Place]:
+        rows = (
+            await self._session.scalars(
+                select(PlaceModel).where(PlaceModel.source == source).order_by(PlaceModel.id)
+            )
+        ).all()
+        return [place_from_model(row) for row in rows]
+
     async def get_by_slug(self, slug: str) -> Place | None:
         row = await self._session.execute(
             select(PlaceModel, CategoryModel.slug)

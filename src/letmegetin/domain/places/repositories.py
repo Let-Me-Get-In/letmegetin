@@ -30,6 +30,10 @@ class PlaceRepository(Protocol):
 
     async def get_by_slug(self, slug: str) -> Place | None: ...
 
+    async def list_by_source(self, source: str) -> list[Place]:
+        """Every place of one imported ``source``, ordered by place id (the publish scan)."""
+        ...
+
     async def list_for_dedup(self, limit: int | None = None) -> list[DedupRow]:
         """Places with a location and no canonical parent, for the duplicate pass."""
 

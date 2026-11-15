@@ -47,6 +47,7 @@ from letmegetin.application.places.import_acceslibre import (
 )
 from letmegetin.application.places.import_osm import OsmRow, import_osm, render_unmatched
 from letmegetin.application.places.lov2_export import load_identifier_rule
+from letmegetin.application.places.osm_publish import format_publish_report, osm_publish
 from letmegetin.application.places.push_acceslibre import PushReport, push_acceslibre
 from letmegetin.application.places.reclassify import reclassify_places
 from letmegetin.application.referential.admin import (
@@ -787,6 +788,21 @@ def osm_audit() -> None:
     for gap in found:
         typer.echo(gap)
     raise typer.Exit(code=1)
+
+
+@osm_app.command("publish")
+def osm_publish_command(
+    out: Annotated[Path, typer.Option("--out", help="Directory answers.osmChange goes to")],
+) -> None:
+    """Write answers.osmChange from the stored OSM rows; never uploads (D-09)."""
+
+    async def callback(session: AsyncSession) -> str:
+        report = await osm_publish(
+            SqlAlchemyPlaceRepository(session), out=out, data_dir=settings.data_dir
+        )
+        return "\n".join(format_publish_report(report))
+
+    _run_admin(callback, bump=False)
 
 
 @import_app.command("reclassify")
