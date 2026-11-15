@@ -76,7 +76,7 @@ def test_osm_import_writes_one_place_with_version_and_raw_tags(
     assert "created=1" in output
     assert "resolved=1" in output
     assert "unresolved=2" in output
-    assert "unmatched: name=Antiquités shop=antiques=1" in output
+    assert "unmatched: amenity=drinking_water name=Fontaine du Coin=1" in output
     assert "unmatched: highway=residential=1" in output
 
     rows = _places(
