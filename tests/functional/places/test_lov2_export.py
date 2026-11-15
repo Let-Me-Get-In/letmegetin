@@ -362,6 +362,15 @@ def test_blocked_rule_diverts_every_place(partner_data: Path, db: None, tmp_path
         row["entity"] == "place" and row["reason"] == "identifier_unresolved"
         for row in _mapping(tmp_path)
     )
+    # A category with no inverse is its own entity in the document, never a place.
+    assert any(
+        row["entity"] == "category" and row["reason"] == "no_category_inverse"
+        for row in _mapping(tmp_path)
+    )
+    assert all(
+        row["entity"] != "place" or row["reason"] != "no_category_inverse"
+        for row in _mapping(tmp_path)
+    )
 
 
 _IMPORT_HEADER = "id;nom;commune;code_postal;latitude;longitude;categorie;entree_pmr\n"

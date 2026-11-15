@@ -226,6 +226,20 @@ class UnmappablePlace:
 
 
 @dataclass(frozen=True, slots=True)
+class UnmappableCategory:
+    """A category with no `activite` inverse; the places carrying it divert separately."""
+
+    identifier: str | None
+    reason: str
+    detail: str = ""
+
+    entity = "category"
+
+    def to_csv(self) -> tuple[object, ...]:
+        return (self.entity, self.identifier, self.reason, self.detail)
+
+
+@dataclass(frozen=True, slots=True)
 class UnmappableAnswer:
     """An answer whose criterion has no AccesLibre field (D-08)."""
 
