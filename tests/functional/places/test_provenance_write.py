@@ -167,7 +167,7 @@ def test_a_contribution_carries_the_user_licence_never_none(db: None) -> None:
     written = _answer()
     assert (written.source, written.source_license, written.actor) == (
         "user",
-        "odbl",
+        "dual",
         f"user:{user_id}",
     )
     assert written.observed_at is None
