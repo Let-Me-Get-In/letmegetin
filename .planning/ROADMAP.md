@@ -89,11 +89,20 @@ Notes:
 **Plans**: 6 plans
 
 Plans:
+**Wave 1**
 - [ ] 15-01-PLAN.md — Parameterise the export destination and prove the lov2_partner licence gate + directory separation (PART-01)
 - [ ] 15-02-PLAN.md — Promote httpx, build the fixed-origin AccesLibre adapter + pure push decision + identifier resolver (PART-02)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 15-03-PLAN.md — The read-only identifier probe (erp_slug + rule CSV) and its blocking live run (PART-01, PART-02)
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 15-04-PLAN.md — Project our keys into AccesLibre's vocabulary (slug-first) and emit the mapping document (PART-01)
+
+**Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 15-05-PLAN.md — The outbound journal, the read-then-diff push use case + `acceslibre push`, and the A1 no-op PATCH gate (PART-02)
+
+**Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 15-06-PLAN.md — The `dual` licence rows (D-01/D-02) and the contributor-terms-gated re-stamp migration (PART-01, PART-02)
 
 ### Phase 16: OpenStreetMap
