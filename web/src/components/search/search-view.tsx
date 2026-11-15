@@ -18,6 +18,21 @@ const MapView = dynamic(() => import("./map-view").then((mod) => mod.MapView), {
 
 const PAGE_SIZE = 100;
 
+function distanceMeters(
+  a: { lat: number; lng: number },
+  b: { lat: number; lng: number },
+): number {
+  const R = 6371000;
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const h =
+    Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
 export function SearchView({ locale }: { locale: Locale }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -36,6 +51,7 @@ export function SearchView({ locale }: { locale: Locale }) {
   const [criteria, setCriteria] = useState<CriterionNode[]>([]);
   const [locating, setLocating] = useState(false);
   const [geoMessage, setGeoMessage] = useState("");
+  const [areaCenter, setAreaCenter] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     setDraft(parseSearch(new URLSearchParams(query)));
@@ -45,6 +61,7 @@ export function SearchView({ locale }: { locale: Locale }) {
     let active = true;
     setLoading(true);
     setError("");
+    setAreaCenter(null);
     api<PlaceSummary[]>(placesPath(state))
       .then((data) => {
         if (!active) return;
@@ -93,6 +110,18 @@ export function SearchView({ locale }: { locale: Locale }) {
   const submit = useCallback(() => {
     router.push(`/?${toSearchParams(draft).toString()}`);
   }, [router, draft]);
+
+  const searchArea = useCallback(() => {
+    if (!areaCenter) return;
+    const next = { ...state, lat: areaCenter.lat, lng: areaCenter.lng };
+    setDraft(next);
+    router.push(`/?${toSearchParams(next).toString()}`);
+  }, [areaCenter, state, router]);
+
+  // Offering a new search only once the map has really moved avoids a button that
+  // flickers on every pixel of a pan, and pairs with the 60 rpm public limit.
+  const drift = areaCenter ? distanceMeters(areaCenter, state) : 0;
+  const movedAway = drift > Math.max(200, state.radius / 2);
 
   const loadMore = useCallback(() => {
     if (loadingMore) return;
@@ -178,13 +207,25 @@ export function SearchView({ locale }: { locale: Locale }) {
       ) : null}
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <MapView
-          locale={locale}
-          places={places}
-          center={{ lat: state.lat, lng: state.lng }}
-          selected={selected}
-          onSelect={setSelected}
-        />
+        <div className="relative">
+          <MapView
+            locale={locale}
+            places={places}
+            center={{ lat: state.lat, lng: state.lng }}
+            selected={selected}
+            onSelect={setSelected}
+            onMoveEnd={setAreaCenter}
+          />
+          {movedAway ? (
+            <button
+              type="button"
+              onClick={searchArea}
+              className="absolute left-1/2 top-3 -translate-x-1/2 rounded-full border border-line bg-paper px-4 py-2 text-sm font-medium shadow-sm hover:border-accent hover:text-accent"
+            >
+              {t(locale, "searchThisArea")}
+            </button>
+          ) : null}
+        </div>
         <div>
           <p role="status" aria-live="polite" className="sr-only">
             {announcement}

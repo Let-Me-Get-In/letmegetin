@@ -36,12 +36,21 @@ type Props = {
   center: { lat: number; lng: number };
   selected: string | null;
   onSelect: (slug: string) => void;
+  onMoveEnd?: (center: { lat: number; lng: number }) => void;
 };
 
-export function MapView({ locale, places, center, selected, onSelect }: Props) {
+export function MapView({ locale, places, center, selected, onSelect, onMoveEnd }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapLibreMap | null>(null);
   const markers = useRef<Marker[]>([]);
+  // The listener is installed once, so it reads the latest callback through a
+  // ref instead of forcing the map to be recreated on every render.
+  const moveHandler = useRef(onMoveEnd);
+  useEffect(() => {
+    moveHandler.current = onMoveEnd;
+  }, [onMoveEnd]);
+  // flyTo also fires moveend; a programmatic move must not offer "search here".
+  const flying = useRef(false);
 
   useEffect(() => {
     if (!container.current || map.current) return;
@@ -52,6 +61,14 @@ export function MapView({ locale, places, center, selected, onSelect }: Props) {
       zoom: 13,
     });
     instance.addControl(new NavigationControl(), "top-right");
+    instance.on("moveend", () => {
+      if (flying.current) {
+        flying.current = false;
+        return;
+      }
+      const moved = instance.getCenter();
+      moveHandler.current?.({ lat: moved.lat, lng: moved.lng });
+    });
     map.current = instance;
     return () => {
       instance.remove();
@@ -78,12 +95,14 @@ export function MapView({ locale, places, center, selected, onSelect }: Props) {
   }, [places, selected, onSelect]);
 
   useEffect(() => {
+    flying.current = true;
     map.current?.flyTo({ center: [center.lng, center.lat], zoom: 13 });
   }, [center.lat, center.lng]);
 
   useEffect(() => {
     const place = places.find((item) => item.slug === selected);
     if (place?.lat != null && place.lng != null) {
+      flying.current = true;
       map.current?.flyTo({ center: [place.lng, place.lat], zoom: 15 });
     }
   }, [selected, places]);
