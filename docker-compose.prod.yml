@@ -86,6 +86,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+      # The entrypoint runs migrations before serving, so a cold start is
+      # minutes, not seconds: without this a first deploy fails its dependency
+      # wait with the API healthy but too late, and web is never started.
+      start_period: 180s
     restart: unless-stopped
 
   web:
