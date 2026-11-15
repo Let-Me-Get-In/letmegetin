@@ -928,6 +928,13 @@ def export_odbl_command(
     async def callback(session: AsyncSession) -> str:
         since_seq, since_date = _parse_since(since)
         refuse_partner_window(destination, delta=delta, since=since_seq, since_date=since_date)
+        # A partner archive in the public directory would publish withheld rows and
+        # overwrite the ODbL latest.json the API serves (T-15-01).
+        if destination != "open_export" and out.resolve() == settings.export_dir.resolve():
+            raise DomainError(
+                f"--out points at the served export directory: a {destination} archive must "
+                "not be published there"
+            )
         repository = SqlAlchemyExportRepository(session)
         events = SqlAlchemyExportEventRepository(session)
         if destination == "lov2_partner":
