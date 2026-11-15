@@ -191,10 +191,9 @@ jobs:
 
           sha, repo, author = sys.argv[1:4]
           print(json.dumps({"content":
-              f"**letmegetin main guard — {repo} has a commit with no merged pull request**\n"
-              f"- commit: {sha}\n"
-              f"- author: {author}\n"
-              "The guard detects; nothing stopped the push."}))
+              "🔴 **letmegetin · main moved without a merged pull request**\n"
+              f"{repo} · commit {sha} · by {author}\n"
+              "→ nothing blocked the push; find out who pushed and why"}))
           ' "$COMMIT_SHA" "$REPO" "$author")
 
           # Best-effort: a Discord or network failure must not mask the verdict,
