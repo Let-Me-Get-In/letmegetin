@@ -79,6 +79,7 @@ from letmegetin.application.referential.licences import (
     load_source_licences,
     sync_licences,
 )
+from letmegetin.application.referential.osm_tags import audit_osm_tags, load_osm_accessibility_tags
 from letmegetin.application.retention import run_retention
 from letmegetin.config import settings
 from letmegetin.core.db import SessionLocal
@@ -126,6 +127,7 @@ export_app = typer.Typer(help="Write the open ODbL export (snapshot, delta or ca
 api_key_app = typer.Typer(help="Create, list and revoke partner API keys.")
 user_app = typer.Typer(help="Create and verify operator/E2E accounts.")
 acceslibre_app = typer.Typer(help="Probe the AccesLibre ERP identifier and push owned answers.")
+osm_app = typer.Typer(help="Audit the reviewed OSM tags and generate OSM changesets.")
 app.add_typer(category_app, name="category")
 app.add_typer(criterion_app, name="criterion")
 app.add_typer(vocabulary_app, name="vocabulary")
@@ -139,6 +141,7 @@ app.add_typer(export_app, name="export")
 app.add_typer(api_key_app, name="api-key")
 app.add_typer(user_app, name="user")
 app.add_typer(acceslibre_app, name="acceslibre")
+app.add_typer(osm_app, name="osm")
 
 AdminCallback = Callable[[AsyncSession], Awaitable[str]]
 LabelPairs = Annotated[
@@ -757,6 +760,33 @@ def import_osm_command(
         return "\n".join(lines)
 
     _run_admin(callback, bump=False, commit=not dry_run)
+
+
+@osm_app.command("audit")
+def osm_audit() -> None:
+    """Fail when a reviewed OSM tag or accessibility value names nothing (T-16-03)."""
+
+    async def gaps() -> list[str]:
+        async with SessionLocal() as session:
+            return audit_osm_tags(
+                await SqlAlchemyCategoryRepository(session).list_all(),
+                await SqlAlchemyCriterionRepository(session).list_all(),
+                await SqlAlchemyCategoryMappingRepository(session).list_osm_tags(),
+                load_osm_accessibility_tags(settings.data_dir / "osm_accessibility_tags.csv"),
+            )
+
+    try:
+        found = asyncio.run(gaps())
+    except DomainError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=1) from exc
+    if not found:
+        typer.echo("osm tags ok: every osm_tag and accessibility value resolves")
+        return
+    typer.echo("osm tag gaps:")
+    for gap in found:
+        typer.echo(gap)
+    raise typer.Exit(code=1)
 
 
 @import_app.command("reclassify")
