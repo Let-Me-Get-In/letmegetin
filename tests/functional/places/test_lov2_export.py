@@ -336,6 +336,18 @@ def test_partner_feed_refuses_a_delta(partner_data: Path, db: None, tmp_path: Pa
     assert "full snapshots only" in invoked.output
 
 
+def test_partner_feed_refuses_the_served_directory(partner_data: Path, db: None) -> None:
+    served = settings.export_dir.resolve()
+
+    invoked = CliRunner().invoke(
+        admin.app,
+        ["export", "odbl", "--destination", "lov2_partner", "--out", str(served)],
+    )
+
+    assert invoked.exit_code == 1
+    assert "served export directory" in invoked.output
+
+
 def test_blocked_rule_diverts_every_place(partner_data: Path, db: None, tmp_path: Path) -> None:
     (partner_data / "acceslibre_identifier_rule.csv").write_text(
         "rule;detail\nblocked;UNVERIFIED\n", encoding="utf-8"
