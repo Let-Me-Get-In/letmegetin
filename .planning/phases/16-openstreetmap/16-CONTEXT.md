@@ -30,7 +30,7 @@ ticketed separately, see Deferred).
 
 ### Where the data comes from
 - **D-01:** The source is the **Geofabrik `france-latest.osm.pbf` extract**, read in streaming. This
-  adds one dependency (`pyosmium`) — the first new package since the project began. Reading the PBF
+  adds one dependency (`osmium`) — the first new package since the project began. Reading the PBF
   in streaming is the reason the import is feasible at national scale; loading it into memory is not.
 - **D-02:** The importer is **idempotent on `(source, source_id)`** where `source_id` is the OSM
   object reference (`node/123`, `way/456`), reusing the existing unique index. A re-run changes
