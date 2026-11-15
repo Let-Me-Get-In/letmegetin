@@ -56,6 +56,8 @@ class OwnedAnswer:
     recorded_at: datetime
     origin_id: str | None
     erp_slug: str | None
+    # Why the row may leave at all; journalled beside the decision (D-12).
+    source_license: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,6 +70,9 @@ class AcceslibrePushWrite:
     decision: PushDecision
     reason: str | None
     actor: str
+    # Provenance, same columns as place_accessibility_write: what the row's licence was.
+    source: str = "user"
+    source_license: str | None = None
 
 
 class AccesLibrePushRepositoryPort(Protocol):
