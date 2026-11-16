@@ -65,8 +65,14 @@ export default function OpengraphImage() {
           </div>
         </div>
 
-        <div style={{ display: "flex", fontSize: "24px", color: "#5d6a61" }}>
-          letmegetin.org — 634 931 lieux en France · référentiel ouvert
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <div style={{ display: "flex", fontSize: "24px", color: "#5d6a61" }}>
+            letmegetin.org — 634 931 lieux en France · référentiel ouvert
+          </div>
+          {/* Attributed outside the page too: a shared card loses the footer of the site. */}
+          <div style={{ display: "flex", fontSize: "18px", color: "#5d6a61" }}>
+            Données : Acceslibre (Licence Ouverte 2.0) et OpenStreetMap (ODbL)
+          </div>
         </div>
       </div>
     ),
