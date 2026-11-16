@@ -184,6 +184,19 @@ canonical row (identifier kept, name kept as an alias, merge logged); between 0.
 a review queue. Nothing is ever deleted or hard-merged on either side. A linked OSM object is still
 emitted under its own node id: we modify the OSM object that exists, never our canonical placeholder.
 
+### Contributor identity
+
+A contributor will be able to sign in to LetMeGetIn with their **OpenStreetMap account** (OAuth), so
+that the answer they record is attributable to the OSM identity they already have, and so that the
+work they do on our side is visibly work done for OSM rather than for a separate database.
+
+This is a decision, not a feature that exists yet. Today LetMeGetIn accounts are separate, and only
+the operator writes to OSM. When OSM sign-in lands, an answer recorded by a signed-in contributor
+carries their OSM username in our journal, and the changeset that returns it names them; nobody's
+work is published under a name they did not choose. Contributors without an OSM account keep
+contributing — their answers are returned under this proposal like any other, attributed as
+"LetMeGetIn contributors".
+
 ## Related projects
 
 We are not the first to work on this, and we would rather say so than be told.
