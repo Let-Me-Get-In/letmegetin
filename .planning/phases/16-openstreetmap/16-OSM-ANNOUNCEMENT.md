@@ -86,6 +86,23 @@ critère qui puisse les porter sans inventer du sens. Un couple clé=valeur non 
 est ignoré et compté, et je publie la liste des combinaisons non mappées les plus
 fréquentes pour que le mapping grandisse par la preuve.
 
+Et pour couper court à la question qui vient naturellement : je ne viens pas vous
+proposer ma grille de critères. Elle en contient 182. Votre vocabulaire
+d'accessibilité tient en une trentaine de clés, il a demandé des années de
+discussion, et il fonctionne. Mes critères sont plus fins qu'aucun jeu de clés
+(la hauteur d'un lecteur de carte bancaire, la forme d'une poignée) et deux clés
+seulement les portent aujourd'hui chez vous : wheelchair et toilets:wheelchair.
+Vous demander d'adopter une taxonomie conçue pour un produit, adossée à deux
+clés, serait une prise de contrôle déguisée en contribution, et je sais qu'elle
+serait rejetée. Si un jour quelque chose de mon modèle vaut la peine d'être
+proposé, ça passera par une page Proposed features, la liste tagging et une
+discussion qui part de votre vocabulaire, pas du mien.
+
+Ce que j'ai et que vous n'avez pas, c'est la pertinence par type de lieu : une
+boulangerie et une piscine ne se relèvent pas de la même façon. Ça, ça tient dans
+de la prose sur les pages de tags, pas dans un schéma, et je préfère l'écrire avec
+vous.
+
 Sur les licences, puisqu'une partie de mes données vient d'ailleurs. Ma source
 principale, AccesLibre, publie sous Licence Ouverte 2.0. Cette licence autorise
 explicitement à redistribuer et à combiner avec d'autres informations, à une seule
