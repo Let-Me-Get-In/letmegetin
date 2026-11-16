@@ -3,9 +3,19 @@
 Trois textes, dans cet ordre. Le code est fini ; la publication est manuelle, et la gate de
 `osm publish` refuse tant qu'un humain n'a pas fait les trois gestes de la fin de ce document.
 
-Ce qui a changé après lecture du fil 14961 : nous citons Complète Tes Commerces et OSM Mon Commerce
-au lieu de demander s'ils existent, et nous répondons à la question que pyrog avait posée en 2025
-(« peut-on extraire des données pour enrichir OSM ? ») par du code plutôt que par un avis.
+Ce qui a changé depuis la première version : la Licence Ouverte 2.0 est lue dans le texte, et elle
+tranche la question de licence au lieu de la laisser en suspens. Les deux messages en tiennent compte,
+et la page wiki gagne une section sur les licences.
+
+Le détail utile, pour savoir ce qu'on affirme :
+
+- LO 2.0 autorise à « diffuser, redistribuer, publier et transmettre », y compris « en la combinant
+  avec d'autres informations », à une seule condition : la paternité (source et date de mise à jour).
+- LO 2.0 « a été conçue pour être compatible avec toute licence libre qui exige a minima la mention de
+  paternité ».
+- Conséquence : LO vers ODbL passe, parce qu'une obligation d'attribution satisfait une obligation
+  d'attribution plus partage à l'identique. L'inverse ne passe pas : une ligne ODbL imposerait le
+  partage à l'identique à une base publiée en LO.
 
 ---
 
@@ -44,7 +54,7 @@ C'est pour ça que je commence par demander l'avis de ceux qui savent plutôt qu
 par publier.
 ```
 
-## 2. Contribution — catégorie « Contribuer »
+## 2. Contribution — Contribuer > Projets de contribution
 
 Objet : `Proposition — retour d'accessibilité LetMeGetIn vers OSM (petits changesets, sans import)`
 
@@ -75,6 +85,21 @@ hearing_loop ne sont pas mappés aujourd'hui, parce que mon référentiel n'a pa
 critère qui puisse les porter sans inventer du sens. Un couple clé=valeur non revu
 est ignoré et compté, et je publie la liste des combinaisons non mappées les plus
 fréquentes pour que le mapping grandisse par la preuve.
+
+Sur les licences, puisqu'une partie de mes données vient d'ailleurs. Ma source
+principale, AccesLibre, publie sous Licence Ouverte 2.0. Cette licence autorise
+explicitement à redistribuer et à combiner avec d'autres informations, à une seule
+condition : la paternité, c'est-à-dire la source et la date de dernière mise à
+jour. Elle précise aussi qu'elle est compatible avec toute licence libre exigeant
+au minimum la mention de paternité. Donc leurs données peuvent entrer dans une
+base ODbL et remonter vers OSM, et c'est ce que je fais ; l'attribution vit dans
+cette page wiki et dans les tags de changeset, pas dans chaque objet.
+
+Dans l'autre sens, je ne peux pas. Une ligne dérivée d'OSM est sous ODbL, donc à
+partage à l'identique ; l'envoyer à une base publiée en Licence Ouverte lui
+imposerait une obligation qu'elle ne peut pas porter. C'est pour ça que je ne
+pousse jamais de donnée OSM vers cette source, et c'est encodé comme une règle de
+données, pas comme un commentaire dans le code.
 
 Sur ce qui existe déjà. Je ne prétends pas être le premier. Complète Tes Commerces
 aide déjà à compléter les commerces d'une ville dans OSM, wheelchair compris, avec
@@ -121,19 +146,56 @@ Merci d'avance. Et si la réponse est « pas maintenant », je préfère le savo
 d'écrire une ligne dans OSM.
 ```
 
-**Après avoir posté :** répondre aussi dans le fil
-[Acceslibre et utilisation détournée des données OSM](https://forum.openstreetmap.fr/t/acceslibre-et-utilisation-detourne-des-donnees-osm/14961)
-avec deux phrases et un lien vers le nouveau fil. Ce fil-ci contient la plainte ; le nouveau contient
-la réponse. Ne pas y développer l'argumentaire.
+## 3. Réponse dans le fil « Acceslibre et utilisation détournée des données OSM »
 
-## 3. Wiki — https://wiki.openstreetmap.org/wiki/Import/LetMeGetIn
+Fil : https://forum.openstreetmap.fr/t/acceslibre-et-utilisation-detourne-des-donnees-osm/14961
+
+À poster **après** le fil principal, et à garder court. Ce fil a trois ans ; y arriver avec un
+argumentaire complet se lira comme une relance. Deux paragraphes et un lien suffisent.
+
+```
+Bonjour,
+
+Je tombe sur ce fil en travaillant sur un problème voisin, et je crois pouvoir
+répondre à la question posée au départ, au moins pour la partie licence.
+
+La Licence Ouverte 2.0, sous laquelle AccesLibre publie, autorise explicitement à
+redistribuer et à combiner avec d'autres informations, à une seule condition : la
+paternité. Elle précise aussi qu'elle est compatible avec toute licence libre
+exigeant au minimum la mention de paternité. Donc leurs données peuvent aller vers
+OSM : une obligation d'attribution satisfait l'attribution exigée par l'ODbL.
+L'inverse ne marche pas, et c'est là que la base dérivée se referme : une ligne
+dérivée d'OSM est en partage à l'identique, l'envoyer chez eux leur imposerait une
+obligation que leur licence ne peut pas porter.
+
+C'est la lecture que j'applique dans le projet sur lequel je travaille
+(https://letmegetin.org) : je lis OSM, je rends les réponses d'accessibilité de mes
+contributeurs en petits changesets revus à la main, et je ne pousse jamais une
+ligne dérivée d'OSM vers une base en Licence Ouverte. La proposition complète, avec
+ce qu'on lit, ce qu'on écrit et ce qu'on refuse d'écrire, est ici :
+https://forum.openstreetmap.fr/t/...
+
+Je ne prétends pas que ça règle leur cas. Mais si quelqu'un veut savoir à quoi
+ressemble un aller-retour qui respecte les deux licences, le code est public et
+c'est fait pour être critiqué.
+```
+
+**Ne pas** écrire dans ce fil que la réponse d'AccesLibre autorise quoi que ce soit. Leur licence
+autorise, indépendamment d'eux ; l'accord oral ne fait que confirmer. Écrire l'inverse leur ferait
+endosser une décision qu'ils n'ont pas à prendre, dans un fil qui leur reproche déjà leur silence.
+
+## 4. Wiki — https://wiki.openstreetmap.org/wiki/Import/LetMeGetIn
 
 Contenu de `data/referential/osm/wiki_page.md`, **sans le bloc de frontmatter** `--- url: … ---`
-(champ interne de la gate). La page est en anglais, comme le reste du wiki OSM.
+(champ interne de la gate), et sous forme **wikitext** : `data/referential/osm/wiki_page.wikitext`.
+La page est en anglais, comme le reste du wiki OSM.
+
+Résumé d'édition : `Create the LetMeGetIn accessibility round-trip proposal: Geofabrik France extract
+read in streaming, accessibility answers written back as reviewed small changesets`
 
 ---
 
-## 4. Fermer la gate
+## 5. Fermer la gate
 
 ```bash
 # 1. URL réelle du wiki dans la page elle-même
@@ -154,7 +216,7 @@ uv run python -m letmegetin.admin osm publish --out /tmp/osm-review
 wiki dans le commentaire. C'est ce fichier qu'on ouvre dans JOSM, en un premier changeset de quelques
 dizaines d'objets.
 
-## 5. Après la discussion
+## 6. Après la discussion
 
 Le retour peut demander de retirer des catégories ou des tags. Les fichiers concernés sont
 `data/referential/category_mapping.csv` (colonne `osm_tag`) et

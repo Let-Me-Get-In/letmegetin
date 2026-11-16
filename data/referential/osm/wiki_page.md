@@ -67,6 +67,25 @@ issued.
 continuous sync. An operator reviews a generated `.osmChange` document and sends it from a dedicated
 account (see [[#Changeset Tags]]).
 
+## Licences
+
+Three licences meet in this round trip, and they do not all travel in the same direction.
+
+- **OSM data** is ODbL 1.0. Anything derived from it stays ODbL, with the share-alike obligation that
+  implies.
+- **Our contributors' answers** are offered under a dual licence (Licence Ouverte 2.0 or ODbL, the
+  recipient chooses), so they can go to OSM under ODbL and to a Licence Ouverte partner under LO 2.0.
+- **AccesLibre**, our main data source, publishes under **Licence Ouverte 2.0**. That licence allows
+  redistribution and combination with other information on a single condition: attribution, meaning
+  the source and the date of last update. It also states that it was designed to be compatible with
+  any free licence requiring at least attribution. AccesLibre data can therefore enter an ODbL
+  database and reach OSM, and this page plus our changeset tags are where the attribution lives.
+
+The other direction is refused. An ODbL row carries share-alike, and sending it to a database that
+publishes under Licence Ouverte would impose an obligation that licence cannot carry. The
+redistribution rule is reviewed data (`data/referential/licence_destinations.csv`), not a branch in
+the code, and a row whose licence may not leave for a destination is counted rather than written.
+
 ## Data Preparation
 
 ### Data Reduction & Simplification
