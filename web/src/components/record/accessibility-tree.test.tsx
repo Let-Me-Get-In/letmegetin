@@ -47,6 +47,42 @@ describe("AccessibilityTree", () => {
     expect(screen.getByText("Non renseigné")).toBeInTheDocument();
   });
 
+  it("marks an answer a person recorded, and leaves imported values unmarked", () => {
+    const mixed: TreeNode[] = [
+      {
+        slug: "entree",
+        label: { fr: "Entrée" },
+        type: "array",
+        children: [
+          {
+            slug: "entree-acces",
+            label: { fr: "Accès" },
+            type: "multichoice",
+            value: { value: "De plain-pied", source: "user" },
+            children: [],
+          },
+          {
+            slug: "entree-largeur",
+            label: { fr: "Largeur de porte (cm)" },
+            type: "user_value",
+            value: { value: 90, source: "acceslibre" },
+            children: [],
+          },
+        ],
+      },
+    ];
+
+    render(<AccessibilityTree tree={mixed} locale="fr" />);
+
+    // Exactly one marker: the person's answer, never the imported one.
+    expect(screen.getAllByText("Contribution")).toHaveLength(1);
+    const marked = screen.getByText("De plain-pied").parentElement;
+    expect(marked).toContainElement(screen.getByText("Contribution"));
+    expect(screen.getByText("90").parentElement).not.toContainElement(
+      screen.getByText("Contribution"),
+    );
+  });
+
   it("explains an empty grid", () => {
     render(<AccessibilityTree tree={[]} locale="fr" />);
 

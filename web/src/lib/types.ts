@@ -31,7 +31,9 @@ export type TreeNode = {
   type: string;
   handicap_families?: string[];
   children: TreeNode[];
-  value?: { value?: unknown } | null;
+  // `source` is the provenance of this answer (phase 12): a criterion answered by a
+  // person reads differently from one imported from a partner.
+  value?: { value?: unknown; source?: string | null } | null;
 };
 
 export type Photo = {

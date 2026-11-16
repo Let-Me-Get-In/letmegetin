@@ -29,6 +29,11 @@ export function AccessibilityTree({ tree, locale }: { tree: TreeNode[]; locale: 
                   <dt className="font-medium">{label(criterion.label, locale)}</dt>
                   <dd className="text-sm text-muted">
                     {formatValue(criterion.value?.value, locale)}
+                    {criterion.value?.source === "user" ? (
+                      <span className="ml-2 whitespace-nowrap rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
+                        {t(locale, "sourceUser")}
+                      </span>
+                    ) : null}
                   </dd>
                 </div>
               ))}
