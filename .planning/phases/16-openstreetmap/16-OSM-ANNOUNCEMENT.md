@@ -49,6 +49,17 @@ sont **pas** mappés aujourd'hui, parce que mon référentiel n'a pas de critèr
 sans inventer du sens. Un couple `clé=valeur` non revu est ignoré et compté, et je publie la liste
 des combinaisons non mappées les plus fréquentes pour que le mapping grandisse par la preuve.
 
+**Et la suite, pour être franc.** LetMeGetIn couvre la France aujourd'hui. L'ambition, si le projet
+tient ses promesses — assez de lieux documentés, assez de contributeurs, une relation de travail avec
+la communauté OSM française —, est d'ouvrir le référentiel au reste de l'Europe, puis au-delà. Je le
+dis maintenant plutôt que de le laisser se découvrir plus tard.
+
+**Cette proposition ne concerne que la France.** Je lis l'extrait français et j'écris sur des objets
+français ; je ne demande ni n'implique aucun accord pour un import ailleurs. Chaque pays a ses
+conventions de tag, sa communauté et ses règles d'import : un élargissement viendrait avec sa propre
+proposition et sa propre discussion, pays par pays. C'est une honnêteté sur la trajectoire, pas une
+demande de mandat continental.
+
 **Rien n'est encore envoyé.** Le dépôt génère un fichier `.osmChange` qu'un opérateur ouvre dans JOSM
 et envoie après revue ; le code refuse de générer quoi que ce soit sans consentement explicite aux
 contributor terms. Le code est public :
@@ -63,6 +74,8 @@ La proposition complète est sur le wiki :
    acceptez-vous aussi des réponses déclaratives (non vérifiées sur le terrain) si elles sont
    marquées comme telles ?
 3. Y a-t-il un projet existant en France que je devrais rejoindre plutôt que de faire ça de mon côté ?
+4. Sur la portée : si le projet couvre un jour d'autres pays, préférez-vous un aller-retour par pays,
+   coordonné avec chaque communauté locale, ou une autre forme ?
 
 Merci d'avance — et si la réponse est « pas maintenant », je préfère le savoir avant d'écrire une
 ligne dans OSM.

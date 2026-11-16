@@ -27,6 +27,21 @@ OSM is our community base, and its accessibility gaps are exactly what LetMeGetI
 We do not duplicate OSM, we do not compete with it, and we do not overwrite what mappers have
 surveyed by hand — a human answer in OSM always wins over ours.
 
+### Geographic scope
+
+LetMeGetIn covers **France** today. The long-term ambition is to open the referential to the rest of
+Europe, and then beyond it, **if and only if the French project works**: enough places documented,
+enough contributors, and a working relationship with the local OSM community. We would rather say
+this now than let it be discovered later.
+
+**This proposal covers France only.** It reads the French extract and writes to French objects. It
+does not ask for, and does not imply, any agreement for an import elsewhere.
+
+A wider scope would not be an extension of this import. Each country has its own tagging
+conventions, its own community and its own import guidelines, so each one would come with its own
+proposal and its own discussion in that community. The reason to mention it here is honesty about
+where the project is going, not a request for a continental mandate.
+
 ## Schedule
 
 Nothing is scheduled until this proposal is accepted. The first upload, if accepted, will be a single
@@ -142,6 +157,15 @@ emitted under its own node id: we modify the OSM object that exists, never our c
 - French mailing list: https://lists.openstreetmap.org/listinfo/talk-fr
 
 Discussion is open and this page will record its outcome before any upload happens.
+
+Four things we would like challenged, beyond the mapping itself:
+
+1. **Is the tag mapping reasonable**, or are there values we should not write at all?
+2. **Should a declared accessibility answer be tagged as such**, or do you expect `source=survey` and
+   nothing less? We can carry our provenance into the changeset and stop there.
+3. **Is there a French project already doing this** that we should join rather than start alone?
+4. **Scope.** This proposal is French. If the project later covers other countries, would you rather
+   see one round trip per country, coordinated with each local community, or a different shape?
 
 ## Contact
 
