@@ -18,6 +18,10 @@ export type AccessibilityValue = {
   label: Label;
   handicap_families: string[];
   value: { value?: unknown } & Record<string, unknown>;
+  // Provenance of this answer (phase 12): who wrote it, under which licence, when it was observed.
+  source?: string | null;
+  license?: string | null;
+  observed_at?: string | null;
 };
 
 export type TreeNode = {
@@ -61,6 +65,10 @@ export type ReviewPage = {
 
 export type PlaceDetail = PlaceSummary & {
   accessibility: AccessibilityValue[];
+  // Where the place row itself came from, and under which licence (phase 12, D-16).
+  source?: string | null;
+  license?: string | null;
+  observed_at?: string | null;
   // Each family carries the same {rate, percent, level} shape as the overall level (D-04).
   accessibility_by_family: Record<string, Documentation>;
   tree: TreeNode[];

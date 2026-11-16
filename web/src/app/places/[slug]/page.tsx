@@ -98,6 +98,29 @@ export default async function PlacePage({ params, searchParams }: Props) {
               {place.category ?? t(locale, "unknownCategory")}
               {place.address ? ` · ${place.address}` : ""}
             </p>
+            {place.source ? (
+              <p className="mt-1 text-sm text-muted">
+                {format(t(locale, "placeSourceLine"), {
+                  source: t(
+                    locale,
+                    place.source === "acceslibre"
+                      ? "sourceAcceslibre"
+                      : place.source === "osm"
+                        ? "sourceOsm"
+                        : place.source === "overture"
+                          ? "sourceOverture"
+                          : "sourceUser",
+                  ),
+                })}
+                {" · "}
+                <Link
+                  href="/licences"
+                  className="underline underline-offset-4 hover:text-accent"
+                >
+                  {t(locale, "placeSourceLink")}
+                </Link>
+              </p>
+            ) : null}
           </div>
           <div className="rounded-card border border-line bg-white/60 px-4 py-3 text-sm dark:bg-white/5">
             <p className="font-medium">
