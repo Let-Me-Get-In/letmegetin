@@ -218,7 +218,8 @@ const MESSAGES = {
     landingDataSources: "Sources",
     landingDataSourcesValue: "Acceslibre (Etalab 2.0) · OpenStreetMap (ODbL) · Overture",
     landingDataLicences: "Licences",
-    landingDataLicencesValue: "Etalab 2.0 · ODbL",
+    landingDataLicencesValue:
+      "Acceslibre sous Licence Ouverte 2.0 · OpenStreetMap sous ODbL 1.0 · le détail des licences",
     landingDataCode: "Code source",
     landingDataCodeValue: "GitHub · Let-Me-Get-In/letmegetin",
     landingApiTitle: "Une API publique pour bâtir dessus.",
@@ -240,6 +241,26 @@ const MESSAGES = {
     landingFooterApp: "Ouvrir l'application",
     landingFooterNote: "Projet open source. Données sous licences ouvertes.",
     landingBackToTop: "Retour en haut",
+    licencesTitle: "Licences et sources",
+    licencesIntro:
+      "Les lieux et les réponses de LetMeGetIn viennent de plusieurs sources, chacune sous sa propre licence. Cette page dit lesquelles, à quelles conditions, et ce qu'il faut créditer si vous réutilisez ces données.",
+    licencesAcceslibreBody:
+      "La base des établissements vient d'Acceslibre, publiée par l'État sous Licence Ouverte 2.0. Toute réutilisation doit citer le producteur et la date de dernière mise à jour. La date que nous affichons est celle de notre dernier import, pas celle de leur base.",
+    licencesOsmBody:
+      "Les lieux et les tags issus d'OpenStreetMap restent sous ODbL 1.0, avec partage à l'identique : toute base dérivée doit rester sous ODbL et être offerte dans les mêmes conditions.",
+    licencesOvertureBody:
+      "Les lieux importés d'Overture restent sous CDLA-Permissive-2.0 : réutilisation libre sous réserve de mentionner la source.",
+    licencesContributionTitle: "Contributions",
+    licencesContributionLicence: "Licence Ouverte 2.0 ou ODbL 1.0, au choix",
+    licencesContributionBody:
+      "Les informations qu'une personne enregistre sur un lieu sont proposées sous deux licences : la Licence Ouverte 2.0 ou l'ODbL 1.0. Le réutilisateur choisit celle qui l'arrange, et le partage à l'identique ne s'applique qu'à la seconde.",
+    licencesCodeTitle: "Code source",
+    licencesCodeBody:
+      "Le code de la plateforme et de l'API est publié sous GNU Affero General Public License v3.0. Si vous exploitez une version modifiée comme service en ligne, vous devez publier votre version modifiée.",
+    licencesDirectionTitle: "Ces licences ne voyagent pas dans le même sens",
+    licencesDirectionBody:
+      "Une donnée sous Licence Ouverte peut entrer dans une base sous ODbL, parce qu'une obligation d'attribution satisfait une obligation d'attribution et de partage. L'inverse est impossible : ajouter une donnée ODbL à une base sous Licence Ouverte imposerait à cette base un partage à l'identique qu'elle ne peut pas porter. C'est pourquoi nos exports destinés à un partenaire sous Licence Ouverte ne contiennent jamais de donnée dérivée d'OpenStreetMap.",
+    licencesBack: "Retour à l'accueil",
   },
   en: {
     skip: "Skip to content",
@@ -440,7 +461,8 @@ const MESSAGES = {
     landingDataSources: "Sources",
     landingDataSourcesValue: "Acceslibre (Etalab 2.0) · OpenStreetMap (ODbL) · Overture",
     landingDataLicences: "Licences",
-    landingDataLicencesValue: "Etalab 2.0 · ODbL",
+    landingDataLicencesValue:
+      "Acceslibre under the Open Licence 2.0 · OpenStreetMap under ODbL 1.0 · licence details",
     landingDataCode: "Source code",
     landingDataCodeValue: "GitHub · Let-Me-Get-In/letmegetin",
     landingApiTitle: "A public API to build on.",
@@ -462,6 +484,26 @@ const MESSAGES = {
     landingFooterApp: "Open the app",
     landingFooterNote: "Open-source project. Data under open licences.",
     landingBackToTop: "Back to top",
+    licencesTitle: "Licences and sources",
+    licencesIntro:
+      "The places and answers in LetMeGetIn come from several sources, each under its own licence. This page says which ones, on what terms, and what to credit if you reuse this data.",
+    licencesAcceslibreBody:
+      "The establishment database comes from Acceslibre, published by the French state under the Open Licence 2.0. Any reuse must credit the producer and the date of last update. The date we show is the date of our last import, not the date of their database.",
+    licencesOsmBody:
+      "Places and tags coming from OpenStreetMap remain under ODbL 1.0, with share-alike: any derived database must stay under ODbL and be offered on the same terms.",
+    licencesOvertureBody:
+      "Places imported from Overture remain under CDLA-Permissive-2.0: reuse is free provided the source is credited.",
+    licencesContributionTitle: "Contributions",
+    licencesContributionLicence: "Open Licence 2.0 or ODbL 1.0, your choice",
+    licencesContributionBody:
+      "Information a person records about a place is offered under two licences: the Open Licence 2.0 or ODbL 1.0. The reuser picks whichever suits them, and share-alike only applies to the second.",
+    licencesCodeTitle: "Source code",
+    licencesCodeBody:
+      "The platform and API code is published under the GNU Affero General Public License v3.0. If you run a modified version as an online service, you must publish your modified version.",
+    licencesDirectionTitle: "These licences do not travel both ways",
+    licencesDirectionBody:
+      "Data under the Open Licence can enter a database under ODbL, because an attribution obligation satisfies an attribution-and-share-alike obligation. The reverse is impossible: adding ODbL data to a database under the Open Licence would impose share-alike on a database that cannot carry it. That is why our exports for a partner under the Open Licence never contain data derived from OpenStreetMap.",
+    licencesBack: "Back to the home page",
   },
 } as const;
 
