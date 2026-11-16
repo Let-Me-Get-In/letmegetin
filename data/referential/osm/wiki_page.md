@@ -140,6 +140,22 @@ canonical row (identifier kept, name kept as an alias, merge logged); between 0.
 a review queue. Nothing is ever deleted or hard-merged on either side. A linked OSM object is still
 emitted under its own node id: we modify the OSM object that exists, never our canonical placeholder.
 
+## Related projects
+
+We are not the first to work on this, and we would rather say so than be told.
+
+- **[[FR:Complète Tes Commerces]]** (https://complete-tes-commerces.fr, by MerylStreet) already helps
+  French contributors complete the establishments of a city in OSM, `wheelchair` included, with a
+  per-city dashboard and completion wizards. It answers *what is missing*; we answer *what a place is
+  like for each kind of disability*. We import from OSM and write back, so the two should reinforce
+  each other rather than compete, and we would welcome being pointed at the right way to align.
+- **[[OSM Mon Commerce]]** pursues the same completion goal from the shop side.
+- The forum thread
+  [Acceslibre et utilisation détournée des données OSM](https://forum.openstreetmap.fr/t/acceslibre-et-utilisation-detourne-des-donnees-osm/14961)
+  asked in 2023 whether a public accessibility platform built on OSM had to publish under ODbL, and
+  in 2025 whether its data could be extracted to enrich OSM. Neither received a code answer. This
+  proposal is an attempt at one.
+
 ## QA
 
 - Every answer written back is validated before it leaves: a null or out-of-type value is refused,
@@ -163,7 +179,8 @@ Four things we would like challenged, beyond the mapping itself:
 1. **Is the tag mapping reasonable**, or are there values we should not write at all?
 2. **Should a declared accessibility answer be tagged as such**, or do you expect `source=survey` and
    nothing less? We can carry our provenance into the changeset and stop there.
-3. **Is there a French project already doing this** that we should join rather than start alone?
+3. **How should we coordinate with Complète Tes Commerces and OSM Mon Commerce?** If there is a
+   mapping or a workflow we should align with, we would rather adopt it than invent a third one.
 4. **Scope.** This proposal is French. If the project later covers other countries, would you rather
    see one round trip per country, coordinated with each local community, or a different shape?
 
