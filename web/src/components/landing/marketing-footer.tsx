@@ -30,7 +30,7 @@ export function MarketingFooter({ locale, appUrl }: { locale: Locale; appUrl: st
           >
             {t(locale, "landingFooterSource")}
           </a>
-          <a className="hover:text-accent" href="#donnees">
+          <a className="hover:text-accent" href="/licences">
             {t(locale, "landingFooterLicences")}
           </a>
           <a className="hover:text-accent" href={appUrl}>

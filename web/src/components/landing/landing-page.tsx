@@ -228,7 +228,15 @@ export function LandingPage({
                 <dt className="text-[0.7rem] uppercase tracking-[0.16em] text-muted">
                   {t(locale, "landingDataLicences")}
                 </dt>
-                <dd className="mt-1">{t(locale, "landingDataLicencesValue")}</dd>
+                <dd className="mt-1">
+                  {t(locale, "landingDataLicencesValue")}{" "}
+                  <a
+                    className="underline underline-offset-4 hover:text-accent"
+                    href="/licences"
+                  >
+                    {t(locale, "landingFooterLicences")}
+                  </a>
+                </dd>
               </div>
               <div className="sm:col-span-2">
                 <dt className="text-[0.7rem] uppercase tracking-[0.16em] text-muted">
