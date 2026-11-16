@@ -119,6 +119,32 @@ conservative: values we cannot map legally are left alone rather than approximat
 `wheelchair=no`, `ramp`, `handrail` and `hearing_loop` are '''not''' mapped today, because our
 referential has no criterion that can carry them without inventing meaning.
 
+Two OSM keys carry our answers today, `wheelchair` and `toilets:wheelchair`, across four values.
+Everything else we hold stays on our side until a reviewed row can express it.
+
+=== What we do not propose ===
+
+
+Our referential contains 182 criteria and four handicap families. '''We are not proposing it as an
+OSM tagging scheme''', and we would ask you to hold us to that.
+
+OSM's accessibility vocabulary is about thirty keys — `wheelchair`, `toilets:wheelchair`, `ramp`,
+`handrail`, `tactile_paving`, `traffic_signals:sound`, `capacity:disabled`, `kerb`, plus
+`wheelchair:description` for what no key covers. It took years of discussion to settle, and it
+works. Our criteria are finer-grained than any key set: a card-reader height, a door-handle shape,
+a contrast against the wall. Proposing them would mean asking OSM to adopt a taxonomy designed for
+one product, backed today by two mapped keys. That would be a hostile act dressed as a
+contribution, and it would be rejected.
+
+If something in our model ever looks worth proposing, it will arrive through the tagging proposal
+process on its own: a `Proposed features` page, the `tagging` mailing list, and a discussion that
+starts from your vocabulary rather than ours. Not folded into an import.
+
+The one thing we do have that OSM has no place for is '''which questions matter for which kind of
+place''' — a bakery and a swimming pool are not surveyed the same way. That belongs in wiki prose per
+tag, not in a schema, and we would rather write it with you than at you.
+
+
 === Changeset Tags ===
 
 
