@@ -212,7 +212,7 @@ We are not the first to work on this, and we would rather say so than be told.
 
 ## Discussion
 
-- Discussion thread: **<to be published>**
+- Discussion thread: https://forum.openstreetmap.fr/t/proposition-retour-daccessibilite-letmegetin-vers-osm-petits-changesets-sans-import/48548
 - French OSM forum: https://forum.openstreetmap.fr/
 - French mailing list: https://lists.openstreetmap.org/listinfo/talk-fr
 
