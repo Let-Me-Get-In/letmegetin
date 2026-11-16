@@ -63,15 +63,15 @@ On the write-back side, we add only tags a reviewed row can express. The mapping
 
 === Changeset Tags ===
 
-* <code>comment</code> = <code>LetMeGetIn accessibility contribution — see <this page></code>
-* <code>created_by</code> = <code>LetMeGetIn <version></code>
+* <code>comment</code> = <code>LetMeGetIn accessibility contribution — see &lt;this page&gt;</code>
+* <code>created_by</code> = <code>LetMeGetIn &lt;version&gt;</code>
 * <code>source</code> = <code>survey</code> for answers recorded in the field by a contributor; the generated document records the provenance per answer so the operator can state it accurately.
 
 Changeset size is capped by the review workflow, not by the tool: an operator sends one reviewed batch at a time. No changeset will exceed a few hundred objects.
 
 === Data Transformation ===
 
-The generator re-emits the object's '''full stored tag set''' with our accessibility tags added, because an <code>.osmChange</code> <code><modify></code> replaces the whole tag set — omitting a tag would delete it. An object whose version or raw tag set we do not hold is '''not emitted and is counted''': we would rather skip a place than damage it.
+The generator re-emits the object's '''full stored tag set''' with our accessibility tags added, because an <code>.osmChange</code> <code>&lt;modify&gt;</code> replaces the whole tag set — omitting a tag would delete it. An object whose version or raw tag set we do not hold is '''not emitted and is counted''': we would rather skip a place than damage it.
 
 Nothing is ever created and nothing is ever deleted.
 
@@ -104,7 +104,7 @@ We are not the first to work on this, and we would rather say so than be told.
 
 * '''[[FR:Complète Tes Commerces]]''' (https://complete-tes-commerces.fr, by MerylStreet) already helps French contributors complete the establishments of a city in OSM, <code>wheelchair</code> included, with a per-city dashboard and completion wizards. It answers ''what is missing''; we answer ''what a place is like for each kind of disability''. We import from OSM and write back, so the two should reinforce each other rather than compete, and we would welcome being pointed at the right way to align.
 * '''[[OSM Mon Commerce]]''' pursues the same completion goal from the shop side.
-* The forum thread [Acceslibre et utilisation détournée des données OSM](https://forum.openstreetmap.fr/t/acceslibre-et-utilisation-detourne-des-donnees-osm/14961) asked in 2023 whether a public accessibility platform built on OSM had to publish under ODbL, and in 2025 whether its data could be extracted to enrich OSM. Neither received a code answer. This proposal is an attempt at one.
+* The forum thread [https://forum.openstreetmap.fr/t/acceslibre-et-utilisation-detourne-des-donnees-osm/14961 Acceslibre et utilisation détournée des données OSM] asked in 2023 whether a public accessibility platform built on OSM had to publish under ODbL, and in 2025 whether its data could be extracted to enrich OSM. Neither received a code answer. This proposal is an attempt at one.
 
 == QA ==
 
@@ -115,7 +115,7 @@ We are not the first to work on this, and we would rather say so than be told.
 
 == Discussion ==
 
-* Discussion thread: '''<to be published>'''
+* Discussion thread: '''&lt;to be published&gt;'''
 * French OSM forum: https://forum.openstreetmap.fr/
 * French mailing list: https://lists.openstreetmap.org/listinfo/talk-fr
 
