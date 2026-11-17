@@ -40,6 +40,11 @@ class Place:
     category_id: int | None = None
     # Raw source vocabulary value (Acceslibre ``activite``), kept even when unresolved.
     source_category: str | None = None
+    # RNB building id (stable, never reused) — a link to a building, never a business key.
+    rnb_id: str | None = None
+    siret: str | None = None
+    address_number: str | None = None
+    address_street: str | None = None
     address_full: str | None = None
     city: str | None = None
     postal_code: str | None = None
@@ -122,6 +127,8 @@ class DedupRow:
     lat: float
     lng: float
     city: str | None = None
+    # A known, differing rnb_id proves two records sit in different buildings.
+    rnb_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

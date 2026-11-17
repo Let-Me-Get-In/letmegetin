@@ -47,6 +47,11 @@ _COLUMNS: dict[str, tuple[str, ...]] = {
     # AccesLibre's own ERP slug — the identifier the API addresses ERPs by, and the one
     # `resolve_identifier` keys a `slug` rule on (D-05, 15-03 probe).
     "erp_slug": ("slug",),
+    # The RNB building id (12 chars), the SIRET, and the address the export splits in two.
+    "rnb_id": ("rnb_id",),
+    "siret": ("siret",),
+    "address_number": ("numero", "number"),
+    "address_street": ("voie", "street"),
     # The source's own claim about the data ("date de dernière mise à jour"), not ingestion time.
     "observed_at": ("date_maj", "date_mise_a_jour", "updated_at"),
 }
@@ -68,6 +73,11 @@ class AcceslibreRow:
     phone: str | None = None
     # AccesLibre's ERP slug: null when the export has no slug column (D-05, research corr. 3).
     erp_slug: str | None = None
+    # RNB building id: a link to a building, never a business key.
+    rnb_id: str | None = None
+    siret: str | None = None
+    address_number: str | None = None
+    address_street: str | None = None
     # What the source claims (``date_maj``), nullable; freshness compares this (D-02, D-10).
     observed_at: datetime | None = None
     accessibility: dict[str, dict[str, object]] = field(default_factory=dict)
@@ -151,10 +161,16 @@ def _to_row(record: dict[str, Any]) -> AcceslibreRow | None:
     if not source_id or not name:
         return None
     category = _field(record, "category")
+    address_number = _field(record, "address_number")
+    address_street = _field(record, "address_street")
+    # The export has no `adresse` column: it splits the address into numero + voie.
+    address = " ".join(part for part in (address_number, address_street) if part) or _field(
+        record, "address"
+    )
     return AcceslibreRow(
         source_id=str(source_id),
         name=str(name),
-        address=_field(record, "address"),
+        address=address,
         city=_field(record, "city"),
         postal_code=_field(record, "postal_code"),
         lat=_coordinate(_field(record, "lat")),
@@ -163,6 +179,10 @@ def _to_row(record: dict[str, Any]) -> AcceslibreRow | None:
         website=_field(record, "website"),
         phone=_field(record, "phone"),
         erp_slug=_field(record, "erp_slug"),
+        rnb_id=_field(record, "rnb_id"),
+        siret=_field(record, "siret"),
+        address_number=address_number,
+        address_street=address_street,
         observed_at=_date(_field(record, "observed_at")),
         accessibility=accessibility_values(record),
         photos=_photos(record),
@@ -257,11 +277,24 @@ async def _import_row(
 
     existing = await places.get_by_source_id(SOURCE_ACCESLIBRE, row.source_id)
     if existing is not None:
-        # Re-import refreshes the source-owned values without touching contributions, and fills
-        # the ERP slug the partner feed keys on when the export finally carries it (D-05).
+        # Re-import refreshes the source-owned values without touching contributions: the ERP
+        # slug the partner feed keys on, and the building/address identifiers the export
+        # started carrying (D-05).
         if not dry_run:
-            if row.erp_slug and existing.erp_slug != row.erp_slug:
-                existing.erp_slug = row.erp_slug
+            changed = False
+            for source_name, place_name in (
+                ("erp_slug", "erp_slug"),
+                ("rnb_id", "rnb_id"),
+                ("siret", "siret"),
+                ("address_number", "address_number"),
+                ("address_street", "address_street"),
+                ("address", "address_full"),
+            ):
+                value = getattr(row, source_name)
+                if value and getattr(existing, place_name) != value:
+                    setattr(existing, place_name, value)
+                    changed = True
+            if changed:
                 await places.update(existing)
             await _write_source_data(places, existing.id, row)
         report.skipped += 1
@@ -277,6 +310,10 @@ async def _import_row(
         source_id=row.source_id,
         category_id=category_id,
         source_category=source_category,
+        rnb_id=row.rnb_id,
+        siret=row.siret,
+        address_number=row.address_number,
+        address_street=row.address_street,
         address_full=row.address,
         city=row.city,
         postal_code=row.postal_code,

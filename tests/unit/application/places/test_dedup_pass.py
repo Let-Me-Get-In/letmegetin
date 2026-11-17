@@ -43,6 +43,55 @@ async def test_recompute_flags_the_near_twin_once_and_ignores_the_far_one() -> N
 
 
 @pytest.mark.asyncio
+async def test_two_known_buildings_are_never_flagged_as_duplicates() -> None:
+    # Same name, same coordinates, two different RNB buildings: the export says these
+    # are two places (a shared building cannot produce two ids), so the name score loses.
+    places = _FakePlaces(
+        [
+            DedupRow(
+                id=1,
+                name_normalized="pharmacie du centre",
+                lat=45.0,
+                lng=5.0,
+                rnb_id="AAAA1111BBBB",
+            ),
+            DedupRow(
+                id=2,
+                name_normalized="pharmacie du centre",
+                lat=45.0,
+                lng=5.0,
+                rnb_id="CCCC2222DDDD",
+            ),
+        ]
+    )
+
+    report = await recompute_duplicates(places)
+
+    assert report.flagged == 0
+    assert places.flagged == []
+
+
+@pytest.mark.asyncio
+async def test_a_missing_building_id_does_not_clear_a_real_duplicate() -> None:
+    places = _FakePlaces(
+        [
+            DedupRow(id=1, name_normalized="pharmacie du centre", lat=45.0, lng=5.0),
+            DedupRow(
+                id=2,
+                name_normalized="pharmacie du centre",
+                lat=45.0,
+                lng=5.0,
+                rnb_id="AAAA1111BBBB",
+            ),
+        ]
+    )
+
+    report = await recompute_duplicates(places)
+
+    assert report.flagged == 1
+
+
+@pytest.mark.asyncio
 async def test_recompute_is_a_no_op_on_an_empty_table() -> None:
     places = _FakePlaces([])
 

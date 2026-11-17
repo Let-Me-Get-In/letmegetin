@@ -110,6 +110,37 @@ def test_acceslibre_import_logs_the_merge_and_keeps_the_alias(db: None, tmp_path
     assert [row[0] for row in aliases] == ["Mediatheque Test Alpha"]
 
 
+_IDENTIFIER_FIXTURE = (
+    "id;nom;numero;voie;commune;code_postal;latitude;longitude;categorie;rnb_id;siret;"
+    "slug\n"
+    "test-id-1;Mairie Identifiant;12;Rue des Tests;Testville;99001;45.4000;5.4000;"
+    "Mairie;ABCD1234EF56;12345678900012;0001-mairie-identifiant\n"
+)
+
+
+def test_acceslibre_import_stores_the_building_and_address_identifiers(
+    db: None, tmp_path: Path
+) -> None:
+    path = tmp_path / "acceslibre.csv"
+    path.write_text(_IDENTIFIER_FIXTURE, encoding="utf-8")
+    _import(path)
+
+    rows = _places(
+        "SELECT address_full, address_number, address_street, rnb_id, siret, erp_slug "
+        "FROM place WHERE source = 'acceslibre' AND source_id = 'test-id-1'"
+    )
+    assert rows == [
+        (
+            "12 Rue des Tests",
+            "12",
+            "Rue des Tests",
+            "ABCD1234EF56",
+            "12345678900012",
+            "0001-mairie-identifiant",
+        )
+    ]
+
+
 _ACCESSIBILITY_FIXTURE = (
     "id;nom;adresse;commune;code_postal;latitude;longitude;categorie;"
     "entree_pmr;entree_largeur_mini;photo_url\n"

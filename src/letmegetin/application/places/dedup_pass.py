@@ -57,6 +57,9 @@ async def recompute_duplicates(
     for row in rows:
         grid[(int(row.lat // cell), int(row.lng // cell))].append(row.id)
     by_name = {row.id: row.name_normalized for row in rows}
+    # A known, differing rnb_id proves two records are in different buildings; the name
+    # score would only guess. Same or missing rnb_id keeps the previous behaviour.
+    by_rnb = {row.id: row.rnb_id for row in rows if row.rnb_id}
     # Normalized once: the pass scores 6.6 M pairs and re-normalizing the town in
     # every comparison would dominate the run.
     by_locality = {row.id: normalize_name(row.city) if row.city else "" for row in rows}
@@ -71,6 +74,13 @@ async def recompute_duplicates(
                         if other_id == place_id:
                             continue
                         report.pairs += 1
+                        # Different known buildings: never a duplicate, whatever the names say.
+                        if (
+                            place_id in by_rnb
+                            and other_id in by_rnb
+                            and by_rnb[place_id] != by_rnb[other_id]
+                        ):
+                            continue
                         score = similar_score(
                             name,
                             by_name[other_id],

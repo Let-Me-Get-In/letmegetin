@@ -236,6 +236,12 @@ class PlaceModel(Base, TimestampMixin):
         ForeignKey("categories.id", ondelete="SET NULL"), index=True
     )
     source_category: Mapped[str | None] = mapped_column(String(120), index=True)
+    # RNB building id: a stable, never-reused link to a building, not a business key
+    # (one building legitimately holds many ERPs).
+    rnb_id: Mapped[str | None] = mapped_column(String(12), index=True)
+    siret: Mapped[str | None] = mapped_column(String(14))
+    address_number: Mapped[str | None] = mapped_column(String(32))
+    address_street: Mapped[str | None] = mapped_column(String(255))
     address_full: Mapped[str | None] = mapped_column(String(500))
     city: Mapped[str | None] = mapped_column(String(120))
     postal_code: Mapped[str | None] = mapped_column(String(16))

@@ -341,6 +341,10 @@ _PLACE_PAYLOAD_COLUMNS = (
     "slug",
     "category_id",
     "source_category",
+    "rnb_id",
+    "siret",
+    "address_number",
+    "address_street",
     "address_full",
     "city",
     "postal_code",
@@ -717,6 +721,7 @@ class SqlAlchemyPlaceRepository:
                 PlaceModel.lat,
                 PlaceModel.lng,
                 PlaceModel.city,
+                PlaceModel.rnb_id,
             )
             .where(PlaceModel.canonical_id.is_(None), PlaceModel.lat.is_not(None))
             .order_by(PlaceModel.id)
@@ -731,6 +736,7 @@ class SqlAlchemyPlaceRepository:
                 lat=row.lat,
                 lng=row.lng,
                 city=row.city,
+                rnb_id=row.rnb_id,
             )
             for row in rows
         ]
@@ -866,6 +872,10 @@ class SqlAlchemyPlaceRepository:
             slug=place.slug,
             category_id=place.category_id,
             source_category=place.source_category,
+            rnb_id=place.rnb_id,
+            siret=place.siret,
+            address_number=place.address_number,
+            address_street=place.address_street,
             address_full=place.address_full,
             city=place.city,
             postal_code=place.postal_code,
@@ -899,7 +909,12 @@ class SqlAlchemyPlaceRepository:
         model.name_normalized = normalize_name(place.name)
         model.category_id = place.category_id
         model.source_category = place.source_category
-        model.address_full = place.address_full
+        # Only ever filled, never cleared: an export without a column must not erase it.
+        model.rnb_id = place.rnb_id or model.rnb_id
+        model.siret = place.siret or model.siret
+        model.address_number = place.address_number or model.address_number
+        model.address_street = place.address_street or model.address_street
+        model.address_full = place.address_full or model.address_full
         model.city = place.city
         model.postal_code = place.postal_code
         model.country_code = place.country_code
