@@ -194,6 +194,39 @@ docker compose ... exec api letmegetin-admin retention
 4. Is the database reachable/backed up? Check disk and `pg_isready`.
 5. If data is corrupted: restore the last backup into a scratch DB, verify, then promote.
 
+## SSH is not reachable (port 22 closed)
+
+Port 22 is closed by default. A deploy admits its own runner for the length of a
+run through the `lmgi-ssh-window` firewall, and a break-glass window admits one
+`/32` for a bounded time. Both expire. When you cannot reach the host, work
+through this in order — **the firewall, not the host, is almost always the
+cause**, and it is fixed without touching the server.
+
+1. **Re-admit yourself through the firewall.** Either
+   - Hetzner Cloud Console → **Firewalls** → `lmgi-<name>-ssh-window` → **Add rule**
+     → TCP, port 22, source = your current public IP `/32`; or
+   - from a workstation with the token:
+
+     ```bash
+     HCLOUD_TOKEN=… ./scripts/ssh-window.py add "operator-<you>" 3600 "$(curl -4 -sS https://api.ipify.org)"
+     ```
+
+   Both are changes to a **Cloud firewall**, applied over the Hetzner API — they
+   do not need SSH.
+
+2. **Retry the connection.** If it works, you forgot to remove a window, or the
+   janitor's TTL passed while you were working. Nothing else is wrong.
+
+3. **Only if the firewall shows your `/32` and the connection still fails** is the
+   host itself suspect: `systemctl status ssh`, disk full, sshd refusing keys.
+   This is the case for **rescue mode** (Hetzner Console → Rescue → enable, reboot
+   into it, fix, reboot back). Rescue boots a rescue system on the disk; it does
+   **not** change firewall rules, which is why it is step 3 and not step 1.
+
+4. **A deploy that cannot connect** is not a lock-out: its `always()` step removes
+   the rule it added, and the janitor sweeps anything left. Re-run the deploy;
+   check `ssh-window.py list` for a stale `runner-*` rule first.
+
 ## Secrets
 
 - Application secrets live in **Infisical** (project, environment `prod`, path `/`). The server
