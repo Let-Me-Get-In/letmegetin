@@ -146,6 +146,11 @@ Dans l'ordre de valeur :
   faux positifs, sauf erreur de saisie de commune d'un côté.
 - Les chiffres portent sur le fichier du 17 novembre 2026. La base bouge : elle
   comptait 634 931 ERP lors de notre import précédent, soit 242 de moins.
+- La mesure de la section 3 vient de notre passe applicative (12 359 paires
+  signalées). `scripts/acceslibre_duplicate_candidates.py` refait le calcul depuis
+  l'export seul, avec une règle plus stricte sur les noms (la commune est retirée
+  du nom avant comparaison) : 8 463 paires, dont 5 634 avec preuve. C'est ce
+  second chiffre que nous communiquons, parce qu'il est reproductible par eux.
 
 ## 7. Deux questions tranchées dans leur code source et dans la documentation du RNB
 
