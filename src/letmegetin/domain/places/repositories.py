@@ -30,6 +30,10 @@ class PlaceRepository(Protocol):
 
     async def get_by_slug(self, slug: str) -> Place | None: ...
 
+    async def list_by_source(self, source: str) -> list[Place]:
+        """Every place of one imported ``source``, ordered by place id (the publish scan)."""
+        ...
+
     async def list_for_dedup(self, limit: int | None = None) -> list[DedupRow]:
         """Places with a location and no canonical parent, for the duplicate pass."""
 
@@ -198,3 +202,11 @@ class CategoryMappingRepository(Protocol):
     """Resolve a source vocabulary term to one of our categories."""
 
     async def resolve_slug(self, slug: str) -> int | None: ...
+
+    async def resolve_osm_tag(self, tag: str) -> int | None:
+        """Category id for one reviewed ``category_mapping.osm_tag`` value, else ``None``."""
+        ...
+
+    async def list_osm_tags(self) -> dict[str, str]:
+        """Every reviewed ``osm_tag`` with the slug of the category it maps to."""
+        ...

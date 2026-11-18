@@ -92,6 +92,8 @@ def place_from_model(model: PlaceModel) -> Place:
         source_url=model.source_url,
         retrieved_at=model.retrieved_at,
         observed_at=model.observed_at,
+        osm_version=model.osm_version,
+        osm_tags=model.osm_tags,
     )
 
 

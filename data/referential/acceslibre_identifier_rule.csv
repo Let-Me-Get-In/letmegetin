@@ -1,2 +1,2 @@
 rule;detail
-blocked;UNVERIFIED — run 'acceslibre probe <origin_id>' to confirm which identifier the ERP is addressed by
+slug;the ERP slug '0001-mairie' differs from origin_id '3f8c9858-6faf-4b27-8182-7177f3655a04' — re-import the slug column to populate erp_slug

@@ -45,7 +45,9 @@ from letmegetin.application.places.import_acceslibre import (
     import_acceslibre,
     iter_acceslibre_rows,
 )
+from letmegetin.application.places.import_osm import OsmRow, import_osm, render_unmatched
 from letmegetin.application.places.lov2_export import load_identifier_rule
+from letmegetin.application.places.osm_publish import format_publish_report, osm_publish
 from letmegetin.application.places.push_acceslibre import PushReport, push_acceslibre
 from letmegetin.application.places.reclassify import reclassify_places
 from letmegetin.application.referential.admin import (
@@ -78,6 +80,7 @@ from letmegetin.application.referential.licences import (
     load_source_licences,
     sync_licences,
 )
+from letmegetin.application.referential.osm_tags import audit_osm_tags, load_osm_accessibility_tags
 from letmegetin.application.retention import run_retention
 from letmegetin.config import settings
 from letmegetin.core.db import SessionLocal
@@ -87,6 +90,7 @@ from letmegetin.domain.places.licence import DESTINATIONS
 from letmegetin.domain.referential.entities import Category, Criterion, Label, VocabularyEntry
 from letmegetin.domain.referential.labels import parse_label_pairs
 from letmegetin.infrastructure.acceslibre.client import AccesLibreClient
+from letmegetin.infrastructure.osm_pbf import iter_osm_rows
 from letmegetin.infrastructure.persistence.export_repositories import (
     SqlAlchemyExportEventRepository,
     SqlAlchemyExportRepository,
@@ -124,6 +128,7 @@ export_app = typer.Typer(help="Write the open ODbL export (snapshot, delta or ca
 api_key_app = typer.Typer(help="Create, list and revoke partner API keys.")
 user_app = typer.Typer(help="Create and verify operator/E2E accounts.")
 acceslibre_app = typer.Typer(help="Probe the AccesLibre ERP identifier and push owned answers.")
+osm_app = typer.Typer(help="Audit the reviewed OSM tags and generate OSM changesets.")
 app.add_typer(category_app, name="category")
 app.add_typer(criterion_app, name="criterion")
 app.add_typer(vocabulary_app, name="vocabulary")
@@ -137,6 +142,7 @@ app.add_typer(export_app, name="export")
 app.add_typer(api_key_app, name="api-key")
 app.add_typer(user_app, name="user")
 app.add_typer(acceslibre_app, name="acceslibre")
+app.add_typer(osm_app, name="osm")
 
 AdminCallback = Callable[[AsyncSession], Awaitable[str]]
 LabelPairs = Annotated[
@@ -708,6 +714,95 @@ def import_acceslibre_command(
         return "\n".join(lines)
 
     _run_admin(callback, bump=False, commit=not dry_run)
+
+
+@import_app.command("osm")
+def import_osm_command(
+    file: Annotated[Path, typer.Option("--file", "-f", help="Local .osm.pbf extract")],
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", help="Report resolution and write nothing")
+    ] = False,
+    no_dedup: Annotated[
+        bool,
+        typer.Option(
+            "--no-dedup",
+            help="Skip the per-row duplicate lookup (first bulk load; run the dedup pass after)",
+        ),
+    ] = False,
+) -> None:
+    """Import a local OpenStreetMap PBF extract; idempotent by (source, source_id)."""
+
+    def _progress(rows: Iterable[OsmRow], every: int = 5000) -> Iterator[OsmRow]:
+        # One transaction means the table shows nothing until the end: this is the
+        # only way to tell "slow" apart from "stuck" while a national extract runs.
+        for index, row in enumerate(rows, 1):
+            if index % every == 0:
+                print(f"  ... {index} objects read", file=sys.stderr, flush=True)
+            yield row
+
+    async def callback(session: AsyncSession) -> str:
+        report = await import_osm(
+            SqlAlchemyPlaceRepository(session),
+            SqlAlchemyCategoryRepository(session),
+            SqlAlchemyCategoryMappingRepository(session),
+            SqlAlchemyPlaceAliasRepository(session),
+            SqlAlchemyMergeLogRepository(session),
+            SqlAlchemyCriterionRepository(session),
+            _progress(iter_osm_rows(file)),
+            dry_run=dry_run,
+            dedup=not no_dedup,
+        )
+        lines = [
+            f"osm import: created={report.created} linked={report.linked} "
+            f"review={report.review} skipped={report.skipped} resolved={report.resolved} "
+            f"unresolved={report.unresolved} dry_run={dry_run}"
+        ]
+        lines.extend(render_unmatched(report))
+        return "\n".join(lines)
+
+    _run_admin(callback, bump=False, commit=not dry_run)
+
+
+@osm_app.command("audit")
+def osm_audit() -> None:
+    """Fail when a reviewed OSM tag or accessibility value names nothing (T-16-03)."""
+
+    async def gaps() -> list[str]:
+        async with SessionLocal() as session:
+            return audit_osm_tags(
+                await SqlAlchemyCategoryRepository(session).list_all(),
+                await SqlAlchemyCriterionRepository(session).list_all(),
+                await SqlAlchemyCategoryMappingRepository(session).list_osm_tags(),
+                load_osm_accessibility_tags(settings.data_dir / "osm_accessibility_tags.csv"),
+            )
+
+    try:
+        found = asyncio.run(gaps())
+    except DomainError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=1) from exc
+    if not found:
+        typer.echo("osm tags ok: every osm_tag and accessibility value resolves")
+        return
+    typer.echo("osm tag gaps:")
+    for gap in found:
+        typer.echo(gap)
+    raise typer.Exit(code=1)
+
+
+@osm_app.command("publish")
+def osm_publish_command(
+    out: Annotated[Path, typer.Option("--out", help="Directory answers.osmChange goes to")],
+) -> None:
+    """Write answers.osmChange from the stored OSM rows; never uploads (D-09)."""
+
+    async def callback(session: AsyncSession) -> str:
+        report = await osm_publish(
+            SqlAlchemyPlaceRepository(session), out=out, data_dir=settings.data_dir
+        )
+        return "\n".join(format_publish_report(report))
+
+    _run_admin(callback, bump=False)
 
 
 @import_app.command("reclassify")

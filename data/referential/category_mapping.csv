@@ -4,156 +4,156 @@ bed_and_breakfast;bed_and_breakfast;bed_and_breakfast;tourism=guest_house;heberg
 recreation_center;recreation_center;;;;
 gite;gite;;;;
 hotel;hotel;hotel;tourism=hotel;hebergement;
-aquarium;aquarium;;;;
-antique_furniture_store;antique_furniture_store;;;;
-cemetery;cemetery;;;;
-funeral_home;funeral_home;;;;
-luggage_store;luggage_store;;;;
-association_or_organization;association_or_organization;;;;
-car_dealer;car_dealer;;;;
+aquarium;aquarium;;tourism=aquarium;;osm_tag review: 2026-11-16
+antique_furniture_store;antique_furniture_store;;shop=antiques;;osm_tag review: 2026-11-16
+cemetery;cemetery;;landuse=cemetery;;osm_tag review: 2026-11-16
+funeral_home;funeral_home;;shop=funeral_directors;;osm_tag review: 2026-11-16
+luggage_store;luggage_store;;shop=leather;;osm_tag review: 2026-11-16
+association_or_organization;association_or_organization;;office=association;;osm_tag review: 2026-11-16
+car_dealer;car_dealer;;shop=car;;osm_tag review: 2026-11-16
 lodging;lodging;;;;
-shopping_center;shopping_center;;;;
+shopping_center;shopping_center;;shop=mall;;osm_tag review: 2026-11-16
 boot_store;boot_store;;;;
-chocolate_shop;chocolate_shop;;;;
-home_goods_store;home_goods_store;;;;
+chocolate_shop;chocolate_shop;;shop=chocolate;;osm_tag review: 2026-11-16
+home_goods_store;home_goods_store;;shop=houseware;;osm_tag review: 2026-11-16
 grocery_store;grocery_store;grocery_store;shop=grocery;commerce;
-tobacco_shop;tobacco_shop;;;;
-cell_phone_store;cell_phone_store;;;;
+tobacco_shop;tobacco_shop;;shop=tobacco;;osm_tag review: 2026-11-16
+cell_phone_store;cell_phone_store;;shop=mobile_phone;;osm_tag review: 2026-11-16
 catering_service;catering_service;;;;
 clothing_store;clothing_store;clothing_store;shop=clothes;commerce;
 movie_rental_store;movie_rental_store;;;;
-corporate_office;corporate_office;;;;
-driving_school;driving_school;;;;
+corporate_office;corporate_office;;office=company;;osm_tag review: 2026-11-16
+driving_school;driving_school;;amenity=driving_school;;osm_tag review: 2026-11-16
 middle_school;middle_school;;;;
 elementary_school;elementary_school;;;;
-college;college;;;;
+college;college;;amenity=college;;osm_tag review: 2026-11-16
 high_school;high_school;;;;
-florist;florist;;;;
-cheese_shop;cheese_shop;;;;
-department_store;department_store;;;;
-toy_store;toy_store;;;;
+florist;florist;;shop=florist;;osm_tag review: 2026-11-16
+cheese_shop;cheese_shop;;shop=cheese;;osm_tag review: 2026-11-16
+department_store;department_store;;shop=department_store;;osm_tag review: 2026-11-16
+toy_store;toy_store;;shop=toys;;osm_tag review: 2026-11-16
 laundry;laundry;;;;
-book_store;book_store;;;;
-market;market;;;;
-music_store;music_store;;;;
-home_improvement_store;home_improvement_store;;;;
-locksmith;locksmith;;;;
-lawyer;lawyer;;;;
-bazar;bazar;;;;
-jewelry_store;jewelry_store;;;;
-butcher_shop;butcher_shop;;;;
+book_store;book_store;;shop=books;;osm_tag review: 2026-11-16
+market;market;;amenity=marketplace;;osm_tag review: 2026-11-16
+music_store;music_store;;shop=musical_instrument;;osm_tag review: 2026-11-16
+home_improvement_store;home_improvement_store;;shop=doityourself;;osm_tag review: 2026-11-16
+locksmith;locksmith;;craft=locksmith;;osm_tag review: 2026-11-16
+lawyer;lawyer;;office=lawyer;;osm_tag review: 2026-11-16
+bazar;bazar;;shop=variety_store;;osm_tag review: 2026-11-16
+jewelry_store;jewelry_store;;shop=jewelry;;osm_tag review: 2026-11-16
+butcher_shop;butcher_shop;;shop=butcher;;osm_tag review: 2026-11-16
 bakery;bakery;bakery;shop=bakery;commerce;
-wine_store;wine_store;;;;
-perfume_store;perfume_store;;;;
-seafood_market;seafood_market;;;;
-green_grocers;green_grocers;;;;
-photo_lab;photo_lab;;;;
-sporting_goods_store;sporting_goods_store;;;;
+wine_store;wine_store;;shop=wine;;osm_tag review: 2026-11-16
+perfume_store;perfume_store;;shop=perfumery;;osm_tag review: 2026-11-16
+seafood_market;seafood_market;;shop=seafood;;osm_tag review: 2026-11-16
+green_grocers;green_grocers;;shop=greengrocer;;osm_tag review: 2026-11-16
+photo_lab;photo_lab;;shop=photo;;osm_tag review: 2026-11-16
+sporting_goods_store;sporting_goods_store;;shop=sports;;osm_tag review: 2026-11-16
 supermarket;supermarket;supermarket;shop=supermarket;commerce;
-car_rental;car_rental;;;;
-car_wash;car_wash;;;;
+car_rental;car_rental;;amenity=car_rental;;osm_tag review: 2026-11-16
+car_wash;car_wash;;amenity=car_wash;;osm_tag review: 2026-11-16
 church;church;;;;
-city_hall;city_hall;;;;
-convenience_store;convenience_store;;;;
-courthouse;courthouse;;;;
-embassy;embassy;;;;
-fire_station;fire_station;;;;
-furniture_store;furniture_store;;;;
+city_hall;city_hall;;amenity=townhall;;osm_tag review: 2026-11-16
+convenience_store;convenience_store;;shop=convenience;;osm_tag review: 2026-11-16
+courthouse;courthouse;;amenity=courthouse;;osm_tag review: 2026-11-16
+embassy;embassy;;office=diplomatic;;osm_tag review: 2026-11-16
+fire_station;fire_station;;amenity=fire_station;;osm_tag review: 2026-11-16
+furniture_store;furniture_store;;shop=furniture;;osm_tag review: 2026-11-16
 grocery_or_supermarket;grocery_or_supermarket;;;;
-training_center;training_center;;;;
+training_center;training_center;;amenity=training;;osm_tag review: 2026-11-16
 parking;parking;parking;amenity=parking;stationnement;
 fitness_center;fitness_center;fitness_center;leisure=fitness_centre;loisir_sport;
-public_swimming_pool;public_swimming_pool;;;;
+public_swimming_pool;public_swimming_pool;;leisure=swimming_pool;;osm_tag review: 2026-11-16
 beauty_salon;beauty_salon;beauty_salon;shop=beauty;commerce;
-hair_care;hair_care;;;;
-tattoo_shop;tattoo_shop;;;;
-spa;spa;;;;
+hair_care;hair_care;;shop=hairdresser;;osm_tag review: 2026-11-16
+tattoo_shop;tattoo_shop;;shop=tattoo;;osm_tag review: 2026-11-16
+spa;spa;;leisure=spa;;osm_tag review: 2026-11-16
 hostel;hostel;hostel;tourism=hostel;hebergement;
 luxury_hotel;luxury_hotel;;;;
 library;library;library;amenity=library;loisir_culture;
-bowling_alley;bowling_alley;;;;
-casino;casino;;;;
-movie_theater;movie_theater;;;;
+bowling_alley;bowling_alley;;leisure=bowling_alley;;osm_tag review: 2026-11-16
+casino;casino;;amenity=casino;;osm_tag review: 2026-11-16
+movie_theater;movie_theater;;amenity=cinema;;osm_tag review: 2026-11-16
 circus;circus;;;;
-night_club;night_club;;;;
-art_gallery;art_gallery;;;;
-monument;monument;;;;
+night_club;night_club;;amenity=nightclub;;osm_tag review: 2026-11-16
+art_gallery;art_gallery;;tourism=art_gallery;;osm_tag review: 2026-11-16
+monument;monument;;historic=monument;;osm_tag review: 2026-11-16
 museum;museum;museum;tourism=museum;loisir_culture;
-sports_complex;sports_complex;;;;
+sports_complex;sports_complex;;leisure=sports_centre;;osm_tag review: 2026-11-16
 opera_house;opera_house;;;;
 park;park;park;leisure=park;loisir_culture;
-amusement_park;amusement_park;;;;
-beach_resort;beach_resort;;;;
+amusement_park;amusement_park;;tourism=theme_park;;osm_tag review: 2026-11-16
+beach_resort;beach_resort;;leisure=resort;;osm_tag review: 2026-11-16
 national_park;national_park;;;;
 stadium;stadium;stadium;leisure=stadium;loisir_sport;
-performing_arts_theater;performing_arts_theater;;;;
+performing_arts_theater;performing_arts_theater;;amenity=theatre;;osm_tag review: 2026-11-16
 zoo;zoo;zoo;tourism=zoo;loisir_culture;
-cultural_center;cultural_center;;;;
-government_office;government_office;;;;
+cultural_center;cultural_center;;amenity=arts_centre;;osm_tag review: 2026-11-16
+government_office;government_office;;office=government;;osm_tag review: 2026-11-16
 airport;airport;airport;aeroway=aerodrome;transport;
-travel_agency;travel_agency;;;;
-real_estate_agency;real_estate_agency;;;;
-insurance_agency;insurance_agency;;;;
+travel_agency;travel_agency;;shop=travel_agency;;osm_tag review: 2026-11-16
+real_estate_agency;real_estate_agency;;office=estate_agent;;osm_tag review: 2026-11-16
+insurance_agency;insurance_agency;;office=insurance;;osm_tag review: 2026-11-16
 bank;bank;bank;amenity=bank;service_public;
-child_care_agency;child_care_agency;;;;
-atm;atm;;;;
-internet_cafe;internet_cafe;;;;
+child_care_agency;child_care_agency;;amenity=childcare;;osm_tag review: 2026-11-16
+atm;atm;;amenity=atm;;osm_tag review: 2026-11-16
+internet_cafe;internet_cafe;;amenity=internet_cafe;;osm_tag review: 2026-11-16
 train_station;train_station;train_station;railway=station;transport;
 place_of_worship;place_of_worship;place_of_worship;amenity=place_of_worship;culte;
 social_services_organization;social_services_organization;;;;
-copy_shop;copy_shop;;;;
-function_room_facility;function_room_facility;;;;
-bicycle_store;bicycle_store;;;;
-electrician;electrician;;;;
+copy_shop;copy_shop;;shop=copyshop;;osm_tag review: 2026-11-16
+function_room_facility;function_room_facility;;amenity=community_centre;;osm_tag review: 2026-11-16
+bicycle_store;bicycle_store;;shop=bicycle;;osm_tag review: 2026-11-16
+electrician;electrician;;craft=electrician;;osm_tag review: 2026-11-16
 bus_station;bus_station;bus_station;amenity=bus_station;transport;
 cafe;cafe;cafe;amenity=cafe;restauration;
 police;police;police;amenity=police;service_public;
-appliance_store;appliance_store;;;;
-unemployment_office;unemployment_office;;;;
+appliance_store;appliance_store;;shop=appliance;;osm_tag review: 2026-11-16
+unemployment_office;unemployment_office;;office=employment_agency;;osm_tag review: 2026-11-16
 hindu_temple;hindu_temple;;;;
-vacation_appartment;vacation_appartment;;;;
+vacation_appartment;vacation_appartment;;tourism=apartment;;osm_tag review: 2026-11-16
 transit_station;transit_station;;;;
 bar;bar;bar;amenity=bar;restauration;
 fast_food_restaurant;fast_food_restaurant;restaurant;amenity=fast_food;restauration;
 dentist;dentist;dentist;amenity=dentist;sante;
 hospital;hospital;hospital;amenity=hospital;sante;
-physiotherapist;physiotherapist;;;;
+physiotherapist;physiotherapist;;healthcare=physiotherapist;;osm_tag review: 2026-11-16
 university;university;university;amenity=university;enseignement;
 store;store;;;;
-liquor_store;liquor_store;;;;
+liquor_store;liquor_store;;shop=alcohol;;osm_tag review: 2026-11-16
 local_government_office;local_government_office;;;;
 meal_delivery;meal_delivery;;;;
 school;school;school;amenity=school;enseignement;
-shoe_store;shoe_store;;;;
-storage;storage;;;;
+shoe_store;shoe_store;;shop=shoes;;osm_tag review: 2026-11-16
+storage;storage;;shop=storage_rental;;osm_tag review: 2026-11-16
 subway_station;subway_station;;;;
-pet_store;pet_store;;;;
+pet_store;pet_store;;shop=pet;;osm_tag review: 2026-11-16
 post_office;post_office;post_office;amenity=post_office;service_public;
 tea_house;tea_house;;;;
-tourist_information_center;tourist_information_center;;;;
+tourist_information_center;tourist_information_center;;tourism=information;;osm_tag review: 2026-11-16
 restaurant;restaurant;restaurant;amenity=restaurant;restauration;
 nursing_agency;nursing_agency;;;;
-medical_lab;medical_lab;;;;
-wheelchair_store;wheelchair_store;;;;
-optician;optician;;;;
+medical_lab;medical_lab;;healthcare=laboratory;;osm_tag review: 2026-11-16
+wheelchair_store;wheelchair_store;;shop=medical_supply;;osm_tag review: 2026-11-16
+optician;optician;;shop=optician;;osm_tag review: 2026-11-16
 meal_takeaway;meal_takeaway;;;;
 mosque;mosque;;;;
 movie_rental;movie_rental;;;;
 synagogue;synagogue;;;;
-rv_park;rv_park;;;;
-accounting;accounting;;;;
-car_repair;car_repair;;;;
-electronics_store;electronics_store;;;;
+rv_park;rv_park;;tourism=caravan_site;;osm_tag review: 2026-11-16
+accounting;accounting;;office=accountant;;osm_tag review: 2026-11-16
+car_repair;car_repair;;shop=car_repair;;osm_tag review: 2026-11-16
+electronics_store;electronics_store;;shop=electronics;;osm_tag review: 2026-11-16
 establishment;establishment;;;;
-gym;gym;;;;
+gym;gym;;leisure=sports_hall;;osm_tag review: 2026-11-16
 gas_station;gas_station;gas_station;amenity=fuel;service_public;
 taxi_service;taxi_service;;;;
 doctor;doctor;doctor;amenity=doctors;sante;
 physiotherapy_center;physiotherapy_center;;;;
 pharmacy;pharmacy;pharmacy;amenity=pharmacy;sante;
 orthesist;orthesist;;;;
-public_bathroom;public_bathroom;;;;
-veterinary_care;veterinary_care;;;;
-hardware_store;hardware_store;;;;
+public_bathroom;public_bathroom;;amenity=toilets;;osm_tag review: 2026-11-16
+veterinary_care;veterinary_care;;amenity=veterinary;;osm_tag review: 2026-11-16
+hardware_store;hardware_store;;shop=hardware;;osm_tag review: 2026-11-16
 shopping_mall;shopping_mall;;;;
-taxi_stand;taxi_stand;;;;
+taxi_stand;taxi_stand;;amenity=taxi;;osm_tag review: 2026-11-16
