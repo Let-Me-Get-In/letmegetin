@@ -17,3 +17,7 @@ data/referential/raw/
 backups/
 deploy/.env.prod
 deploy/infisical.env
+
+# local planning workspace (kept out of the repository)
+.planning/
+.playwright-mcp/

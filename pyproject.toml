@@ -47,7 +47,7 @@ line-length = 100
 target-version = "py312"
 # Ruff 0.17 formats Markdown by default; this repo only formats Python sources.
 include = ["*.py", "*.pyi"]
-extend-exclude = ["*.md", ".planning"]
+extend-exclude = ["*.md"]
 force-exclude = true
 
 [tool.ruff.lint]

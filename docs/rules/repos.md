@@ -50,6 +50,3 @@ contract to keep in sync.
   and point at the index.
 - **The same for workflows, hooks and helpers**: a copied file is a fork nobody
   remembers to merge.
-- **`.planning/` lives in the repo that owns the work.** A phase spanning several
-  repos keeps its plan in the owning repo and lists the other repos' PRs in the
-  phase notes — do not create three half-plans.

@@ -3,7 +3,7 @@
 - **English, always, for everything an engineer or an agent writes**: commit
   messages, code comments, pull request descriptions, tickets in the issue
   tracker (title, description, comments), and technical documentation — decision
-  records, runbooks, API docs, `.planning/` artifacts.
+  records, runbooks, API docs.
 - **Product copy is the one exception**: user-facing strings, marketing and
   published content follow the product's own language policy, and ship through
   its translation catalogue from the first screen. That is a product decision,

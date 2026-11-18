@@ -7,7 +7,7 @@
 | Rules for agents | `AGENTS.md`, then these files |
 | Product contract | `PRODUCT.md` |
 | Design contract (tokens, type, components) | `DESIGN.md` |
-| Delivery rules | [`delivery.md`](delivery.md), [`gsd.md`](gsd.md) |
+| Delivery rules | [`delivery.md`](delivery.md) |
 | Long-form docs, ADRs, runbooks | `docs/` — start at its index |
 
 **Never restate a rule from one file into another.** A copied number diverges;

@@ -205,11 +205,7 @@ uv run pytest
 
 ## Conventions
 
-- **Linear**: every branch/commit/PR starts with the ticket id (`LET-<n>`; team `LET`, project `LetMeGetIn`). See `.planning/LINEAR.md`.
+- **Linear**: every branch/commit/PR starts with the ticket id (`LET-<n>`; team `LET`, project `LetMeGetIn`).
 - Branch: `LET-<n>-<slug>` — Commit/PR: `LET-<n> <type>(<scope>): <description>`.
 - The `.githooks/commit-msg` hook enforces the convention (and rejects `feat(01-02)`).
 - Full details: [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).
-
-## GSD
-
-The project is driven by GSD (`.planning/`). Next step: `/gsd-plan-phase 1` (or `/gsd-discuss-phase 1`).

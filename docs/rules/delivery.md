@@ -14,12 +14,11 @@ delivers. The rest — branches, commits, pull requests, stacks — is unchanged
   because the PR finishes it.
 - **If a merge closes a ticket with work left**, reopen it and file the remainder
   the same day. That is the most common drift.
-- **A phase or milestone closure files its residuals the same day.** Whatever the
-  phase knowingly leaves — a skipped audit, a measurement not taken, a counter
-  deferred to the next phase — becomes **one ticket per residual**, linked
-  `related` to the phase ticket, before the phase is marked complete. A
-  `Deferred Ideas` entry in `.planning/` is not a tracker item: it is invisible to
-  the board and dies with the branch.
+- **A milestone closure files its residuals the same day.** Whatever the work
+  knowingly leaves — a skipped audit, a measurement not taken, a counter deferred
+  — becomes **one ticket per residual**, linked `related` to the milestone ticket,
+  before the milestone is marked complete. A note kept outside the tracker is not
+  a tracker item: it is invisible to the board and dies with the branch.
 - **Everything written in the tracker is in English.**
 
 ### With Linear
@@ -35,9 +34,9 @@ delivers. The rest — branches, commits, pull requests, stacks — is unchanged
   milestone named `v1.1` duplicates the project and a version nobody reads. Put a
   project milestone only when one project ships several deliveries, and name it
   after the outcome with a target date.
-- **One GSD phase = one or more tickets.** Plan the phase, then cut it into
-  tickets — one per shippable slice — when it carries more than one outcome.
-  Several tickets for one phase are stacked, bottom layer first.
+- **One delivery = one or more tickets.** Cut the work into tickets — one per
+  shippable slice — when it carries more than one outcome. Several tickets for one
+  delivery are stacked, bottom layer first.
 - **Create the project with the milestone, not after it.** A milestone whose
   project does not exist is a plan with nowhere to report.
 - **Ticket titles start with their area** so the board reads without opening the
@@ -97,18 +96,12 @@ feat(runs): stop leaving a finished run on "Read the offer" (INT-42)
 - Conventional Commits: imperative, lowercase, no trailing period, under 72
   characters. Types: `feat` `fix` `docs` `test` `chore` `refactor` `perf` `style`
   `ci`.
-- **The scope names the feature or module, never the phase number.** `fix(runs)`,
-  never `fix(03)` or `feat(02-01)`. Someone reading `git log` without
-  `.planning/` open must understand the change.
+- **The scope names the feature or module, never a plan number.** `fix(runs)`,
+  never `fix(03)` or `feat(02-01)`. Someone reading `git log` must understand the
+  change without opening an internal plan.
 - **The ticket id closes the subject**, in parentheses, when the project has a
   tracker. A commit that has no ticket says so in its body — never invent an id.
   The id never opens the subject.
-- **GSD ids never enter the git or tracker record**: no phase number, no plan id
-  (`02-01`), no workstream name in a commit subject or body, a branch, a PR
-  title or body, a ticket or document title or description. They are internal to
-  `.planning/`; the map is `.planning/LINEAR.md`. Pointing at the GSD *files*
-  that explain a decision is welcome in a PR or ticket description —
-  `.planning/phases/03-billing/PLAN.md` — as a reference, never as a label.
 - **Atomic commits**: one logical change each, and every commit leaves CI green.
   Do not mix a refactor with a behaviour change.
 - Breaking change: `!` after the type/scope plus a `BREAKING CHANGE:` footer.

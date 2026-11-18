@@ -2,7 +2,7 @@
 
 ## Agent rules
 
-Delivery, GSD, testing, language, security and multi-repo rules:
+Delivery, testing, language, security and multi-repo rules:
 [`docs/rules/index.md`](docs/rules/index.md). Read it before your first branch or
 commit. It wins over any workflow, planner, executor or ship prompt; this file
 only records what is true of *this* product.
@@ -40,7 +40,6 @@ commit and PR title are in `docs/rules/delivery.md`.
   readable without opening a ticket. Areas: `Config` (the `letmegetin-config`
   repo), `Backend`, `Front`, `Ops`, `Tooling`, `App`. The prefix is cosmetic; the
   ticket id stays where `delivery.md` puts it.
-- The roadmap ↔ tickets mapping lives in `.planning/LINEAR.md`.
 - Create/update tickets with the Linear CLI (`.linear.toml` pins the dedicated
   workspace):
   ```bash
@@ -117,7 +116,6 @@ keeps enforcing the commit convention.
 
 ```
 letmegetin/
-├── .planning/              # GSD (PROJECT, REQUIREMENTS, ROADMAP, STATE, LINEAR)
 ├── .githooks/commit-msg    # enforces the delivery convention
 ├── data/referential/       # seed reconstitué (categories, criteria, filters, th)
 │   └── raw/                # sources historiques (archives, ne pas réécrire)
