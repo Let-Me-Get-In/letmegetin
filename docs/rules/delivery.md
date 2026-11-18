@@ -102,6 +102,8 @@ feat(runs): stop leaving a finished run on "Read the offer" (INT-42)
 - **The ticket id closes the subject**, in parentheses, when the project has a
   tracker. A commit that has no ticket says so in its body — never invent an id.
   The id never opens the subject.
+- **The body explains what the subject cannot**: why, and the constraint that
+  makes the change what it is. A few lines, never a changelog of the diff.
 - **Atomic commits**: one logical change each, and every commit leaves CI green.
   Do not mix a refactor with a behaviour change.
 - Breaking change: `!` after the type/scope plus a `BREAKING CHANGE:` footer.
@@ -118,6 +120,10 @@ feat(runs): stop leaving a finished run on "Read the offer" (INT-42)
   document) / `How it works` / `Tests`, plus `Notes` when it applies
   (screenshot, breaking change, stack layer, follow-up). Never paste the commit
   list.
+- **Short by default**: a bullet is a fact, not a paragraph. A PR body of five
+  bullets beats five paragraphs; a ticket states the gap and its acceptance in
+  under ten lines. Cut history, restated context and self-commentary — a reader
+  who needs the detail can ask.
 - **Never merge.** An open, verified PR means the work is done: CI green, stop.
   Do not run `gh pr merge`, do not click Merge. Merging is a human decision.
 - **Related, dependent changes are stacked** (`gh stack init` / `add` /
